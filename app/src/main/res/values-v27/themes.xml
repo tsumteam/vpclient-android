@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.Base.Starting.V27" parent="Theme.Base.Starting.V26">
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:navigationBarDividerColor">@android:color/transparent</item>
+    </style>
+
+    <style name="Theme.VPClient.Starting" parent="Theme.Base.Starting.V27" />
+
+    <style name="Theme.Base.V27" parent="Theme.Base.V26">
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:navigationBarDividerColor">@android:color/transparent</item>
+    </style>
+
+    <style name="Theme.VPClient" parent="Theme.Base.V27" />
+
+</resources>

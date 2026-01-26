@@ -1,0 +1,11 @@
+.idea
+.kotlin
+.gradle
+build
+build-cache
+generated
+local.properties
+config/courier-keystore-release.jks
+config/keystore-release.properties
+app/release
+app/debug
