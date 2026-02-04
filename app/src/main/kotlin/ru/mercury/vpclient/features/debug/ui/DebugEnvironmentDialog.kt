@@ -53,28 +53,13 @@ fun DebugEnvironmentDialog(
             )
 
             RadioRow(
-                text = VPClientEnvironment.BCA.name,
-                selected = selectedEnvironment == VPClientEnvironment.BCA,
-                onSelect = {
-                    onSelectEnvironment(VPClientEnvironment.BCA)
-                    onDismissRequest()
-                },
-                modifier = Modifier.padding(start = 8.dp, top = 24.dp, end = 8.dp)
-            )
-
-            HorizontalDivider(
-                modifier = Modifier.padding(horizontal = 24.dp),
-                color = MaterialTheme.colorScheme.divider2
-            )
-
-            RadioRow(
                 text = VPClientEnvironment.TEST.name,
                 selected = selectedEnvironment == VPClientEnvironment.TEST,
                 onSelect = {
                     onSelectEnvironment(VPClientEnvironment.TEST)
                     onDismissRequest()
                 },
-                modifier = Modifier.padding(horizontal = 8.dp)
+                modifier = Modifier.padding(start = 8.dp, top = 24.dp, end = 8.dp)
             )
 
             HorizontalDivider(
@@ -117,7 +102,7 @@ private fun DebugEnvironmentDialogPreview() {
     VPClientTheme {
         DebugEnvironmentDialog(
             onDismissRequest = {},
-            selectedEnvironment = VPClientEnvironment.BCA,
+            selectedEnvironment = VPClientEnvironment.TEST,
             onSelectEnvironment = {}
         )
     }

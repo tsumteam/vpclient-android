@@ -9,3 +9,4 @@ config/courier-keystore-release.jks
 config/keystore-release.properties
 app/release
 app/debug
+/config/vpclient-keystore-release.jks

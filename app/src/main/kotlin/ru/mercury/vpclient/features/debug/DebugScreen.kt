@@ -2,9 +2,7 @@ package ru.mercury.vpclient.features.debug
 
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -13,15 +11,12 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Slider
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.buildAnnotatedString
@@ -223,62 +218,6 @@ private fun DebugActivityContent(
                 )
             }
             item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable(onClick = { dispatch(DebugIntent.AutofillClick) })
-                        .padding(horizontal = 16.dp, vertical = 20.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = "Автозаполнение данных",
-                        style = VPClientTypography.Regular_18_OnBackground,
-                    )
-
-                    Switch(
-                        checked = state.autofill,
-                        onCheckedChange = null
-                    )
-                }
-            }
-            item {
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                    thickness = .1.dp,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            }
-            item {
-                Column {
-                    Text(
-                        text = "Задержка запросов: ${state.requestDelayMs.toInt()} сек.",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 16.dp, top = 20.dp, end = 16.dp),
-                        style = VPClientTypography.Regular_18_OnBackground
-                    )
-
-                    Slider(
-                        value = state.requestDelayMs,
-                        onValueChange = { dispatch(DebugIntent.RequestDelayChange(it)) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 20.dp, top = 8.dp, end = 20.dp),
-                        valueRange = 0F..10F,
-                        steps = 10,
-                        onValueChangeFinished = { dispatch(DebugIntent.RequestDelayChangeFinished) }
-                    )
-                }
-            }
-            item {
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                    thickness = .1.dp,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            }
-            item {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -295,40 +234,6 @@ private fun DebugActivityContent(
                         style = VPClientTypography.Regular_14_Secondary
                     )
                 }
-            }
-            item {
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                    thickness = .1.dp,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            }
-            item {
-                Text(
-                    text = "Выполнить Ktor-запрос",
-                    style = VPClientTypography.Regular_18_OnBackground,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable(onClick = { dispatch(DebugIntent.NetworkRequest) })
-                        .padding(horizontal = 16.dp, vertical = 20.dp)
-                )
-            }
-            item {
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                    thickness = .1.dp,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            }
-            item {
-                Text(
-                    text = "Выполнить Room-запрос",
-                    style = VPClientTypography.Regular_18_OnBackground,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable(onClick = { dispatch(DebugIntent.DatabaseRequest) })
-                        .padding(horizontal = 16.dp, vertical = 20.dp)
-                )
             }
         }
     }

@@ -43,6 +43,7 @@ kotlin {
 android {
     namespace = "ru.mercury.vpclient"
     compileSdk = libs.versions.compile.sdk.get().toInt()
+    flavorDimensions += "env"
 
     defaultConfig {
         applicationId = "ru.mercury.vpclient"
@@ -53,6 +54,24 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "VP_VPCLIENT_API_KEY", "\"$vpclientApiKey\"")
         buildConfigField("String", "APPMETRICA_API_KEY", "\"$appmetricaApiKey\"")
+    }
+
+
+    productFlavors {
+        create("prod") {
+            dimension = "env"
+            buildConfigField("String", "VPCLIENT_ENV", "\"prod\"")
+        }
+        create("uat") {
+            dimension = "env"
+            applicationIdSuffix = ".uat"
+            buildConfigField("String", "VPCLIENT_ENV", "\"uat\"")
+        }
+        create("dev") {
+            dimension = "env"
+            applicationIdSuffix = ".dev"
+            buildConfigField("String", "VPCLIENT_ENV", "\"dev\"")
+        }
     }
 
     signingConfigs {
@@ -106,7 +125,6 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
         debug {
-            applicationIdSuffix = ".debug"
             signingConfig = if (signingConfigs.findByName("debug") != null) signingConfigs.getByName("debug") else null
         }
     }
@@ -142,17 +160,10 @@ android {
 }
 
 androidComponents {
-    onVariants(selector().withBuildType("debug")) { variant ->
+    onVariants { variant ->
         variant.outputs.forEach { output ->
             if (output is VariantOutputImpl) {
-                output.outputFileName = "VPClient-v${android.defaultConfig.versionName}(${android.defaultConfig.versionCode})-debug.apk"
-            }
-        }
-    }
-    onVariants(selector().withBuildType("release")) { variant ->
-        variant.outputs.forEach { output ->
-            if (output is VariantOutputImpl) {
-                output.outputFileName = "VPClient-v${android.defaultConfig.versionName}(${android.defaultConfig.versionCode})-release.apk"
+                output.outputFileName = "VPClient-${variant.name}-v${android.defaultConfig.versionName}(${android.defaultConfig.versionCode}).apk"
             }
         }
     }

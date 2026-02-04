@@ -13,6 +13,8 @@ sealed class PreferenceKey<T>(
     data object PairedUser: PreferenceKey<String>(stringPreferencesKey("pairedUser"))
     data object UserToken: PreferenceKey<String>(stringPreferencesKey("userToken"))
     data object RequestDelay: PreferenceKey<Float>(floatPreferencesKey("requestDelay"))
-    data object Environment: PreferenceKey<String>(stringPreferencesKey("environment"))
+    data object EnvironmentProd: PreferenceKey<String>(stringPreferencesKey("environmentProd"))
+    data object EnvironmentUat: PreferenceKey<String>(stringPreferencesKey("environmentUat"))
+    data object EnvironmentDev: PreferenceKey<String>(stringPreferencesKey("environmentDev"))
     data object Autofill: PreferenceKey<Boolean>(booleanPreferencesKey("autofill"))
 }

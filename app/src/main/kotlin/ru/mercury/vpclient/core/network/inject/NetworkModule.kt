@@ -11,13 +11,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
-import io.ktor.client.network.sockets.ConnectTimeoutException
-import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.HttpCallValidator
-import io.ktor.client.plugins.HttpRequestTimeoutException
 import io.ktor.client.plugins.HttpTimeout
-import io.ktor.client.plugins.ResponseException
-import io.ktor.client.plugins.ServerResponseException
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
@@ -25,16 +20,11 @@ import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.client.request.header
-import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import io.ktor.network.sockets.SocketTimeoutException
 import io.ktor.serialization.kotlinx.json.json
-import io.ktor.utils.io.CancellationException
-import kotlinx.io.IOException
 import kotlinx.serialization.json.Json
 import ru.mercury.vpclient.BuildConfig
-import ru.mercury.vpclient.core.network.env.VPClientEnvironment
 import ru.mercury.vpclient.core.network.provideLoggingInterceptor
 import ru.mercury.vpclient.core.persistence.datastore.PreferenceKey
 import ru.mercury.vpclient.core.persistence.datastore.SettingsDataStore
@@ -53,14 +43,9 @@ object NetworkModule {
     ): HttpClient {
         val ktor = HttpClient(OkHttp) {
             defaultRequest {
-                val vpclientEnvironment = when {
-                    BuildConfig.DEBUG -> {
-                        val vpclientEnvironmentName = settingsDataStore.get().getValueBlocking(PreferenceKey.Environment)
-                        if (vpclientEnvironmentName.isNullOrEmpty()) VPClientEnvironment.BCA else VPClientEnvironment.valueOf(vpclientEnvironmentName)
-                    }
-                    else -> VPClientEnvironment.PROD
-                }
-                url(vpclientEnvironment.url)
+                val environmentKey = environmentPreferenceKey()
+                val environmentUrl = settingsDataStore.get().getValueBlocking(environmentKey)
+                url(environmentUrl)
 
                 header("X-ApiKey", BuildConfig.VP_VPCLIENT_API_KEY)
 
@@ -142,4 +127,13 @@ object NetworkModule {
     private const val ERROR_TEXT_LENGTH = 1024
     private const val DEFAULT_APPLICATION_TYPE = "api"
     private const val DEFAULT_DEVICE_ID = "swagger"
+
+    private fun environmentPreferenceKey(): PreferenceKey<String> {
+        return when (BuildConfig.FLAVOR) {
+            "prod" -> PreferenceKey.EnvironmentProd
+            "uat" -> PreferenceKey.EnvironmentUat
+            "dev" -> PreferenceKey.EnvironmentDev
+            else -> PreferenceKey.EnvironmentDev
+        }
+    }
 }
