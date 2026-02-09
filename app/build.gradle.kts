@@ -56,7 +56,6 @@ android {
         buildConfigField("String", "APPMETRICA_API_KEY", "\"$appmetricaApiKey\"")
     }
 
-
     productFlavors {
         create("prod") {
             dimension = "env"

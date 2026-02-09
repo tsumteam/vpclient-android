@@ -52,23 +52,28 @@ jobs:
       - name: expose version
         run: ./gradlew -q printVersion | tee -a $GITHUB_ENV
 
-      - run: ./gradlew assembleDebug
+      - name: assemble dev/uat/prod debug
+        run: ./gradlew assembleDevDebug assembleUatDebug assembleProdDebug
         if: ${{ env.IS_DEBUG == 'true' }}
 
       - uses: actions/upload-artifact@v4
         if: ${{ env.IS_DEBUG == 'true' }}
         with:
           name: debug-apk-${{ env.VERSION_CODE }}
-          path: app/build/outputs/apk/debug
+          path: app/build/outputs/apk/*/debug/*.apk
           retention-days: 1
 
-      - name: expose debug apk path
+      - name: expose debug apk paths
         if: ${{ env.IS_DEBUG == 'true' }}
         run: |
-          latest=$(ls -t app/build/outputs/apk/debug/*.apk | head -1)
-          echo "DEBUG_APK_PATH=$latest" >> $GITHUB_ENV
+          dev_latest=$(ls -t app/build/outputs/apk/dev/debug/*.apk | head -1)
+          uat_latest=$(ls -t app/build/outputs/apk/uat/debug/*.apk | head -1)
+          prod_latest=$(ls -t app/build/outputs/apk/prod/debug/*.apk | head -1)
+          echo "DEV_DEBUG_APK_PATH=$dev_latest" >> $GITHUB_ENV
+          echo "UAT_DEBUG_APK_PATH=$uat_latest" >> $GITHUB_ENV
+          echo "PROD_DEBUG_APK_PATH=$prod_latest" >> $GITHUB_ENV
 
-      - name: telegram notify (debug)
+      - name: telegram notify (debug dev)
         if: ${{ env.IS_DEBUG == 'true' }}
         env:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
@@ -76,13 +81,51 @@ jobs:
           THREAD_ID: ${{ secrets.TELEGRAM_THREAD_ID }}
           MESSAGE: |
             ✅ <b>${{ env.VERSION_NAME }} (${{ env.VERSION_CODE }})</b>
-            <b>Тип:</b> Debug
+            <b>Тип:</b> Debug (dev)
             <b>Ветка:</b> <code>${{ github.ref_name }}</code>
             <b>Коммит:</b> <code>${{ env.SHORT_SHA }}</code>
         run: |
           curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendDocument" \
             -F chat_id="${CHAT_ID}" \
-            -F document="@${DEBUG_APK_PATH}" \
+            -F document="@${DEV_DEBUG_APK_PATH}" \
+            -F caption="${{ env.MESSAGE }}" \
+            -F message_thread_id="${THREAD_ID}" \
+            -F parse_mode="HTML"
+
+      - name: telegram notify (debug uat)
+        if: ${{ env.IS_DEBUG == 'true' }}
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          THREAD_ID: ${{ secrets.TELEGRAM_THREAD_ID }}
+          MESSAGE: |
+            ✅ <b>${{ env.VERSION_NAME }} (${{ env.VERSION_CODE }})</b>
+            <b>Тип:</b> Debug (uat)
+            <b>Ветка:</b> <code>${{ github.ref_name }}</code>
+            <b>Коммит:</b> <code>${{ env.SHORT_SHA }}</code>
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendDocument" \
+            -F chat_id="${CHAT_ID}" \
+            -F document="@${UAT_DEBUG_APK_PATH}" \
+            -F caption="${{ env.MESSAGE }}" \
+            -F message_thread_id="${THREAD_ID}" \
+            -F parse_mode="HTML"
+
+      - name: telegram notify (debug prod)
+        if: ${{ env.IS_DEBUG == 'true' }}
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          THREAD_ID: ${{ secrets.TELEGRAM_THREAD_ID }}
+          MESSAGE: |
+            ✅ <b>${{ env.VERSION_NAME }} (${{ env.VERSION_CODE }})</b>
+            <b>Тип:</b> Debug (prod)
+            <b>Ветка:</b> <code>${{ github.ref_name }}</code>
+            <b>Коммит:</b> <code>${{ env.SHORT_SHA }}</code>
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendDocument" \
+            -F chat_id="${CHAT_ID}" \
+            -F document="@${PROD_DEBUG_APK_PATH}" \
             -F caption="${{ env.MESSAGE }}" \
             -F message_thread_id="${THREAD_ID}" \
             -F parse_mode="HTML"
