@@ -13,7 +13,6 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     env:
-      APPMETRICA_API_KEY: ${{ secrets.APPMETRICA_API_KEY }}
       KEYSTORE_FILE: ${{ secrets.KEYSTORE_FILE }}
       KEYSTORE_KEY_ALIAS: ${{ secrets.KEYSTORE_KEY_ALIAS }}
       KEYSTORE_KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
