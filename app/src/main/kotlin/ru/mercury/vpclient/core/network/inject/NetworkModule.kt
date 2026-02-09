@@ -47,8 +47,6 @@ object NetworkModule {
                 val environmentUrl = settingsDataStore.get().getValueBlocking(environmentKey)
                 url(environmentUrl)
 
-                header("X-ApiKey", BuildConfig.VP_VPCLIENT_API_KEY)
-
                 val applicationType = settingsDataStore.get().getValueBlocking(PreferenceKey.ApplicationType).orEmpty().ifEmpty { DEFAULT_APPLICATION_TYPE }
                 header("X-ApplicationType", applicationType)
 

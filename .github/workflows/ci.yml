@@ -13,7 +13,6 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     env:
-      VP_VPCLIENT_API_KEY: ${{ secrets.VP_VPCLIENT_API_KEY }}
       APPMETRICA_API_KEY: ${{ secrets.APPMETRICA_API_KEY }}
       KEYSTORE_FILE: ${{ secrets.KEYSTORE_FILE }}
       KEYSTORE_KEY_ALIAS: ${{ secrets.KEYSTORE_KEY_ALIAS }}
@@ -80,6 +79,8 @@ jobs:
           CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           THREAD_ID: ${{ secrets.TELEGRAM_THREAD_ID }}
           MESSAGE: |
+            #vp_client_dev
+            
             ✅ <b>${{ env.VERSION_NAME }} (${{ env.VERSION_CODE }})</b>
             <b>Тип:</b> Debug (dev)
             <b>Ветка:</b> <code>${{ github.ref_name }}</code>
@@ -99,6 +100,8 @@ jobs:
           CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           THREAD_ID: ${{ secrets.TELEGRAM_THREAD_ID }}
           MESSAGE: |
+            #vp_client_uat
+            
             ✅ <b>${{ env.VERSION_NAME }} (${{ env.VERSION_CODE }})</b>
             <b>Тип:</b> Debug (uat)
             <b>Ветка:</b> <code>${{ github.ref_name }}</code>
@@ -118,6 +121,8 @@ jobs:
           CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           THREAD_ID: ${{ secrets.TELEGRAM_THREAD_ID }}
           MESSAGE: |
+            #vp_client_prod
+            
             ✅ <b>${{ env.VERSION_NAME }} (${{ env.VERSION_CODE }})</b>
             <b>Тип:</b> Debug (prod)
             <b>Ветка:</b> <code>${{ github.ref_name }}</code>
@@ -191,6 +196,8 @@ jobs:
           CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           THREAD_ID: ${{ secrets.TELEGRAM_THREAD_ID }}
           MESSAGE: |
+            #vp_client_prod
+            
             ✅ <b>${{ env.VERSION_NAME }} (${{ env.VERSION_CODE }})</b>
             <b>Тип:</b> Release
             <b>Ветка:</b> <code>${{ github.ref_name }}</code>

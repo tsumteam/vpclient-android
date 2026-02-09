@@ -25,11 +25,6 @@ private val gitCommitsCount: Int by lazy {
         1
     }
 }
-private val vpclientApiKey: String by lazy {
-    val key = gradleLocalProperties(rootDir, providers).getProperty("VP_VPCLIENT_API_KEY").orEmpty().ifEmpty { System.getenv("VP_VPCLIENT_API_KEY") }
-    if (key.isEmpty()) throw GradleException("VP_VPCLIENT_API_KEY is empty")
-    key
-}
 private val appmetricaApiKey: String by lazy {
     val key = gradleLocalProperties(rootDir, providers).getProperty("APPMETRICA_API_KEY").orEmpty().ifEmpty { System.getenv("APPMETRICA_API_KEY") }
     if (key.isEmpty()) throw GradleException("APPMETRICA_API_KEY is empty")
@@ -52,7 +47,6 @@ android {
         versionName = "1.0.0"
         versionCode = gitCommitsCount
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "VP_VPCLIENT_API_KEY", "\"$vpclientApiKey\"")
         buildConfigField("String", "APPMETRICA_API_KEY", "\"$appmetricaApiKey\"")
     }
 

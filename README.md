@@ -1,7 +1,6 @@
-VPClient Android App
+Vip Platinum Client Android App
 =
-Исходный код приложения для курьеров.
+Исходный код приложения для клиентов.
 
 ## Build
-- Добавь в папку config файлы `vpclient-keystore-release.jks`, `keystore-release.properties`, `vpclient-keystore-debug.jks` и `keystore-debug.properties`
-- Добавь переменные `VP_VPCLIENT_API_KEY=` и `APPMETRICA_API_KEY=` в `local.properties`
+- Добавь в папку config файлы `vpclient-keystore-release.jks` и `keystore-release.properties`
