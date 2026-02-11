@@ -1,12 +1,28 @@
 package ru.mercury.vpclient.core.interactor
 
+import kotlinx.coroutines.flow.Flow
+import ru.mercury.vpclient.core.entity.CodeValidationError
+import ru.mercury.vpclient.core.entity.NameValidationError
+import ru.mercury.vpclient.core.entity.PhoneValidationError
+import ru.mercury.vpclient.core.persistence.database.entity.ClientEntity
+
 interface AuthenticationInteractor {
 
-    suspend fun register(phone: String, name: String): String
+    val clientEntityFlow: Flow<ClientEntity>
 
-    suspend fun login(phone: String): String
+    fun validateRequiredName(name: String): NameValidationError?
 
-    suspend fun continueLogin(phone: String, code: String): String
+    fun validateRequiredPhone(phone: String): PhoneValidationError?
+
+    fun validateRequiredCode(code: String): CodeValidationError?
+
+    suspend fun register(phone: String, name: String)
+
+    suspend fun login(phone: String)
+
+    suspend fun continueLogin(code: String)
 
     suspend fun logout()
+
+    suspend fun resendCode()
 }

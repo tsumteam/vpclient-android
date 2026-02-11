@@ -15,7 +15,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.core.ui.ktx.blockClickable
-import ru.mercury.vpclient.core.ui.theme.VPClientTheme
+import ru.mercury.vpclient.core.ui.theme.ClientTheme
 import ru.mercury.vpclient.core.ui.theme.black50
 
 @Composable
@@ -53,7 +53,7 @@ fun LoadingBox(
 @Preview
 @Composable
 private fun LoadingBoxPreview() {
-    VPClientTheme {
+    ClientTheme {
         LoadingBox(
             isVisible = true
         )

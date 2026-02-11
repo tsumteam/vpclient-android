@@ -1,14 +1,16 @@
-package ru.mercury.vpclient.core.navigation
+ package ru.mercury.vpclient.core.navigation
 
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
-import ru.mercury.vpclient.features.authentication.navigation.AuthenticationRoute
 import ru.mercury.vpclient.features.main.navigation.MainRoute
+import ru.mercury.vpclient.features.register.navigation.RegisterRoute
+import ru.mercury.vpclient.features.welcome.navigation.WelcomeRoute
 
 fun NavBackStack<NavKey>.navigateTo(route: Route) {
     when (route) {
         is BackRoute -> popBackStack()
-        is AuthenticationRoute -> {
+        is WelcomeRoute -> setRoot(route)
+        is RegisterRoute -> {
             popUpTo<MainRoute>(inclusive = true)
             push(route, singleTop = true)
         }
@@ -19,7 +21,7 @@ fun NavBackStack<NavKey>.navigateTo(route: Route) {
                     push(route, singleTop = true)
                 }
                 else -> {
-                    popUpTo<AuthenticationRoute>(inclusive = true)
+                    popUpTo<WelcomeRoute>(inclusive = true)
                     push(route, singleTop = true)
                 }
             }

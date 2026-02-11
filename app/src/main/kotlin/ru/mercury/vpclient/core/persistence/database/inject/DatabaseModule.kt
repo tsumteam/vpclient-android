@@ -10,6 +10,7 @@ import dagger.hilt.components.SingletonComponent
 import ru.mercury.vpclient.core.persistence.database.AppDatabase
 import ru.mercury.vpclient.core.persistence.database.dao.BoutiqueDao
 import ru.mercury.vpclient.core.persistence.database.dao.CargoDao
+import ru.mercury.vpclient.core.persistence.database.dao.ClientDao
 import ru.mercury.vpclient.core.persistence.database.dao.DeliveryDao
 import ru.mercury.vpclient.core.persistence.database.dao.LoyaltyDao
 import ru.mercury.vpclient.core.persistence.database.dao.OutboxDao
@@ -40,6 +41,9 @@ object DatabaseModule {
 
     @Provides
     fun cargoDao(database: AppDatabase): CargoDao = database.cargoDao()
+
+    @Provides
+    fun clientDao(database: AppDatabase): ClientDao = database.clientDao()
 
     @Provides
     fun deliveryDao(database: AppDatabase): DeliveryDao = database.deliveryDao()

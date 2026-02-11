@@ -21,8 +21,8 @@ import androidx.constraintlayout.compose.Dimension
 import ru.mercury.vpclient.core.DeliveryId
 import ru.mercury.vpclient.core.persistence.database.pojo.ReturnPojo
 import ru.mercury.vpclient.core.ui.preview.ReturnPojoProvider
-import ru.mercury.vpclient.core.ui.theme.VPClientTheme
-import ru.mercury.vpclient.core.ui.theme.VPClientTypography
+import ru.mercury.vpclient.core.ui.theme.ClientTheme
+import ru.mercury.vpclient.core.ui.theme.ClientTypography
 
 @Composable
 fun ReturnCard(
@@ -44,10 +44,9 @@ fun ReturnCard(
 
         Text(
             text = pojo.boutiqueEntity.boutiqueName,
-            textAlign = TextAlign.Start,
             overflow = TextOverflow.Ellipsis,
             maxLines = 2,
-            style = VPClientTypography.Medium_16_OnBackground,
+            style = ClientTypography.Medium_16_OnBackground.copy(textAlign = TextAlign.Start),
             modifier = Modifier.constrainAs(boutiqueNameText) {
                 width = Dimension.fillToConstraints
                 height = Dimension.fillToConstraints
@@ -55,16 +54,6 @@ fun ReturnCard(
                 top.linkTo(parent.top, 20.dp)
                 end.linkTo(chevronButton.start, 16.dp)
                 bottom.linkTo(chevronButton.bottom)
-            }
-        )
-
-        ChevronButton(
-            onClick = onClick,
-            modifier = Modifier.constrainAs(chevronButton) {
-                width = Dimension.value(36.dp)
-                height = Dimension.value(36.dp)
-                top.linkTo(parent.top, 18.dp)
-                end.linkTo(parent.end, 16.dp)
             }
         )
 
@@ -87,7 +76,7 @@ fun ReturnCard(
 private fun ReturnCardPreview(
     @PreviewParameter(ReturnPojoProvider::class) pojo: ReturnPojo
 ) {
-    VPClientTheme {
+    ClientTheme {
         ReturnCard(
             pojo = pojo,
             onClick = {},

@@ -9,7 +9,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import dagger.hilt.android.AndroidEntryPoint
 import ru.mercury.vpclient.core.ui.ktx.installShortcuts
 import ru.mercury.vpclient.core.ui.ktx.setLightSystemBars
-import ru.mercury.vpclient.core.ui.theme.VPClientTheme
+import ru.mercury.vpclient.core.ui.theme.ClientTheme
 import ru.mercury.vpclient.main.MainActivityContent
 import ru.mercury.vpclient.main.MainActivityViewModel
 
@@ -24,6 +24,6 @@ class MainActivity: ComponentActivity() {
         installShortcuts()
         enableEdgeToEdge()
         window.setLightSystemBars()
-        setContent { VPClientTheme { MainActivityContent() } }
+        setContent { ClientTheme { MainActivityContent() } }
     }
 }

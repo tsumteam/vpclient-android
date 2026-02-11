@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshState
@@ -14,17 +12,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.Job
-import ru.mercury.vpclient.core.ui.components.VPClientTopAppBar
-import ru.mercury.vpclient.core.ui.theme.VPClientIcons
-import ru.mercury.vpclient.core.ui.theme.VPClientTheme
+import ru.mercury.vpclient.core.ui.components.ClientTopAppBar
+import ru.mercury.vpclient.core.ui.theme.ClientTheme
 import ru.mercury.vpclient.features.main.tabs.home.stack.routes.intent.RoutesIntent
 import ru.mercury.vpclient.features.main.tabs.home.stack.routes.model.RoutesModel
 
@@ -33,7 +27,6 @@ fun RoutesScreen(
     viewModel: RoutesViewModel = hiltViewModel()
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
-    val context = LocalContext.current
     val pullToRefreshState = rememberPullToRefreshState()
 
     RoutesScreenContent(
@@ -52,7 +45,7 @@ private fun RoutesScreenContent(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            VPClientTopAppBar(
+            ClientTopAppBar(
                 title = {
                     Box(
                         modifier = Modifier
@@ -60,12 +53,12 @@ private fun RoutesScreenContent(
                             .fillMaxWidth(),
                         contentAlignment = Alignment.Center
                     ) {
-                        Icon(
+                        /*Icon(
                             painter = painterResource(VPClientIcons.LogoVipVPClient),
                             modifier = Modifier.size(54.dp, 49.dp),
                             contentDescription = null,
                             tint = Color.Black
-                        )
+                        )*/
                     }
                 }
             )
@@ -89,7 +82,7 @@ private fun RoutesScreenContent(
 @Preview
 @Composable
 private fun RoutesScreenContentPreview() {
-    VPClientTheme {
+    ClientTheme {
         RoutesScreenContent(
             state = RoutesModel(),
             dispatch = {},
@@ -104,7 +97,7 @@ private fun RoutesScreenContentPreview() {
 @Preview
 @Composable
 private fun RoutesScreenContentPreview2() {
-    VPClientTheme {
+    ClientTheme {
         RoutesScreenContent(
             state = RoutesModel(
                 routesJob = Job()

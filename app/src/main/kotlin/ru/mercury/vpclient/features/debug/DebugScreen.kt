@@ -30,15 +30,15 @@ import ru.mercury.vpclient.BuildConfig
 import ru.mercury.vpclient.core.event.SnackbarEvent
 import ru.mercury.vpclient.core.ktx.snackbarMessage
 import ru.mercury.vpclient.core.navigation.BackRoute
+import ru.mercury.vpclient.core.ui.components.ClientTopAppBar
 import ru.mercury.vpclient.core.ui.components.CloseIconButton
-import ru.mercury.vpclient.core.ui.components.VPClientLazyColumn
-import ru.mercury.vpclient.core.ui.components.VPClientSnackbarHost
-import ru.mercury.vpclient.core.ui.components.VPClientTopAppBar
+import ru.mercury.vpclient.core.ui.components.ClientLazyColumn
+import ru.mercury.vpclient.core.ui.components.ClientSnackbarHost
 import ru.mercury.vpclient.core.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.core.ui.ktx.rememberNavigateToAppSettings
 import ru.mercury.vpclient.core.ui.ktx.rememberNavigateToDeveloperSettings
-import ru.mercury.vpclient.core.ui.theme.VPClientTheme
-import ru.mercury.vpclient.core.ui.theme.VPClientTypography
+import ru.mercury.vpclient.core.ui.theme.ClientTheme
+import ru.mercury.vpclient.core.ui.theme.ClientTypography
 import ru.mercury.vpclient.features.debug.intent.DebugIntent
 import ru.mercury.vpclient.features.debug.model.DebugModel
 import ru.mercury.vpclient.features.debug.ui.DebugEnvironmentDialog
@@ -103,7 +103,7 @@ private fun DebugActivityContent(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            VPClientTopAppBar(
+            ClientTopAppBar(
                 title = { Text("Debug Settings") },
                 navigationIcon = {
                     CloseIconButton(
@@ -112,9 +112,9 @@ private fun DebugActivityContent(
                 }
             )
         },
-        snackbarHost = { VPClientSnackbarHost(snackbarHostState) }
+        snackbarHost = { ClientSnackbarHost(snackbarHostState) }
     ) { innerPadding ->
-        VPClientLazyColumn(
+        ClientLazyColumn(
             modifier = Modifier
                 .padding(innerPadding)
                 .navigationBarsPadding(),
@@ -128,32 +128,32 @@ private fun DebugActivityContent(
                 ) {
                     Text(
                         text = buildAnnotatedString {
-                            withStyle(VPClientTypography.SpanStyle_Medium_14_OnBackground) { append("DeviceId: ") }
-                            withStyle(VPClientTypography.SpanStyle_Regular_14_OnBackground) { append(state.deviceId) }
+                            withStyle(ClientTypography.SpanStyle_Medium_14_OnBackground) { append("DeviceId: ") }
+                            withStyle(ClientTypography.SpanStyle_Regular_14_OnBackground) { append(state.deviceId) }
                         },
                         modifier = Modifier.fillMaxWidth()
                     )
 
                     Text(
                         text = buildAnnotatedString {
-                            withStyle(VPClientTypography.SpanStyle_Medium_14_OnBackground) { append("UserToken: ") }
-                            withStyle(VPClientTypography.SpanStyle_Regular_14_OnBackground) { append(state.userToken) }
+                            withStyle(ClientTypography.SpanStyle_Medium_14_OnBackground) { append("UserToken: ") }
+                            withStyle(ClientTypography.SpanStyle_Regular_14_OnBackground) { append(state.userToken) }
                         },
                         modifier = Modifier.fillMaxWidth()
                     )
 
                     Text(
                         text = buildAnnotatedString {
-                            withStyle(VPClientTypography.SpanStyle_Medium_14_OnBackground) { append("VersionName: ") }
-                            withStyle(VPClientTypography.SpanStyle_Regular_14_OnBackground) { append(BuildConfig.VERSION_NAME) }
+                            withStyle(ClientTypography.SpanStyle_Medium_14_OnBackground) { append("VersionName: ") }
+                            withStyle(ClientTypography.SpanStyle_Regular_14_OnBackground) { append(BuildConfig.VERSION_NAME) }
                         },
                         modifier = Modifier.fillMaxWidth()
                     )
 
                     Text(
                         text = buildAnnotatedString {
-                            withStyle(VPClientTypography.SpanStyle_Medium_14_OnBackground) { append("VersionCode: ") }
-                            withStyle(VPClientTypography.SpanStyle_Regular_14_OnBackground) { append(BuildConfig.VERSION_CODE.toString()) }
+                            withStyle(ClientTypography.SpanStyle_Medium_14_OnBackground) { append("VersionCode: ") }
+                            withStyle(ClientTypography.SpanStyle_Regular_14_OnBackground) { append(BuildConfig.VERSION_CODE.toString()) }
                         },
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -169,7 +169,7 @@ private fun DebugActivityContent(
             item {
                 Text(
                     text = "Настройки приложения",
-                    style = VPClientTypography.Regular_18_OnBackground,
+                    style = ClientTypography.Regular_18_OnBackground,
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable(onClick = navigateToAppSettings)
@@ -186,7 +186,7 @@ private fun DebugActivityContent(
             item {
                 Text(
                     text = "Настройки разработчика",
-                    style = VPClientTypography.Regular_18_OnBackground,
+                    style = ClientTypography.Regular_18_OnBackground,
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable(onClick = navigateToDeveloperSettings)
@@ -203,7 +203,7 @@ private fun DebugActivityContent(
             item {
                 Text(
                     text = "Очистить локальную базу данных",
-                    style = VPClientTypography.Regular_18_OnBackground,
+                    style = ClientTypography.Regular_18_OnBackground,
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable(onClick = { dispatch(DebugIntent.DropLocalDbClick) })
@@ -226,12 +226,12 @@ private fun DebugActivityContent(
                 ) {
                     Text(
                         text = "Окружение",
-                        style = VPClientTypography.Regular_18_OnBackground
+                        style = ClientTypography.Regular_18_OnBackground
                     )
 
                     Text(
                         text = state.environment.name,
-                        style = VPClientTypography.Regular_14_Secondary
+                        style = ClientTypography.Regular_14_Secondary
                     )
                 }
             }
@@ -243,7 +243,7 @@ private fun DebugActivityContent(
 @Preview(heightDp = 1200, fontScale = 1.5F)
 @Composable
 private fun DebugActivityContentPreview() {
-    VPClientTheme {
+    ClientTheme {
         DebugActivityContent(
             snackbarHostState = remember { SnackbarHostState() },
             state = DebugModel(

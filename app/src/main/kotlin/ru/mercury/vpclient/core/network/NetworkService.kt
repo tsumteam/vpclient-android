@@ -4,10 +4,11 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import io.ktor.client.statement.bodyAsText
 import ru.mercury.vpclient.core.network.request.AuthenticationContinueLoginRequest
 import ru.mercury.vpclient.core.network.request.AuthenticationLoginRequest
 import ru.mercury.vpclient.core.network.request.AuthenticationRegisterRequest
+import ru.mercury.vpclient.core.network.response.BaseResponse
+import ru.mercury.vpclient.core.network.response.TokenResponse
 import javax.inject.Inject
 
 class NetworkService @Inject constructor(
@@ -16,29 +17,29 @@ class NetworkService @Inject constructor(
 
     suspend fun authenticationRegister(
         request: AuthenticationRegisterRequest
-    ): String {
-        return ktorHttpClient.post("/api/authentication/register") {
+    ): BaseResponse<String> {
+        return ktorHttpClient.post("authentication/register") {
             setBody(request)
-        }.bodyAsText()
+        }.body()
     }
 
     suspend fun authenticationLogin(
         request: AuthenticationLoginRequest
-    ): String {
-        return ktorHttpClient.post("/api/authentication/login") {
+    ): BaseResponse<String> {
+        return ktorHttpClient.post("authentication/login") {
             setBody(request)
-        }.bodyAsText()
+        }.body()
     }
 
     suspend fun authenticationContinueLogin(
         request: AuthenticationContinueLoginRequest
-    ): String {
-        return ktorHttpClient.post("/api/authentication/continue-login") {
+    ): BaseResponse<TokenResponse> {
+        return ktorHttpClient.post("authentication/continue-login") {
             setBody(request)
-        }.bodyAsText()
+        }.body()
     }
 
-    suspend fun authenticationLogout() {
-        return ktorHttpClient.post("/api/authentication/logout").body()
+    suspend fun authenticationLogout(): BaseResponse<String> {
+        return ktorHttpClient.post("authentication/logout").body()
     }
 }

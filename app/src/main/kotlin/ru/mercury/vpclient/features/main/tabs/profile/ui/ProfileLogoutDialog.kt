@@ -23,9 +23,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.mercury.vpclient.core.ui.theme.VPClientStrings
-import ru.mercury.vpclient.core.ui.theme.VPClientTheme
-import ru.mercury.vpclient.core.ui.theme.VPClientTypography
+import ru.mercury.vpclient.core.ui.theme.ClientStrings
+import ru.mercury.vpclient.core.ui.theme.ClientTheme
+import ru.mercury.vpclient.core.ui.theme.ClientTypography
 import ru.mercury.vpclient.core.ui.theme.surface4
 
 @Composable
@@ -45,10 +45,10 @@ fun ProfileLogoutDialog(
             horizontalAlignment = Alignment.Start
         ) {
             Text(
-                text = stringResource(VPClientStrings.AppName),
+                text = stringResource(ClientStrings.AppName),
                 modifier = Modifier
                     .padding(start = 24.dp, top = 24.dp, end = 24.dp),
-                style = VPClientTypography.Regular_22_OnBackground.copy(lineHeight = 28.sp)
+                style = ClientTypography.Regular_22_OnBackground.copy(lineHeight = 28.sp)
             )
 
             Row(
@@ -60,8 +60,8 @@ fun ProfileLogoutDialog(
                     onClick = onDismissRequest
                 ) {
                     Text(
-                        text = stringResource(VPClientStrings.AppName),
-                        style = VPClientTypography.Regular_14_OnBackground
+                        text = stringResource(ClientStrings.AppName),
+                        style = ClientTypography.Regular_14_OnBackground
                     )
                 }
 
@@ -70,8 +70,8 @@ fun ProfileLogoutDialog(
                     modifier = Modifier.padding(start = 8.dp)
                 ) {
                     Text(
-                        text = stringResource(VPClientStrings.AppName),
-                        style = VPClientTypography.Medium_14_OnBackground
+                        text = stringResource(ClientStrings.AppName),
+                        style = ClientTypography.Medium_14_OnBackground
                     )
                 }
             }
@@ -83,7 +83,7 @@ fun ProfileLogoutDialog(
 @Preview(fontScale = 1.5F)
 @Composable
 private fun ProfileLogoutDialogPreview() {
-    VPClientTheme {
+    ClientTheme {
         ProfileLogoutDialog(
             onConfirmRequest = {},
             onDismissRequest = {}

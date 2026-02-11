@@ -6,9 +6,9 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.BuildConfig
 import ru.mercury.vpclient.core.event.SnackbarEvent
-import ru.mercury.vpclient.core.mvi.VPClientViewModel
-import ru.mercury.vpclient.core.navigation.BackRoute
-import ru.mercury.vpclient.core.network.env.VPClientEnvironment
+import ru.mercury.vpclient.core.mvi.ClientViewModel
+import ru.mercury.vpclient.core.mvi.Event
+import ru.mercury.vpclient.core.network.env.ClientEnvironment
 import ru.mercury.vpclient.core.persistence.datastore.PreferenceKey
 import ru.mercury.vpclient.core.persistence.datastore.SettingsDataStore
 import ru.mercury.vpclient.features.debug.intent.DebugIntent
@@ -20,7 +20,7 @@ import javax.inject.Provider
 @HiltViewModel
 class DebugViewModel @Inject constructor(
     private val settingsDataStore: Provider<SettingsDataStore>
-): VPClientViewModel<DebugIntent, DebugModel>(DebugModel()) {
+): ClientViewModel<DebugIntent, DebugModel, Event>(DebugModel()) {
 
     init {
         dispatch(DebugIntent.FetchSettings)
@@ -28,7 +28,7 @@ class DebugViewModel @Inject constructor(
 
     override fun dispatch(intent: DebugIntent) {
         when (intent) {
-            is DebugIntent.BackClick -> launch { push(BackRoute) }
+            is DebugIntent.BackClick -> launch { /*push(BackRoute)*/ }
             is DebugIntent.FetchSettings -> {
                 launch {
                     combine(
@@ -39,7 +39,7 @@ class DebugViewModel @Inject constructor(
                         DebugModel(
                             deviceId = deviceId.orEmpty(),
                             userToken = userToken.orEmpty(),
-                            environment = VPClientEnvironment.valueOf(environment ?: BuildConfig.VPCLIENT_ENV)
+                            environment = resolveEnvironment(environment)
                         )
                     }.collectLatest { model -> reduce { model } }
                 }
@@ -66,6 +66,26 @@ class DebugViewModel @Inject constructor(
             "uat" -> PreferenceKey.EnvironmentUat
             "dev" -> PreferenceKey.EnvironmentDev
             else -> PreferenceKey.EnvironmentDev
+        }
+    }
+
+    private fun resolveEnvironment(value: String?): ClientEnvironment {
+        return parseEnvironment(value)
+            ?: parseEnvironment(BuildConfig.VPCLIENT_ENV)
+            ?: ClientEnvironment.TEST
+    }
+
+    private fun parseEnvironment(value: String?): ClientEnvironment? {
+        val normalized = value?.trim().orEmpty()
+        if (normalized.isEmpty()) return null
+
+        return ClientEnvironment.entries.firstOrNull {
+            it.name.equals(normalized, ignoreCase = true) || it.url.equals(normalized, ignoreCase = true)
+        } ?: when (normalized.lowercase()) {
+            "dev", "test" -> ClientEnvironment.TEST
+            "uat" -> ClientEnvironment.UAT
+            "prod", "production" -> ClientEnvironment.PROD
+            else -> null
         }
     }
 }

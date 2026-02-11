@@ -8,11 +8,13 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import ru.mercury.vpclient.core.interactor.AuthenticationInteractor
 import ru.mercury.vpclient.core.interactor.impl.AuthenticationInteractorImpl
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 interface InteractorModule {
 
     @Binds
+    @Singleton
     fun authenticationInteractor(impl: AuthenticationInteractorImpl): AuthenticationInteractor
 }

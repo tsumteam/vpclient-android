@@ -3,11 +3,12 @@ package ru.mercury.vpclient.main
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.core.interactor.Interactor
-import ru.mercury.vpclient.core.mvi.VPClientViewModel
+import ru.mercury.vpclient.core.mvi.ClientViewModel
+import ru.mercury.vpclient.core.mvi.Event
 import ru.mercury.vpclient.core.persistence.datastore.PreferenceKey
 import ru.mercury.vpclient.core.persistence.datastore.SettingsDataStore
-import ru.mercury.vpclient.features.authentication.navigation.AuthenticationRoute
 import ru.mercury.vpclient.features.main.navigation.MainRoute
+import ru.mercury.vpclient.features.welcome.navigation.WelcomeRoute
 import ru.mercury.vpclient.main.intent.MainActivityIntent
 import ru.mercury.vpclient.main.model.MainActivityModel
 import javax.inject.Inject
@@ -16,7 +17,7 @@ import javax.inject.Inject
 class MainActivityViewModel @Inject constructor(
     private val interactor: Interactor,
     private val settingsDataStore: SettingsDataStore
-): VPClientViewModel<MainActivityIntent, MainActivityModel>(MainActivityModel()) {
+): ClientViewModel<MainActivityIntent, MainActivityModel, Event>(MainActivityModel()) {
 
     init {
         dispatch(MainActivityIntent.ResolveNavigation)
@@ -26,7 +27,7 @@ class MainActivityViewModel @Inject constructor(
         when (intent) {
             is MainActivityIntent.ResolveNavigation -> {
                 launch {
-                    val startDestination = if (settingsDataStore.getValue(PreferenceKey.UserToken).isNullOrEmpty()) AuthenticationRoute else MainRoute()
+                    val startDestination = if (settingsDataStore.getValue(PreferenceKey.UserToken).isNullOrEmpty()) WelcomeRoute else MainRoute()
                     reduce { it.copy(splashLoading = false, startDestination = startDestination) }
                 }
             }

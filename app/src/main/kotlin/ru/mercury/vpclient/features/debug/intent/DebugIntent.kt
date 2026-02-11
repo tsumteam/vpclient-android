@@ -1,7 +1,7 @@
 package ru.mercury.vpclient.features.debug.intent
 
 import ru.mercury.vpclient.core.mvi.Intent
-import ru.mercury.vpclient.core.network.env.VPClientEnvironment
+import ru.mercury.vpclient.core.network.env.ClientEnvironment
 
 sealed interface DebugIntent: Intent {
     data object BackClick: DebugIntent
@@ -9,5 +9,5 @@ sealed interface DebugIntent: Intent {
     data object EnvironmentClick: DebugIntent
     data object DismissEnvironmentDialog: DebugIntent
     data object DropLocalDbClick: DebugIntent
-    data class SelectEnvironment(val environment: VPClientEnvironment): DebugIntent
+    data class SelectEnvironment(val environment: ClientEnvironment): DebugIntent
 }

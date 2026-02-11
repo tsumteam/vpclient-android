@@ -2,10 +2,10 @@ package ru.mercury.vpclient.core.ktx
 
 import kotlinx.coroutines.CancellationException
 import ru.mercury.vpclient.core.entity.VPClientError
-import ru.mercury.vpclient.core.exception.VPClientEmptyException
-import ru.mercury.vpclient.core.exception.VPClientException
+import ru.mercury.vpclient.core.exception.ClientEmptyException
+import ru.mercury.vpclient.core.exception.ClientException
 import ru.mercury.vpclient.core.network.response.BaseResponse
-import ru.mercury.vpclient.core.network.response.ResultResponse
+import ru.mercury.vpclient.core.network.response.DataResponse
 import ru.mercury.vpclient.core.network.response.RoutesResponse
 
 suspend fun <T> handleResponse(
@@ -28,9 +28,9 @@ suspend fun <T> handleResponse(
                                 else -> onSuccess(data)
                             }
                         }
-                        is ResultResponse -> {
+                        is DataResponse -> {
                             when {
-                                data.result == ResultResponse.RESULT_OK -> onSuccess(data)
+                                data.data == DataResponse.RESULT_OK -> onSuccess(data)
                                 else -> onEmpty()
                             }
                         }
@@ -47,7 +47,7 @@ suspend fun <T> handleResponse(
                     )
                     when {
                         onFailure != null -> onFailure(error)
-                        else -> throw VPClientException(error.message)
+                        else -> throw ClientException(error.message)
                     }
                 }
                 errors != null -> {
@@ -58,14 +58,14 @@ suspend fun <T> handleResponse(
                     )
                     when {
                         onFailure != null -> onFailure(error)
-                        else -> throw VPClientException(error.message)
+                        else -> throw ClientException(error.message)
                     }
                 }
                 else -> {
                     val error = VPClientError.Unknown("Неизвестная ошибка")
                     when {
                         onFailure != null -> onFailure(error)
-                        else -> throw VPClientException(error.message)
+                        else -> throw ClientException(error.message)
                     }
                 }
             }
@@ -78,7 +78,7 @@ suspend fun <T> handleResponse(
                 }
                 when {
                     onFailure != null -> onFailure(error)
-                    else -> throw VPClientException(error.message)
+                    else -> throw ClientException(error.message)
                 }
             }
         }
@@ -97,14 +97,14 @@ suspend fun <T> handleResponseResult(
                 when (data) {
                     is RoutesResponse -> {
                         when {
-                            data.routes.isEmpty() -> Result.failure(VPClientEmptyException())
+                            data.routes.isEmpty() -> Result.failure(ClientEmptyException())
                             else -> Result.success(data)
                         }
                     }
-                    is ResultResponse -> {
+                    is DataResponse -> {
                         when {
-                            data.result == ResultResponse.RESULT_OK -> Result.success(data)
-                            else -> Result.failure(VPClientEmptyException())
+                            data.data == DataResponse.RESULT_OK -> Result.success(data)
+                            else -> Result.failure(ClientEmptyException())
                         }
                     }
                     else -> Result.success(data)
@@ -112,15 +112,15 @@ suspend fun <T> handleResponseResult(
             }
             error != null -> {
                 val message = error.display.orEmpty().ifEmpty { error.msg.orEmpty() }
-                Result.failure(VPClientException(message))
+                Result.failure(ClientException(message))
             }
             errors != null -> {
                 val message = errors.values.flatten().joinToString(", ")
-                Result.failure(VPClientException(message))
+                Result.failure(ClientException(message))
             }
             else -> {
                 val message = "Неизвестная ошибка"
-                Result.failure(VPClientException(message))
+                Result.failure(ClientException(message))
             }
         }
     } catch (e: Exception) {

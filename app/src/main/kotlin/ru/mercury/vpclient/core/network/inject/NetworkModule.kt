@@ -25,6 +25,7 @@ import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import ru.mercury.vpclient.BuildConfig
+import ru.mercury.vpclient.core.network.env.ClientEnvironment
 import ru.mercury.vpclient.core.network.provideLoggingInterceptor
 import ru.mercury.vpclient.core.persistence.datastore.PreferenceKey
 import ru.mercury.vpclient.core.persistence.datastore.SettingsDataStore
@@ -43,9 +44,9 @@ object NetworkModule {
     ): HttpClient {
         val ktor = HttpClient(OkHttp) {
             defaultRequest {
-                val environmentKey = environmentPreferenceKey()
-                val environmentUrl = settingsDataStore.get().getValueBlocking(environmentKey)
-                url(environmentUrl)
+                val clientEnvironmentName = settingsDataStore.get().getValueBlocking(environmentPreferenceKey())
+                val clientEnvironment = ClientEnvironment.valueOf(clientEnvironmentName ?: ClientEnvironment.TEST.name)
+                url(clientEnvironment.url)
 
                 val applicationType = settingsDataStore.get().getValueBlocking(PreferenceKey.ApplicationType).orEmpty().ifEmpty { DEFAULT_APPLICATION_TYPE }
                 header("X-ApplicationType", applicationType)

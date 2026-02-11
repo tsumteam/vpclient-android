@@ -16,8 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.mercury.vpclient.core.ui.theme.VPClientTheme
-import ru.mercury.vpclient.core.ui.theme.VPClientTypography
+import ru.mercury.vpclient.core.ui.theme.ClientTheme
+import ru.mercury.vpclient.core.ui.theme.ClientTypography
 
 @Composable
 fun RadioRow(
@@ -37,7 +37,7 @@ fun RadioRow(
         Text(
             text = text,
             modifier = Modifier.padding(horizontal = 16.dp),
-            style = VPClientTypography.Regular_14_OnBackground.copy(lineHeight = 20.sp)
+            style = ClientTypography.Regular_14_OnBackground.copy(lineHeight = 20.sp)
         )
 
         RadioButton(
@@ -51,7 +51,7 @@ fun RadioRow(
 @Preview
 @Composable
 fun RadioRowPreview() {
-    VPClientTheme {
+    ClientTheme {
         RadioRow(
             text = "Банковская карта",
             selected = false,

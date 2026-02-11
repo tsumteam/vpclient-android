@@ -16,7 +16,7 @@ private val LightColorScheme = lightColorScheme(
 )
 
 @Composable
-fun VPClientTheme(
+fun ClientTheme(
     content: @Composable () -> Unit
 ) {
     MaterialTheme(

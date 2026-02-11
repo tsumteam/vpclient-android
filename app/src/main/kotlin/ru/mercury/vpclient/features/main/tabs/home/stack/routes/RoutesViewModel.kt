@@ -6,9 +6,10 @@ import ru.mercury.vpclient.core.RoomException
 import ru.mercury.vpclient.core.RoomSQLiteException
 import ru.mercury.vpclient.core.event.ClipboardEvent
 import ru.mercury.vpclient.core.event.SnackbarBottomBarErrorEvent
-import ru.mercury.vpclient.core.exception.VPClientException
+import ru.mercury.vpclient.core.exception.ClientException
 import ru.mercury.vpclient.core.interactor.Interactor
-import ru.mercury.vpclient.core.mvi.VPClientViewModel
+import ru.mercury.vpclient.core.mvi.ClientViewModel
+import ru.mercury.vpclient.core.mvi.Event
 import ru.mercury.vpclient.features.main.tabs.home.stack.routes.intent.RoutesIntent
 import ru.mercury.vpclient.features.main.tabs.home.stack.routes.model.RoutesModel
 import ru.mercury.vpclient.main.event.MainEventManager
@@ -17,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class RoutesViewModel @Inject constructor(
     private val interactor: Interactor
-): VPClientViewModel<RoutesIntent, RoutesModel>(RoutesModel()) {
+): ClientViewModel<RoutesIntent, RoutesModel, Event>(RoutesModel()) {
 
     init {
         dispatch(RoutesIntent.CollectRouteData)
@@ -50,7 +51,7 @@ class RoutesViewModel @Inject constructor(
 
     override fun catch(throwable: Throwable) {
         when (throwable) {
-            is VPClientException -> launch { MainEventManager.send(SnackbarBottomBarErrorEvent(throwable.message)) }
+            is ClientException -> launch { MainEventManager.send(SnackbarBottomBarErrorEvent(throwable.message)) }
             is RoomException, is RoomSQLiteException -> launch { MainEventManager.send(SnackbarBottomBarErrorEvent(throwable.message.orEmpty())) }
             else -> super.catch(throwable)
         }

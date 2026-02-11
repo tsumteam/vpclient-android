@@ -11,18 +11,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import ru.mercury.vpclient.core.ui.components.VPClientLazyColumn
+import ru.mercury.vpclient.core.ui.components.ClientLazyColumn
 import ru.mercury.vpclient.core.ui.placeholder.PlaceholderHighlight
 import ru.mercury.vpclient.core.ui.placeholder.material3.fade
 import ru.mercury.vpclient.core.ui.placeholder.placeholder
-import ru.mercury.vpclient.core.ui.theme.VPClientTheme
+import ru.mercury.vpclient.core.ui.theme.ClientTheme
 
 @Composable
 fun PageLoading(
     modifier: Modifier = Modifier,
     paddingValues: PaddingValues = PaddingValues()
 ) {
-    VPClientLazyColumn(
+    ClientLazyColumn(
         modifier = modifier,
         contentPadding = paddingValues,
         userScrollEnabled = false
@@ -61,7 +61,7 @@ fun PageLoading(
 @Preview
 @Composable
 fun PageLoadingPreview() {
-    VPClientTheme {
+    ClientTheme {
         PageLoading()
     }
 }

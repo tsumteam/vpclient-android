@@ -6,7 +6,7 @@ import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
 import ru.mercury.vpclient.BuildConfig
-import ru.mercury.vpclient.core.ui.theme.VPClientIcons
+import ru.mercury.vpclient.core.ui.theme.ClientIcons
 import ru.mercury.vpclient.features.debug.DebugActivity
 
 fun Context.installShortcuts() {
@@ -20,7 +20,7 @@ fun Context.installShortcuts() {
             .setShortLabel("Debug Настройки")
             .setLongLabel("Debug Настройки")
             .setRank(1)
-            .setIcon(IconCompat.createWithResource(this, VPClientIcons.ShortcutSettins))
+            .setIcon(IconCompat.createWithResource(this, ClientIcons.ShortcutSettins))
             .setIntent(intent)
             .build()
         ShortcutManagerCompat.setDynamicShortcuts(this, listOf(settingsShortcut))

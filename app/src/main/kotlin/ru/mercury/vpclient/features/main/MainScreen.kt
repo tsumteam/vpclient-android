@@ -14,8 +14,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -33,16 +36,22 @@ import ru.mercury.vpclient.core.navigation.Route
 import ru.mercury.vpclient.core.navigation.navigateTo
 import ru.mercury.vpclient.core.navigation.setRoot
 import ru.mercury.vpclient.core.ui.ktx.ObserveAsEvents
-import ru.mercury.vpclient.core.ui.theme.VPClientIcons
-import ru.mercury.vpclient.core.ui.theme.VPClientStrings
-import ru.mercury.vpclient.core.ui.theme.VPClientTheme
-import ru.mercury.vpclient.core.ui.theme.secondary2
-import ru.mercury.vpclient.core.ui.theme.surface4
+import ru.mercury.vpclient.core.ui.theme.ClientIcons
+import ru.mercury.vpclient.core.ui.theme.ClientStrings
+import ru.mercury.vpclient.core.ui.theme.ClientTheme
+import ru.mercury.vpclient.core.ui.theme.ClientTypography
+import ru.mercury.vpclient.core.ui.theme.secondary4
 import ru.mercury.vpclient.features.main.event.MainTabsEventManager
 import ru.mercury.vpclient.features.main.intent.MainIntent
 import ru.mercury.vpclient.features.main.model.MainModel
-import ru.mercury.vpclient.features.main.tabs.cash.CashScreen
-import ru.mercury.vpclient.features.main.tabs.cash.navigation.CashRoute
+import ru.mercury.vpclient.features.main.tabs.brands.BrandsScreen
+import ru.mercury.vpclient.features.main.tabs.brands.navigation.BrandsRoute
+import ru.mercury.vpclient.features.main.tabs.catalog.CatalogScreen
+import ru.mercury.vpclient.features.main.tabs.catalog.navigation.CatalogRoute
+import ru.mercury.vpclient.features.main.tabs.consultants.ConsultantsScreen
+import ru.mercury.vpclient.features.main.tabs.consultants.navigation.ConsultantsRoute
+import ru.mercury.vpclient.features.main.tabs.fitting.FittingScreen
+import ru.mercury.vpclient.features.main.tabs.fitting.navigation.FittingRoute
 import ru.mercury.vpclient.features.main.tabs.home.HomeScreen
 import ru.mercury.vpclient.features.main.tabs.home.navigation.HomeRoute
 import ru.mercury.vpclient.features.main.tabs.profile.ProfileScreen
@@ -102,8 +111,11 @@ private fun MainScreenContent(
             ),
             entryProvider = entryProvider {
                 entry<HomeRoute> { HomeScreen() }
+                entry<BrandsRoute> { BrandsScreen() }
+                entry<CatalogRoute> { CatalogScreen() }
+                entry<FittingRoute> { FittingScreen() }
+                entry<ConsultantsRoute> { ConsultantsScreen() }
                 entry<ProfileRoute> { ProfileScreen() }
-                entry<CashRoute> { CashScreen() }
             }
         )
 
@@ -120,32 +132,170 @@ private fun MainScreenContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentWidth(),
-                containerColor = MaterialTheme.colorScheme.surface4
+                containerColor = Color.White
             ) {
                 NavigationBarItem(
                     selected = state.selectedRoute == HomeRoute,
                     onClick = {
                         when {
                             state.selectedRoute != HomeRoute -> dispatch(MainIntent.SelectTab(HomeRoute))
-                            else -> {
-                                navBackStack.setRoot(state.selectedRoute)
-                            }
+                            else -> navBackStack.setRoot(state.selectedRoute)
                         }
                     },
                     icon = {
                         Icon(
-                            painter = painterResource(VPClientIcons.Home),
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onBackground
+                            painter = painterResource(ClientIcons.Home),
+                            contentDescription = null
                         )
                     },
                     label = {
                         Text(
-                            text = stringResource(VPClientStrings.AppName)
+                            text = stringResource(ClientStrings.MainTabHome),
+                            modifier = Modifier.fillMaxWidth(),
+                            style = ClientTypography.Regular_11.copy(textAlign = TextAlign.Center),
+                            minLines = 2,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
                         )
                     },
                     colors = NavigationBarItemDefaults.colors().copy(
-                        selectedIndicatorColor = MaterialTheme.colorScheme.secondary2
+                        selectedIconColor = MaterialTheme.colorScheme.primary,
+                        selectedTextColor = MaterialTheme.colorScheme.primary,
+                        unselectedIconColor = MaterialTheme.colorScheme.secondary4,
+                        unselectedTextColor = MaterialTheme.colorScheme.secondary4,
+                        selectedIndicatorColor = Color.Transparent
+                    )
+                )
+
+                NavigationBarItem(
+                    selected = state.selectedRoute == BrandsRoute,
+                    onClick = {
+                        when {
+                            state.selectedRoute != BrandsRoute -> dispatch(MainIntent.SelectTab(BrandsRoute))
+                            else -> navBackStack.setRoot(state.selectedRoute)
+                        }
+                    },
+                    icon = {
+                        Icon(
+                            painter = painterResource(ClientIcons.Brands),
+                            contentDescription = null
+                        )
+                    },
+                    label = {
+                        Text(
+                            text = stringResource(ClientStrings.MainTabBrands),
+                            modifier = Modifier.fillMaxWidth(),
+                            minLines = 2,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                            style = ClientTypography.Regular_11.copy(textAlign = TextAlign.Center)
+                        )
+                    },
+                    colors = NavigationBarItemDefaults.colors().copy(
+                        selectedIconColor = MaterialTheme.colorScheme.primary,
+                        selectedTextColor = MaterialTheme.colorScheme.primary,
+                        unselectedIconColor = MaterialTheme.colorScheme.secondary4,
+                        unselectedTextColor = MaterialTheme.colorScheme.secondary4,
+                        selectedIndicatorColor = Color.Transparent
+                    )
+                )
+
+                NavigationBarItem(
+                    selected = state.selectedRoute == CatalogRoute,
+                    onClick = {
+                        when {
+                            state.selectedRoute != CatalogRoute -> dispatch(MainIntent.SelectTab(CatalogRoute))
+                            else -> navBackStack.setRoot(state.selectedRoute)
+                        }
+                    },
+                    icon = {
+                        Icon(
+                            painter = painterResource(ClientIcons.Catalog),
+                            contentDescription = null
+                        )
+                    },
+                    label = {
+                        Text(
+                            text = stringResource(ClientStrings.MainTabCatalog),
+                            modifier = Modifier.fillMaxWidth(),
+                            style = ClientTypography.Regular_11.copy(textAlign = TextAlign.Center),
+                            minLines = 2,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    },
+                    colors = NavigationBarItemDefaults.colors().copy(
+                        selectedIconColor = MaterialTheme.colorScheme.primary,
+                        selectedTextColor = MaterialTheme.colorScheme.primary,
+                        unselectedIconColor = MaterialTheme.colorScheme.secondary4,
+                        unselectedTextColor = MaterialTheme.colorScheme.secondary4,
+                        selectedIndicatorColor = Color.Transparent
+                    )
+                )
+
+                NavigationBarItem(
+                    selected = state.selectedRoute == FittingRoute,
+                    onClick = {
+                        when {
+                            state.selectedRoute != FittingRoute -> dispatch(MainIntent.SelectTab(FittingRoute))
+                            else -> navBackStack.setRoot(state.selectedRoute)
+                        }
+                    },
+                    icon = {
+                        Icon(
+                            painter = painterResource(ClientIcons.Fitting),
+                            contentDescription = null
+                        )
+                    },
+                    label = {
+                        Text(
+                            text = stringResource(ClientStrings.MainTabFitting),
+                            modifier = Modifier.fillMaxWidth(),
+                            style = ClientTypography.Regular_11.copy(textAlign = TextAlign.Center),
+                            minLines = 2,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    },
+                    colors = NavigationBarItemDefaults.colors().copy(
+                        selectedIconColor = MaterialTheme.colorScheme.primary,
+                        selectedTextColor = MaterialTheme.colorScheme.primary,
+                        unselectedIconColor = MaterialTheme.colorScheme.secondary4,
+                        unselectedTextColor = MaterialTheme.colorScheme.secondary4,
+                        selectedIndicatorColor = Color.Transparent
+                    )
+                )
+
+                NavigationBarItem(
+                    selected = state.selectedRoute == ConsultantsRoute,
+                    onClick = {
+                        when {
+                            state.selectedRoute != ConsultantsRoute -> dispatch(MainIntent.SelectTab(ConsultantsRoute))
+                            else -> navBackStack.setRoot(state.selectedRoute)
+                        }
+                    },
+                    icon = {
+                        Icon(
+                            painter = painterResource(ClientIcons.Consultants),
+                            contentDescription = null
+                        )
+                    },
+                    label = {
+                        Text(
+                            text = stringResource(ClientStrings.MainTabConsultants),
+                            modifier = Modifier.fillMaxWidth(),
+                            style = ClientTypography.Regular_11.copy(textAlign = TextAlign.Center),
+                            minLines = 2,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    },
+                    colors = NavigationBarItemDefaults.colors().copy(
+                        selectedIconColor = MaterialTheme.colorScheme.primary,
+                        selectedTextColor = MaterialTheme.colorScheme.primary,
+                        unselectedIconColor = MaterialTheme.colorScheme.secondary4,
+                        unselectedTextColor = MaterialTheme.colorScheme.secondary4,
+                        selectedIndicatorColor = Color.Transparent
                     )
                 )
 
@@ -154,52 +304,31 @@ private fun MainScreenContent(
                     onClick = {
                         when {
                             state.selectedRoute != ProfileRoute -> dispatch(MainIntent.SelectTab(ProfileRoute))
-                            else -> {
-                                navBackStack.setRoot(state.selectedRoute)
-                            }
+                            else -> navBackStack.setRoot(state.selectedRoute)
                         }
                     },
                     icon = {
                         Icon(
-                            painter = painterResource(VPClientIcons.Home),
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onBackground
+                            painter = painterResource(ClientIcons.Profile),
+                            contentDescription = null
                         )
                     },
                     label = {
                         Text(
-                            text = stringResource(VPClientStrings.AppName)
+                            text = stringResource(ClientStrings.MainTabProfile),
+                            modifier = Modifier.fillMaxWidth(),
+                            style = ClientTypography.Regular_11.copy(textAlign = TextAlign.Center),
+                            minLines = 2,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
                         )
                     },
                     colors = NavigationBarItemDefaults.colors().copy(
-                        selectedIndicatorColor = MaterialTheme.colorScheme.secondary2
-                    )
-                )
-
-                NavigationBarItem(
-                    selected = state.selectedRoute == CashRoute,
-                    onClick = {
-                        when {
-                            state.selectedRoute != CashRoute -> dispatch(MainIntent.SelectTab(CashRoute))
-                            else -> {
-                                navBackStack.setRoot(state.selectedRoute)
-                            }
-                        }
-                    },
-                    icon = {
-                        Icon(
-                            painter = painterResource(VPClientIcons.Home),
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onBackground
-                        )
-                    },
-                    label = {
-                        Text(
-                            text = stringResource(VPClientStrings.AppName)
-                        )
-                    },
-                    colors = NavigationBarItemDefaults.colors().copy(
-                        selectedIndicatorColor = MaterialTheme.colorScheme.secondary2
+                        selectedIconColor = MaterialTheme.colorScheme.primary,
+                        selectedTextColor = MaterialTheme.colorScheme.primary,
+                        unselectedIconColor = MaterialTheme.colorScheme.secondary4,
+                        unselectedTextColor = MaterialTheme.colorScheme.secondary4,
+                        selectedIndicatorColor = Color.Transparent
                     )
                 )
             }
@@ -210,7 +339,7 @@ private fun MainScreenContent(
 @Preview
 @Composable
 private fun MainScreenContentPreview() {
-    VPClientTheme {
+    ClientTheme {
         MainScreenContent(
             state = MainModel(),
             dispatch = {},

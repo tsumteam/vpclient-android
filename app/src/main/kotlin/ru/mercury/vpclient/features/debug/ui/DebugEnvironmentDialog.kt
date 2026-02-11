@@ -21,18 +21,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.mercury.vpclient.core.network.env.VPClientEnvironment
+import ru.mercury.vpclient.core.network.env.ClientEnvironment
 import ru.mercury.vpclient.core.ui.components.RadioRow
-import ru.mercury.vpclient.core.ui.theme.VPClientTheme
-import ru.mercury.vpclient.core.ui.theme.VPClientTypography
+import ru.mercury.vpclient.core.ui.theme.ClientTheme
+import ru.mercury.vpclient.core.ui.theme.ClientTypography
 import ru.mercury.vpclient.core.ui.theme.divider2
 import ru.mercury.vpclient.core.ui.theme.surface4
 
 @Composable
 fun DebugEnvironmentDialog(
     onDismissRequest: () -> Unit,
-    selectedEnvironment: VPClientEnvironment,
-    onSelectEnvironment: (VPClientEnvironment) -> Unit
+    selectedEnvironment: ClientEnvironment,
+    onSelectEnvironment: (ClientEnvironment) -> Unit
 ) {
     BasicAlertDialog(
         onDismissRequest = onDismissRequest,
@@ -49,14 +49,14 @@ fun DebugEnvironmentDialog(
             Text(
                 text = "Выберите окружение",
                 modifier = Modifier.padding(start = 24.dp, top = 24.dp, end = 24.dp),
-                style = VPClientTypography.Regular_22_OnBackground.copy(lineHeight = 22.sp)
+                style = ClientTypography.Regular_22_OnBackground.copy(lineHeight = 22.sp)
             )
 
             RadioRow(
-                text = VPClientEnvironment.TEST.name,
-                selected = selectedEnvironment == VPClientEnvironment.TEST,
+                text = ClientEnvironment.TEST.name,
+                selected = selectedEnvironment == ClientEnvironment.TEST,
                 onSelect = {
-                    onSelectEnvironment(VPClientEnvironment.TEST)
+                    onSelectEnvironment(ClientEnvironment.TEST)
                     onDismissRequest()
                 },
                 modifier = Modifier.padding(start = 8.dp, top = 24.dp, end = 8.dp)
@@ -68,10 +68,10 @@ fun DebugEnvironmentDialog(
             )
 
             RadioRow(
-                text = VPClientEnvironment.UAT.name,
-                selected = selectedEnvironment == VPClientEnvironment.UAT,
+                text = ClientEnvironment.UAT.name,
+                selected = selectedEnvironment == ClientEnvironment.UAT,
                 onSelect = {
-                    onSelectEnvironment(VPClientEnvironment.UAT)
+                    onSelectEnvironment(ClientEnvironment.UAT)
                     onDismissRequest()
                 },
                 modifier = Modifier.padding(horizontal = 8.dp)
@@ -83,10 +83,10 @@ fun DebugEnvironmentDialog(
             )
 
             RadioRow(
-                text = VPClientEnvironment.PROD.name,
-                selected = selectedEnvironment == VPClientEnvironment.PROD,
+                text = ClientEnvironment.PROD.name,
+                selected = selectedEnvironment == ClientEnvironment.PROD,
                 onSelect = {
-                    onSelectEnvironment(VPClientEnvironment.PROD)
+                    onSelectEnvironment(ClientEnvironment.PROD)
                     onDismissRequest()
                 },
                 modifier = Modifier.padding(horizontal = 8.dp).padding(bottom = 16.dp)
@@ -99,10 +99,10 @@ fun DebugEnvironmentDialog(
 @Preview(fontScale = 1.5F)
 @Composable
 private fun DebugEnvironmentDialogPreview() {
-    VPClientTheme {
+    ClientTheme {
         DebugEnvironmentDialog(
             onDismissRequest = {},
-            selectedEnvironment = VPClientEnvironment.TEST,
+            selectedEnvironment = ClientEnvironment.TEST,
             onSelectEnvironment = {}
         )
     }

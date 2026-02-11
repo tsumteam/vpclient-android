@@ -6,6 +6,7 @@ import androidx.room.TypeConverters
 import ru.mercury.vpclient.core.persistence.database.converter.Converter
 import ru.mercury.vpclient.core.persistence.database.dao.BoutiqueDao
 import ru.mercury.vpclient.core.persistence.database.dao.CargoDao
+import ru.mercury.vpclient.core.persistence.database.dao.ClientDao
 import ru.mercury.vpclient.core.persistence.database.dao.DeliveryDao
 import ru.mercury.vpclient.core.persistence.database.dao.LoyaltyDao
 import ru.mercury.vpclient.core.persistence.database.dao.OutboxDao
@@ -15,6 +16,7 @@ import ru.mercury.vpclient.core.persistence.database.dao.ProductDao
 import ru.mercury.vpclient.core.persistence.database.dao.RouteDao
 import ru.mercury.vpclient.core.persistence.database.entity.BoutiqueEntity
 import ru.mercury.vpclient.core.persistence.database.entity.CargoEntity
+import ru.mercury.vpclient.core.persistence.database.entity.ClientEntity
 import ru.mercury.vpclient.core.persistence.database.entity.DeliveryEntity
 import ru.mercury.vpclient.core.persistence.database.entity.LoyaltyEntity
 import ru.mercury.vpclient.core.persistence.database.entity.OutboxEntity
@@ -27,6 +29,7 @@ import ru.mercury.vpclient.core.persistence.database.entity.RouteEntity
     entities = [
         BoutiqueEntity::class,
         CargoEntity::class,
+        ClientEntity::class,
         DeliveryEntity::class,
         LoyaltyEntity::class,
         OutboxEntity::class,
@@ -43,6 +46,7 @@ abstract class AppDatabase: RoomDatabase() {
 
     abstract fun boutiqueDao(): BoutiqueDao
     abstract fun cargoDao(): CargoDao
+    abstract fun clientDao(): ClientDao
     abstract fun deliveryDao(): DeliveryDao
     abstract fun loyaltyDao(): LoyaltyDao
     abstract fun outboxDao(): OutboxDao
@@ -53,6 +57,6 @@ abstract class AppDatabase: RoomDatabase() {
 
     companion object {
         const val DATABASE_NAME = "vpclient.db"
-        const val DATABASE_VERSION = 6
+        const val DATABASE_VERSION = 8
     }
 }

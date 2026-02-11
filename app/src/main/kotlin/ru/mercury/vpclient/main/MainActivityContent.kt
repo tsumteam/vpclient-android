@@ -4,9 +4,13 @@ package ru.mercury.vpclient.main
 
 import android.content.ClipData
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -24,7 +28,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -52,13 +55,19 @@ import ru.mercury.vpclient.core.navigation.BackRoute
 import ru.mercury.vpclient.core.navigation.Route
 import ru.mercury.vpclient.core.navigation.navigateTo
 import ru.mercury.vpclient.core.ui.components.LoadingBox
-import ru.mercury.vpclient.core.ui.components.VPClientSnackbarHost
+import ru.mercury.vpclient.core.ui.components.ClientSnackbarHost
 import ru.mercury.vpclient.core.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.core.ui.ktx.rememberRequestMultiplePermissions
-import ru.mercury.vpclient.features.authentication.AuthenticationScreen
-import ru.mercury.vpclient.features.authentication.navigation.AuthenticationRoute
+import ru.mercury.vpclient.features.code.CodeScreen
+import ru.mercury.vpclient.features.code.navigation.CodeRoute
+import ru.mercury.vpclient.features.login.LoginScreen
+import ru.mercury.vpclient.features.login.navigation.LoginRoute
 import ru.mercury.vpclient.features.main.MainScreen
 import ru.mercury.vpclient.features.main.navigation.MainRoute
+import ru.mercury.vpclient.features.register.RegisterScreen
+import ru.mercury.vpclient.features.register.navigation.RegisterRoute
+import ru.mercury.vpclient.features.welcome.WelcomeScreen
+import ru.mercury.vpclient.features.welcome.navigation.WelcomeRoute
 import ru.mercury.vpclient.main.event.MainEventManager
 import ru.mercury.vpclient.main.intent.MainActivityIntent
 
@@ -75,7 +84,6 @@ fun MainActivityContent(
 
     val context = LocalContext.current
     val clipboard = LocalClipboard.current
-    val hapticFeedback = LocalHapticFeedback.current
     val snackbarHostState = remember { SnackbarHostState() }
     val snackbarHostStateError = remember { SnackbarHostState() }
     val snackbarHostStateFab = remember { SnackbarHostState() }
@@ -104,13 +112,18 @@ fun MainActivityContent(
                 rememberSaveableStateHolderNavEntryDecorator(),
                 rememberViewModelStoreNavEntryDecorator()
             ),
+            popTransitionSpec = { fadeIn() togetherWith fadeOut() using SizeTransform(clip = false) },
+            predictivePopTransitionSpec = { fadeIn() togetherWith fadeOut() using SizeTransform(clip = false) },
             entryProvider = entryProvider {
-                entry<AuthenticationRoute> { AuthenticationScreen() }
+                entry<WelcomeRoute> { WelcomeScreen() }
+                entry<RegisterRoute> { RegisterScreen() }
+                entry<LoginRoute> { LoginScreen() }
+                entry<CodeRoute> { CodeScreen() }
                 entry<MainRoute> { MainScreen() }
             }
         )
 
-        VPClientSnackbarHost(
+        ClientSnackbarHost(
             hostState = snackbarHostState,
             modifier = Modifier
                 .navigationBarsPadding()
@@ -118,7 +131,7 @@ fun MainActivityContent(
                 .align(Alignment.BottomCenter)
         )
 
-        VPClientSnackbarHost(
+        ClientSnackbarHost(
             hostState = snackbarHostStateError,
             modifier = Modifier
                 .navigationBarsPadding()
@@ -127,7 +140,7 @@ fun MainActivityContent(
             containerColor = MaterialTheme.colorScheme.error
         )
 
-        VPClientSnackbarHost(
+        ClientSnackbarHost(
             hostState = snackbarHostStateFab,
             modifier = Modifier
                 .navigationBarsPadding()
@@ -135,7 +148,7 @@ fun MainActivityContent(
                 .align(Alignment.BottomCenter)
         )
 
-        VPClientSnackbarHost(
+        ClientSnackbarHost(
             hostState = snackbarHostStateFabError,
             modifier = Modifier
                 .navigationBarsPadding()
@@ -144,7 +157,7 @@ fun MainActivityContent(
             containerColor = MaterialTheme.colorScheme.error
         )
 
-        VPClientSnackbarHost(
+        ClientSnackbarHost(
             hostState = snackbarHostStateBottomBar,
             modifier = Modifier
                 .navigationBarsPadding()
@@ -152,7 +165,7 @@ fun MainActivityContent(
                 .align(Alignment.BottomCenter)
         )
 
-        VPClientSnackbarHost(
+        ClientSnackbarHost(
             hostState = snackbarHostStateBottomBarError,
             modifier = Modifier
                 .navigationBarsPadding()
@@ -161,7 +174,7 @@ fun MainActivityContent(
             containerColor = MaterialTheme.colorScheme.error
         )
 
-        VPClientSnackbarHost(
+        ClientSnackbarHost(
             hostState = snackbarHostStateBottomBarFab,
             modifier = Modifier
                 .navigationBarsPadding()
@@ -169,7 +182,7 @@ fun MainActivityContent(
                 .align(Alignment.BottomCenter)
         )
 
-        VPClientSnackbarHost(
+        ClientSnackbarHost(
             hostState = snackbarHostStateBottomBarFabError,
             modifier = Modifier
                 .navigationBarsPadding()
@@ -178,7 +191,7 @@ fun MainActivityContent(
             containerColor = MaterialTheme.colorScheme.error
         )
 
-        VPClientSnackbarHost(
+        ClientSnackbarHost(
             hostState = snackbarHostStateTopError,
             modifier = Modifier
                 .statusBarsPadding()
