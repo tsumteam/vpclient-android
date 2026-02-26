@@ -25,7 +25,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.core.ui.theme.ClientStrings
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
-import ru.mercury.vpclient.core.ui.theme.ClientTypography
+import ru.mercury.vpclient.core.ui.theme.medium14
+import ru.mercury.vpclient.core.ui.theme.onBackground
+import ru.mercury.vpclient.core.ui.theme.regular14
+import ru.mercury.vpclient.core.ui.theme.regular22
 import ru.mercury.vpclient.core.ui.theme.surface4
 
 @Composable
@@ -48,7 +51,7 @@ fun ProfileLogoutDialog(
                 text = stringResource(ClientStrings.AppName),
                 modifier = Modifier
                     .padding(start = 24.dp, top = 24.dp, end = 24.dp),
-                style = ClientTypography.Regular_22_OnBackground.copy(lineHeight = 28.sp)
+                style = MaterialTheme.typography.regular22.copy(lineHeight = 28.sp).onBackground()
             )
 
             Row(
@@ -61,7 +64,7 @@ fun ProfileLogoutDialog(
                 ) {
                     Text(
                         text = stringResource(ClientStrings.AppName),
-                        style = ClientTypography.Regular_14_OnBackground
+                        style = MaterialTheme.typography.regular14
                     )
                 }
 
@@ -71,7 +74,7 @@ fun ProfileLogoutDialog(
                 ) {
                     Text(
                         text = stringResource(ClientStrings.AppName),
-                        style = ClientTypography.Medium_14_OnBackground
+                        style = MaterialTheme.typography.medium14.onBackground()
                     )
                 }
             }

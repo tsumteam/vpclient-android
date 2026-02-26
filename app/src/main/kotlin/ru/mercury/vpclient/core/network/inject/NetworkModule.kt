@@ -25,6 +25,10 @@ import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import ru.mercury.vpclient.BuildConfig
+import ru.mercury.vpclient.core.APP_FULL_VERSION
+import ru.mercury.vpclient.core.APP_VERSION
+import ru.mercury.vpclient.core.DEFAULT_EMPLOYEE_APP
+import ru.mercury.vpclient.core.ktx.versionCode
 import ru.mercury.vpclient.core.network.env.ClientEnvironment
 import ru.mercury.vpclient.core.network.provideLoggingInterceptor
 import ru.mercury.vpclient.core.persistence.datastore.PreferenceKey
@@ -50,15 +54,15 @@ object NetworkModule {
 
                 val applicationType = settingsDataStore.get().getValueBlocking(PreferenceKey.ApplicationType).orEmpty().ifEmpty { DEFAULT_APPLICATION_TYPE }
                 header("X-ApplicationType", applicationType)
-
-                val pairedUser = settingsDataStore.get().getValueBlocking(PreferenceKey.PairedUser).orEmpty()
-                if (pairedUser.isNotEmpty()) {
-                    header("X-PairedUser", pairedUser)
-                }
+                header("X-AppVersion", APP_VERSION)
+                header("X-AppFullVersion", APP_FULL_VERSION)
+                header("X-EmployeeApp", DEFAULT_EMPLOYEE_APP)
+                header("X-AppBuild", context.versionCode)
 
                 val userToken = settingsDataStore.get().getValueBlocking(PreferenceKey.UserToken).orEmpty()
                 if (userToken.isNotEmpty()) {
                     header("X-UserToken", userToken)
+                    header("X-Token", userToken)
                     header("Authorization", "Bearer $userToken")
                 }
 

@@ -24,7 +24,9 @@ import ru.mercury.vpclient.core.ui.components.ClientTextButton
 import ru.mercury.vpclient.core.ui.theme.ClientIcons
 import ru.mercury.vpclient.core.ui.theme.ClientStrings
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
-import ru.mercury.vpclient.core.ui.theme.ClientTypography
+import ru.mercury.vpclient.core.ui.theme.livretMedium21
+import ru.mercury.vpclient.core.ui.theme.onBackground
+import ru.mercury.vpclient.core.ui.theme.regular16
 import ru.mercury.vpclient.features.welcome.intent.WelcomeIntent
 
 @Composable
@@ -64,7 +66,7 @@ private fun WelcomeScreenContent(
                 modifier = Modifier
                     .padding(start = 16.dp, top = 106.dp, end = 16.dp)
                     .fillMaxWidth(),
-                style = ClientTypography.Medium_21_OnBackground.copy(lineHeight = 21.sp, letterSpacing = .2.sp, textAlign = TextAlign.Center)
+                style = MaterialTheme.typography.livretMedium21.copy(textAlign = TextAlign.Center, lineHeight = 28.sp).onBackground()
             )
 
             Text(
@@ -72,7 +74,7 @@ private fun WelcomeScreenContent(
                 modifier = Modifier
                     .padding(start = 16.dp, top = 24.dp, end = 16.dp)
                     .fillMaxWidth(),
-                style = ClientTypography.Regular_16_OnBackground.copy(lineHeight = 20.sp, letterSpacing = .2.sp, textAlign = TextAlign.Center)
+                style = MaterialTheme.typography.regular16.copy(lineHeight = 20.sp, letterSpacing = .2.sp, textAlign = TextAlign.Center).onBackground()
             )
 
             ClientButton(

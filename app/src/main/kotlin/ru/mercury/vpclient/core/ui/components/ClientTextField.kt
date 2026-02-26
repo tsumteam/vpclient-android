@@ -50,8 +50,9 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.distinctUntilChanged
 import ru.mercury.vpclient.core.ui.theme.ClientIcons
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
-import ru.mercury.vpclient.core.ui.theme.ClientTypography
 import ru.mercury.vpclient.core.ui.theme.green
+import ru.mercury.vpclient.core.ui.theme.medium16
+import ru.mercury.vpclient.core.ui.theme.onBackground
 
 @Composable
 private fun rememberSyncedTextFieldState(
@@ -146,7 +147,7 @@ fun ClientTextField(
                     )
                 }
             },
-        textStyle = ClientTypography.Medium_16_OnBackground,
+        textStyle = MaterialTheme.typography.medium16.onBackground(),
         label = {
             Text(
                 text = label
@@ -226,7 +227,7 @@ fun ClientTextField(
         state = textState,
         modifier = modifier.fillMaxWidth(),
         enabled = enabled,
-        textStyle = ClientTypography.Medium_16_OnBackground,
+        textStyle = MaterialTheme.typography.medium16.onBackground(),
         placeholder = {
             Text(
                 text = placeholder,
@@ -325,7 +326,7 @@ fun ClientTextField(
                     )
                 }
             },
-        textStyle = ClientTypography.Medium_16_OnBackground,
+        textStyle = MaterialTheme.typography.medium16.onBackground(),
         label = {
             Text(
                 text = label

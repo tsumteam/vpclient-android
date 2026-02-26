@@ -49,7 +49,11 @@ import ru.mercury.vpclient.core.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.core.ui.theme.ClientIcons
 import ru.mercury.vpclient.core.ui.theme.ClientStrings
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
-import ru.mercury.vpclient.core.ui.theme.ClientTypography
+import ru.mercury.vpclient.core.ui.theme.error
+import ru.mercury.vpclient.core.ui.theme.livretMedium21
+import ru.mercury.vpclient.core.ui.theme.onBackground
+import ru.mercury.vpclient.core.ui.theme.regular12
+import ru.mercury.vpclient.core.ui.theme.regular15
 import ru.mercury.vpclient.features.code.event.CodeEvents
 import ru.mercury.vpclient.features.code.intent.CodeIntent
 import ru.mercury.vpclient.features.code.model.CodeModel
@@ -137,7 +141,7 @@ private fun CodeScreenContent(
                 modifier = Modifier
                     .padding(start = 16.dp, top = 36.dp, end = 16.dp)
                     .fillMaxWidth(),
-                style = ClientTypography.Medium_21_OnBackground.copy(lineHeight = 21.sp, letterSpacing = .2.sp, textAlign = TextAlign.Center)
+                style = MaterialTheme.typography.livretMedium21.copy(textAlign = TextAlign.Center).onBackground()
             )
 
             Box(
@@ -168,7 +172,7 @@ private fun CodeScreenContent(
                         modifier = Modifier
                             .fillMaxWidth()
                             .align(Alignment.BottomCenter),
-                        style = ClientTypography.Regular_12_Error.copy(letterSpacing = .2.sp, textAlign = TextAlign.Center)
+                        style = MaterialTheme.typography.regular12.copy(letterSpacing = .2.sp, textAlign = TextAlign.Center).error()
                     )
                 }
             }
@@ -185,7 +189,7 @@ private fun CodeScreenContent(
                 modifier = Modifier
                     .padding(start = 16.dp, top = 14.dp, end = 16.dp)
                     .fillMaxWidth(),
-                style = ClientTypography.Regular_15_OnBackground.copy(lineHeight = 19.sp, letterSpacing = .2.sp, textAlign = TextAlign.Center)
+                style = MaterialTheme.typography.regular15.copy(lineHeight = 19.sp, letterSpacing = .2.sp, textAlign = TextAlign.Center).onBackground()
             )
 
             when {
@@ -201,7 +205,7 @@ private fun CodeScreenContent(
                         modifier = Modifier
                             .padding(start = 16.dp, top = 15.dp, end = 16.dp)
                             .fillMaxWidth(),
-                        style = ClientTypography.Regular_15_OnBackground.copy(lineHeight = 19.sp, letterSpacing = .2.sp, textAlign = TextAlign.Center)
+                        style = MaterialTheme.typography.regular15.copy(lineHeight = 19.sp, letterSpacing = .2.sp, textAlign = TextAlign.Center).onBackground()
                     )
                 }
                 else -> {
@@ -210,7 +214,7 @@ private fun CodeScreenContent(
                         modifier = Modifier
                             .padding(start = 16.dp, top = 15.dp, end = 16.dp)
                             .fillMaxWidth(),
-                        style = ClientTypography.Regular_15_OnBackground.copy(lineHeight = 19.sp, letterSpacing = .2.sp, textAlign = TextAlign.Center)
+                        style = MaterialTheme.typography.regular15.copy(lineHeight = 19.sp, letterSpacing = .2.sp, textAlign = TextAlign.Center).onBackground()
                     )
 
                     ClientTextButton(

@@ -41,7 +41,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.core.CODE_LENGTH
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
-import ru.mercury.vpclient.core.ui.theme.ClientTypography
+import ru.mercury.vpclient.core.ui.theme.medium21
+import ru.mercury.vpclient.core.ui.theme.onBackground
 
 @Composable
 fun SmsCodeInput(
@@ -119,7 +120,7 @@ fun SmsCodeInput(
                         if (symbol.isNotEmpty()) {
                             Text(
                                 text = symbol,
-                                style = ClientTypography.Medium_21_OnBackground.copy(lineHeight = 21.sp)
+                                style = MaterialTheme.typography.medium21.copy(lineHeight = 21.sp).onBackground()
                             )
                         }
 

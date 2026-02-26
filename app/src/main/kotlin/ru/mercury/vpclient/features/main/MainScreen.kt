@@ -39,7 +39,7 @@ import ru.mercury.vpclient.core.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.core.ui.theme.ClientIcons
 import ru.mercury.vpclient.core.ui.theme.ClientStrings
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
-import ru.mercury.vpclient.core.ui.theme.ClientTypography
+import ru.mercury.vpclient.core.ui.theme.regular11
 import ru.mercury.vpclient.core.ui.theme.secondary4
 import ru.mercury.vpclient.features.main.event.MainTabsEventManager
 import ru.mercury.vpclient.features.main.intent.MainIntent
@@ -152,7 +152,7 @@ private fun MainScreenContent(
                         Text(
                             text = stringResource(ClientStrings.MainTabHome),
                             modifier = Modifier.fillMaxWidth(),
-                            style = ClientTypography.Regular_11.copy(textAlign = TextAlign.Center),
+                            style = MaterialTheme.typography.regular11.copy(textAlign = TextAlign.Center),
                             minLines = 2,
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis
@@ -188,7 +188,7 @@ private fun MainScreenContent(
                             minLines = 2,
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
-                            style = ClientTypography.Regular_11.copy(textAlign = TextAlign.Center)
+                            style = MaterialTheme.typography.regular11.copy(textAlign = TextAlign.Center)
                         )
                     },
                     colors = NavigationBarItemDefaults.colors().copy(
@@ -218,7 +218,7 @@ private fun MainScreenContent(
                         Text(
                             text = stringResource(ClientStrings.MainTabCatalog),
                             modifier = Modifier.fillMaxWidth(),
-                            style = ClientTypography.Regular_11.copy(textAlign = TextAlign.Center),
+                            style = MaterialTheme.typography.regular11.copy(textAlign = TextAlign.Center),
                             minLines = 2,
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis
@@ -251,7 +251,7 @@ private fun MainScreenContent(
                         Text(
                             text = stringResource(ClientStrings.MainTabFitting),
                             modifier = Modifier.fillMaxWidth(),
-                            style = ClientTypography.Regular_11.copy(textAlign = TextAlign.Center),
+                            style = MaterialTheme.typography.regular11.copy(textAlign = TextAlign.Center),
                             minLines = 2,
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis
@@ -284,7 +284,7 @@ private fun MainScreenContent(
                         Text(
                             text = stringResource(ClientStrings.MainTabConsultants),
                             modifier = Modifier.fillMaxWidth(),
-                            style = ClientTypography.Regular_11.copy(textAlign = TextAlign.Center),
+                            style = MaterialTheme.typography.regular11.copy(textAlign = TextAlign.Center),
                             minLines = 2,
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis
@@ -317,7 +317,7 @@ private fun MainScreenContent(
                         Text(
                             text = stringResource(ClientStrings.MainTabProfile),
                             modifier = Modifier.fillMaxWidth(),
-                            style = ClientTypography.Regular_11.copy(textAlign = TextAlign.Center),
+                            style = MaterialTheme.typography.regular11.copy(textAlign = TextAlign.Center),
                             minLines = 2,
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis

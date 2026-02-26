@@ -22,7 +22,8 @@ import ru.mercury.vpclient.core.DeliveryId
 import ru.mercury.vpclient.core.persistence.database.pojo.ReturnPojo
 import ru.mercury.vpclient.core.ui.preview.ReturnPojoProvider
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
-import ru.mercury.vpclient.core.ui.theme.ClientTypography
+import ru.mercury.vpclient.core.ui.theme.medium16
+import ru.mercury.vpclient.core.ui.theme.onBackground
 
 @Composable
 fun ReturnCard(
@@ -46,7 +47,7 @@ fun ReturnCard(
             text = pojo.boutiqueEntity.boutiqueName,
             overflow = TextOverflow.Ellipsis,
             maxLines = 2,
-            style = ClientTypography.Medium_16_OnBackground.copy(textAlign = TextAlign.Start),
+            style = MaterialTheme.typography.medium16.copy(textAlign = TextAlign.Start).onBackground(),
             modifier = Modifier.constrainAs(boutiqueNameText) {
                 width = Dimension.fillToConstraints
                 height = Dimension.fillToConstraints

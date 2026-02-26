@@ -15,9 +15,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
-import ru.mercury.vpclient.core.ui.theme.ClientTypography
+import ru.mercury.vpclient.core.ui.theme.onBackground
+import ru.mercury.vpclient.core.ui.theme.regular14
 
 @Composable
 fun RadioRow(
@@ -37,7 +37,7 @@ fun RadioRow(
         Text(
             text = text,
             modifier = Modifier.padding(horizontal = 16.dp),
-            style = ClientTypography.Regular_14_OnBackground.copy(lineHeight = 20.sp)
+            style = MaterialTheme.typography.regular14.onBackground()
         )
 
         RadioButton(

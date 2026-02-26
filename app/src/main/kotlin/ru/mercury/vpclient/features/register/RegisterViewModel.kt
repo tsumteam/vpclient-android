@@ -28,6 +28,7 @@ class RegisterViewModel @Inject constructor(
                         launch {
                             reduce { it.copy(nameValidationError = null, phoneValidationError = null, isLoading = true) }
                             interactor.register(stateFlow.value.phone, stateFlow.value.name)
+                            reduce { it.copy(isLoading = false) }
                             MainEventManager.send(CodeRoute)
                         }
                     }

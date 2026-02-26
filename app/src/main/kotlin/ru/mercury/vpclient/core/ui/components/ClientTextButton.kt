@@ -21,7 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
-import ru.mercury.vpclient.core.ui.theme.ClientTypography
+import ru.mercury.vpclient.core.ui.theme.medium16
 
 @Composable
 fun ClientTextButton(
@@ -55,7 +55,7 @@ fun ClientTextButton(
             else -> {
                 Text(
                     text = text,
-                    style = ClientTypography.Medium_16.copy(textAlign = TextAlign.Center)
+                    style = MaterialTheme.typography.medium16.copy(textAlign = TextAlign.Center)
                 )
             }
         }

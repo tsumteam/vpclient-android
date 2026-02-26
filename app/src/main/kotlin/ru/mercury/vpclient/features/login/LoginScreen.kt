@@ -46,7 +46,9 @@ import ru.mercury.vpclient.core.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.core.ui.theme.ClientIcons
 import ru.mercury.vpclient.core.ui.theme.ClientStrings
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
-import ru.mercury.vpclient.core.ui.theme.ClientTypography
+import ru.mercury.vpclient.core.ui.theme.livretMedium21
+import ru.mercury.vpclient.core.ui.theme.onBackground
+import ru.mercury.vpclient.core.ui.theme.regular15
 import ru.mercury.vpclient.core.ui.transformation.PhoneInputTransformation
 import ru.mercury.vpclient.core.ui.transformation.PhoneOutputTransformation
 import ru.mercury.vpclient.features.login.event.LoginEvents
@@ -142,7 +144,7 @@ private fun LoginScreenContent(
                 modifier = Modifier
                     .padding(start = 16.dp, top = 36.dp, end = 16.dp)
                     .fillMaxWidth(),
-                style = ClientTypography.Medium_21_OnBackground.copy(lineHeight = 21.sp, letterSpacing = .2.sp, textAlign = TextAlign.Center)
+                style = MaterialTheme.typography.livretMedium21.copy(textAlign = TextAlign.Center).onBackground()
             )
 
             ClientTextField(
@@ -176,7 +178,7 @@ private fun LoginScreenContent(
                 modifier = Modifier
                     .padding(start = 16.dp, top = 24.dp, end = 16.dp)
                     .fillMaxWidth(),
-                style = ClientTypography.Regular_15_OnBackground.copy(lineHeight = 19.sp, letterSpacing = .2.sp, textAlign = TextAlign.Center)
+                style = MaterialTheme.typography.regular15.copy(lineHeight = 19.sp, letterSpacing = .2.sp, textAlign = TextAlign.Center).onBackground()
             )
         }
     }

@@ -28,8 +28,9 @@ import ru.mercury.vpclient.core.ui.components.ClientButton
 import ru.mercury.vpclient.core.ui.components.ClientLazyColumn
 import ru.mercury.vpclient.core.ui.theme.ClientStrings
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
-import ru.mercury.vpclient.core.ui.theme.ClientTypography
 import ru.mercury.vpclient.core.ui.theme.divider
+import ru.mercury.vpclient.core.ui.theme.onBackground
+import ru.mercury.vpclient.core.ui.theme.regular16
 import ru.mercury.vpclient.features.main.tabs.profile.intent.ProfileIntent
 import ru.mercury.vpclient.features.main.tabs.profile.model.ProfileModel
 
@@ -69,7 +70,7 @@ private fun ProfileScreenContent(
                     modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 40.dp),
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 5,
-                    style = ClientTypography.Regular_16_OnBackground.copy(textAlign = TextAlign.Center)
+                    style = MaterialTheme.typography.regular16.copy(textAlign = TextAlign.Center).onBackground()
                 )
             }
         }

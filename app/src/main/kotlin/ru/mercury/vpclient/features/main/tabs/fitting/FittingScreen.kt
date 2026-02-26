@@ -22,8 +22,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.mercury.vpclient.core.ui.components.ClientLazyColumn
-import ru.mercury.vpclient.core.ui.theme.ClientTypography
 import ru.mercury.vpclient.core.ui.theme.divider
+import ru.mercury.vpclient.core.ui.theme.onBackground
+import ru.mercury.vpclient.core.ui.theme.regular16
 import ru.mercury.vpclient.features.main.tabs.fitting.model.FittingModel
 
 @Composable
@@ -60,7 +61,7 @@ private fun FittingScreenContent(
                     modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 40.dp),
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 5,
-                    style = ClientTypography.Regular_16_OnBackground.copy(textAlign = TextAlign.Center)
+                    style = MaterialTheme.typography.regular16.copy(textAlign = TextAlign.Center).onBackground()
                 )
             }
         }

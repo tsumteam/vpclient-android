@@ -14,7 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import ru.mercury.vpclient.core.ui.theme.ClientTypography
+import ru.mercury.vpclient.core.ui.theme.medium16
+import ru.mercury.vpclient.core.ui.theme.onBackground
 
 @Composable
 fun VPClientSecureTextField(
@@ -77,7 +78,7 @@ fun VPClientSecureTextField(
             null
         },
         modifier = modifier,
-        textStyle = ClientTypography.Medium_16_OnBackground,
+        textStyle = MaterialTheme.typography.medium16.onBackground(),
         keyboardOptions = keyboardOptions,
         onKeyboardAction = keyboardActionHandler,
         textObfuscationMode = if (isPasswordVisible) TextObfuscationMode.Visible else TextObfuscationMode.Hidden,

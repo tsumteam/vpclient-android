@@ -38,7 +38,12 @@ import ru.mercury.vpclient.core.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.core.ui.ktx.rememberNavigateToAppSettings
 import ru.mercury.vpclient.core.ui.ktx.rememberNavigateToDeveloperSettings
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
-import ru.mercury.vpclient.core.ui.theme.ClientTypography
+import ru.mercury.vpclient.core.ui.theme.onBackground
+import ru.mercury.vpclient.core.ui.theme.regular14
+import ru.mercury.vpclient.core.ui.theme.regular18
+import ru.mercury.vpclient.core.ui.theme.secondary
+import ru.mercury.vpclient.core.ui.theme.spanMedium14
+import ru.mercury.vpclient.core.ui.theme.spanRegular14
 import ru.mercury.vpclient.features.debug.intent.DebugIntent
 import ru.mercury.vpclient.features.debug.model.DebugModel
 import ru.mercury.vpclient.features.debug.ui.DebugEnvironmentDialog
@@ -128,32 +133,32 @@ private fun DebugActivityContent(
                 ) {
                     Text(
                         text = buildAnnotatedString {
-                            withStyle(ClientTypography.SpanStyle_Medium_14_OnBackground) { append("DeviceId: ") }
-                            withStyle(ClientTypography.SpanStyle_Regular_14_OnBackground) { append(state.deviceId) }
+                            withStyle(MaterialTheme.typography.spanMedium14.onBackground()) { append("DeviceId: ") }
+                            withStyle(MaterialTheme.typography.spanRegular14.onBackground()) { append(state.deviceId) }
                         },
                         modifier = Modifier.fillMaxWidth()
                     )
 
                     Text(
                         text = buildAnnotatedString {
-                            withStyle(ClientTypography.SpanStyle_Medium_14_OnBackground) { append("UserToken: ") }
-                            withStyle(ClientTypography.SpanStyle_Regular_14_OnBackground) { append(state.userToken) }
+                            withStyle(MaterialTheme.typography.spanMedium14.onBackground()) { append("UserToken: ") }
+                            withStyle(MaterialTheme.typography.spanRegular14.onBackground()) { append(state.userToken) }
                         },
                         modifier = Modifier.fillMaxWidth()
                     )
 
                     Text(
                         text = buildAnnotatedString {
-                            withStyle(ClientTypography.SpanStyle_Medium_14_OnBackground) { append("VersionName: ") }
-                            withStyle(ClientTypography.SpanStyle_Regular_14_OnBackground) { append(BuildConfig.VERSION_NAME) }
+                            withStyle(MaterialTheme.typography.spanMedium14.onBackground()) { append("VersionName: ") }
+                            withStyle(MaterialTheme.typography.spanRegular14.onBackground()) { append(BuildConfig.VERSION_NAME) }
                         },
                         modifier = Modifier.fillMaxWidth()
                     )
 
                     Text(
                         text = buildAnnotatedString {
-                            withStyle(ClientTypography.SpanStyle_Medium_14_OnBackground) { append("VersionCode: ") }
-                            withStyle(ClientTypography.SpanStyle_Regular_14_OnBackground) { append(BuildConfig.VERSION_CODE.toString()) }
+                            withStyle(MaterialTheme.typography.spanMedium14.onBackground()) { append("VersionCode: ") }
+                            withStyle(MaterialTheme.typography.spanRegular14.onBackground()) { append(BuildConfig.VERSION_CODE.toString()) }
                         },
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -169,7 +174,7 @@ private fun DebugActivityContent(
             item {
                 Text(
                     text = "Настройки приложения",
-                    style = ClientTypography.Regular_18_OnBackground,
+                    style = MaterialTheme.typography.regular18.onBackground(),
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable(onClick = navigateToAppSettings)
@@ -186,7 +191,7 @@ private fun DebugActivityContent(
             item {
                 Text(
                     text = "Настройки разработчика",
-                    style = ClientTypography.Regular_18_OnBackground,
+                    style = MaterialTheme.typography.regular18.onBackground(),
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable(onClick = navigateToDeveloperSettings)
@@ -203,7 +208,7 @@ private fun DebugActivityContent(
             item {
                 Text(
                     text = "Очистить локальную базу данных",
-                    style = ClientTypography.Regular_18_OnBackground,
+                    style = MaterialTheme.typography.regular18.onBackground(),
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable(onClick = { dispatch(DebugIntent.DropLocalDbClick) })
@@ -226,12 +231,12 @@ private fun DebugActivityContent(
                 ) {
                     Text(
                         text = "Окружение",
-                        style = ClientTypography.Regular_18_OnBackground
+                        style = MaterialTheme.typography.regular18.onBackground()
                     )
 
                     Text(
                         text = state.environment.name,
-                        style = ClientTypography.Regular_14_Secondary
+                        style = MaterialTheme.typography.regular14.secondary()
                     )
                 }
             }
