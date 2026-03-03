@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
@@ -20,35 +21,36 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.autofill.ContentType
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentType
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.core.entity.PhoneValidationError
+import ru.mercury.vpclient.core.ui.components.AgreementText
 import ru.mercury.vpclient.core.ui.components.ClientButton
 import ru.mercury.vpclient.core.ui.components.ClientCenterAlignedTopAppBar
 import ru.mercury.vpclient.core.ui.components.ClientSnackbarHost
-import ru.mercury.vpclient.core.ui.components.ClientText
 import ru.mercury.vpclient.core.ui.components.ClientTextField
+import ru.mercury.vpclient.core.ui.icons.Logo82
 import ru.mercury.vpclient.core.ui.ktx.ObserveAsEvents
-import ru.mercury.vpclient.core.ui.theme.ClientIcons
+import ru.mercury.vpclient.core.ui.preview.LoginModelProvider
 import ru.mercury.vpclient.core.ui.theme.ClientStrings
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
 import ru.mercury.vpclient.core.ui.theme.livretMedium21
 import ru.mercury.vpclient.core.ui.theme.onBackground
-import ru.mercury.vpclient.core.ui.theme.regular15
 import ru.mercury.vpclient.core.ui.transformation.PhoneInputTransformation
 import ru.mercury.vpclient.core.ui.transformation.PhoneOutputTransformation
 import ru.mercury.vpclient.features.login.event.LoginEvents
@@ -61,7 +63,6 @@ fun LoginScreen(
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
     val focusManager = LocalFocusManager.current
-    val uriHandler = LocalUriHandler.current
     val scope = rememberCoroutineScope()
     val focusRequester = remember { FocusRequester() }
     val snackbarHostStateError = remember { SnackbarHostState() }
@@ -76,7 +77,6 @@ fun LoginScreen(
     ObserveAsEvents(flow = viewModel.eventFlow) { event ->
         when (event) {
             is LoginEvents.ClearFocus -> focusManager.clearFocus()
-            is LoginEvents.OpenUri -> uriHandler.openUri(state.agreementUri)
             is LoginEvents.SnackbarMessage -> {
                 snackbarHostStateError.run {
                     currentSnackbarData?.dismiss()
@@ -98,8 +98,6 @@ private fun LoginScreenContent(
 ) {
     val phoneInputTransformation = remember { PhoneInputTransformation() }
     val phoneOutputTransformation = remember { PhoneOutputTransformation() }
-    val agreementSourceText = stringResource(ClientStrings.LoginAgreementText)
-    val agreementClickableRange = 65 until agreementSourceText.length
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -107,8 +105,9 @@ private fun LoginScreenContent(
             ClientCenterAlignedTopAppBar(
                 title = {
                     Icon(
-                        painter = painterResource(ClientIcons.Logo82),
+                        imageVector = Logo82,
                         contentDescription = null,
+                        modifier = Modifier.size(82.dp, 57.dp),
                         tint = Color.Black
                     )
                 }
@@ -119,6 +118,7 @@ private fun LoginScreenContent(
                 onClick = { dispatch(LoginIntent.LoginClick) },
                 text = stringResource(ClientStrings.LoginButton),
                 loading = state.isLoading,
+                enabled = state.isLoginEnabled,
                 modifier = Modifier
                     .padding(16.dp)
                     .imePadding()
@@ -151,15 +151,13 @@ private fun LoginScreenContent(
                 value = state.phone,
                 onValueChange = { dispatch(LoginIntent.EnterPhone(it)) },
                 label = stringResource(ClientStrings.LoginPhoneLabel),
-                isErrorVisible = state.phoneValidationError != null,
-                error = when (state.phoneValidationError) {
-                    PhoneValidationError.Empty -> stringResource(ClientStrings.LoginPhoneEmptyError)
-                    null -> ""
-                },
+                isErrorVisible = state.phoneValidationError == PhoneValidationError.Invalid,
+                error = stringResource(ClientStrings.LoginPhoneInvalidError),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 16.dp, top = 40.dp, end = 16.dp)
-                    .focusRequester(focusRequester),
+                    .focusRequester(focusRequester)
+                    .semantics { contentType = ContentType.PhoneNumber },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Phone,
                     imeAction = ImeAction.Done
@@ -171,14 +169,11 @@ private fun LoginScreenContent(
                 outputTransformation = phoneOutputTransformation
             )
 
-            ClientText(
-                text = agreementSourceText,
-                clickableRange = agreementClickableRange,
-                onClick = { dispatch(LoginIntent.OpenAgreement) },
+            AgreementText(
+                agreementTextRes = ClientStrings.LoginAgreementText,
                 modifier = Modifier
                     .padding(start = 16.dp, top = 24.dp, end = 16.dp)
-                    .fillMaxWidth(),
-                style = MaterialTheme.typography.regular15.copy(lineHeight = 19.sp, letterSpacing = .2.sp, textAlign = TextAlign.Center).onBackground()
+                    .fillMaxWidth()
             )
         }
     }
@@ -186,10 +181,12 @@ private fun LoginScreenContent(
 
 @Preview
 @Composable
-private fun LoginScreenContentPreview() {
+private fun LoginScreenContentPreview(
+    @PreviewParameter(LoginModelProvider::class) state: LoginModel
+) {
     ClientTheme {
         LoginScreenContent(
-            state = LoginModel(),
+            state = state,
             dispatch = {},
             focusRequester = remember { FocusRequester() },
             snackbarHostStateError = remember { SnackbarHostState() }

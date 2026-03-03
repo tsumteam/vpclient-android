@@ -1,9 +1,9 @@
 package ru.mercury.vpclient.features.main.navigation
 
 import kotlinx.serialization.Serializable
-import ru.mercury.vpclient.core.navigation.Route
+import androidx.navigation3.runtime.NavKey
 
 @Serializable
 data class MainRoute(
     val popUpToMain: Boolean = false
-): Route
+): NavKey

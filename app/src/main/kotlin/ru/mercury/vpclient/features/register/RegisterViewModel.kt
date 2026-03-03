@@ -4,6 +4,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.core.exception.RegisterException
 import ru.mercury.vpclient.core.interactor.Interactor
+import ru.mercury.vpclient.core.ktx.normalizePhoneInput
 import ru.mercury.vpclient.core.mvi.ClientViewModel
 import ru.mercury.vpclient.features.code.navigation.CodeRoute
 import ru.mercury.vpclient.features.register.event.RegisterEvents
@@ -36,7 +37,7 @@ class RegisterViewModel @Inject constructor(
             }
             is RegisterIntent.MoveFocusDown -> launch { push(RegisterEvents.MoveFocusDown) }
             is RegisterIntent.EnterName -> reduce { it.copy(name = intent.name, nameValidationError = null) }
-            is RegisterIntent.EnterPhone -> reduce { it.copy(phone = intent.phone, phoneValidationError = null) }
+            is RegisterIntent.EnterPhone -> reduce { it.copy(phone = normalizePhoneInput(intent.phone), phoneValidationError = null) }
             is RegisterIntent.OnKeyboardDone -> {
                 launch {
                     val canClearFocus = interactor.validateRequiredName(stateFlow.value.name) == null && interactor.validateRequiredPhone(stateFlow.value.phone) == null
@@ -46,7 +47,6 @@ class RegisterViewModel @Inject constructor(
                     }
                 }
             }
-            is RegisterIntent.OpenAgreement -> launch { push(RegisterEvents.OpenUri) }
         }
     }
 

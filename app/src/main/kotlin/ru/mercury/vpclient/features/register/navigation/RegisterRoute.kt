@@ -1,7 +1,7 @@
 package ru.mercury.vpclient.features.register.navigation
 
 import kotlinx.serialization.Serializable
-import ru.mercury.vpclient.core.navigation.Route
+import androidx.navigation3.runtime.NavKey
 
 @Serializable
-data object RegisterRoute: Route
+data object RegisterRoute: NavKey

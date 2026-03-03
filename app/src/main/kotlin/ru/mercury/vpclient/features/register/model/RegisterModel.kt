@@ -2,6 +2,7 @@ package ru.mercury.vpclient.features.register.model
 
 import ru.mercury.vpclient.core.entity.NameValidationError
 import ru.mercury.vpclient.core.entity.PhoneValidationError
+import ru.mercury.vpclient.core.ktx.isValidPhoneNumber
 import ru.mercury.vpclient.core.mvi.Model
 
 data class RegisterModel(
@@ -9,6 +10,9 @@ data class RegisterModel(
     val phone: String = "",
     val nameValidationError: NameValidationError? = null,
     val phoneValidationError: PhoneValidationError? = null,
-    val isLoading: Boolean = false,
-    val agreementUri: String = "https://google.com" // fixme
-): Model
+    val isLoading: Boolean = false
+): Model {
+
+    val isRegisterEnabled: Boolean
+        get() = name.isNotBlank() && phone.isValidPhoneNumber() && !isLoading
+}

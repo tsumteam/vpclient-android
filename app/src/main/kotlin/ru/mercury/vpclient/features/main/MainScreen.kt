@@ -15,7 +15,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -31,12 +30,13 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import ru.mercury.vpclient.core.navigation.BackRoute
-import ru.mercury.vpclient.core.navigation.Route
-import ru.mercury.vpclient.core.navigation.navigateTo
-import ru.mercury.vpclient.core.navigation.setRoot
+import ru.mercury.vpclient.core.ui.icons.Brands24
+import ru.mercury.vpclient.core.ui.icons.Catalog24
+import ru.mercury.vpclient.core.ui.icons.Consultants24
+import ru.mercury.vpclient.core.ui.icons.Fitting24
+import ru.mercury.vpclient.core.ui.icons.Home24
+import ru.mercury.vpclient.core.ui.icons.Profile24
 import ru.mercury.vpclient.core.ui.ktx.ObserveAsEvents
-import ru.mercury.vpclient.core.ui.theme.ClientIcons
 import ru.mercury.vpclient.core.ui.theme.ClientStrings
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
 import ru.mercury.vpclient.core.ui.theme.regular11
@@ -65,7 +65,8 @@ fun MainScreen(
     val mainBackStack: NavBackStack<NavKey> = rememberNavBackStack(state.selectedRoute)
 
     LaunchedEffect(state.selectedRoute) {
-        mainBackStack.setRoot(state.selectedRoute)
+        mainBackStack.clear()
+        mainBackStack.add(state.selectedRoute)
     }
 
     MainScreenContent(
@@ -78,7 +79,7 @@ fun MainScreen(
         flow = MainTabsEventManager.eventFlow
     ) { event ->
         when (event) {
-            is Route -> viewModel.dispatch(MainIntent.SelectTab(event))
+            is NavKey -> viewModel.dispatch(MainIntent.SelectTab(event))
         }
     }
 }
@@ -96,7 +97,11 @@ private fun MainScreenContent(
 
         NavDisplay(
             backStack = navBackStack,
-            onBack = { navBackStack.navigateTo(BackRoute) },
+            onBack = {
+                if (navBackStack.size > 1) {
+                    navBackStack.removeAt(navBackStack.lastIndex)
+                }
+            },
             modifier = Modifier.constrainAs(navHost) {
                 width = Dimension.fillToConstraints
                 height = Dimension.fillToConstraints
@@ -139,12 +144,15 @@ private fun MainScreenContent(
                     onClick = {
                         when {
                             state.selectedRoute != HomeRoute -> dispatch(MainIntent.SelectTab(HomeRoute))
-                            else -> navBackStack.setRoot(state.selectedRoute)
+                            else -> {
+                                navBackStack.clear()
+                                navBackStack.add(state.selectedRoute)
+                            }
                         }
                     },
                     icon = {
                         Icon(
-                            painter = painterResource(ClientIcons.Home),
+                            imageVector = Home24,
                             contentDescription = null
                         )
                     },
@@ -172,12 +180,15 @@ private fun MainScreenContent(
                     onClick = {
                         when {
                             state.selectedRoute != BrandsRoute -> dispatch(MainIntent.SelectTab(BrandsRoute))
-                            else -> navBackStack.setRoot(state.selectedRoute)
+                            else -> {
+                                navBackStack.clear()
+                                navBackStack.add(state.selectedRoute)
+                            }
                         }
                     },
                     icon = {
                         Icon(
-                            painter = painterResource(ClientIcons.Brands),
+                            imageVector = Brands24,
                             contentDescription = null
                         )
                     },
@@ -205,12 +216,15 @@ private fun MainScreenContent(
                     onClick = {
                         when {
                             state.selectedRoute != CatalogRoute -> dispatch(MainIntent.SelectTab(CatalogRoute))
-                            else -> navBackStack.setRoot(state.selectedRoute)
+                            else -> {
+                                navBackStack.clear()
+                                navBackStack.add(state.selectedRoute)
+                            }
                         }
                     },
                     icon = {
                         Icon(
-                            painter = painterResource(ClientIcons.Catalog),
+                            imageVector = Catalog24,
                             contentDescription = null
                         )
                     },
@@ -238,12 +252,15 @@ private fun MainScreenContent(
                     onClick = {
                         when {
                             state.selectedRoute != FittingRoute -> dispatch(MainIntent.SelectTab(FittingRoute))
-                            else -> navBackStack.setRoot(state.selectedRoute)
+                            else -> {
+                                navBackStack.clear()
+                                navBackStack.add(state.selectedRoute)
+                            }
                         }
                     },
                     icon = {
                         Icon(
-                            painter = painterResource(ClientIcons.Fitting),
+                            imageVector = Fitting24,
                             contentDescription = null
                         )
                     },
@@ -271,12 +288,15 @@ private fun MainScreenContent(
                     onClick = {
                         when {
                             state.selectedRoute != ConsultantsRoute -> dispatch(MainIntent.SelectTab(ConsultantsRoute))
-                            else -> navBackStack.setRoot(state.selectedRoute)
+                            else -> {
+                                navBackStack.clear()
+                                navBackStack.add(state.selectedRoute)
+                            }
                         }
                     },
                     icon = {
                         Icon(
-                            painter = painterResource(ClientIcons.Consultants),
+                            imageVector = Consultants24,
                             contentDescription = null
                         )
                     },
@@ -304,12 +324,15 @@ private fun MainScreenContent(
                     onClick = {
                         when {
                             state.selectedRoute != ProfileRoute -> dispatch(MainIntent.SelectTab(ProfileRoute))
-                            else -> navBackStack.setRoot(state.selectedRoute)
+                            else -> {
+                                navBackStack.clear()
+                                navBackStack.add(state.selectedRoute)
+                            }
                         }
                     },
                     icon = {
                         Icon(
-                            painter = painterResource(ClientIcons.Profile),
+                            imageVector = Profile24,
                             contentDescription = null
                         )
                     },

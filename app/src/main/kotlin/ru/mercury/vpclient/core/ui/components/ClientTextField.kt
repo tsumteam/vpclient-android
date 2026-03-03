@@ -9,16 +9,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActionScope
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.InputTransformation
-import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.foundation.text.input.OutputTransformation
 import androidx.compose.foundation.text.input.TextFieldLineLimits
-import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,12 +25,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -42,73 +37,25 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.flow.distinctUntilChanged
-import ru.mercury.vpclient.core.ui.theme.ClientIcons
+import ru.mercury.vpclient.core.ui.icons.Close24
+import ru.mercury.vpclient.core.ui.ktx.keyboardActionHandler
+import ru.mercury.vpclient.core.ui.ktx.rememberSyncedTextFieldState
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
 import ru.mercury.vpclient.core.ui.theme.green
 import ru.mercury.vpclient.core.ui.theme.medium16
 import ru.mercury.vpclient.core.ui.theme.onBackground
 
 @Composable
-private fun rememberSyncedTextFieldState(
-    value: String,
-    onValueChange: (String) -> Unit
-): TextFieldState {
-    val textState = rememberTextFieldState(initialText = value)
-
-    LaunchedEffect(textState) {
-        snapshotFlow { textState.text.toString() }
-            .distinctUntilChanged()
-            .collect { onValueChange(it) }
-    }
-
-    LaunchedEffect(value) {
-        if (textState.text.toString() != value) {
-            textState.setTextAndPlaceCursorAtEnd(value)
-        }
-    }
-
-    return textState
-}
-
-private fun keyboardActionHandler(
-    keyboardOptions: KeyboardOptions,
-    keyboardActions: KeyboardActions
-): KeyboardActionHandler =
-    KeyboardActionHandler { performDefaultAction ->
-        val scope = object: KeyboardActionScope {
-            override fun defaultKeyboardAction(imeAction: ImeAction) {
-                performDefaultAction()
-            }
-        }
-        val action = when (keyboardOptions.imeAction) {
-            ImeAction.Done -> keyboardActions.onDone
-            ImeAction.Go -> keyboardActions.onGo
-            ImeAction.Next -> keyboardActions.onNext
-            ImeAction.Previous -> keyboardActions.onPrevious
-            ImeAction.Search -> keyboardActions.onSearch
-            ImeAction.Send -> keyboardActions.onSend
-            else -> null
-        }
-        when {
-            action != null -> action.invoke(scope)
-            else -> performDefaultAction()
-        }
-    }
-
-@Composable
 fun ClientTextField(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
-    isErrorVisible: Boolean,
-    error: String,
     modifier: Modifier = Modifier,
+    isErrorVisible: Boolean = false,
+    error: String = "",
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default
 ) {
@@ -157,8 +104,9 @@ fun ClientTextField(
             when {
                 isErrorVisible && currentValue.isNotEmpty() -> {
                     Icon(
-                        painter = painterResource(ClientIcons.Close),
+                        imageVector = Close24,
                         contentDescription = null,
+                        modifier = Modifier.size(24.dp),
                         tint = MaterialTheme.colorScheme.error
                     )
                 }
@@ -167,8 +115,9 @@ fun ClientTextField(
                         onClick = { textState.setTextAndPlaceCursorAtEnd("") }
                     ) {
                         Icon(
-                            painter = painterResource(ClientIcons.Close),
+                            imageVector = Close24,
                             contentDescription = null,
+                            modifier = Modifier.size(24.dp),
                             tint = MaterialTheme.colorScheme.secondary
                         )
                     }
@@ -238,8 +187,9 @@ fun ClientTextField(
             when {
                 accepted -> {
                     Icon(
-                        painter = painterResource(ClientIcons.Close),
+                        imageVector = Close24,
                         contentDescription = null,
+                        modifier = Modifier.size(24.dp),
                         tint = MaterialTheme.colorScheme.green
                     )
                 }
@@ -248,8 +198,9 @@ fun ClientTextField(
                         onClick = { textState.setTextAndPlaceCursorAtEnd("") }
                     ) {
                         Icon(
-                            painter = painterResource(ClientIcons.Close),
+                            imageVector = Close24,
                             contentDescription = null,
+                            modifier = Modifier.size(24.dp),
                             tint = MaterialTheme.colorScheme.secondary
                         )
                     }
@@ -313,7 +264,7 @@ fun ClientTextField(
             }
             .drawWithContent {
                 drawContent()
-                if (errorColor.alpha > 0f) {
+                if (errorColor.alpha > 0F) {
                     val strokeWidth = 1.dp.toPx()
                     val cornerRadius = 8.dp.toPx()
                     val fallbackHeight = (size.height - 20.dp.toPx()).coerceAtLeast(0F)
@@ -338,8 +289,9 @@ fun ClientTextField(
                     onClick = { textState.setTextAndPlaceCursorAtEnd("") }
                 ) {
                     Icon(
-                        painter = painterResource(ClientIcons.Close),
+                        imageVector = Close24,
                         contentDescription = null,
+                        modifier = Modifier.size(24.dp),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }

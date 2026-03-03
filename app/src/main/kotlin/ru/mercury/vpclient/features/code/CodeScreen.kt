@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -23,8 +24,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.autofill.ContentType
+import androidx.compose.ui.semantics.contentType
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -32,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -40,13 +44,13 @@ import kotlinx.coroutines.launch
 import ru.mercury.vpclient.core.entity.CodeValidationError
 import ru.mercury.vpclient.core.ktx.formatCodeResendTime
 import ru.mercury.vpclient.core.ktx.formatPhoneForDisplay
-import ru.mercury.vpclient.core.persistence.database.entity.ClientEntity
 import ru.mercury.vpclient.core.ui.components.ClientButton
 import ru.mercury.vpclient.core.ui.components.ClientCenterAlignedTopAppBar
 import ru.mercury.vpclient.core.ui.components.ClientSnackbarHost
 import ru.mercury.vpclient.core.ui.components.ClientTextButton
+import ru.mercury.vpclient.core.ui.icons.Logo82
 import ru.mercury.vpclient.core.ui.ktx.ObserveAsEvents
-import ru.mercury.vpclient.core.ui.theme.ClientIcons
+import ru.mercury.vpclient.core.ui.preview.CodeModelProvider
 import ru.mercury.vpclient.core.ui.theme.ClientStrings
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
 import ru.mercury.vpclient.core.ui.theme.error
@@ -104,8 +108,9 @@ private fun CodeScreenContent(
             ClientCenterAlignedTopAppBar(
                 title = {
                     Icon(
-                        painter = painterResource(ClientIcons.Logo82),
+                        imageVector = Logo82,
                         contentDescription = null,
+                        modifier = Modifier.size(82.dp, 57.dp),
                         tint = Color.Black
                     )
                 }
@@ -116,6 +121,7 @@ private fun CodeScreenContent(
                 onClick = { dispatch(CodeIntent.ConfirmClick) },
                 text = stringResource(ClientStrings.CodeButton),
                 loading = state.isLoading,
+                enabled = state.isConfirmEnabled,
                 modifier = Modifier
                     .padding(16.dp)
                     .imePadding()
@@ -154,21 +160,19 @@ private fun CodeScreenContent(
                     value = state.code,
                     onValueChange = { dispatch(CodeIntent.EnterCode(it)) },
                     focusRequester = focusRequester,
-                    isErrorVisible = state.codeValidationError != null,
+                    isErrorVisible = state.codeValidationError == CodeValidationError.Invalid,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .align(Alignment.TopCenter),
+                        .align(Alignment.TopCenter)
+                        .semantics { contentType = ContentType.SmsOtpCode },
                     keyboardActions = KeyboardActions(
                         onDone = { dispatch(CodeIntent.OnKeyboardDone) }
                     )
                 )
 
-                if (state.codeValidationError != null) {
+                if (state.codeValidationError == CodeValidationError.Invalid) {
                     Text(
-                        text = when (state.codeValidationError) {
-                            CodeValidationError.Empty -> stringResource(ClientStrings.CodeEmptyError)
-                            CodeValidationError.Invalid -> stringResource(ClientStrings.CodeInvalidError)
-                        },
+                        text = stringResource(ClientStrings.CodeInvalidError),
                         modifier = Modifier
                             .fillMaxWidth()
                             .align(Alignment.BottomCenter),
@@ -231,15 +235,12 @@ private fun CodeScreenContent(
 
 @Preview
 @Composable
-private fun CodeScreenContentPreview() {
+private fun CodeScreenContentPreview(
+    @PreviewParameter(CodeModelProvider::class) state: CodeModel
+) {
     ClientTheme {
         CodeScreenContent(
-            state = CodeModel(
-                clientEntity = ClientEntity(
-                    phone = "+78005553535",
-                    name = ""
-                )
-            ),
+            state = state,
             dispatch = {},
             focusRequester = remember { FocusRequester() },
             snackbarHostStateError = remember { SnackbarHostState() }

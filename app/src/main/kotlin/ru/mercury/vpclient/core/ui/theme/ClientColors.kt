@@ -13,6 +13,7 @@ val Secondary5 = Color(0xFFDADCE1)
 val Background = Color(0xFFFFFFFF)
 val OnBackground = Color(0xFF1F1F1F)
 val Surface = Color(0xFFF6F3F3)
+val Surface3 = Color(0xFFF5F4F9)
 val Surface2 = Color(0xFFDCD2D2)
 val Surface4 = Color(0xFFEDE7E7)
 val OnSurfaceVariant = Color(0xFF666161)
@@ -46,6 +47,9 @@ val ColorScheme.secondary5: Color
 
 val ColorScheme.surface2: Color
     get() = Surface2
+
+val ColorScheme.surface3: Color
+    get() = Surface3
 
 val ColorScheme.surface4: Color
     get() = Surface4

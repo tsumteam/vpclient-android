@@ -11,5 +11,6 @@ fun ClientEntity.resendCodeTimerSec(
     if (codeResendTimer == 0L || elapsedMillis >= CODE_RESEND_MAX_TIME) return 0
     val remainingMillis = CODE_RESEND_MAX_TIME - elapsedMillis
     val remainingSeconds = (remainingMillis / CODE_RESEND_TIMER_DELAY).toInt()
-    return remainingSeconds.coerceIn(1, 59)
+    val maxSeconds = (CODE_RESEND_MAX_TIME / CODE_RESEND_TIMER_DELAY).toInt().coerceAtLeast(1)
+    return remainingSeconds.coerceIn(1, maxSeconds)
 }

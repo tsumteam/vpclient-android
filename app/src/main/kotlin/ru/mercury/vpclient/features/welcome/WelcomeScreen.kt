@@ -11,7 +11,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,7 +20,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import ru.mercury.vpclient.core.ui.components.ClientButton
 import ru.mercury.vpclient.core.ui.components.ClientColumn
 import ru.mercury.vpclient.core.ui.components.ClientTextButton
-import ru.mercury.vpclient.core.ui.theme.ClientIcons
+import ru.mercury.vpclient.core.ui.icons.Logo117
 import ru.mercury.vpclient.core.ui.theme.ClientStrings
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
 import ru.mercury.vpclient.core.ui.theme.livretMedium21
@@ -53,7 +52,7 @@ private fun WelcomeScreenContent(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Icon(
-                painter = painterResource(ClientIcons.Logo117),
+                imageVector = Logo117,
                 contentDescription = null,
                 modifier = Modifier
                     .padding(top = 90.dp)
@@ -79,15 +78,13 @@ private fun WelcomeScreenContent(
 
             ClientButton(
                 onClick = { dispatch(WelcomeIntent.RegisterClick) },
-                modifier = Modifier
-                    .padding(start = 16.dp, top = 61.dp, end = 16.dp),
+                modifier = Modifier.padding(start = 16.dp, top = 61.dp, end = 16.dp),
                 text = stringResource(ClientStrings.WelcomeRegister)
             )
 
             ClientTextButton(
                 onClick = { dispatch(WelcomeIntent.LoginClick) },
-                modifier = Modifier
-                    .padding(start = 16.dp, top = 8.dp, end = 16.dp),
+                modifier = Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp),
                 text = stringResource(ClientStrings.WelcomeLogin)
             )
         }

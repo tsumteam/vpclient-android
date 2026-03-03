@@ -1,6 +1,7 @@
 package ru.mercury.vpclient.features.code.model
 
 import kotlinx.coroutines.Job
+import ru.mercury.vpclient.core.CODE_LENGTH
 import ru.mercury.vpclient.core.entity.CodeValidationError
 import ru.mercury.vpclient.core.mvi.Model
 import ru.mercury.vpclient.core.persistence.database.entity.ClientEntity
@@ -17,4 +18,7 @@ data class CodeModel(
 
     val isResendLoading: Boolean
         get() = resendCodeJob != null && resendCodeJob.isActive == true
+
+    val isConfirmEnabled: Boolean
+        get() = code.length == CODE_LENGTH && !isLoading
 }

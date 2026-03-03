@@ -1,8 +1,8 @@
 package ru.mercury.vpclient.features.main.tabs.home.intent
 
 import ru.mercury.vpclient.core.mvi.Intent
-import ru.mercury.vpclient.core.navigation.Route
+import androidx.navigation3.runtime.NavKey
 
 sealed interface HomeIntent: Intent {
-    data class NavigateRoute(val route: Route): HomeIntent
+    data class NavigateRoute(val route: NavKey): HomeIntent
 }

@@ -29,27 +29,27 @@ import ru.mercury.vpclient.core.ui.theme.ClientTheme
 @Composable
 fun ClientText(
     text: String,
-    clickableRange: IntRange?,
-    onClick: () -> Unit,
+    clickableRanges: List<IntRange>,
+    onClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
     style: TextStyle = LocalTextStyle.current,
     clickableColor: Color = MaterialTheme.colorScheme.error,
     pressedBackgroundColor: Color = clickableColor.copy(alpha = .16F)
 ) {
-    val normalizedRange = clickableRange?.let { range ->
+    val normalizedRanges = clickableRanges.mapNotNull { range ->
         val start = range.first.coerceAtLeast(0)
         val endExclusive = (range.last + 1).coerceAtMost(text.length)
         if (start < endExclusive) start until endExclusive else null
     }
-    var isPressed by remember { mutableStateOf(false) }
+    var pressedRangeIndex by remember { mutableStateOf<Int?>(null) }
     val textLayoutResult = remember { mutableStateOf<TextLayoutResult?>(null) }
     val annotatedText = buildAnnotatedString {
         append(text)
-        normalizedRange?.let { range ->
+        normalizedRanges.forEachIndexed { index, range ->
             addStyle(
                 style = SpanStyle(
                     color = clickableColor,
-                    background = if (isPressed) pressedBackgroundColor else Color.Transparent
+                    background = if (pressedRangeIndex == index) pressedBackgroundColor else Color.Transparent
                 ),
                 start = range.first,
                 end = range.last + 1
@@ -57,18 +57,19 @@ fun ClientText(
         }
     }
 
-    val clickableModifier = when (normalizedRange) {
-        null -> Modifier
-        else -> Modifier.pointerInput(text, normalizedRange) {
+    val clickableModifier = when {
+        normalizedRanges.isEmpty() -> Modifier
+        else -> Modifier.pointerInput(text, normalizedRanges) {
             detectTapGestures(
                 onPress = { position ->
                     val layoutResult = textLayoutResult.value ?: return@detectTapGestures
                     val offset = layoutResult.getOffsetForPosition(position)
-                    if (offset !in normalizedRange) return@detectTapGestures
-                    isPressed = true
+                    val clickableIndex = normalizedRanges.indexOfFirst { offset in it }
+                    if (clickableIndex == -1) return@detectTapGestures
+                    pressedRangeIndex = clickableIndex
                     val released = tryAwaitRelease()
-                    isPressed = false
-                    if (released) onClick()
+                    pressedRangeIndex = null
+                    if (released) onClick(clickableIndex)
                 }
             )
         }
@@ -96,7 +97,7 @@ private fun ClientTextPreview() {
         ) {
             ClientText(
                 text = stringResource(ClientStrings.LoginAgreementText),
-                clickableRange = 65 until text.length,
+                clickableRanges = listOf(65 until text.length),
                 onClick = {},
                 modifier = Modifier.padding(top = 24.dp),
             )

@@ -15,13 +15,13 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import ru.mercury.vpclient.core.navigation.BackRoute
-import ru.mercury.vpclient.core.navigation.Route
-import ru.mercury.vpclient.core.navigation.navigateTo
-import ru.mercury.vpclient.core.navigation.setRoot
 import ru.mercury.vpclient.core.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.features.main.tabs.home.event.HomeEventManager
 import ru.mercury.vpclient.features.main.tabs.home.stack.routes.RoutesScreen
 import ru.mercury.vpclient.features.main.tabs.home.stack.routes.navigation.RoutesRoute
+import ru.mercury.vpclient.features.main.navigation.MainRoute
+import ru.mercury.vpclient.features.register.navigation.RegisterRoute
+import ru.mercury.vpclient.features.welcome.navigation.WelcomeRoute
 
 @Composable
 fun HomeScreen(
@@ -31,12 +31,17 @@ fun HomeScreen(
     val navBackStack: NavBackStack<NavKey> = rememberNavBackStack(state.selectedRoute)
 
     LaunchedEffect(state.selectedRoute) {
-        navBackStack.setRoot(state.selectedRoute)
+        navBackStack.clear()
+        navBackStack.add(state.selectedRoute)
     }
 
     NavDisplay(
         backStack = navBackStack,
-        onBack = { navBackStack.navigateTo(BackRoute) },
+        onBack = {
+            if (navBackStack.size > 1) {
+                navBackStack.removeLastOrNull()
+            }
+        },
         modifier = Modifier.fillMaxSize(),
         entryDecorators = listOf(
             rememberSaveableStateHolderNavEntryDecorator(),
@@ -51,7 +56,51 @@ fun HomeScreen(
         flow = HomeEventManager.eventFlow
     ) { event ->
         when (event) {
-            is Route -> navBackStack.navigateTo(event)
+            is NavKey -> {
+                when (event) {
+                    is BackRoute -> {
+                        if (navBackStack.size > 1) {
+                            navBackStack.removeLastOrNull()
+                        }
+                    }
+                    is WelcomeRoute -> {
+                        navBackStack.clear()
+                        navBackStack.add(event)
+                    }
+                    is RegisterRoute -> {
+                        val mainIndex = navBackStack.indexOfLast { it is MainRoute }
+                        if (mainIndex != -1) {
+                            while (navBackStack.lastIndex >= mainIndex) {
+                                navBackStack.removeAt(navBackStack.lastIndex)
+                            }
+                        }
+                        if (navBackStack.lastOrNull() != event) {
+                            navBackStack.add(event)
+                        }
+                    }
+                    is MainRoute -> {
+                        if (event.popUpToMain) {
+                            val mainIndex = navBackStack.indexOfLast { it is MainRoute }
+                            if (mainIndex != -1) {
+                                while (navBackStack.lastIndex >= mainIndex) {
+                                    navBackStack.removeAt(navBackStack.lastIndex)
+                                }
+                            }
+                        } else {
+                            val welcomeIndex = navBackStack.indexOfLast { it is WelcomeRoute }
+                            if (welcomeIndex != -1) {
+                                while (navBackStack.lastIndex >= welcomeIndex) {
+                                    navBackStack.removeAt(navBackStack.lastIndex)
+                                }
+                            }
+                        }
+                        if (navBackStack.lastOrNull() != event) {
+                            navBackStack.add(event)
+                        }
+                    }
+                    else -> navBackStack.add(event)
+                }
+            }
         }
     }
 }

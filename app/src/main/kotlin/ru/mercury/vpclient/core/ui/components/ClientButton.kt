@@ -195,18 +195,21 @@ fun ClientButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true
 ) {
+    val isEnabled = enabled && !loading
+    val isLoading = enabled || loading
+
     Button(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
             .height(56.dp),
-        enabled = enabled,
+        enabled = isEnabled,
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (enabled || loading) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.disabled,
-            contentColor = if (enabled || loading) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onDisabled,
-            disabledContainerColor = if (enabled || loading) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.disabled,
-            disabledContentColor = if (enabled || loading) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onDisabled
+            containerColor = if (isLoading) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.disabled,
+            contentColor = if (isLoading) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onDisabled,
+            disabledContainerColor = if (isLoading) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.disabled,
+            disabledContentColor = if (isLoading) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onDisabled
         )
     ) {
         when {

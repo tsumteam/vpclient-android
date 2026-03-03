@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
@@ -20,37 +21,37 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.autofill.ContentType
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentType
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.core.entity.NameValidationError
 import ru.mercury.vpclient.core.entity.PhoneValidationError
+import ru.mercury.vpclient.core.ui.components.AgreementText
 import ru.mercury.vpclient.core.ui.components.ClientButton
 import ru.mercury.vpclient.core.ui.components.ClientCenterAlignedTopAppBar
 import ru.mercury.vpclient.core.ui.components.ClientSnackbarHost
-import ru.mercury.vpclient.core.ui.components.ClientText
 import ru.mercury.vpclient.core.ui.components.ClientTextField
+import ru.mercury.vpclient.core.ui.icons.Logo82
 import ru.mercury.vpclient.core.ui.ktx.ObserveAsEvents
-import ru.mercury.vpclient.core.ui.theme.ClientIcons
+import ru.mercury.vpclient.core.ui.preview.RegisterModelProvider
 import ru.mercury.vpclient.core.ui.theme.ClientStrings
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
 import ru.mercury.vpclient.core.ui.theme.livretMedium21
 import ru.mercury.vpclient.core.ui.theme.onBackground
-import ru.mercury.vpclient.core.ui.theme.regular15
 import ru.mercury.vpclient.core.ui.transformation.PhoneInputTransformation
 import ru.mercury.vpclient.core.ui.transformation.PhoneOutputTransformation
 import ru.mercury.vpclient.features.register.event.RegisterEvents
@@ -63,7 +64,6 @@ fun RegisterScreen(
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
     val focusManager = LocalFocusManager.current
-    val uriHandler = LocalUriHandler.current
     val scope = rememberCoroutineScope()
     val focusRequester = remember { FocusRequester() }
     val snackbarHostStateError = remember { SnackbarHostState() }
@@ -79,7 +79,6 @@ fun RegisterScreen(
         when (event) {
             is RegisterEvents.MoveFocusDown -> focusManager.moveFocus(FocusDirection.Down)
             is RegisterEvents.ClearFocus -> focusManager.clearFocus()
-            is RegisterEvents.OpenUri -> uriHandler.openUri(state.agreementUri)
             is RegisterEvents.SnackbarMessage -> {
                 snackbarHostStateError.run {
                     currentSnackbarData?.dismiss()
@@ -101,8 +100,6 @@ private fun RegisterScreenContent(
 ) {
     val phoneInputTransformation = remember { PhoneInputTransformation() }
     val phoneOutputTransformation = remember { PhoneOutputTransformation() }
-    val agreementSourceText = stringResource(ClientStrings.RegisterAgreementText)
-    val agreementClickableRange = 65 until agreementSourceText.length
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -110,8 +107,9 @@ private fun RegisterScreenContent(
             ClientCenterAlignedTopAppBar(
                 title = {
                     Icon(
-                        painter = painterResource(ClientIcons.Logo82),
+                        imageVector = Logo82,
                         contentDescription = null,
+                        modifier = Modifier.size(82.dp, 57.dp),
                         tint = Color.Black
                     )
                 }
@@ -122,6 +120,7 @@ private fun RegisterScreenContent(
                 onClick = { dispatch(RegisterIntent.RegisterClick) },
                 text = stringResource(ClientStrings.RegisterButton),
                 loading = state.isLoading,
+                enabled = state.isRegisterEnabled,
                 modifier = Modifier
                     .padding(16.dp)
                     .imePadding()
@@ -154,15 +153,11 @@ private fun RegisterScreenContent(
                 value = state.name,
                 onValueChange = { dispatch(RegisterIntent.EnterName(it)) },
                 label = stringResource(ClientStrings.RegisterNameLabel),
-                isErrorVisible = state.nameValidationError != null,
-                error = when (state.nameValidationError) {
-                    NameValidationError.Empty -> stringResource(ClientStrings.RegisterNameEmptyError)
-                    null -> ""
-                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 16.dp, top = 40.dp, end = 16.dp)
-                    .focusRequester(focusRequester),
+                    .focusRequester(focusRequester)
+                    .semantics { contentType = ContentType.PersonFullName },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Next
                 ),
@@ -175,14 +170,12 @@ private fun RegisterScreenContent(
                 value = state.phone,
                 onValueChange = { dispatch(RegisterIntent.EnterPhone(it)) },
                 label = stringResource(ClientStrings.RegisterPhoneLabel),
-                isErrorVisible = state.phoneValidationError != null,
-                error = when (state.phoneValidationError) {
-                    PhoneValidationError.Empty -> stringResource(ClientStrings.RegisterPhoneEmptyError)
-                    null -> ""
-                },
+                isErrorVisible = state.phoneValidationError == PhoneValidationError.Invalid,
+                error = stringResource(ClientStrings.RegisterPhoneInvalidError),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, top = 24.dp, end = 16.dp),
+                    .padding(start = 16.dp, top = 24.dp, end = 16.dp)
+                    .semantics { contentType = ContentType.PhoneNumber },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Phone,
                     imeAction = ImeAction.Done
@@ -194,14 +187,11 @@ private fun RegisterScreenContent(
                 outputTransformation = phoneOutputTransformation
             )
 
-            ClientText(
-                text = agreementSourceText,
-                clickableRange = agreementClickableRange,
-                onClick = { dispatch(RegisterIntent.OpenAgreement) },
+            AgreementText(
+                agreementTextRes = ClientStrings.RegisterAgreementText,
                 modifier = Modifier
                     .padding(start = 16.dp, top = 28.dp, end = 16.dp)
-                    .fillMaxWidth(),
-                style = MaterialTheme.typography.regular15.copy(lineHeight = 19.sp, letterSpacing = .2.sp, textAlign = TextAlign.Center).onBackground()
+                    .fillMaxWidth()
             )
         }
     }
@@ -209,10 +199,12 @@ private fun RegisterScreenContent(
 
 @Preview
 @Composable
-private fun RegisterScreenContentPreview() {
+private fun RegisterScreenContentPreview(
+    @PreviewParameter(RegisterModelProvider::class) state: RegisterModel
+) {
     ClientTheme {
         RegisterScreenContent(
-            state = RegisterModel(),
+            state = state,
             dispatch = {},
             focusRequester = remember { FocusRequester() },
             snackbarHostStateError = remember { SnackbarHostState() }

@@ -8,6 +8,8 @@ import ru.mercury.vpclient.core.entity.CodeValidationError
 import ru.mercury.vpclient.core.entity.NameValidationError
 import ru.mercury.vpclient.core.entity.PhoneValidationError
 import ru.mercury.vpclient.core.interactor.AuthenticationInteractor
+import ru.mercury.vpclient.core.ktx.isValidPhoneNumber
+import ru.mercury.vpclient.core.ktx.normalizePhoneInput
 import ru.mercury.vpclient.core.persistence.database.entity.ClientEntity
 import ru.mercury.vpclient.core.repository.AuthenticationRepository
 import javax.inject.Inject
@@ -21,14 +23,16 @@ class AuthenticationInteractorImpl @Inject constructor(
 
     override fun validateRequiredName(name: String): NameValidationError? {
         return when {
-            name.isEmpty() -> NameValidationError.Empty
+            name.isBlank() -> NameValidationError.Empty
             else -> null
         }
     }
 
     override fun validateRequiredPhone(phone: String): PhoneValidationError? {
+        val normalizedPhone = normalizePhoneInput(phone)
         return when {
-            phone.isEmpty() -> PhoneValidationError.Empty
+            normalizedPhone.isEmpty() -> PhoneValidationError.Empty
+            !normalizedPhone.isValidPhoneNumber() -> PhoneValidationError.Invalid
             else -> null
         }
     }

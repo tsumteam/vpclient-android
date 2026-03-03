@@ -1,4 +1,3 @@
-
 import com.android.build.api.variant.impl.VariantOutputImpl
 import java.io.FileInputStream
 import java.nio.charset.StandardCharsets
