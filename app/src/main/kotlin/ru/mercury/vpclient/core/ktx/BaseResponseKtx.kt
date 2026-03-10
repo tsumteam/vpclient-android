@@ -6,7 +6,6 @@ import ru.mercury.vpclient.core.exception.ClientEmptyException
 import ru.mercury.vpclient.core.exception.ClientException
 import ru.mercury.vpclient.core.network.response.BaseResponse
 import ru.mercury.vpclient.core.network.response.DataResponse
-import ru.mercury.vpclient.core.network.response.RoutesResponse
 
 suspend fun <T> handleResponse(
     request: suspend () -> BaseResponse<T>,
@@ -22,12 +21,6 @@ suspend fun <T> handleResponse(
             when {
                 data != null -> {
                     when (data) {
-                        is RoutesResponse -> {
-                            when {
-                                data.routes.isEmpty() -> onEmpty()
-                                else -> onSuccess(data)
-                            }
-                        }
                         is DataResponse -> {
                             when {
                                 data.data == DataResponse.RESULT_OK -> onSuccess(data)
@@ -95,12 +88,6 @@ suspend fun <T> handleResponseResult(
         when {
             data != null -> {
                 when (data) {
-                    is RoutesResponse -> {
-                        when {
-                            data.routes.isEmpty() -> Result.failure(ClientEmptyException())
-                            else -> Result.success(data)
-                        }
-                    }
                     is DataResponse -> {
                         when {
                             data.data == DataResponse.RESULT_OK -> Result.success(data)

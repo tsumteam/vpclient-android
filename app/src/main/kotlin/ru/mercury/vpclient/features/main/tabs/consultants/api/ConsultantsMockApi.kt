@@ -1,11 +1,11 @@
 package ru.mercury.vpclient.features.main.tabs.consultants.api
 
 import ru.mercury.vpclient.core.entity.ConsultantActionModel
-import ru.mercury.vpclient.core.ui.icons.Brands24
-import ru.mercury.vpclient.core.ui.icons.Catalog24
-import ru.mercury.vpclient.core.ui.icons.Consultants24
-import ru.mercury.vpclient.core.ui.icons.Fitting24
-import ru.mercury.vpclient.core.ui.icons.Home24
+import ru.mercury.vpclient.core.ui.icons.Basket24
+import ru.mercury.vpclient.core.ui.icons.Chat24
+import ru.mercury.vpclient.core.ui.icons.FittingShirt24
+import ru.mercury.vpclient.core.ui.icons.Phone24
+import ru.mercury.vpclient.core.ui.icons.Selection24
 import ru.mercury.vpclient.features.main.tabs.consultants.model.ConsultantUiModel
 
 //fixme
@@ -17,6 +17,8 @@ object ConsultantsMockApi {
                 id = "consultant_1",
                 name = "Анна Смирнова",
                 avatarUrl = "https://i.pravatar.cc/144?img=32",
+                workplace = "MVST",
+                storeName = "Барвиха Luxury Village",
                 isActive = true,
                 actions = consultantActions()
             ),
@@ -24,6 +26,8 @@ object ConsultantsMockApi {
                 id = "consultant_2",
                 name = "Мария Иванова",
                 avatarUrl = "https://i.pravatar.cc/144?img=47",
+                workplace = "MVST",
+                storeName = "Барвиха Luxury Village",
                 isActive = false,
                 actions = consultantActions()
             ),
@@ -31,6 +35,8 @@ object ConsultantsMockApi {
                 id = "consultant_3",
                 name = "Олег Петров",
                 avatarUrl = "https://i.pravatar.cc/144?img=12",
+                workplace = "MVST",
+                storeName = "Барвиха Luxury Village",
                 isActive = false,
                 actions = consultantActions()
             )
@@ -40,10 +46,10 @@ object ConsultantsMockApi {
 
 private fun consultantActions(): List<ConsultantActionModel> {
     return listOf(
-        ConsultantActionModel(id = "call", label = "Позвонить", icon = Home24),
-        ConsultantActionModel(id = "fitting", label = "Примерка", icon = Fitting24),
-        ConsultantActionModel(id = "cart", label = "Корзина", icon = Catalog24),
-        ConsultantActionModel(id = "chat", label = "Чат", icon = Consultants24, showNotificationBadge = true),
-        ConsultantActionModel(id = "selection", label = "Подборка", icon = Brands24)
+        ConsultantActionModel(id = "call", label = "Позвонить", icon = Phone24),
+        ConsultantActionModel(id = "fitting", label = "Примерка", icon = FittingShirt24),
+        ConsultantActionModel(id = "cart", label = "Корзина", icon = Basket24),
+        ConsultantActionModel(id = "chat", label = "Чат", icon = Chat24, showNotificationBadge = true),
+        ConsultantActionModel(id = "selection", label = "Подборка", icon = Selection24)
     )
 }

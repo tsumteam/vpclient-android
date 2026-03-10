@@ -52,8 +52,7 @@ val Profile24: ImageVector
 
 private var _profile24: ImageVector? = null
 
-@Preview
-@Preview(fontScale = 3F)
+@Preview(showBackground = true)
 @Composable
 private fun Profile24Preview() {
     ClientTheme {

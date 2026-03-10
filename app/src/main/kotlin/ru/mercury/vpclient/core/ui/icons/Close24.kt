@@ -51,7 +51,6 @@ val Close24: ImageVector
 private var _close24: ImageVector? = null
 
 @Preview
-@Preview(fontScale = 3F)
 @Composable
 private fun Close24Preview() {
     ClientTheme {

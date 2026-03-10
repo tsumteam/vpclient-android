@@ -65,8 +65,7 @@ val Catalog24: ImageVector
 
 private var _catalog24: ImageVector? = null
 
-@Preview
-@Preview(fontScale = 3F)
+@Preview(showBackground = true)
 @Composable
 private fun Catalog24Preview() {
     ClientTheme {

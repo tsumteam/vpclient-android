@@ -121,8 +121,7 @@ val Fitting24: ImageVector
 
 private var _fitting24: ImageVector? = null
 
-@Preview
-@Preview(fontScale = 3F)
+@Preview(showBackground = true)
 @Composable
 private fun Fitting24Preview() {
     ClientTheme {

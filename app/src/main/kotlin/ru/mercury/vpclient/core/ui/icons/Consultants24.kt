@@ -75,8 +75,7 @@ val Consultants24: ImageVector
 
 private var _consultants24: ImageVector? = null
 
-@Preview
-@Preview(fontScale = 3F)
+@Preview(showBackground = true)
 @Composable
 private fun Consultants24Preview() {
     ClientTheme {

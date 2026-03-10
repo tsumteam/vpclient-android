@@ -231,7 +231,6 @@ val Logo117: ImageVector
 private var _logo117: ImageVector? = null
 
 @Preview
-@Preview(fontScale = 3F)
 @Composable
 private fun Logo117Preview() {
     ClientTheme {

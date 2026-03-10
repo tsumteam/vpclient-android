@@ -4,9 +4,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.core.mvi.ClientViewModel
 import ru.mercury.vpclient.core.mvi.Event
+import ru.mercury.vpclient.features.consultant.navigation.ConsultantRoute
 import ru.mercury.vpclient.features.main.tabs.consultants.api.ConsultantsMockApi
 import ru.mercury.vpclient.features.main.tabs.consultants.intent.ConsultantsIntent
 import ru.mercury.vpclient.features.main.tabs.consultants.model.ConsultantsModel
+import ru.mercury.vpclient.main.event.MainEventManager
 import javax.inject.Inject
 
 @HiltViewModel
@@ -15,6 +17,7 @@ class ConsultantsViewModel @Inject constructor(
 ): ClientViewModel<ConsultantsIntent, ConsultantsModel, Event>(ConsultantsModel()) {
 
     init {
+        dispatch(ConsultantsIntent.CollectEmployees)
         dispatch(ConsultantsIntent.LoadConsultants)
     }
 
@@ -28,6 +31,7 @@ class ConsultantsViewModel @Inject constructor(
                     }
                 )
             }
+            is ConsultantsIntent.ConsultantClick -> launch { MainEventManager.send(ConsultantRoute(intent.consultantId)) }
         }
     }
 }

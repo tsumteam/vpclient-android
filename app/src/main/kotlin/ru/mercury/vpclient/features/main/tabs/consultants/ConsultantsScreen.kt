@@ -70,7 +70,7 @@ private fun ConsultantsScreenContent(
                     isActive = consultant.isActive,
                     onActionClick = {},
                     onActiveClick = { dispatch(ConsultantsIntent.SetActiveConsultant(consultant.id)) },
-                    onClick = { dispatch(ConsultantsIntent.SetActiveConsultant(consultant.id)) }
+                    onClick = { dispatch(ConsultantsIntent.ConsultantClick(consultant.id)) }
                 )
             }
         }

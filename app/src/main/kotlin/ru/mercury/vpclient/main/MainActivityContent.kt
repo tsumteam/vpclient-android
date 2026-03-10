@@ -4,20 +4,15 @@ package ru.mercury.vpclient.main
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.SizeTransform
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -34,6 +29,8 @@ import ru.mercury.vpclient.core.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.core.ui.ktx.rememberRequestMultiplePermissions
 import ru.mercury.vpclient.features.code.CodeScreen
 import ru.mercury.vpclient.features.code.navigation.CodeRoute
+import ru.mercury.vpclient.features.consultant.ConsultantScreen
+import ru.mercury.vpclient.features.consultant.navigation.ConsultantRoute
 import ru.mercury.vpclient.features.login.LoginScreen
 import ru.mercury.vpclient.features.login.navigation.LoginRoute
 import ru.mercury.vpclient.features.main.MainScreen
@@ -58,14 +55,10 @@ fun MainActivityContent(
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        val bottomPadding by animateDpAsState(targetValue = 0.dp, animationSpec = tween(easing = LinearOutSlowInEasing), label = "bottomPadding")
-
         NavDisplay(
             backStack = navBackStack,
             onBack = { if (navBackStack.size > 1) navBackStack.removeLastOrNull() },
-            modifier = Modifier
-                .padding(bottom = bottomPadding)
-                .fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
             entryDecorators = listOf(
                 rememberSaveableStateHolderNavEntryDecorator(),
                 rememberViewModelStoreNavEntryDecorator()
@@ -78,6 +71,7 @@ fun MainActivityContent(
                 entry<LoginRoute> { LoginScreen() }
                 entry<CodeRoute> { CodeScreen() }
                 entry<MainRoute> { MainScreen() }
+                entry<ConsultantRoute> { ConsultantScreen(consultantId = it.consultantId) }
             }
         )
 

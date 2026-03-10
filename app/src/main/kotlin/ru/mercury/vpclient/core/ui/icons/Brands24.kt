@@ -91,8 +91,7 @@ val Brands24: ImageVector
 
 private var _brands24: ImageVector? = null
 
-@Preview
-@Preview(fontScale = 3F)
+@Preview(showBackground = true)
 @Composable
 private fun Brands24Preview() {
     ClientTheme {

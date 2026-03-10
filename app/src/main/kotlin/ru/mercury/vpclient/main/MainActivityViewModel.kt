@@ -2,7 +2,6 @@ package ru.mercury.vpclient.main
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.core.interactor.Interactor
 import ru.mercury.vpclient.core.mvi.ClientViewModel
 import ru.mercury.vpclient.core.mvi.Event
 import ru.mercury.vpclient.core.persistence.datastore.PreferenceKey
@@ -15,7 +14,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
-    private val interactor: Interactor,
     private val settingsDataStore: SettingsDataStore
 ): ClientViewModel<MainActivityIntent, MainActivityModel, Event>(MainActivityModel()) {
 
@@ -32,7 +30,6 @@ class MainActivityViewModel @Inject constructor(
                 }
             }
             is MainActivityIntent.CenterLoading -> reduce { it.copy(centerLoading = intent.enabled) }
-            is MainActivityIntent.PaymentCancel -> {}
         }
     }
 }
