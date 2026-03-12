@@ -12,6 +12,7 @@ import dagger.hilt.components.SingletonComponent
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpCallValidator
+import io.ktor.client.plugins.HttpSend
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
@@ -19,15 +20,18 @@ import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.logging.SIMPLE
+import io.ktor.client.plugins.plugin
 import io.ktor.client.request.header
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
 import ru.mercury.vpclient.BuildConfig
 import ru.mercury.vpclient.core.APP_FULL_VERSION
 import ru.mercury.vpclient.core.APP_VERSION
 import ru.mercury.vpclient.core.DEFAULT_EMPLOYEE_APP
+import ru.mercury.vpclient.core.ktx.orEmpty
 import ru.mercury.vpclient.core.ktx.versionCode
 import ru.mercury.vpclient.core.network.env.ClientEnvironment
 import ru.mercury.vpclient.core.network.provideLoggingInterceptor
@@ -84,6 +88,16 @@ object NetworkModule {
                 requestTimeoutMillis = if (BuildConfig.DEBUG) DEBUG_REQUEST_TIMEOUT_MILLIS else REQUEST_TIMEOUT_MILLIS
                 connectTimeoutMillis = if (BuildConfig.DEBUG) DEBUG_CONNECT_TIMEOUT_MILLIS else CONNECT_TIMEOUT_MILLIS
                 socketTimeoutMillis = if (BuildConfig.DEBUG) DEBUG_SOCKET_TIMEOUT_SECONDS else SOCKET_TIMEOUT_SECONDS
+            }
+            install(HttpSend)
+            install("request-delay") {
+                plugin(HttpSend).intercept { request ->
+                    val requestDelayMillis = settingsDataStore.get().getValueBlocking(PreferenceKey.RequestDelay).orEmpty
+                    if (requestDelayMillis > 0L) {
+                        delay(requestDelayMillis)
+                    }
+                    execute(request)
+                }
             }
             install(Logging) {
                 logger = Logger.SIMPLE

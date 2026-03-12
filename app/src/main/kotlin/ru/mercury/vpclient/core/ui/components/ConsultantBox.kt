@@ -1,16 +1,14 @@
 package ru.mercury.vpclient.core.ui.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -18,16 +16,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import ru.mercury.vpclient.core.entity.ConsultantActionModel
-import ru.mercury.vpclient.core.ui.icons.Basket24
-import ru.mercury.vpclient.core.ui.icons.Chat24
-import ru.mercury.vpclient.core.ui.icons.FittingShirt24
-import ru.mercury.vpclient.core.ui.icons.Phone24
-import ru.mercury.vpclient.core.ui.icons.Selection24
+import ru.mercury.vpclient.core.persistence.database.entity.EmployeeEntity
+import ru.mercury.vpclient.core.ui.PlaceholderHighlight
+import ru.mercury.vpclient.core.ui.fade
+import ru.mercury.vpclient.core.ui.placeholder
+import ru.mercury.vpclient.core.ui.preview.EmployeeEntityProvider
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
 import ru.mercury.vpclient.core.ui.theme.medium16
 import ru.mercury.vpclient.core.ui.theme.onBackground
@@ -35,21 +31,18 @@ import ru.mercury.vpclient.core.ui.theme.secondary5
 
 @Composable
 fun ConsultantBox(
-    name: String,
-    avatarUrl: String,
-    actions: List<ConsultantActionModel>,
-    isActive: Boolean,
-    onActionClick: (ConsultantActionModel) -> Unit,
+    employee: EmployeeEntity,
+    onActionClick: (Int) -> Unit,
     onActiveClick: () -> Unit,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val displayName = name.replaceFirst(" ", "\n")
+    val displayName = if (employee == EmployeeEntity.Empty) "Имя\nФамилия" else "${employee.employeeName}\n${employee.employeeSurname}"
 
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .then(if (employee == EmployeeEntity.Empty) Modifier else Modifier.clickable(onClick = onClick))
     ) {
         Column(
             modifier = Modifier
@@ -63,33 +56,58 @@ fun ConsultantBox(
                     .padding(top = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                AsyncImage(
-                    model = avatarUrl,
-                    contentDescription = name,
-                    contentScale = ContentScale.Crop,
+                ClientAsyncImage(
+                    imageUrl = employee.photoUrl.ifEmpty { employee.previewPhotoUrl },
                     modifier = Modifier
                         .size(72.dp)
                         .clip(CircleShape)
+                        .placeholder(
+                            visible = employee == EmployeeEntity.Empty,
+                            highlight = PlaceholderHighlight.fade(),
+                            shape = CircleShape
+                        )
                 )
 
                 Text(
                     text = displayName,
                     modifier = Modifier
                         .weight(1F)
-                        .padding(start = 16.dp),
+                        .padding(start = 16.dp, end = 8.dp)
+                        .placeholder(
+                            visible = employee == EmployeeEntity.Empty,
+                            highlight = PlaceholderHighlight.fade(),
+                            shape = RoundedCornerShape(4.dp)
+                        ),
                     maxLines = 2,
                     style = MaterialTheme.typography.medium16.onBackground()
                 )
 
-                ConsultantActiveButton(
-                    isActive = isActive,
-                    onClick = onActiveClick
-                )
+                when {
+                    employee.isActive -> {
+                        ConsultantActiveBadge(
+                            modifier = Modifier.placeholder(
+                                visible = employee == EmployeeEntity.Empty,
+                                highlight = PlaceholderHighlight.fade(),
+                                shape = RoundedCornerShape(4.dp)
+                            )
+                        )
+                    }
+                    else -> {
+                        ConsultantMakeActiveButton(
+                            onClick = onActiveClick,
+                            modifier = Modifier.placeholder(
+                                visible = employee == EmployeeEntity.Empty,
+                                highlight = PlaceholderHighlight.fade(),
+                                shape = RoundedCornerShape(4.dp)
+                            )
+                        )
+                    }
+                }
             }
 
             ConsultantActionsRow(
-                actions = actions,
-                onActionClick = onActionClick,
+                entity = employee,
+                onClick = onActionClick,
                 modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)
             )
         }
@@ -102,32 +120,17 @@ fun ConsultantBox(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
-private fun ConsultantBoxPreview() {
+private fun ConsultantBoxPreview(
+    @PreviewParameter(EmployeeEntityProvider::class) entity: EmployeeEntity
+) {
     ClientTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(16.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            ConsultantBox(
-                name = "Анна Смирнова",
-                avatarUrl = "https://i.pravatar.cc/144?img=32",
-                actions = listOf(
-                    ConsultantActionModel(id = "call", label = "Позвонить", icon = Phone24),
-                    ConsultantActionModel(id = "fitting", label = "Примерка", icon = FittingShirt24),
-                    ConsultantActionModel(id = "cart", label = "Корзина", icon = Basket24),
-                    ConsultantActionModel(id = "chat", label = "Чат", icon = Chat24, showNotificationBadge = true),
-                    ConsultantActionModel(id = "selection", label = "Подборка", icon = Selection24)
-                ),
-                isActive = false,
-                onActionClick = {},
-                onActiveClick = {},
-                onClick = {}
-            )
-        }
+        ConsultantBox(
+            employee = entity,
+            onActionClick = {},
+            onActiveClick = {},
+            onClick = {}
+        )
     }
 }

@@ -9,5 +9,6 @@ sealed interface DebugIntent: Intent {
     data object EnvironmentClick: DebugIntent
     data object DismissEnvironmentDialog: DebugIntent
     data object DropLocalDbClick: DebugIntent
+    data class ToggleRequestDelay(val enabled: Boolean): DebugIntent
     data class SelectEnvironment(val environment: ClientEnvironment): DebugIntent
 }

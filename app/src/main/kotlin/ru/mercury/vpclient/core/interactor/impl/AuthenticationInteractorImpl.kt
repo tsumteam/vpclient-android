@@ -3,7 +3,7 @@ package ru.mercury.vpclient.core.interactor.impl
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import ru.mercury.vpclient.core.CODE_LENGTH
-import ru.mercury.vpclient.core.coroutines.VPClientDispatchers
+import ru.mercury.vpclient.core.coroutines.ClientDispatchers
 import ru.mercury.vpclient.core.entity.CodeValidationError
 import ru.mercury.vpclient.core.entity.NameValidationError
 import ru.mercury.vpclient.core.entity.PhoneValidationError
@@ -15,7 +15,7 @@ import ru.mercury.vpclient.core.repository.AuthenticationRepository
 import javax.inject.Inject
 
 class AuthenticationInteractorImpl @Inject constructor(
-    private val dispatchers: VPClientDispatchers,
+    private val dispatchers: ClientDispatchers,
     private val authenticationRepository: AuthenticationRepository
 ): AuthenticationInteractor {
 

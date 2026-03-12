@@ -8,6 +8,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import ru.mercury.vpclient.core.persistence.database.AppDatabase
+import ru.mercury.vpclient.core.persistence.database.dao.CatalogCategoryDao
 import ru.mercury.vpclient.core.persistence.database.dao.ClientDao
 import ru.mercury.vpclient.core.persistence.database.dao.EmployeeDao
 import javax.inject.Singleton
@@ -27,6 +28,9 @@ object DatabaseModule {
             AppDatabase.DATABASE_NAME
         ).fallbackToDestructiveMigration(dropAllTables = true).build()
     }
+
+    @Provides
+    fun catalogCategoryDao(database: AppDatabase): CatalogCategoryDao = database.catalogCategoryDao()
 
     @Provides
     fun clientDao(database: AppDatabase): ClientDao = database.clientDao()

@@ -35,7 +35,7 @@ class RegisterViewModel @Inject constructor(
                     }
                 }
             }
-            is RegisterIntent.MoveFocusDown -> launch { push(RegisterEvents.MoveFocusDown) }
+            is RegisterIntent.MoveFocusDown -> launch { send(RegisterEvents.MoveFocusDown) }
             is RegisterIntent.EnterName -> reduce { it.copy(name = intent.name, nameValidationError = null) }
             is RegisterIntent.EnterPhone -> reduce { it.copy(phone = normalizePhoneInput(intent.phone), phoneValidationError = null) }
             is RegisterIntent.OnKeyboardDone -> {
@@ -43,7 +43,7 @@ class RegisterViewModel @Inject constructor(
                     val canClearFocus = interactor.validateRequiredName(stateFlow.value.name) == null && interactor.validateRequiredPhone(stateFlow.value.phone) == null
                     dispatch(RegisterIntent.RegisterClick)
                     if (canClearFocus) {
-                        push(RegisterEvents.ClearFocus)
+                        send(RegisterEvents.ClearFocus)
                     }
                 }
             }
@@ -55,7 +55,7 @@ class RegisterViewModel @Inject constructor(
             is RegisterException -> {
                 launch {
                     reduce { it.copy(isLoading = false) }
-                    push(RegisterEvents.SnackbarMessage(throwable.message))
+                    send(RegisterEvents.SnackbarMessage(throwable.message))
                 }
             }
             else -> super.catch(throwable)

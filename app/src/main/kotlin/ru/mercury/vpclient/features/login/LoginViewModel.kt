@@ -39,7 +39,7 @@ class LoginViewModel @Inject constructor(
                     val canClearFocus = interactor.validateRequiredPhone(stateFlow.value.phone) == null
                     dispatch(LoginIntent.LoginClick)
                     if (canClearFocus) {
-                        push(LoginEvents.ClearFocus)
+                        send(LoginEvents.ClearFocus)
                     }
                 }
             }
@@ -51,7 +51,7 @@ class LoginViewModel @Inject constructor(
             is LoginException -> {
                 launch {
                     reduce { it.copy(isLoading = false) }
-                    push(LoginEvents.SnackbarMessage(throwable.message))
+                    send(LoginEvents.SnackbarMessage(throwable.message))
                 }
             }
             else -> super.catch(throwable)

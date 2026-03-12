@@ -6,6 +6,9 @@ val Int?.orEmpty: Int
 val Int?.isNotEmpty: Boolean
     get() = this != null && this != 0
 
+val Long?.orEmpty: Long
+    get() = this ?: 0L
+
 val Long?.isNotEmpty: Boolean
     get() = this != null && this != 0L
 

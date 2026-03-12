@@ -98,6 +98,35 @@ val Typography.medium22: TextStyle
         fontSize = 22.sp
     )
 
+val Typography.livretRegular14: TextStyle
+    get() = TextStyle(
+        fontWeight = FontWeight.W400,
+        fontFamily = FontFamily(Font(resId = R.font.tt_livret_subhead_regular, weight = FontWeight.W400)),
+        fontSize = 14.sp
+    )
+
+val Typography.livretRegular16: TextStyle
+    get() = TextStyle(
+        fontWeight = FontWeight.W400,
+        fontFamily = FontFamily(Font(resId = R.font.tt_livret_subhead_regular, weight = FontWeight.W400)),
+        fontSize = 16.sp
+    )
+
+val Typography.livretMedium13: TextStyle
+    get() = TextStyle(
+        fontWeight = FontWeight.W500,
+        fontFamily = FontFamily(Font(resId = R.font.tt_livret_subhead_medium, weight = FontWeight.W500)),
+        fontSize = 13.sp
+    )
+
+val Typography.livretMedium19: TextStyle
+    get() = TextStyle(
+        fontWeight = FontWeight.W500,
+        fontFamily = FontFamily(Font(resId = R.font.tt_livret_subhead_medium, weight = FontWeight.W500)),
+        fontSize = 19.sp,
+        letterSpacing = .2.sp
+    )
+
 val Typography.livretMedium21: TextStyle
     get() = TextStyle(
         fontWeight = FontWeight.W500,

@@ -1,12 +1,12 @@
 package ru.mercury.vpclient.core.ui.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import ru.mercury.vpclient.core.ui.icons.Close24
+import ru.mercury.vpclient.core.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
 
 @Composable
@@ -18,24 +18,20 @@ fun CloseIconButton(
         onClick = onClick,
         modifier = modifier
     ) {
-        /*Icon(
-            painter = painterResource(VPClientIcons.Close),
+        Icon(
+            imageVector = Close24,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onBackground
-        )*/
+        )
     }
 }
 
-@Preview
+@FontScalePreviews
 @Composable
 private fun CloseIconButtonPreview() {
     ClientTheme {
-        Box(
-            modifier = Modifier.background(MaterialTheme.colorScheme.background)
-        ) {
-            CloseIconButton(
-                onClick = {}
-            )
-        }
+        CloseIconButton(
+            onClick = {}
+        )
     }
 }

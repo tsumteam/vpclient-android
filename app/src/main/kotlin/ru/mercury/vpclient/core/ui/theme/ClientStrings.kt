@@ -42,9 +42,16 @@ object ClientStrings {
     val MainTabConsultants = R.string.main_tab_consultants
     val MainTabProfile = R.string.main_tab_profile
 
+    val CatalogViewAllClothing = R.string.catalog_view_all_clothing
+
     val ConsultantsTitle = R.string.consultants_title
     val ConsultantsActiveButton = R.string.consultants_active_button
     val ConsultantsMakeActiveButton = R.string.consultants_make_active_button
+    val ConsultantActionCall = R.string.consultant_action_call
+    val ConsultantActionFitting = R.string.consultant_action_fitting
+    val ConsultantActionCart = R.string.consultant_action_cart
+    val ConsultantActionChat = R.string.consultant_action_chat
+    val ConsultantActionSelection = R.string.consultant_action_selection
 
     val ProfileTitle = R.string.profile_title
     val ProfileLogout = R.string.profile_logout

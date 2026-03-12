@@ -3,7 +3,7 @@ package ru.mercury.vpclient.core.persistence.database.entity
 import androidx.room.Entity
 
 @Entity(
-    tableName = "client",
+    tableName = "Client",
     primaryKeys = ["phone"]
 )
 data class ClientEntity(

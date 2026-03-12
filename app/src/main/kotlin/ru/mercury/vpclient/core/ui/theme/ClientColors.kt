@@ -21,6 +21,7 @@ val Error = Color(0xFFD76B6B)
 val Divider = Color(0xFFD0C4C4)
 val Divider2 = Color(0xFFCAC4D0)
 val Green = Color(0xFF5DC590)
+val Black1 = Color(0xFF1B1B1B)
 val Black50 = Color(0x80000000)
 val Disabled = Color(0xFFCBC9C9)
 val OnDisabled = Color(0xFFF8F5F5)
@@ -62,6 +63,9 @@ val ColorScheme.divider2: Color
 
 val ColorScheme.green: Color
     get() = Green
+
+val ColorScheme.black1: Color
+    get() = Black1
 
 val ColorScheme.black50: Color
     get() = Black50

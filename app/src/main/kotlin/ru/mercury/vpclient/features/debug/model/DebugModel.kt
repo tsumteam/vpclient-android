@@ -7,5 +7,6 @@ data class DebugModel(
     val deviceId: String = "",
     val userToken: String = "",
     val environment: ClientEnvironment = ClientEnvironment.TEST,
+    val requestDelayEnabled: Boolean = false,
     val environmentDialog: Boolean = false
 ): Model

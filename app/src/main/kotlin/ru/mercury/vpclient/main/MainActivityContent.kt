@@ -3,10 +3,6 @@
 package ru.mercury.vpclient.main
 
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.SizeTransform
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -15,15 +11,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
-import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
-import androidx.navigation3.ui.NavDisplay
 import ru.mercury.vpclient.core.event.CenterLoading
 import ru.mercury.vpclient.core.navigation.BackRoute
+import ru.mercury.vpclient.core.ui.components.CourierNavDisplay
 import ru.mercury.vpclient.core.ui.components.LoadingBox
 import ru.mercury.vpclient.core.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.core.ui.ktx.rememberRequestMultiplePermissions
@@ -44,34 +38,27 @@ import ru.mercury.vpclient.main.intent.MainActivityIntent
 
 @Composable
 fun MainActivityContent(
-    viewModel: MainActivityViewModel = hiltViewModel(),
-    requestPermissions: () -> Unit = rememberRequestMultiplePermissions()
+    viewModel: MainActivityViewModel = hiltViewModel()
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
     if (state.startDestination == null) return
 
     val navBackStack: NavBackStack<NavKey> = rememberNavBackStack(requireNotNull(state.startDestination))
+    val requestPermissions = rememberRequestMultiplePermissions()
 
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        NavDisplay(
+        CourierNavDisplay(
             backStack = navBackStack,
-            onBack = { if (navBackStack.size > 1) navBackStack.removeLastOrNull() },
             modifier = Modifier.fillMaxSize(),
-            entryDecorators = listOf(
-                rememberSaveableStateHolderNavEntryDecorator(),
-                rememberViewModelStoreNavEntryDecorator()
-            ),
-            popTransitionSpec = { fadeIn() togetherWith fadeOut() using SizeTransform(clip = false) },
-            predictivePopTransitionSpec = { fadeIn() togetherWith fadeOut() using SizeTransform(clip = false) },
             entryProvider = entryProvider {
                 entry<WelcomeRoute> { WelcomeScreen() }
                 entry<RegisterRoute> { RegisterScreen() }
                 entry<LoginRoute> { LoginScreen() }
                 entry<CodeRoute> { CodeScreen() }
                 entry<MainRoute> { MainScreen() }
-                entry<ConsultantRoute> { ConsultantScreen(consultantId = it.consultantId) }
+                entry<ConsultantRoute> { ConsultantScreen(it) }
             }
         )
 

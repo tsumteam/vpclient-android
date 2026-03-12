@@ -38,9 +38,16 @@
     <string name="main_tab_consultants">Консуль\n-танты</string>
     <string name="main_tab_profile">Профиль</string>
 
+    <string name="catalog_view_all_clothing">Смотреть всю одежду</string>
+
     <string name="consultants_title">Консультанты</string>
     <string name="consultants_active_button">Активный</string>
     <string name="consultants_make_active_button">Сделать активным</string>
+    <string name="consultant_action_call">Позвонить</string>
+    <string name="consultant_action_fitting">Примерка</string>
+    <string name="consultant_action_cart">Корзина</string>
+    <string name="consultant_action_chat">Чат</string>
+    <string name="consultant_action_selection">Подборка</string>
 
     <string name="profile_title">Профиль</string>
     <string name="profile_logout">Выйти</string>

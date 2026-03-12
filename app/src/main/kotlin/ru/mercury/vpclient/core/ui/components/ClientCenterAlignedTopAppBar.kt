@@ -2,6 +2,7 @@
 
 package ru.mercury.vpclient.core.ui.components
 
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -20,11 +21,15 @@ import ru.mercury.vpclient.core.ui.theme.ClientTheme
 @Composable
 fun ClientCenterAlignedTopAppBar(
     title: @Composable () -> Unit,
-    colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors().copy(containerColor = Color.Transparent)
+    colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors().copy(containerColor = Color.Transparent),
+    navigationIcon: @Composable () -> Unit = {},
+    actions: @Composable RowScope.() -> Unit = {}
 ) {
     CenterAlignedTopAppBar(
         title = title,
-        colors = colors
+        colors = colors,
+        navigationIcon = navigationIcon,
+        actions = actions
     )
 }
 

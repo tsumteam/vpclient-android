@@ -91,7 +91,7 @@ class CodeViewModel @Inject constructor(
                     val canClearFocus = stateFlow.value.code.length == CODE_LENGTH
                     dispatch(CodeIntent.ConfirmClick)
                     if (canClearFocus) {
-                        push(CodeEvents.ClearFocus)
+                        send(CodeEvents.ClearFocus)
                     }
                 }
             }
@@ -103,19 +103,19 @@ class CodeViewModel @Inject constructor(
             is ContinueLoginException -> {
                 launch {
                     reduce { it.copy(isLoading = false) }
-                    push(CodeEvents.SnackbarMessage(throwable.message))
+                    send(CodeEvents.SnackbarMessage(throwable.message))
                 }
             }
             is LoginException -> {
                 launch {
                     reduce { it.copy(resendCodeJob = null) }
-                    push(CodeEvents.SnackbarMessage(throwable.message))
+                    send(CodeEvents.SnackbarMessage(throwable.message))
                 }
             }
             is RegisterException -> {
                 launch {
                     reduce { it.copy(resendCodeJob = null) }
-                    push(CodeEvents.SnackbarMessage(throwable.message))
+                    send(CodeEvents.SnackbarMessage(throwable.message))
                 }
             }
             else -> super.catch(throwable)

@@ -1,8 +1,8 @@
 package ru.mercury.vpclient.features.consultant.model
 
 import ru.mercury.vpclient.core.mvi.Model
-import ru.mercury.vpclient.features.main.tabs.consultants.model.ConsultantUiModel
+import ru.mercury.vpclient.core.persistence.database.entity.EmployeeEntity
 
 data class ConsultantModel(
-    val consultant: ConsultantUiModel = ConsultantUiModel.Empty
+    val employeeEntity: EmployeeEntity = EmployeeEntity.Empty
 ): Model

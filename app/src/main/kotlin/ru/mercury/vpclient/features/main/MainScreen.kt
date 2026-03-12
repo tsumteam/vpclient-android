@@ -1,9 +1,7 @@
 package ru.mercury.vpclient.features.main
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -18,18 +16,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
-import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
-import androidx.navigation3.ui.NavDisplay
+import ru.mercury.vpclient.core.ui.components.CourierNavDisplay
 import ru.mercury.vpclient.core.ui.icons.Brands24
 import ru.mercury.vpclient.core.ui.icons.Catalog24
 import ru.mercury.vpclient.core.ui.icons.Consultants24
@@ -38,7 +33,6 @@ import ru.mercury.vpclient.core.ui.icons.Home24
 import ru.mercury.vpclient.core.ui.icons.Profile24
 import ru.mercury.vpclient.core.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.core.ui.theme.ClientStrings
-import ru.mercury.vpclient.core.ui.theme.ClientTheme
 import ru.mercury.vpclient.core.ui.theme.regular11
 import ru.mercury.vpclient.core.ui.theme.secondary4
 import ru.mercury.vpclient.features.main.event.MainTabsEventManager
@@ -46,8 +40,9 @@ import ru.mercury.vpclient.features.main.intent.MainIntent
 import ru.mercury.vpclient.features.main.model.MainModel
 import ru.mercury.vpclient.features.main.tabs.brands.BrandsScreen
 import ru.mercury.vpclient.features.main.tabs.brands.navigation.BrandsRoute
-import ru.mercury.vpclient.features.main.tabs.catalog.CatalogScreen
-import ru.mercury.vpclient.features.main.tabs.catalog.navigation.CatalogRoute
+import ru.mercury.vpclient.features.main.tabs.catalog.CatalogStackScreen
+import ru.mercury.vpclient.features.main.tabs.catalog.navigation.CatalogStackRoute
+import ru.mercury.vpclient.features.main.tabs.catalog.stack.catalog.navigation.CatalogRoute
 import ru.mercury.vpclient.features.main.tabs.consultants.ConsultantsScreen
 import ru.mercury.vpclient.features.main.tabs.consultants.navigation.ConsultantsRoute
 import ru.mercury.vpclient.features.main.tabs.fitting.FittingScreen
@@ -63,6 +58,7 @@ fun MainScreen(
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
     val mainBackStack: NavBackStack<NavKey> = rememberNavBackStack(state.selectedRoute)
+    val catalogBackStack: NavBackStack<NavKey> = rememberNavBackStack(CatalogRoute)
 
     LaunchedEffect(state.selectedRoute) {
         mainBackStack.clear()
@@ -72,7 +68,8 @@ fun MainScreen(
     MainScreenContent(
         state = state,
         dispatch = viewModel::dispatch,
-        navBackStack = mainBackStack
+        navBackStack = mainBackStack,
+        catalogNavBackStack = catalogBackStack
     )
 
     ObserveAsEvents(
@@ -88,14 +85,15 @@ fun MainScreen(
 private fun MainScreenContent(
     state: MainModel,
     dispatch: (MainIntent) -> Unit,
-    navBackStack: NavBackStack<NavKey>
+    navBackStack: NavBackStack<NavKey>,
+    catalogNavBackStack: NavBackStack<NavKey>
 ) {
     ConstraintLayout(
         modifier = Modifier.fillMaxSize()
     ) {
-        val (navHost, bottomColumn) = createRefs()
+        val (navHost, bottomBar) = createRefs()
 
-        NavDisplay(
+        CourierNavDisplay(
             backStack = navBackStack,
             onBack = {
                 if (navBackStack.size > 1) {
@@ -108,265 +106,245 @@ private fun MainScreenContent(
                 start.linkTo(parent.start)
                 top.linkTo(parent.top)
                 end.linkTo(parent.end)
-                bottom.linkTo(bottomColumn.top)
+                bottom.linkTo(bottomBar.top)
             },
-            entryDecorators = listOf(
-                rememberSaveableStateHolderNavEntryDecorator(),
-                rememberViewModelStoreNavEntryDecorator()
-            ),
             entryProvider = entryProvider {
                 entry<HomeRoute> { HomeScreen() }
                 entry<BrandsRoute> { BrandsScreen() }
-                entry<CatalogRoute> { CatalogScreen() }
+                entry<CatalogStackRoute> { CatalogStackScreen(navBackStack = catalogNavBackStack) }
                 entry<FittingRoute> { FittingScreen() }
                 entry<ConsultantsRoute> { ConsultantsScreen() }
                 entry<ProfileRoute> { ProfileScreen() }
             }
         )
 
-        Column(
-            modifier = Modifier.constrainAs(bottomColumn) {
+        BottomAppBar(
+            modifier = Modifier.constrainAs(bottomBar) {
                 width = Dimension.fillToConstraints
                 height = Dimension.wrapContent
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
                 bottom.linkTo(parent.bottom)
-            }
+            },
+            containerColor = Color.White
         ) {
-            BottomAppBar(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentWidth(),
-                containerColor = Color.White
-            ) {
-                NavigationBarItem(
-                    selected = state.selectedRoute == HomeRoute,
-                    onClick = {
-                        when {
-                            state.selectedRoute != HomeRoute -> dispatch(MainIntent.SelectTab(HomeRoute))
-                            else -> {
-                                navBackStack.clear()
-                                navBackStack.add(state.selectedRoute)
-                            }
+            NavigationBarItem(
+                selected = state.selectedRoute == HomeRoute,
+                onClick = {
+                    when {
+                        state.selectedRoute != HomeRoute -> dispatch(MainIntent.SelectTab(HomeRoute))
+                        else -> {
+                            navBackStack.clear()
+                            navBackStack.add(state.selectedRoute)
                         }
-                    },
-                    icon = {
-                        Icon(
-                            imageVector = Home24,
-                            contentDescription = null
-                        )
-                    },
-                    label = {
-                        Text(
-                            text = stringResource(ClientStrings.MainTabHome),
-                            modifier = Modifier.fillMaxWidth(),
-                            style = MaterialTheme.typography.regular11.copy(textAlign = TextAlign.Center),
-                            minLines = 2,
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    },
-                    colors = NavigationBarItemDefaults.colors().copy(
-                        selectedIconColor = MaterialTheme.colorScheme.primary,
-                        selectedTextColor = MaterialTheme.colorScheme.primary,
-                        unselectedIconColor = MaterialTheme.colorScheme.secondary4,
-                        unselectedTextColor = MaterialTheme.colorScheme.secondary4,
-                        selectedIndicatorColor = Color.Transparent
+                    }
+                },
+                icon = {
+                    Icon(
+                        imageVector = Home24,
+                        contentDescription = null
                     )
+                },
+                label = {
+                    Text(
+                        text = stringResource(ClientStrings.MainTabHome),
+                        modifier = Modifier.fillMaxWidth(),
+                        style = MaterialTheme.typography.regular11.copy(textAlign = TextAlign.Center),
+                        minLines = 2,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
+                colors = NavigationBarItemDefaults.colors().copy(
+                    selectedIconColor = MaterialTheme.colorScheme.primary,
+                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                    unselectedIconColor = MaterialTheme.colorScheme.secondary4,
+                    unselectedTextColor = MaterialTheme.colorScheme.secondary4,
+                    selectedIndicatorColor = Color.Transparent
                 )
+            )
 
-                NavigationBarItem(
-                    selected = state.selectedRoute == BrandsRoute,
-                    onClick = {
-                        when {
-                            state.selectedRoute != BrandsRoute -> dispatch(MainIntent.SelectTab(BrandsRoute))
-                            else -> {
-                                navBackStack.clear()
-                                navBackStack.add(state.selectedRoute)
-                            }
+            NavigationBarItem(
+                selected = state.selectedRoute == BrandsRoute,
+                onClick = {
+                    when {
+                        state.selectedRoute != BrandsRoute -> dispatch(MainIntent.SelectTab(BrandsRoute))
+                        else -> {
+                            navBackStack.clear()
+                            navBackStack.add(state.selectedRoute)
                         }
-                    },
-                    icon = {
-                        Icon(
-                            imageVector = Brands24,
-                            contentDescription = null
-                        )
-                    },
-                    label = {
-                        Text(
-                            text = stringResource(ClientStrings.MainTabBrands),
-                            modifier = Modifier.fillMaxWidth(),
-                            minLines = 2,
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis,
-                            style = MaterialTheme.typography.regular11.copy(textAlign = TextAlign.Center)
-                        )
-                    },
-                    colors = NavigationBarItemDefaults.colors().copy(
-                        selectedIconColor = MaterialTheme.colorScheme.primary,
-                        selectedTextColor = MaterialTheme.colorScheme.primary,
-                        unselectedIconColor = MaterialTheme.colorScheme.secondary4,
-                        unselectedTextColor = MaterialTheme.colorScheme.secondary4,
-                        selectedIndicatorColor = Color.Transparent
+                    }
+                },
+                icon = {
+                    Icon(
+                        imageVector = Brands24,
+                        contentDescription = null
                     )
+                },
+                label = {
+                    Text(
+                        text = stringResource(ClientStrings.MainTabBrands),
+                        modifier = Modifier.fillMaxWidth(),
+                        minLines = 2,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        style = MaterialTheme.typography.regular11.copy(textAlign = TextAlign.Center)
+                    )
+                },
+                colors = NavigationBarItemDefaults.colors().copy(
+                    selectedIconColor = MaterialTheme.colorScheme.primary,
+                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                    unselectedIconColor = MaterialTheme.colorScheme.secondary4,
+                    unselectedTextColor = MaterialTheme.colorScheme.secondary4,
+                    selectedIndicatorColor = Color.Transparent
                 )
+            )
 
-                NavigationBarItem(
-                    selected = state.selectedRoute == CatalogRoute,
-                    onClick = {
-                        when {
-                            state.selectedRoute != CatalogRoute -> dispatch(MainIntent.SelectTab(CatalogRoute))
-                            else -> {
-                                navBackStack.clear()
-                                navBackStack.add(state.selectedRoute)
-                            }
+            NavigationBarItem(
+                selected = state.selectedRoute == CatalogStackRoute,
+                onClick = {
+                    when {
+                        state.selectedRoute != CatalogStackRoute -> dispatch(MainIntent.SelectTab(CatalogStackRoute))
+                        else -> {
+                            navBackStack.clear()
+                            navBackStack.add(state.selectedRoute)
+                            catalogNavBackStack.clear()
+                            catalogNavBackStack.add(CatalogRoute)
                         }
-                    },
-                    icon = {
-                        Icon(
-                            imageVector = Catalog24,
-                            contentDescription = null
-                        )
-                    },
-                    label = {
-                        Text(
-                            text = stringResource(ClientStrings.MainTabCatalog),
-                            modifier = Modifier.fillMaxWidth(),
-                            style = MaterialTheme.typography.regular11.copy(textAlign = TextAlign.Center),
-                            minLines = 2,
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    },
-                    colors = NavigationBarItemDefaults.colors().copy(
-                        selectedIconColor = MaterialTheme.colorScheme.primary,
-                        selectedTextColor = MaterialTheme.colorScheme.primary,
-                        unselectedIconColor = MaterialTheme.colorScheme.secondary4,
-                        unselectedTextColor = MaterialTheme.colorScheme.secondary4,
-                        selectedIndicatorColor = Color.Transparent
+                    }
+                },
+                icon = {
+                    Icon(
+                        imageVector = Catalog24,
+                        contentDescription = null
                     )
+                },
+                label = {
+                    Text(
+                        text = stringResource(ClientStrings.MainTabCatalog),
+                        modifier = Modifier.fillMaxWidth(),
+                        style = MaterialTheme.typography.regular11.copy(textAlign = TextAlign.Center),
+                        minLines = 2,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
+                colors = NavigationBarItemDefaults.colors().copy(
+                    selectedIconColor = MaterialTheme.colorScheme.primary,
+                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                    unselectedIconColor = MaterialTheme.colorScheme.secondary4,
+                    unselectedTextColor = MaterialTheme.colorScheme.secondary4,
+                    selectedIndicatorColor = Color.Transparent
                 )
+            )
 
-                NavigationBarItem(
-                    selected = state.selectedRoute == FittingRoute,
-                    onClick = {
-                        when {
-                            state.selectedRoute != FittingRoute -> dispatch(MainIntent.SelectTab(FittingRoute))
-                            else -> {
-                                navBackStack.clear()
-                                navBackStack.add(state.selectedRoute)
-                            }
+            NavigationBarItem(
+                selected = state.selectedRoute == FittingRoute,
+                onClick = {
+                    when {
+                        state.selectedRoute != FittingRoute -> dispatch(MainIntent.SelectTab(FittingRoute))
+                        else -> {
+                            navBackStack.clear()
+                            navBackStack.add(state.selectedRoute)
                         }
-                    },
-                    icon = {
-                        Icon(
-                            imageVector = Fitting24,
-                            contentDescription = null
-                        )
-                    },
-                    label = {
-                        Text(
-                            text = stringResource(ClientStrings.MainTabFitting),
-                            modifier = Modifier.fillMaxWidth(),
-                            style = MaterialTheme.typography.regular11.copy(textAlign = TextAlign.Center),
-                            minLines = 2,
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    },
-                    colors = NavigationBarItemDefaults.colors().copy(
-                        selectedIconColor = MaterialTheme.colorScheme.primary,
-                        selectedTextColor = MaterialTheme.colorScheme.primary,
-                        unselectedIconColor = MaterialTheme.colorScheme.secondary4,
-                        unselectedTextColor = MaterialTheme.colorScheme.secondary4,
-                        selectedIndicatorColor = Color.Transparent
+                    }
+                },
+                icon = {
+                    Icon(
+                        imageVector = Fitting24,
+                        contentDescription = null
                     )
+                },
+                label = {
+                    Text(
+                        text = stringResource(ClientStrings.MainTabFitting),
+                        modifier = Modifier.fillMaxWidth(),
+                        style = MaterialTheme.typography.regular11.copy(textAlign = TextAlign.Center),
+                        minLines = 2,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
+                colors = NavigationBarItemDefaults.colors().copy(
+                    selectedIconColor = MaterialTheme.colorScheme.primary,
+                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                    unselectedIconColor = MaterialTheme.colorScheme.secondary4,
+                    unselectedTextColor = MaterialTheme.colorScheme.secondary4,
+                    selectedIndicatorColor = Color.Transparent
                 )
+            )
 
-                NavigationBarItem(
-                    selected = state.selectedRoute == ConsultantsRoute,
-                    onClick = {
-                        when {
-                            state.selectedRoute != ConsultantsRoute -> dispatch(MainIntent.SelectTab(ConsultantsRoute))
-                            else -> {
-                                navBackStack.clear()
-                                navBackStack.add(state.selectedRoute)
-                            }
+            NavigationBarItem(
+                selected = state.selectedRoute == ConsultantsRoute,
+                onClick = {
+                    when {
+                        state.selectedRoute != ConsultantsRoute -> dispatch(MainIntent.SelectTab(ConsultantsRoute))
+                        else -> {
+                            navBackStack.clear()
+                            navBackStack.add(state.selectedRoute)
                         }
-                    },
-                    icon = {
-                        Icon(
-                            imageVector = Consultants24,
-                            contentDescription = null
-                        )
-                    },
-                    label = {
-                        Text(
-                            text = stringResource(ClientStrings.MainTabConsultants),
-                            modifier = Modifier.fillMaxWidth(),
-                            style = MaterialTheme.typography.regular11.copy(textAlign = TextAlign.Center),
-                            minLines = 2,
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    },
-                    colors = NavigationBarItemDefaults.colors().copy(
-                        selectedIconColor = MaterialTheme.colorScheme.primary,
-                        selectedTextColor = MaterialTheme.colorScheme.primary,
-                        unselectedIconColor = MaterialTheme.colorScheme.secondary4,
-                        unselectedTextColor = MaterialTheme.colorScheme.secondary4,
-                        selectedIndicatorColor = Color.Transparent
+                    }
+                },
+                icon = {
+                    Icon(
+                        imageVector = Consultants24,
+                        contentDescription = null
                     )
+                },
+                label = {
+                    Text(
+                        text = stringResource(ClientStrings.MainTabConsultants),
+                        modifier = Modifier.fillMaxWidth(),
+                        style = MaterialTheme.typography.regular11.copy(textAlign = TextAlign.Center),
+                        minLines = 2,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
+                colors = NavigationBarItemDefaults.colors().copy(
+                    selectedIconColor = MaterialTheme.colorScheme.primary,
+                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                    unselectedIconColor = MaterialTheme.colorScheme.secondary4,
+                    unselectedTextColor = MaterialTheme.colorScheme.secondary4,
+                    selectedIndicatorColor = Color.Transparent
                 )
+            )
 
-                NavigationBarItem(
-                    selected = state.selectedRoute == ProfileRoute,
-                    onClick = {
-                        when {
-                            state.selectedRoute != ProfileRoute -> dispatch(MainIntent.SelectTab(ProfileRoute))
-                            else -> {
-                                navBackStack.clear()
-                                navBackStack.add(state.selectedRoute)
-                            }
+            NavigationBarItem(
+                selected = state.selectedRoute == ProfileRoute,
+                onClick = {
+                    when {
+                        state.selectedRoute != ProfileRoute -> dispatch(MainIntent.SelectTab(ProfileRoute))
+                        else -> {
+                            navBackStack.clear()
+                            navBackStack.add(state.selectedRoute)
                         }
-                    },
-                    icon = {
-                        Icon(
-                            imageVector = Profile24,
-                            contentDescription = null
-                        )
-                    },
-                    label = {
-                        Text(
-                            text = stringResource(ClientStrings.MainTabProfile),
-                            modifier = Modifier.fillMaxWidth(),
-                            style = MaterialTheme.typography.regular11.copy(textAlign = TextAlign.Center),
-                            minLines = 2,
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    },
-                    colors = NavigationBarItemDefaults.colors().copy(
-                        selectedIconColor = MaterialTheme.colorScheme.primary,
-                        selectedTextColor = MaterialTheme.colorScheme.primary,
-                        unselectedIconColor = MaterialTheme.colorScheme.secondary4,
-                        unselectedTextColor = MaterialTheme.colorScheme.secondary4,
-                        selectedIndicatorColor = Color.Transparent
+                    }
+                },
+                icon = {
+                    Icon(
+                        imageVector = Profile24,
+                        contentDescription = null
                     )
+                },
+                label = {
+                    Text(
+                        text = stringResource(ClientStrings.MainTabProfile),
+                        modifier = Modifier.fillMaxWidth(),
+                        style = MaterialTheme.typography.regular11.copy(textAlign = TextAlign.Center),
+                        minLines = 2,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
+                colors = NavigationBarItemDefaults.colors().copy(
+                    selectedIconColor = MaterialTheme.colorScheme.primary,
+                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                    unselectedIconColor = MaterialTheme.colorScheme.secondary4,
+                    unselectedTextColor = MaterialTheme.colorScheme.secondary4,
+                    selectedIndicatorColor = Color.Transparent
                 )
-            }
+            )
         }
-    }
-}
-
-@Preview
-@Composable
-private fun MainScreenContentPreview() {
-    ClientTheme {
-        MainScreenContent(
-            state = MainModel(),
-            dispatch = {},
-            navBackStack = rememberNavBackStack(HomeRoute)
-        )
     }
 }

@@ -1,0 +1,9 @@
+package ru.mercury.vpclient.features.main.tabs.catalog.stack.catalog.intent
+
+import ru.mercury.vpclient.core.mvi.Intent
+
+sealed interface CatalogIntent: Intent {
+    data object CollectCatalogScreenData: CatalogIntent
+    data object LoadCatalogCategoriesTop: CatalogIntent
+    data class CategoryClick(val categoryId: Int): CatalogIntent
+}

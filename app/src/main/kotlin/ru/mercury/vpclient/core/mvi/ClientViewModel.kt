@@ -22,7 +22,7 @@ abstract class ClientViewModel<I: Intent, S: Model, E: Event>(
         _stateFlow.update(reducer)
     }
 
-    protected suspend fun push(event: E) {
+    protected suspend fun send(event: E) {
         _eventChannel.send(event)
     }
 

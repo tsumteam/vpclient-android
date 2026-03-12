@@ -9,45 +9,43 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.BuildConfig
-import ru.mercury.vpclient.core.event.SnackbarEvent
-import ru.mercury.vpclient.core.ktx.snackbarMessage
-import ru.mercury.vpclient.core.navigation.BackRoute
-import ru.mercury.vpclient.core.ui.components.ClientTopAppBar
-import ru.mercury.vpclient.core.ui.components.CloseIconButton
 import ru.mercury.vpclient.core.ui.components.ClientLazyColumn
 import ru.mercury.vpclient.core.ui.components.ClientSnackbarHost
+import ru.mercury.vpclient.core.ui.components.ClientTopAppBar
+import ru.mercury.vpclient.core.ui.components.CloseIconButton
 import ru.mercury.vpclient.core.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.core.ui.ktx.rememberNavigateToAppSettings
 import ru.mercury.vpclient.core.ui.ktx.rememberNavigateToDeveloperSettings
+import ru.mercury.vpclient.core.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
 import ru.mercury.vpclient.core.ui.theme.onBackground
-import ru.mercury.vpclient.core.ui.theme.regular14
 import ru.mercury.vpclient.core.ui.theme.regular18
-import ru.mercury.vpclient.core.ui.theme.secondary
 import ru.mercury.vpclient.core.ui.theme.spanMedium14
 import ru.mercury.vpclient.core.ui.theme.spanRegular14
+import ru.mercury.vpclient.features.debug.event.DebugEvent
 import ru.mercury.vpclient.features.debug.intent.DebugIntent
 import ru.mercury.vpclient.features.debug.model.DebugModel
 import ru.mercury.vpclient.features.debug.ui.DebugEnvironmentDialog
-import ru.mercury.vpclient.main.event.MainEventManager
 
 @Composable
 fun DebugScreen(
@@ -55,7 +53,6 @@ fun DebugScreen(
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
 
-    val context = LocalContext.current
     val activity = LocalActivity.current
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -78,19 +75,10 @@ fun DebugScreen(
         flow = viewModel.eventFlow
     ) { event ->
         when (event) {
-            is BackRoute -> activity?.finish()
-        }
-    }
-
-    ObserveAsEvents(
-        flow = MainEventManager.eventFlow
-    ) { event ->
-        when (event) {
-            is SnackbarEvent -> {
-                snackbarHostState.run {
-                    currentSnackbarData?.dismiss()
-                    scope.launch { showSnackbar(event.snackbarMessage(context)) }
-                }
+            is DebugEvent.FinishScreen -> activity?.finish()
+            is DebugEvent.SnackbarMessage -> {
+                snackbarHostState.currentSnackbarData?.dismiss()
+                scope.launch { snackbarHostState.showSnackbar(event.message) }
             }
         }
     }
@@ -109,7 +97,11 @@ private fun DebugActivityContent(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             ClientTopAppBar(
-                title = { Text("Debug Settings") },
+                title = {
+                    Text(
+                        text = "Debug Settings"
+                    )
+                },
                 navigationIcon = {
                     CloseIconButton(
                         onClick = { dispatch(DebugIntent.BackClick) }
@@ -117,7 +109,12 @@ private fun DebugActivityContent(
                 }
             )
         },
-        snackbarHost = { ClientSnackbarHost(snackbarHostState) }
+        snackbarHost = {
+            ClientSnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+        }
     ) { innerPadding ->
         ClientLazyColumn(
             modifier = Modifier
@@ -172,13 +169,17 @@ private fun DebugActivityContent(
                 )
             }
             item {
-                Text(
-                    text = "Настройки приложения",
-                    style = MaterialTheme.typography.regular18.onBackground(),
+                ListItem(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable(onClick = navigateToAppSettings)
-                        .padding(horizontal = 16.dp, vertical = 20.dp)
+                        .clickable { navigateToAppSettings() },
+                    headlineContent = {
+                        Text(
+                            text = "Настройки приложения",
+                            style = MaterialTheme.typography.regular18.onBackground()
+                        )
+                    },
+                    colors = ListItemDefaults.colors().copy(containerColor = Color.Transparent),
                 )
             }
             item {
@@ -189,13 +190,17 @@ private fun DebugActivityContent(
                 )
             }
             item {
-                Text(
-                    text = "Настройки разработчика",
-                    style = MaterialTheme.typography.regular18.onBackground(),
+                ListItem(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable(onClick = navigateToDeveloperSettings)
-                        .padding(horizontal = 16.dp, vertical = 20.dp)
+                        .clickable { navigateToDeveloperSettings() },
+                    headlineContent = {
+                        Text(
+                            text = "Настройки разработчика",
+                            style = MaterialTheme.typography.regular18.onBackground()
+                        )
+                    },
+                    colors = ListItemDefaults.colors().copy(containerColor = Color.Transparent),
                 )
             }
             item {
@@ -206,13 +211,23 @@ private fun DebugActivityContent(
                 )
             }
             item {
-                Text(
-                    text = "Очистить локальную базу данных",
-                    style = MaterialTheme.typography.regular18.onBackground(),
+                ListItem(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable(onClick = { dispatch(DebugIntent.DropLocalDbClick) })
-                        .padding(horizontal = 16.dp, vertical = 20.dp)
+                        .clickable { dispatch(DebugIntent.ToggleRequestDelay(!state.requestDelayEnabled)) },
+                    headlineContent = {
+                        Text(
+                            text = "Задержка API-запросов",
+                            style = MaterialTheme.typography.regular18.onBackground()
+                        )
+                    },
+                    trailingContent = {
+                        Switch(
+                            checked = state.requestDelayEnabled,
+                            onCheckedChange = null
+                        )
+                    },
+                    colors = ListItemDefaults.colors().copy(containerColor = Color.Transparent),
                 )
             }
             item {
@@ -223,29 +238,51 @@ private fun DebugActivityContent(
                 )
             }
             item {
-                Column(
+                ListItem(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable(onClick = { dispatch(DebugIntent.EnvironmentClick) })
-                        .padding(horizontal = 16.dp, vertical = 20.dp)
-                ) {
-                    Text(
-                        text = "Окружение",
-                        style = MaterialTheme.typography.regular18.onBackground()
-                    )
-
-                    Text(
-                        text = state.environment.name,
-                        style = MaterialTheme.typography.regular14.secondary()
-                    )
-                }
+                        .clickable { dispatch(DebugIntent.DropLocalDbClick) },
+                    headlineContent = {
+                        Text(
+                            text = "Очистить локальную базу данных",
+                            style = MaterialTheme.typography.regular18.onBackground()
+                        )
+                    },
+                    colors = ListItemDefaults.colors().copy(containerColor = Color.Transparent),
+                )
+            }
+            item {
+                HorizontalDivider(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                    thickness = .1.dp,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
+            item {
+                ListItem(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { dispatch(DebugIntent.EnvironmentClick) },
+                    headlineContent = {
+                        Text(
+                            text = "Окружение",
+                            style = MaterialTheme.typography.regular18.onBackground()
+                        )
+                    },
+                    trailingContent = {
+                        Text(
+                            text = state.environment.name,
+                            style = MaterialTheme.typography.regular18.onBackground()
+                        )
+                    },
+                    colors = ListItemDefaults.colors().copy(containerColor = Color.Transparent),
+                )
             }
         }
     }
 }
 
-@Preview(heightDp = 1200)
-@Preview(heightDp = 1200, fontScale = 1.5F)
+@FontScalePreviews
 @Composable
 private fun DebugActivityContentPreview() {
     ClientTheme {
