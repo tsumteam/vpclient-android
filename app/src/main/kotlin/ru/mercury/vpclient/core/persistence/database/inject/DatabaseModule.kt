@@ -9,8 +9,14 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import ru.mercury.vpclient.core.persistence.database.AppDatabase
 import ru.mercury.vpclient.core.persistence.database.dao.CatalogCategoryDao
+import ru.mercury.vpclient.core.persistence.database.dao.CatalogFilterDao
+import ru.mercury.vpclient.core.persistence.database.dao.CatalogFilterProductsDao
+import ru.mercury.vpclient.core.persistence.database.dao.CatalogFilterProductsQuantityDao
 import ru.mercury.vpclient.core.persistence.database.dao.ClientDao
 import ru.mercury.vpclient.core.persistence.database.dao.EmployeeDao
+import ru.mercury.vpclient.core.persistence.database.dao.FilterValuesDao
+import ru.mercury.vpclient.core.persistence.database.dao.FilterValuesQuantityDao
+import ru.mercury.vpclient.core.persistence.database.dao.PagingKeyDao
 import javax.inject.Singleton
 
 @Module
@@ -30,6 +36,21 @@ object DatabaseModule {
     }
 
     @Provides
+    fun catalogFilterDao(database: AppDatabase): CatalogFilterDao = database.catalogFilterDao()
+
+    @Provides
+    fun catalogFilterProductsDao(database: AppDatabase): CatalogFilterProductsDao = database.catalogFilterProductsDao()
+
+    @Provides
+    fun catalogFilterProductsQuantityDao(database: AppDatabase): CatalogFilterProductsQuantityDao = database.catalogFilterProductsQuantityDao()
+
+    @Provides
+    fun filterValuesDao(database: AppDatabase): FilterValuesDao = database.filterValuesDao()
+
+    @Provides
+    fun filterValuesQuantityDao(database: AppDatabase): FilterValuesQuantityDao = database.filterValuesQuantityDao()
+
+    @Provides
     fun catalogCategoryDao(database: AppDatabase): CatalogCategoryDao = database.catalogCategoryDao()
 
     @Provides
@@ -37,4 +58,7 @@ object DatabaseModule {
 
     @Provides
     fun employeeDao(database: AppDatabase): EmployeeDao = database.employeeDao()
+
+    @Provides
+    fun pagingKeyDao(database: AppDatabase): PagingKeyDao = database.pagingKeyDao()
 }

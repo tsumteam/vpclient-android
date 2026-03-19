@@ -1,14 +1,14 @@
 package ru.mercury.vpclient.core.ui.preview
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import ru.mercury.vpclient.core.entity.CatalogScreenData
+import ru.mercury.vpclient.core.entity.CatalogData
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.catalog.model.CatalogModel
 
 class CatalogModelProvider: PreviewParameterProvider<CatalogModel> {
     override val values: Sequence<CatalogModel> = sequenceOf(
         CatalogModel(),
         CatalogModel(
-            catalogScreenData = CatalogScreenData(
+            catalogData = CatalogData(
                 tabs = listOf("Мужская", "Женская", "Детская"),
                 pages = listOf(
                     listOf(

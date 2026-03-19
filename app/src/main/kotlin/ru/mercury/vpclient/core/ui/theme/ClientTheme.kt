@@ -22,7 +22,6 @@ fun ClientTheme(
     ) {
         MaterialTheme(
             colorScheme = LightColorScheme,
-            typography = Typography,
             content = content
         )
     }

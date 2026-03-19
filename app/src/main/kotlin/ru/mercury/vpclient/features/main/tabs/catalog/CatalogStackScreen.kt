@@ -10,10 +10,12 @@ import ru.mercury.vpclient.core.navigation.BackRoute
 import ru.mercury.vpclient.core.ui.components.CourierNavDisplay
 import ru.mercury.vpclient.core.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.features.main.tabs.catalog.event.CatalogStackEventManager
+import ru.mercury.vpclient.features.main.tabs.catalog.stack.category.CategoryScreen
+import ru.mercury.vpclient.features.main.tabs.catalog.stack.category.navigation.CategoryRoute
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.catalog.CatalogScreen
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.catalog.navigation.CatalogRoute
-import ru.mercury.vpclient.features.main.tabs.catalog.stack.subcategory.SubcategoryScreen
-import ru.mercury.vpclient.features.main.tabs.catalog.stack.subcategory.navigation.SubcategoryRoute
+import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter.FilterScreen
+import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter.navigation.FilterRoute
 
 @Composable
 fun CatalogStackScreen(
@@ -24,7 +26,8 @@ fun CatalogStackScreen(
         modifier = Modifier.fillMaxSize(),
         entryProvider = entryProvider {
             entry<CatalogRoute> { CatalogScreen() }
-            entry<SubcategoryRoute> { SubcategoryScreen(it) }
+            entry<CategoryRoute> { CategoryScreen(it) }
+            entry<FilterRoute> { FilterScreen(it) }
         }
     )
 
@@ -32,7 +35,8 @@ fun CatalogStackScreen(
         flow = CatalogStackEventManager.eventFlow
     ) { event ->
         when (event) {
-            is SubcategoryRoute -> navBackStack.add(event)
+            is CategoryRoute -> navBackStack.add(event)
+            is FilterRoute -> navBackStack.add(event)
             is BackRoute -> navBackStack.removeLastOrNull()
         }
     }

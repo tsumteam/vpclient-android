@@ -35,7 +35,8 @@ class AuthenticationRepositoryImpl @Inject constructor(
                 networkService.authenticationRegister(request)
             },
             onSuccess = {
-                clientDao.upsert(ClientEntity.Empty.copy(phone = phone, name = name, codeResendTimer = System.currentTimeMillis()))
+                val clientEntity = ClientEntity.Empty.copy(phone = phone, name = name, codeResendTimer = System.currentTimeMillis())
+                clientDao.upsert(clientEntity)
             },
             onFailure = { error -> throw RegisterException(error.message) }
         )
@@ -50,7 +51,8 @@ class AuthenticationRepositoryImpl @Inject constructor(
                 networkService.authenticationLogin(request)
             },
             onSuccess = {
-                clientDao.upsert(ClientEntity.Empty.copy(phone = phone, codeResendTimer = System.currentTimeMillis()))
+                val clientEntity = ClientEntity.Empty.copy(phone = phone, codeResendTimer = System.currentTimeMillis())
+                clientDao.upsert(clientEntity)
             },
             onFailure = { error -> throw LoginException(error.message) }
         )
@@ -67,6 +69,9 @@ class AuthenticationRepositoryImpl @Inject constructor(
             },
             onSuccess = {
                 settingsDataStore.setValue(PreferenceKey.UserToken, it.token.orEmpty())
+                val currentUser = networkService.userCurrentUser()
+                val userId = currentUser.data?.id?.toString().orEmpty()
+                settingsDataStore.setValue(PreferenceKey.UserId, userId)
             },
             onFailure = { error -> throw ContinueLoginException(error.message) }
         )
@@ -74,7 +79,11 @@ class AuthenticationRepositoryImpl @Inject constructor(
 
     override suspend fun logout() {
         clientDao.remove()
-        settingsDataStore.removeValue(PreferenceKey.UserToken)
+        settingsDataStore.removeValues(
+            PreferenceKey.UserToken,
+            PreferenceKey.UserId,
+            PreferenceKey.PairedUser
+        )
 
         /*handleResponse(
             request = {

@@ -20,3 +20,5 @@ const val CODE_RESEND_MAX_TIME = 30_000L
 const val CODE_RESEND_TIMER_DELAY = 1_000L
 
 const val MAX_FONT_SCALE = 1.15F
+
+const val DEFAULT_PAGE_SIZE = 40

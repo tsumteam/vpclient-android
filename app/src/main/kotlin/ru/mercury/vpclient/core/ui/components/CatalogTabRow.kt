@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.core.ui.PlaceholderHighlight
-import ru.mercury.vpclient.core.ui.fade
+import ru.mercury.vpclient.core.ui.shimmer
 import ru.mercury.vpclient.core.ui.placeholder
 import ru.mercury.vpclient.core.ui.preview.CatalogTabsProvider
 import ru.mercury.vpclient.core.ui.preview.annotation.FontScalePreviews
@@ -51,7 +51,7 @@ fun CatalogTabRow(
                             .height(32.dp)
                             .placeholder(
                                 visible = true,
-                                highlight = PlaceholderHighlight.fade(),
+                                highlight = PlaceholderHighlight.shimmer(),
                                 color = MaterialTheme.colorScheme.surface4,
                                 shape = RoundedCornerShape(4.dp)
                             )

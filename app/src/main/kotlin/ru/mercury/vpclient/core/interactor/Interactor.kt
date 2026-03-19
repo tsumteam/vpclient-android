@@ -5,7 +5,9 @@ import javax.inject.Inject
 class Interactor @Inject constructor(
     authenticationInteractor: AuthenticationInteractor,
     catalogInteractor: CatalogInteractor,
-    employeeInteractor: EmployeeInteractor
+    employeeInteractor: EmployeeInteractor,
+    filterInteractor: FilterInteractor
 ): AuthenticationInteractor by authenticationInteractor,
     CatalogInteractor by catalogInteractor,
+    FilterInteractor by filterInteractor,
     EmployeeInteractor by employeeInteractor

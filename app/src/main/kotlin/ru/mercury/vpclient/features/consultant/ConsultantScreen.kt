@@ -143,7 +143,7 @@ private fun ConsultantScreenContent(
                     text = state.employeeEntity.employeeName,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 32.dp, start = 16.dp, end = 16.dp),
+                        .padding(start = 16.dp, top = 32.dp, end = 16.dp),
                     style = MaterialTheme.typography.medium21.copy(textAlign = TextAlign.Center).onBackground()
                 )
             }
@@ -152,7 +152,7 @@ private fun ConsultantScreenContent(
                     text = state.employeeEntity.employeeBrand,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 8.dp, start = 16.dp, end = 16.dp),
+                        .padding(start = 16.dp, top = 8.dp, end = 16.dp),
                     style = MaterialTheme.typography.livretMedium21.copy(textAlign = TextAlign.Center).onBackground()
                 )
             }
@@ -161,7 +161,7 @@ private fun ConsultantScreenContent(
                     text = state.employeeEntity.employeeBotiqueAddressShort.ifEmpty { state.employeeEntity.employeeBotiqueAddress },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 8.dp, start = 16.dp, end = 16.dp),
+                        .padding(start = 16.dp, top = 8.dp, end = 16.dp),
                     style = MaterialTheme.typography.regular16.copy(textAlign = TextAlign.Center).secondary()
                 )
             }
@@ -169,7 +169,7 @@ private fun ConsultantScreenContent(
                 ConsultantActionsRow(
                     entity = state.employeeEntity,
                     onClick = {},
-                    modifier = Modifier.padding(top = 32.dp, start = 16.dp, end = 16.dp, bottom = 16.dp)
+                    modifier = Modifier.padding(start = 16.dp, top = 32.dp, end = 16.dp, bottom = 16.dp)
                 )
             }
         }

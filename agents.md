@@ -11,3 +11,7 @@
 - In Kotlin `sealed interface` and `sealed class`, declare all `data object` entries before any `data class` entries
 - Always write functions with {} and return, never use = for the function body
 - In DAO interfaces, place all regular `fun` methods before any `suspend fun` methods
+- We do not avoid small duplication by default; do not extract local helper functions just to remove a few repeated lines
+- For Compose `padding(...)`, order named parameters the same way as in the method signature: `start`, `top`, `end`, `bottom`
+- Do not place classes or constants inside MVI classes; declare them at file level or in dedicated files/packages
+- Place experimental opt-in annotations only at file level, for example `@file:OptIn(ExperimentalMaterial3Api::class)`, not on individual declarations

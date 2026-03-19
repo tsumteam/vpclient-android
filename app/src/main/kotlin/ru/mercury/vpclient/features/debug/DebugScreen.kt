@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -32,7 +34,7 @@ import ru.mercury.vpclient.BuildConfig
 import ru.mercury.vpclient.core.ui.components.ClientLazyColumn
 import ru.mercury.vpclient.core.ui.components.ClientSnackbarHost
 import ru.mercury.vpclient.core.ui.components.ClientTopAppBar
-import ru.mercury.vpclient.core.ui.components.CloseIconButton
+import ru.mercury.vpclient.core.ui.icons.Close24
 import ru.mercury.vpclient.core.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.core.ui.ktx.rememberNavigateToAppSettings
 import ru.mercury.vpclient.core.ui.ktx.rememberNavigateToDeveloperSettings
@@ -103,9 +105,15 @@ private fun DebugActivityContent(
                     )
                 },
                 navigationIcon = {
-                    CloseIconButton(
+                    IconButton(
                         onClick = { dispatch(DebugIntent.BackClick) }
-                    )
+                    ) {
+                        Icon(
+                            imageVector = Close24,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
                 }
             )
         },

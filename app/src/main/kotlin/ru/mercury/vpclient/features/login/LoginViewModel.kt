@@ -10,7 +10,7 @@ import ru.mercury.vpclient.features.code.navigation.CodeRoute
 import ru.mercury.vpclient.features.login.event.LoginEvents
 import ru.mercury.vpclient.features.login.intent.LoginIntent
 import ru.mercury.vpclient.features.login.model.LoginModel
-import ru.mercury.vpclient.main.event.MainEventManager
+import ru.mercury.vpclient.activity.event.MainEventManager
 import javax.inject.Inject
 
 @HiltViewModel

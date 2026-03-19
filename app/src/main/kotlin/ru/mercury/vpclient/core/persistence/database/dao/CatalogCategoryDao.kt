@@ -22,7 +22,7 @@ interface CatalogCategoryDao {
     fun selectPojosFlow(parentId: Int): Flow<List<SubcategoryPojo>>
 
     @Query("SELECT * FROM CatalogCategory WHERE id = :id LIMIT 1")
-    suspend fun select(id: Int): CatalogCategoryEntity?
+    suspend fun select(id: Int): CatalogCategoryEntity
 
     @Upsert
     suspend fun upsert(entities: List<CatalogCategoryEntity>)

@@ -10,6 +10,7 @@ sealed class PreferenceKey<T>(
 ) {
     data object ApplicationType: PreferenceKey<String>(stringPreferencesKey("applicationType"))
     data object DeviceId: PreferenceKey<String>(stringPreferencesKey("deviceId"))
+    data object UserId: PreferenceKey<String>(stringPreferencesKey("userId"))
     data object PairedUser: PreferenceKey<String>(stringPreferencesKey("pairedUser"))
     data object UserToken: PreferenceKey<String>(stringPreferencesKey("userToken"))
     data object RequestDelay: PreferenceKey<Long>(longPreferencesKey("requestDelayMIlls"))

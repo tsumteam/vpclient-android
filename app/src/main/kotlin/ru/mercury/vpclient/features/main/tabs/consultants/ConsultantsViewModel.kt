@@ -12,7 +12,7 @@ import ru.mercury.vpclient.features.consultant.navigation.ConsultantRoute
 import ru.mercury.vpclient.features.main.tabs.consultants.event.ConsultantsEvents
 import ru.mercury.vpclient.features.main.tabs.consultants.intent.ConsultantsIntent
 import ru.mercury.vpclient.features.main.tabs.consultants.model.ConsultantsModel
-import ru.mercury.vpclient.main.event.MainEventManager
+import ru.mercury.vpclient.activity.event.MainEventManager
 import javax.inject.Inject
 
 @HiltViewModel

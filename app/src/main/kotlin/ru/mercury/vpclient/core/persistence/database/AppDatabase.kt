@@ -5,17 +5,35 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import ru.mercury.vpclient.core.persistence.database.converter.Converter
 import ru.mercury.vpclient.core.persistence.database.dao.CatalogCategoryDao
+import ru.mercury.vpclient.core.persistence.database.dao.CatalogFilterDao
+import ru.mercury.vpclient.core.persistence.database.dao.CatalogFilterProductsDao
+import ru.mercury.vpclient.core.persistence.database.dao.CatalogFilterProductsQuantityDao
 import ru.mercury.vpclient.core.persistence.database.dao.ClientDao
 import ru.mercury.vpclient.core.persistence.database.dao.EmployeeDao
+import ru.mercury.vpclient.core.persistence.database.dao.FilterValuesDao
+import ru.mercury.vpclient.core.persistence.database.dao.FilterValuesQuantityDao
+import ru.mercury.vpclient.core.persistence.database.dao.PagingKeyDao
 import ru.mercury.vpclient.core.persistence.database.entity.CatalogCategoryEntity
+import ru.mercury.vpclient.core.persistence.database.entity.CatalogFilterEntity
+import ru.mercury.vpclient.core.persistence.database.entity.CatalogFilterProductsEntity
+import ru.mercury.vpclient.core.persistence.database.entity.CatalogFilterProductsQuantityEntity
 import ru.mercury.vpclient.core.persistence.database.entity.ClientEntity
 import ru.mercury.vpclient.core.persistence.database.entity.EmployeeEntity
+import ru.mercury.vpclient.core.persistence.database.entity.FilterValuesEntity
+import ru.mercury.vpclient.core.persistence.database.entity.FilterValuesQuantityEntity
+import ru.mercury.vpclient.core.persistence.database.entity.PagingKeyEntity
 
 @Database(
     entities = [
+        CatalogFilterEntity::class,
+        CatalogFilterProductsEntity::class,
+        CatalogFilterProductsQuantityEntity::class,
+        FilterValuesEntity::class,
+        FilterValuesQuantityEntity::class,
         CatalogCategoryEntity::class,
         ClientEntity::class,
-        EmployeeEntity::class
+        EmployeeEntity::class,
+        PagingKeyEntity::class
     ],
     version = AppDatabase.DATABASE_VERSION,
     exportSchema = false
@@ -23,12 +41,18 @@ import ru.mercury.vpclient.core.persistence.database.entity.EmployeeEntity
 @TypeConverters(Converter::class)
 abstract class AppDatabase: RoomDatabase() {
 
+    abstract fun catalogFilterDao(): CatalogFilterDao
+    abstract fun catalogFilterProductsDao(): CatalogFilterProductsDao
+    abstract fun catalogFilterProductsQuantityDao(): CatalogFilterProductsQuantityDao
+    abstract fun filterValuesDao(): FilterValuesDao
+    abstract fun filterValuesQuantityDao(): FilterValuesQuantityDao
     abstract fun catalogCategoryDao(): CatalogCategoryDao
     abstract fun clientDao(): ClientDao
     abstract fun employeeDao(): EmployeeDao
+    abstract fun pagingKeyDao(): PagingKeyDao
 
     companion object {
         const val DATABASE_NAME = "vpclient.db"
-        const val DATABASE_VERSION = 19
+        const val DATABASE_VERSION = 32
     }
 }

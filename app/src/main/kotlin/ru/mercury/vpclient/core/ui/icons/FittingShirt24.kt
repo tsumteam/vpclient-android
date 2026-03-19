@@ -7,8 +7,8 @@ import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.addPathNodes
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ru.mercury.vpclient.core.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
 
 val FittingShirt24: ImageVector
@@ -63,7 +63,7 @@ val FittingShirt24: ImageVector
 
 private var _fittingShirt24: ImageVector? = null
 
-@Preview(showBackground = true)
+@FontScalePreviews
 @Composable
 private fun FittingShirt24Preview() {
     ClientTheme {

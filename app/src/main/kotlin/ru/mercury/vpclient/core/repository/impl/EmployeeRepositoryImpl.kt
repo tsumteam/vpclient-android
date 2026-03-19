@@ -8,12 +8,15 @@ import ru.mercury.vpclient.core.network.response.EmployeeBadgesResponse
 import ru.mercury.vpclient.core.network.response.EmployeeResponse
 import ru.mercury.vpclient.core.persistence.database.dao.EmployeeDao
 import ru.mercury.vpclient.core.persistence.database.entity.EmployeeEntity
+import ru.mercury.vpclient.core.persistence.datastore.PreferenceKey
+import ru.mercury.vpclient.core.persistence.datastore.SettingsDataStore
 import ru.mercury.vpclient.core.repository.EmployeeRepository
 import javax.inject.Inject
 
 class EmployeeRepositoryImpl @Inject constructor(
     private val networkService: NetworkService,
-    private val employeeDao: EmployeeDao
+    private val employeeDao: EmployeeDao,
+    private val settingsDataStore: SettingsDataStore
 ): EmployeeRepository {
 
     override val employeeEntitiesFlow: Flow<List<EmployeeEntity>> = employeeDao.selectAllFlow()
@@ -35,6 +38,8 @@ class EmployeeRepositoryImpl @Inject constructor(
         val activeEmployeeId = handleResponseResult {
             networkService.clientActiveEmployee()
         }.getOrNull()?.employeeId.orEmpty()
+
+        settingsDataStore.setValue(PreferenceKey.PairedUser, activeEmployeeId)
 
         val entities = employees.map { employee ->
             val badges = handleResponseResult {

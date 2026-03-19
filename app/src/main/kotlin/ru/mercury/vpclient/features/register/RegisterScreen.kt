@@ -80,10 +80,8 @@ fun RegisterScreen(
             is RegisterEvents.MoveFocusDown -> focusManager.moveFocus(FocusDirection.Down)
             is RegisterEvents.ClearFocus -> focusManager.clearFocus()
             is RegisterEvents.SnackbarMessage -> {
-                snackbarHostStateError.run {
-                    currentSnackbarData?.dismiss()
-                    scope.launch { showSnackbar(event.message) }
-                }
+                snackbarHostStateError.currentSnackbarData?.dismiss()
+                scope.launch { snackbarHostStateError.showSnackbar(event.message) }
             }
         }
     }

@@ -63,6 +63,16 @@ object NetworkModule {
                 header("X-EmployeeApp", DEFAULT_EMPLOYEE_APP)
                 header("X-AppBuild", context.versionCode)
 
+                val userId = settingsDataStore.get().getValueBlocking(PreferenceKey.UserId).orEmpty()
+                if (userId.isNotEmpty()) {
+                    header("X-User", userId)
+                }
+
+                val pairedUser = settingsDataStore.get().getValueBlocking(PreferenceKey.PairedUser).orEmpty()
+                if (pairedUser.isNotEmpty()) {
+                    header("X-PairedUser", pairedUser)
+                }
+
                 val userToken = settingsDataStore.get().getValueBlocking(PreferenceKey.UserToken).orEmpty()
                 if (userToken.isNotEmpty()) {
                     header("X-UserToken", userToken)

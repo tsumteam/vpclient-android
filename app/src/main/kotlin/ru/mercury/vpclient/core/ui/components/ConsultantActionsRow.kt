@@ -12,7 +12,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.core.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.core.ui.PlaceholderHighlight
-import ru.mercury.vpclient.core.ui.fade
+import ru.mercury.vpclient.core.ui.shimmer
 import ru.mercury.vpclient.core.ui.icons.Basket24
 import ru.mercury.vpclient.core.ui.icons.Chat24
 import ru.mercury.vpclient.core.ui.icons.FittingShirt24
@@ -42,7 +42,7 @@ fun ConsultantActionsRow(
                 .weight(1F)
                 .placeholder(
                     visible = entity == EmployeeEntity.Empty,
-                    highlight = PlaceholderHighlight.fade(),
+                    highlight = PlaceholderHighlight.shimmer(),
                     shape = RoundedCornerShape(4.dp)
                 )
         )
@@ -56,7 +56,7 @@ fun ConsultantActionsRow(
                 .weight(1F)
                 .placeholder(
                     visible = entity == EmployeeEntity.Empty,
-                    highlight = PlaceholderHighlight.fade(),
+                    highlight = PlaceholderHighlight.shimmer(),
                     shape = RoundedCornerShape(4.dp)
                 )
         )
@@ -70,7 +70,7 @@ fun ConsultantActionsRow(
                 .weight(1F)
                 .placeholder(
                     visible = entity == EmployeeEntity.Empty,
-                    highlight = PlaceholderHighlight.fade(),
+                    highlight = PlaceholderHighlight.shimmer(),
                     shape = RoundedCornerShape(4.dp)
                 )
         )
@@ -84,7 +84,7 @@ fun ConsultantActionsRow(
                 .weight(1F)
                 .placeholder(
                     visible = entity == EmployeeEntity.Empty,
-                    highlight = PlaceholderHighlight.fade(),
+                    highlight = PlaceholderHighlight.shimmer(),
                     shape = RoundedCornerShape(4.dp)
                 )
         )
@@ -98,7 +98,7 @@ fun ConsultantActionsRow(
                 .weight(1F)
                 .placeholder(
                     visible = entity == EmployeeEntity.Empty,
-                    highlight = PlaceholderHighlight.fade(),
+                    highlight = PlaceholderHighlight.shimmer(),
                     shape = RoundedCornerShape(4.dp)
                 )
         )

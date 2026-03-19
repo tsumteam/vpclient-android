@@ -7,8 +7,8 @@ import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ru.mercury.vpclient.core.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
 
 val Logo82: ImageVector
@@ -230,14 +230,14 @@ val Logo82: ImageVector
 
 private var _logo82: ImageVector? = null
 
-@Preview
+@FontScalePreviews
 @Composable
 private fun Logo82Preview() {
     ClientTheme {
         Icon(
             imageVector = Logo82,
             contentDescription = null,
-            tint = Color.Unspecified
+            tint = Color.Black
         )
     }
 }

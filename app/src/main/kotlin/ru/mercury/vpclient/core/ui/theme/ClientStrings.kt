@@ -5,6 +5,9 @@ import ru.mercury.vpclient.R
 object ClientStrings {
     val AppName = R.string.app_name
 
+    val CommonRetry = R.string.common_retry
+    val CommonReset = R.string.common_reset
+
     val AgreementPersonalData = R.string.agreement_personal_data
     val AgreementTermsOfUse = R.string.agreement_terms_of_use
     val AgreementPrivacyPolicy = R.string.agreement_privacy_policy
@@ -42,7 +45,26 @@ object ClientStrings {
     val MainTabConsultants = R.string.main_tab_consultants
     val MainTabProfile = R.string.main_tab_profile
 
+    val CatalogWatchAll = R.string.catalog_watch_all
     val CatalogViewAllClothing = R.string.catalog_view_all_clothing
+
+    val FilterProductsQuantity = R.plurals.filter_products_quantity
+    val FilterShowProductsQuantity = R.plurals.filter_show_products_quantity
+    val FilterSizeTitle = R.string.filter_size_title
+    val FilterBrandTitle = R.string.filter_brand_title
+    val FilterBrandSearchPlaceholder = R.string.filter_brand_search_placeholder
+    val FilterBrandFavoritesHeader = R.string.filter_brand_favorites_header
+    val FilterBrandTopHeader = R.string.filter_brand_top_header
+    val FilterBrandAllHeader = R.string.filter_brand_all_header
+    val FilterBrandSelectAll = R.string.filter_brand_select_all
+    val FilterBrandEmptySearch = R.string.filter_brand_empty_search
+
+    val SortTitle = R.string.sort_title
+    val SortSelect = R.string.sort_select
+    val SortOurChoice = R.string.sort_our_choice
+    val SortPriceAscending = R.string.sort_price_ascending
+    val SortPriceDescending = R.string.sort_price_descending
+    val SortArrivalDateDescending = R.string.sort_arrival_date_descending
 
     val ConsultantsTitle = R.string.consultants_title
     val ConsultantsActiveButton = R.string.consultants_active_button

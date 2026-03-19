@@ -78,10 +78,8 @@ fun LoginScreen(
         when (event) {
             is LoginEvents.ClearFocus -> focusManager.clearFocus()
             is LoginEvents.SnackbarMessage -> {
-                snackbarHostStateError.run {
-                    currentSnackbarData?.dismiss()
-                    scope.launch { showSnackbar(event.message) }
-                }
+                snackbarHostStateError.currentSnackbarData?.dismiss()
+                scope.launch { snackbarHostStateError.showSnackbar(event.message) }
             }
         }
     }

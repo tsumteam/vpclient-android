@@ -8,7 +8,7 @@ import ru.mercury.vpclient.core.mvi.Event
 import ru.mercury.vpclient.features.main.tabs.profile.intent.ProfileIntent
 import ru.mercury.vpclient.features.main.tabs.profile.model.ProfileModel
 import ru.mercury.vpclient.features.welcome.navigation.WelcomeRoute
-import ru.mercury.vpclient.main.event.MainEventManager
+import ru.mercury.vpclient.activity.event.MainEventManager
 import javax.inject.Inject
 
 @HiltViewModel

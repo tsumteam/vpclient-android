@@ -7,9 +7,11 @@ import dagger.hilt.components.SingletonComponent
 import ru.mercury.vpclient.core.interactor.AuthenticationInteractor
 import ru.mercury.vpclient.core.interactor.CatalogInteractor
 import ru.mercury.vpclient.core.interactor.EmployeeInteractor
+import ru.mercury.vpclient.core.interactor.FilterInteractor
 import ru.mercury.vpclient.core.interactor.impl.AuthenticationInteractorImpl
 import ru.mercury.vpclient.core.interactor.impl.CatalogInteractorImpl
 import ru.mercury.vpclient.core.interactor.impl.EmployeeInteractorImpl
+import ru.mercury.vpclient.core.interactor.impl.FilterInteractorImpl
 import javax.inject.Singleton
 
 @Module
@@ -23,6 +25,10 @@ interface InteractorModule {
     @Binds
     @Singleton
     fun catalogInteractor(impl: CatalogInteractorImpl): CatalogInteractor
+
+    @Binds
+    @Singleton
+    fun filterInteractor(impl: FilterInteractorImpl): FilterInteractor
 
     @Binds
     @Singleton

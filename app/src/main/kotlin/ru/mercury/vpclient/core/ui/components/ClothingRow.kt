@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -23,7 +24,7 @@ import ru.mercury.vpclient.core.ktx.isNotEmpty
 import ru.mercury.vpclient.core.persistence.database.entity.CatalogCategoryEntity
 import ru.mercury.vpclient.core.persistence.database.pojo.SubcategoryPojo
 import ru.mercury.vpclient.core.ui.PlaceholderHighlight
-import ru.mercury.vpclient.core.ui.fade
+import ru.mercury.vpclient.core.ui.shimmer
 import ru.mercury.vpclient.core.ui.placeholder
 import ru.mercury.vpclient.core.ui.preview.SubcategoryPojoProvider
 import ru.mercury.vpclient.core.ui.preview.annotation.FontScalePreviews
@@ -33,8 +34,9 @@ import ru.mercury.vpclient.core.ui.theme.livretMedium19
 @Composable
 fun ClothingRow(
     pojo: SubcategoryPojo,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit,
+    onItemClick: (CatalogCategoryEntity) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
@@ -47,11 +49,11 @@ fun ClothingRow(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 9.dp, start = 64.dp, end = 64.dp)
+                        .padding(start = 64.dp, top = 9.dp, end = 64.dp)
                         .height(24.dp)
                         .placeholder(
                             visible = true,
-                            highlight = PlaceholderHighlight.fade(),
+                            highlight = PlaceholderHighlight.shimmer(),
                             shape = RoundedCornerShape(4.dp)
                         )
                 )
@@ -76,7 +78,7 @@ fun ClothingRow(
                     text = pojo.entity.name.uppercase(),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 9.dp, start = 16.dp, end = 16.dp),
+                        .padding(start = 16.dp, top = 9.dp, end = 16.dp),
                     color = MaterialTheme.colorScheme.onBackground,
                     style = MaterialTheme.typography.livretMedium19.copy(textAlign = TextAlign.Center)
                 )
@@ -93,8 +95,19 @@ fun ClothingRow(
                     ) { entity ->
                         ClothingBox(
                             entity = entity,
-                            onClick = {}
+                            onClick = { onItemClick(entity) }
                         )
+                    }
+
+                    item {
+                        Box(
+                            modifier = Modifier.height(155.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            WatchAllBox(
+                                onClick = onClick
+                            )
+                        }
                     }
                 }
             }
@@ -109,7 +122,9 @@ private fun ClothingRowPreview(
 ) {
     ClientTheme {
         ClothingRow(
-            pojo = pojo
+            pojo = pojo,
+            onClick = {},
+            onItemClick = {}
         )
     }
 }

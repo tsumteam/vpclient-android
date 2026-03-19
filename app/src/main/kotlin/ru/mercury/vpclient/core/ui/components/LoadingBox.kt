@@ -23,7 +23,7 @@ fun LoadingBox(
     isVisible: Boolean,
     modifier: Modifier = Modifier
 ) {
-    VPClientAnimatedVisibility(
+    ClientAnimatedVisibility(
         visible = isVisible,
         modifier = modifier.fillMaxSize()
     ) {

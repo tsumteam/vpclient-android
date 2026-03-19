@@ -17,7 +17,7 @@ jobs:
       KEYSTORE_KEY_ALIAS: ${{ secrets.KEYSTORE_KEY_ALIAS }}
       KEYSTORE_KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
       KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
-      IS_DETEKT_TEST: 'false'
+      IS_DETEKT_TEST: 'true'
       IS_DEBUG: 'true'
       IS_RELEASE: 'false'
       IS_RELEASE_CLOUD: 'false'

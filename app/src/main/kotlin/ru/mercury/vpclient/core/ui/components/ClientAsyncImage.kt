@@ -13,7 +13,8 @@ import ru.mercury.vpclient.core.ui.theme.surface4
 @Composable
 fun ClientAsyncImage(
     imageUrl: String,
-    modifier: Modifier
+    modifier: Modifier,
+    contentScale: ContentScale
 ) {
     val context = LocalContext.current
 
@@ -24,7 +25,7 @@ fun ClientAsyncImage(
             .build(),
         contentDescription = null,
         modifier = modifier,
-        contentScale = ContentScale.Crop,
+        contentScale = contentScale,
         placeholder = ColorPainter(MaterialTheme.colorScheme.surface4),
         error = ColorPainter(MaterialTheme.colorScheme.surface4),
         fallback = ColorPainter(MaterialTheme.colorScheme.surface4)

@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 data class DataResponse(
     @SerialName("data") val data: String?
 ) {
-    companion object Companion {
+    companion object {
         const val RESULT_OK = "ok"
     }
 }

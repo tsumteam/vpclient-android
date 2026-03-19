@@ -12,8 +12,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.R
 
-val Typography = Typography()
-
 val Typography.regular11: TextStyle
     get() = TextStyle(
         fontWeight = FontWeight.W400,
@@ -105,6 +103,13 @@ val Typography.livretRegular14: TextStyle
         fontSize = 14.sp
     )
 
+val Typography.livretRegular11: TextStyle
+    get() = TextStyle(
+        fontWeight = FontWeight.W400,
+        fontFamily = FontFamily(Font(resId = R.font.tt_livret_subhead_regular, weight = FontWeight.W400)),
+        fontSize = 11.sp
+    )
+
 val Typography.livretRegular16: TextStyle
     get() = TextStyle(
         fontWeight = FontWeight.W400,
@@ -155,11 +160,6 @@ fun TextStyle.onBackground(): TextStyle {
 @Composable
 fun TextStyle.secondary(): TextStyle {
     return copy(color = MaterialTheme.colorScheme.secondary)
-}
-
-@Composable
-fun TextStyle.error(): TextStyle {
-    return copy(color = MaterialTheme.colorScheme.error)
 }
 
 @Composable

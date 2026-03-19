@@ -22,13 +22,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.autofill.ContentType
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.autofill.ContentType
-import androidx.compose.ui.semantics.contentType
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentType
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -53,7 +53,6 @@ import ru.mercury.vpclient.core.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.core.ui.preview.CodeModelProvider
 import ru.mercury.vpclient.core.ui.theme.ClientStrings
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
-import ru.mercury.vpclient.core.ui.theme.error
 import ru.mercury.vpclient.core.ui.theme.livretMedium21
 import ru.mercury.vpclient.core.ui.theme.onBackground
 import ru.mercury.vpclient.core.ui.theme.regular12
@@ -84,10 +83,8 @@ fun CodeScreen(
         when (event) {
             is CodeEvents.ClearFocus -> focusManager.clearFocus()
             is CodeEvents.SnackbarMessage -> {
-                snackbarHostStateError.run {
-                    currentSnackbarData?.dismiss()
-                    scope.launch { showSnackbar(event.message) }
-                }
+                snackbarHostStateError.currentSnackbarData?.dismiss()
+                scope.launch { snackbarHostStateError.showSnackbar(event.message) }
             }
         }
     }
@@ -176,7 +173,7 @@ private fun CodeScreenContent(
                         modifier = Modifier
                             .fillMaxWidth()
                             .align(Alignment.BottomCenter),
-                        style = MaterialTheme.typography.regular12.copy(letterSpacing = .2.sp, textAlign = TextAlign.Center).error()
+                        style = MaterialTheme.typography.regular12.copy(color = MaterialTheme.colorScheme.error, letterSpacing = .2.sp, textAlign = TextAlign.Center)
                     )
                 }
             }

@@ -70,10 +70,8 @@ fun CatalogScreen(
     ) { event ->
         when (event) {
             is CatalogEvent.SnackbarMessage -> {
-                snackbarHostStateError.run {
-                    currentSnackbarData?.dismiss()
-                    scope.launch { showSnackbar(event.message) }
-                }
+                snackbarHostStateError.currentSnackbarData?.dismiss()
+                scope.launch { snackbarHostStateError.showSnackbar(event.message) }
             }
         }
     }
@@ -85,7 +83,7 @@ private fun CatalogScreenContent(
     dispatch: (CatalogIntent) -> Unit,
     snackbarHostStateError: SnackbarHostState
 ) {
-    val pagerState = rememberPagerState(pageCount = { state.catalogScreenData.pages.size.coerceAtLeast(1) })
+    val pagerState = rememberPagerState(pageCount = { state.catalogData.pages.size.coerceAtLeast(1) })
     val scope = rememberCoroutineScope()
 
     Scaffold(
@@ -136,7 +134,7 @@ private fun CatalogScreenContent(
                 )
 
                 CatalogTabRow(
-                    tabs = state.catalogScreenData.tabs,
+                    tabs = state.catalogData.tabs,
                     selectedTabIndex = pagerState.currentPage,
                     onTabClick = { index -> scope.launch { pagerState.animateScrollToPage(index) } }
                 )
@@ -183,7 +181,7 @@ private fun CatalogScreenContent(
                         .fillMaxSize(),
                     pageSpacing = 8.dp
                 ) { page ->
-                    val pageData = state.catalogScreenData.pages.getOrNull(page)
+                    val pageData = state.catalogData.pages.getOrNull(page)
 
                     CatalogClothingContent(
                         entities = pageData.orEmpty(),

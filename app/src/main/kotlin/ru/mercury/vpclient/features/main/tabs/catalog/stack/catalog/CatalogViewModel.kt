@@ -12,7 +12,7 @@ import ru.mercury.vpclient.features.main.tabs.catalog.event.CatalogStackEventMan
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.catalog.event.CatalogEvent
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.catalog.intent.CatalogIntent
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.catalog.model.CatalogModel
-import ru.mercury.vpclient.features.main.tabs.catalog.stack.subcategory.navigation.SubcategoryRoute
+import ru.mercury.vpclient.features.main.tabs.catalog.stack.category.navigation.CategoryRoute
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,13 +29,13 @@ class CatalogViewModel @Inject constructor(
         when (intent) {
             is CatalogIntent.CollectCatalogScreenData -> {
                 launch {
-                    interactor.catalogScreenDataFlow.collectLatest { data ->
-                        reduce { it.copy(catalogScreenData = data) }
+                    interactor.catalogDataFlow.collectLatest { data ->
+                        reduce { it.copy(catalogData = data) }
                     }
                 }
             }
             is CatalogIntent.LoadCatalogCategoriesTop -> launch { interactor.loadCatalogCategoriesTop() }
-            is CatalogIntent.CategoryClick -> launch { CatalogStackEventManager.send(SubcategoryRoute(categoryId = intent.categoryId)) }
+            is CatalogIntent.CategoryClick -> launch { CatalogStackEventManager.send(CategoryRoute(categoryId = intent.categoryId)) }
         }
     }
 

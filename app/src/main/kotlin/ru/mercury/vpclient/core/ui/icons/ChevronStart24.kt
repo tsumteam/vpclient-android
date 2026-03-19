@@ -7,8 +7,8 @@ import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.addPathNodes
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ru.mercury.vpclient.core.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
 
 val ChevronStart24: ImageVector
@@ -42,7 +42,7 @@ val ChevronStart24: ImageVector
 
 private var _chevronStart24: ImageVector? = null
 
-@Preview(showBackground = true)
+@FontScalePreviews
 @Composable
 private fun ChevronStart24Preview() {
     ClientTheme {

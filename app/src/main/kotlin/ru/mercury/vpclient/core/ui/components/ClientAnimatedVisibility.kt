@@ -15,7 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
 
 @Composable
-fun VPClientAnimatedVisibility(
+fun ClientAnimatedVisibility(
     visible: Boolean,
     modifier: Modifier = Modifier,
     enter: EnterTransition = fadeIn(),
@@ -38,7 +38,7 @@ private fun ClientAnimatedVisibilityPreview() {
         Box(
             modifier = Modifier.background(MaterialTheme.colorScheme.background)
         ) {
-            VPClientAnimatedVisibility(
+            ClientAnimatedVisibility(
                 visible = true
             ) {}
         }

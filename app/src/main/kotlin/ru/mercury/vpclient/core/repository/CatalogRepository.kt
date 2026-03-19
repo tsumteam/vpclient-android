@@ -1,13 +1,13 @@
 package ru.mercury.vpclient.core.repository
 
 import kotlinx.coroutines.flow.Flow
-import ru.mercury.vpclient.core.entity.CatalogScreenData
+import ru.mercury.vpclient.core.entity.CatalogData
 import ru.mercury.vpclient.core.persistence.database.entity.CatalogCategoryEntity
 import ru.mercury.vpclient.core.persistence.database.pojo.SubcategoryPojo
 
 interface CatalogRepository {
 
-    val catalogScreenDataFlow: Flow<CatalogScreenData>
+    val catalogDataFlow: Flow<CatalogData>
 
     fun catalogCategoryFlow(id: Int): Flow<CatalogCategoryEntity>
 

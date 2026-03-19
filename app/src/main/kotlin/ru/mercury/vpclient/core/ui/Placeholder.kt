@@ -3,6 +3,7 @@ package ru.mercury.vpclient.core.ui
 import androidx.annotation.FloatRange
 import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.InfiniteRepeatableSpec
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Transition
@@ -23,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.toRect
 import androidx.compose.ui.graphics.Brush
@@ -31,7 +33,6 @@ import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.DrawScope
@@ -45,7 +46,14 @@ object PlaceholderDefaults {
     val fadeAnimationSpec: InfiniteRepeatableSpec<Float> by lazy {
         infiniteRepeatable(
             animation = tween(delayMillis = 200, durationMillis = 600),
-            repeatMode = RepeatMode.Reverse,
+            repeatMode = RepeatMode.Reverse
+        )
+    }
+
+    val shimmerAnimationSpec: InfiniteRepeatableSpec<Float> by lazy {
+        infiniteRepeatable(
+            animation = tween(durationMillis = 1200, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
         )
     }
 }
@@ -58,9 +66,9 @@ fun PlaceholderDefaults.color(
 ): Color = contentColor.copy(contentAlpha).compositeOver(backgroundColor)
 
 @Composable
-fun PlaceholderDefaults.fadeHighlightColor(
+fun PlaceholderDefaults.shimmerHighlightColor(
     backgroundColor: Color = MaterialTheme.colorScheme.surface,
-    alpha: Float = .3F
+    alpha: Float = .6F
 ): Color = backgroundColor.copy(alpha = alpha)
 
 @Stable
@@ -78,20 +86,20 @@ interface PlaceholderHighlight {
     companion object
 }
 
-fun PlaceholderHighlight.Companion.fade(
+fun PlaceholderHighlight.Companion.shimmer(
     highlightColor: Color,
-    animationSpec: InfiniteRepeatableSpec<Float> = PlaceholderDefaults.fadeAnimationSpec
-): PlaceholderHighlight = Fade(
+    animationSpec: InfiniteRepeatableSpec<Float> = PlaceholderDefaults.shimmerAnimationSpec
+): PlaceholderHighlight = Shimmer(
     highlightColor = highlightColor,
-    animationSpec = animationSpec,
+    animationSpec = animationSpec
 )
 
 @Composable
-fun PlaceholderHighlight.Companion.fade(
-    animationSpec: InfiniteRepeatableSpec<Float> = PlaceholderDefaults.fadeAnimationSpec
-) = PlaceholderHighlight.fade(
-    highlightColor = PlaceholderDefaults.fadeHighlightColor(),
-    animationSpec = animationSpec,
+fun PlaceholderHighlight.Companion.shimmer(
+    animationSpec: InfiniteRepeatableSpec<Float> = PlaceholderDefaults.shimmerAnimationSpec
+) = PlaceholderHighlight.shimmer(
+    highlightColor = PlaceholderDefaults.shimmerHighlightColor(),
+    animationSpec = animationSpec
 )
 
 fun Modifier.placeholder(
@@ -166,7 +174,7 @@ fun Modifier.placeholder(
                         progress = highlightProgress,
                         lastOutline = lastOutline.value,
                         lastLayoutDirection = lastLayoutDirection.value,
-                        lastSize = lastSize.value,
+                        lastSize = lastSize.value
                     )
                 }
             } else if (placeholderAlpha >= .99F) {
@@ -177,7 +185,7 @@ fun Modifier.placeholder(
                     progress = highlightProgress,
                     lastOutline = lastOutline.value,
                     lastLayoutDirection = lastLayoutDirection.value,
-                    lastSize = lastSize.value,
+                    lastSize = lastSize.value
                 )
             }
 
@@ -194,7 +202,7 @@ private fun DrawScope.drawPlaceholder(
     progress: Float,
     lastOutline: Outline?,
     lastLayoutDirection: LayoutDirection?,
-    lastSize: Size?,
+    lastSize: Size?
 ): Outline? {
     if (shape === RectangleShape) {
         drawRect(color = color)
@@ -202,7 +210,7 @@ private fun DrawScope.drawPlaceholder(
         if (highlight != null) {
             drawRect(
                 brush = highlight.brush(progress, size),
-                alpha = highlight.alpha(progress),
+                alpha = highlight.alpha(progress)
             )
         }
         return null
@@ -218,22 +226,28 @@ private fun DrawScope.drawPlaceholder(
         drawOutline(
             outline = outline,
             brush = highlight.brush(progress, size),
-            alpha = highlight.alpha(progress),
+            alpha = highlight.alpha(progress)
         )
     }
 
     return outline
 }
 
-private data class Fade(
+private data class Shimmer(
     private val highlightColor: Color,
-    override val animationSpec: InfiniteRepeatableSpec<Float>,
+    override val animationSpec: InfiniteRepeatableSpec<Float>
 ): PlaceholderHighlight {
-    private val brush = SolidColor(highlightColor)
+    override fun brush(progress: Float, size: Size): Brush {
+        val shimmerWidth = size.width * .4F
+        val x = progress * (size.width + shimmerWidth) - shimmerWidth
+        return Brush.linearGradient(
+            colors = listOf(Color.Transparent, highlightColor, Color.Transparent),
+            start = Offset(x = x, y = 0F),
+            end = Offset(x = x + shimmerWidth, y = 0F)
+        )
+    }
 
-    override fun brush(progress: Float, size: Size): Brush = brush
-
-    override fun alpha(progress: Float): Float = progress
+    override fun alpha(progress: Float): Float = 1F
 }
 
 private inline fun DrawScope.withLayer(

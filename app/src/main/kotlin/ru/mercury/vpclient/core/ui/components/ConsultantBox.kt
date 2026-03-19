@@ -16,12 +16,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.core.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.core.ui.PlaceholderHighlight
-import ru.mercury.vpclient.core.ui.fade
+import ru.mercury.vpclient.core.ui.shimmer
 import ru.mercury.vpclient.core.ui.placeholder
 import ru.mercury.vpclient.core.ui.preview.EmployeeEntityProvider
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
@@ -63,9 +64,10 @@ fun ConsultantBox(
                         .clip(CircleShape)
                         .placeholder(
                             visible = employee == EmployeeEntity.Empty,
-                            highlight = PlaceholderHighlight.fade(),
+                            highlight = PlaceholderHighlight.shimmer(),
                             shape = CircleShape
-                        )
+                        ),
+                    contentScale = ContentScale.Crop
                 )
 
                 Text(
@@ -75,7 +77,7 @@ fun ConsultantBox(
                         .padding(start = 16.dp, end = 8.dp)
                         .placeholder(
                             visible = employee == EmployeeEntity.Empty,
-                            highlight = PlaceholderHighlight.fade(),
+                            highlight = PlaceholderHighlight.shimmer(),
                             shape = RoundedCornerShape(4.dp)
                         ),
                     maxLines = 2,
@@ -87,7 +89,7 @@ fun ConsultantBox(
                         ConsultantActiveBadge(
                             modifier = Modifier.placeholder(
                                 visible = employee == EmployeeEntity.Empty,
-                                highlight = PlaceholderHighlight.fade(),
+                                highlight = PlaceholderHighlight.shimmer(),
                                 shape = RoundedCornerShape(4.dp)
                             )
                         )
@@ -97,7 +99,7 @@ fun ConsultantBox(
                             onClick = onActiveClick,
                             modifier = Modifier.placeholder(
                                 visible = employee == EmployeeEntity.Empty,
-                                highlight = PlaceholderHighlight.fade(),
+                                highlight = PlaceholderHighlight.shimmer(),
                                 shape = RoundedCornerShape(4.dp)
                             )
                         )

@@ -26,15 +26,9 @@ fun ClientTopAppBar(
                 text = text
             )
         },
-        navigationIcon = {
-            BackIconButton(
-                onClick = onNavigationIconClick
-            )
-        },
+        navigationIcon = {},
         actions = actions,
-        colors = TopAppBarDefaults.topAppBarColors().copy(
-            containerColor = Color.Transparent
-        )
+        colors = TopAppBarDefaults.topAppBarColors().copy(containerColor = Color.Transparent)
     )
 }
 
@@ -50,9 +44,7 @@ fun ClientTopAppBar(
         modifier = modifier,
         navigationIcon = navigationIcon,
         actions = actions,
-        colors = TopAppBarDefaults.topAppBarColors().copy(
-            containerColor = Color.Transparent
-        )
+        colors = TopAppBarDefaults.topAppBarColors().copy(containerColor = Color.Transparent)
     )
 }
 

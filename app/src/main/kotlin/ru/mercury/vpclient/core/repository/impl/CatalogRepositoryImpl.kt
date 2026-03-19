@@ -2,17 +2,20 @@ package ru.mercury.vpclient.core.repository.impl
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import ru.mercury.vpclient.core.entity.CatalogScreenData
+import ru.mercury.vpclient.core.entity.CatalogData
 import ru.mercury.vpclient.core.ktx.basicEntity
 import ru.mercury.vpclient.core.ktx.bottomEntity
 import ru.mercury.vpclient.core.ktx.childEntity
 import ru.mercury.vpclient.core.ktx.handleResponse
 import ru.mercury.vpclient.core.ktx.isBasic
+import ru.mercury.vpclient.core.ktx.isTop
 import ru.mercury.vpclient.core.ktx.orEmpty
 import ru.mercury.vpclient.core.ktx.topEntity
 import ru.mercury.vpclient.core.network.NetworkService
 import ru.mercury.vpclient.core.network.request.BottomCategoriesRequest
 import ru.mercury.vpclient.core.persistence.database.dao.CatalogCategoryDao
+import ru.mercury.vpclient.core.persistence.database.dao.CatalogFilterProductsQuantityDao
+import ru.mercury.vpclient.core.persistence.database.dao.FilterValuesQuantityDao
 import ru.mercury.vpclient.core.persistence.database.entity.CatalogCategoryEntity
 import ru.mercury.vpclient.core.persistence.database.pojo.SubcategoryPojo
 import ru.mercury.vpclient.core.repository.CatalogRepository
@@ -20,8 +23,27 @@ import javax.inject.Inject
 
 class CatalogRepositoryImpl @Inject constructor(
     private val networkService: NetworkService,
-    private val catalogCategoryDao: CatalogCategoryDao
+    private val catalogCategoryDao: CatalogCategoryDao,
+    private val catalogFilterProductsQuantityDao: CatalogFilterProductsQuantityDao,
+    private val filterValuesDialogQuantityDao: FilterValuesQuantityDao
 ): CatalogRepository {
+
+    override val catalogDataFlow: Flow<CatalogData>
+        get() {
+            return catalogCategoryDao.selectAllFlow().map { entities ->
+                val basicCategories = entities
+                    .filter(CatalogCategoryEntity::isBasic)
+                    .sortedBy(CatalogCategoryEntity::position)
+                val itemsByParentId = entities
+                    .filter(CatalogCategoryEntity::isTop)
+                    .groupBy(CatalogCategoryEntity::parentId)
+                    .mapValues { (_, items) -> items.sortedBy(CatalogCategoryEntity::position) }
+                CatalogData(
+                    tabs = basicCategories.map(CatalogCategoryEntity::name),
+                    pages = basicCategories.map { basicCategory -> itemsByParentId[basicCategory.id].orEmpty() }
+                )
+            }
+        }
 
     override fun catalogCategoryFlow(id: Int): Flow<CatalogCategoryEntity> {
         return catalogCategoryDao.selectFlow(id)
@@ -31,30 +53,15 @@ class CatalogRepositoryImpl @Inject constructor(
         return catalogCategoryDao.selectPojosFlow(parentId)
     }
 
-    override val catalogScreenDataFlow: Flow<CatalogScreenData>
-        get() {
-            return catalogCategoryDao.selectAllFlow().map { entities ->
-                val basicCategories = entities.filter(CatalogCategoryEntity::isBasic).sortedBy(CatalogCategoryEntity::position)
-                val itemsByParentId = entities
-                    .filter { it.level == CatalogCategoryEntity.LEVEL_TOP }
-                    .groupBy(CatalogCategoryEntity::parentId)
-                    .mapValues { (_, items) -> items.sortedBy(CatalogCategoryEntity::position) }
-                CatalogScreenData(
-                    tabs = basicCategories.map(CatalogCategoryEntity::name),
-                    pages = basicCategories.map { basicCategory -> itemsByParentId[basicCategory.id].orEmpty() }
-                )
-            }
-        }
-
     override suspend fun loadCatalogCategoriesBasic() {
         handleResponse(
             request = { networkService.catalogCategoriesBasic() },
             onSuccess = { data ->
-                catalogCategoryDao.upsert(
-                    data.items.orEmpty().mapIndexed { index, item ->
-                        item.basicEntity(position = index.plus(1))
-                    }
-                )
+                val catalogCategoryResponses = data.items.orEmpty()
+                val entities = catalogCategoryResponses.mapIndexed { index, item ->
+                    item.basicEntity(position = index.plus(1))
+                }
+                catalogCategoryDao.upsert(entities)
             }
         )
     }
@@ -63,8 +70,8 @@ class CatalogRepositoryImpl @Inject constructor(
         handleResponse(
             request = { networkService.catalogCategoriesTop() },
             onSuccess = { data ->
-                val categories = data.items.orEmpty()
-                val entities = categories.flatMapIndexed { parentIndex, parent ->
+                val catalogCategoryResponses = data.items.orEmpty()
+                val entities = catalogCategoryResponses.flatMapIndexed { parentIndex, parent ->
                     buildList {
                         add(parent.basicEntity(position = parentIndex.plus(1)))
                         addAll(
@@ -90,11 +97,12 @@ class CatalogRepositoryImpl @Inject constructor(
                 networkService.catalogCategoriesBottom(request)
             },
             onSuccess = { data ->
+                val catalogCategoryResponses = data.items.orEmpty()
                 val parent = catalogCategoryDao.select(parentCategoryId)
-                val rootId = parent?.rootId ?: parentCategoryId
-                val bottomLevel = parent?.level?.plus(1) ?: CatalogCategoryEntity.LEVEL_BOTTOM
+                val rootId = parent.rootId
+                val bottomLevel = parent.level.plus(1)
                 val childLevel = bottomLevel.plus(1)
-                val entities = data.items.orEmpty().flatMapIndexed { index, item ->
+                val entities = catalogCategoryResponses.flatMapIndexed { index, item ->
                     buildList {
                         val bottomEntity = item.bottomEntity(
                             parentId = parentCategoryId,

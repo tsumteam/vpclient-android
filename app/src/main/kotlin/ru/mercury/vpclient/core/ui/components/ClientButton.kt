@@ -1,8 +1,5 @@
 package ru.mercury.vpclient.core.ui.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,11 +13,10 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ru.mercury.vpclient.core.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
 import ru.mercury.vpclient.core.ui.theme.disabled
 import ru.mercury.vpclient.core.ui.theme.medium16
@@ -52,22 +48,15 @@ fun ClientButton(
     }
 }
 
-@Preview
+@FontScalePreviews
 @Composable
 private fun ClientButtonPreview() {
     ClientTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background),
-            contentAlignment = Alignment.Center
-        ) {
-            ClientButton(
-                onClick = {},
-                text = "Данные доставки",
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
-        }
+        ClientButton(
+            onClick = {},
+            text = "Данные доставки",
+            modifier = Modifier.padding(16.dp)
+        )
     }
 }
 
@@ -104,23 +93,16 @@ fun ClientButton(
     }
 }
 
-@Preview
+@FontScalePreviews
 @Composable
 private fun ClientButtonPreview2() {
     ClientTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background),
-            contentAlignment = Alignment.Center
-        ) {
-            ClientButton(
-                onClick = {},
-                text = "Данные доставки",
-                enabled = false,
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
-        }
+        ClientButton(
+            onClick = {},
+            text = "Данные доставки",
+            enabled = false,
+            modifier = Modifier.padding(16.dp)
+        )
     }
 }
 
@@ -165,23 +147,16 @@ fun ClientButton(
     }
 }
 
-@Preview
+@FontScalePreviews
 @Composable
 private fun ClientButtonPreview3() {
     ClientTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background),
-            contentAlignment = Alignment.Center
-        ) {
-            ClientButton(
-                onClick = {},
-                text = "Войти",
-                loading = true,
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
-        }
+        ClientButton(
+            onClick = {},
+            text = "Войти",
+            loading = true,
+            modifier = Modifier.padding(16.dp)
+        )
     }
 }
 
@@ -230,24 +205,17 @@ fun ClientButton(
     }
 }
 
-@Preview
+@FontScalePreviews
 @Composable
 private fun ClientButtonPreview4() {
     ClientTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background),
-            contentAlignment = Alignment.Center
-        ) {
-            ClientButton(
-                onClick = {},
-                text = "Войти",
-                loading = false,
-                modifier = Modifier.padding(horizontal = 16.dp),
-                enabled = false
-            )
-        }
+        ClientButton(
+            onClick = {},
+            text = "Войти",
+            loading = false,
+            modifier = Modifier.padding(16.dp),
+            enabled = false
+        )
     }
 }
 
@@ -277,23 +245,17 @@ fun ClientResizeButton(
     }
 }
 
-@Preview
+@FontScalePreviews
 @Composable
 private fun ClientResizeButtonPreview() {
     ClientTheme {
-        Box(
+        ClientResizeButton(
+            onClick = {},
+            text = "Обновить",
             modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background),
-            contentAlignment = Alignment.Center
-        ) {
-            ClientResizeButton(
-                onClick = {},
-                text = "Обновить",
-                modifier = Modifier
-                    .wrapContentWidth()
-                    .height(40.dp)
-            )
-        }
+                .padding(16.dp)
+                .wrapContentWidth()
+                .height(40.dp)
+        )
     }
 }

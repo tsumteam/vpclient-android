@@ -51,7 +51,7 @@ fun VPClientSecureTextField(
                     )*/
                 }
                 else -> {
-                    VPClientAnimatedVisibility(
+                    ClientAnimatedVisibility(
                         visible = state.text.isNotEmpty()
                     ) {
                         IconButton(

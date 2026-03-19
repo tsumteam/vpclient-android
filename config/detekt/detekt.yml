@@ -125,7 +125,7 @@ complexity:
     active: false
     ignoredLabels: []
   LargeClass:
-    active: true
+    active: false
     threshold: 600
   LongMethod:
     active: false
@@ -793,5 +793,20 @@ style:
     ignoreLateinitVar: false
   WildcardImport:
     active: true
-    excludeImports:
-      - 'java.util.*'
+
+michaelbel:
+  active: true
+  ComposableFileOptIn:
+    active: true
+  ModifierPaddingArgumentOrder:
+    active: true
+  NoSpaceBeforeInheritanceColon:
+    active: true
+  PaddingValuesSymmetry:
+    active: true
+  TextAlignInTextStyle:
+    active: true
+  ConstrainAsOperatorOrder:
+    active: true
+  UseLastIndexInsteadOfSizeMinusOne:
+    active: true

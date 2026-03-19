@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">VIP Platinum</string>
 
+    <string name="common_retry">Повторить</string>
+    <string name="common_reset">Сбросить</string>
+
     <string name="agreement_personal_data">обработкой персональных данных</string>
     <string name="agreement_terms_of_use">Условиями пользования</string>
     <string name="agreement_privacy_policy">Политикой конфиденциальности</string>
@@ -38,7 +41,36 @@
     <string name="main_tab_consultants">Консуль\n-танты</string>
     <string name="main_tab_profile">Профиль</string>
 
+    <string name="catalog_watch_all">Смотреть\nвсё</string>
     <string name="catalog_view_all_clothing">Смотреть всю одежду</string>
+
+    <plurals name="filter_products_quantity">
+        <item quantity="one">%1$s товар</item>
+        <item quantity="few">%1$s товара</item>
+        <item quantity="many">%1$s товаров</item>
+        <item quantity="other">%1$s товара</item>
+    </plurals>
+    <plurals name="filter_show_products_quantity">
+        <item quantity="one">Показать %1$s товар</item>
+        <item quantity="few">Показать %1$s товара</item>
+        <item quantity="many">Показать %1$s товаров</item>
+        <item quantity="other">Показать %1$s товара</item>
+    </plurals>
+    <string name="filter_size_title">РАЗМЕР</string>
+    <string name="filter_brand_title">БРЕНДЫ</string>
+    <string name="filter_brand_search_placeholder">Найти бренд</string>
+    <string name="filter_brand_favorites_header">ЛЮБИМЫЕ</string>
+    <string name="filter_brand_top_header">ТОП-БРЕНДЫ</string>
+    <string name="filter_brand_all_header">ВСЕ БРЕНДЫ</string>
+    <string name="filter_brand_select_all">Выбрать все</string>
+    <string name="filter_brand_empty_search">По Вашему запросу ничего не найдено</string>
+
+    <string name="sort_title">СОРТИРОВКА</string>
+    <string name="sort_select">Выбрать</string>
+    <string name="sort_our_choice">Наш выбор</string>
+    <string name="sort_price_ascending">По возрастанию цены</string>
+    <string name="sort_price_descending">По убыванию цены</string>
+    <string name="sort_arrival_date_descending">По новизне</string>
 
     <string name="consultants_title">Консультанты</string>
     <string name="consultants_active_button">Активный</string>

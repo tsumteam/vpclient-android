@@ -1,7 +1,7 @@
 package ru.mercury.vpclient.core.ktx
 
 import kotlinx.coroutines.CancellationException
-import ru.mercury.vpclient.core.entity.VPClientError
+import ru.mercury.vpclient.core.entity.ClientError
 import ru.mercury.vpclient.core.exception.ClientEmptyException
 import ru.mercury.vpclient.core.exception.ClientException
 import ru.mercury.vpclient.core.network.response.BaseResponse
@@ -11,7 +11,7 @@ suspend fun <T> handleResponse(
     request: suspend () -> BaseResponse<T>,
     onSuccess: suspend (T) -> Unit = {},
     onEmpty: suspend () -> Unit = {},
-    onFailure: (suspend (VPClientError) -> Unit)? = null
+    onFailure: (suspend (ClientError) -> Unit)? = null
 ) {
     runCatching { request() }
         .onSuccess { response ->
@@ -32,7 +32,7 @@ suspend fun <T> handleResponse(
                 }
                 error != null -> {
                     val message = (error.display ?: error.msg).orEmpty()
-                    val error = VPClientError.Http(
+                    val error = ClientError.Http(
                         message = message.ifEmpty { "Ошибка запроса" },
                         httpCode = response.status ?: error.code ?: 0,
                         backendCode = error.code,
@@ -45,7 +45,7 @@ suspend fun <T> handleResponse(
                 }
                 errors != null -> {
                     val message = errors.values.flatten().joinToString(", ")
-                    val error = VPClientError.Http(
+                    val error = ClientError.Http(
                         message = message.ifEmpty { "Ошибка валидации" },
                         httpCode = response.status ?: 422
                     )
@@ -55,7 +55,7 @@ suspend fun <T> handleResponse(
                     }
                 }
                 else -> {
-                    val error = VPClientError.Unknown("Неизвестная ошибка")
+                    val error = ClientError.Unknown("Неизвестная ошибка")
                     when {
                         onFailure != null -> onFailure(error)
                         else -> throw ClientException(error.message)
@@ -66,8 +66,8 @@ suspend fun <T> handleResponse(
         .onFailure { exception ->
             if (exception !is CancellationException) {
                 val error = when {
-                    exception.isNetworkRelated -> VPClientError.Network(exception.message.orEmpty(), exception)
-                    else -> VPClientError.Unknown(exception.message.orEmpty(), exception)
+                    exception.isNetworkRelated -> ClientError.Network(exception.message.orEmpty(), exception)
+                    else -> ClientError.Unknown(exception.message.orEmpty(), exception)
                 }
                 when {
                     onFailure != null -> onFailure(error)

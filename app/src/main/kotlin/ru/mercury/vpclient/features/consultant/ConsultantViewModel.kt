@@ -16,7 +16,7 @@ import ru.mercury.vpclient.features.consultant.event.ConsultantEvent
 import ru.mercury.vpclient.features.consultant.intent.ConsultantIntent
 import ru.mercury.vpclient.features.consultant.model.ConsultantModel
 import ru.mercury.vpclient.features.consultant.navigation.ConsultantRoute
-import ru.mercury.vpclient.main.event.MainEventManager
+import ru.mercury.vpclient.activity.event.MainEventManager
 
 @HiltViewModel(assistedFactory = ConsultantViewModel.Factory::class)
 class ConsultantViewModel @AssistedInject constructor(
