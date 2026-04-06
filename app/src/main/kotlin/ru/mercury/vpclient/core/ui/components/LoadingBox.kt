@@ -14,6 +14,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ru.mercury.vpclient.core.ui.components.system.ClientAnimatedVisibility
 import ru.mercury.vpclient.core.ui.ktx.blockClickable
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
 import ru.mercury.vpclient.core.ui.theme.black50

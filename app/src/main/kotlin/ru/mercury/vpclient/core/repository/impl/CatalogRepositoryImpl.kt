@@ -14,8 +14,6 @@ import ru.mercury.vpclient.core.ktx.topEntity
 import ru.mercury.vpclient.core.network.NetworkService
 import ru.mercury.vpclient.core.network.request.BottomCategoriesRequest
 import ru.mercury.vpclient.core.persistence.database.dao.CatalogCategoryDao
-import ru.mercury.vpclient.core.persistence.database.dao.CatalogFilterProductsQuantityDao
-import ru.mercury.vpclient.core.persistence.database.dao.FilterValuesQuantityDao
 import ru.mercury.vpclient.core.persistence.database.entity.CatalogCategoryEntity
 import ru.mercury.vpclient.core.persistence.database.pojo.SubcategoryPojo
 import ru.mercury.vpclient.core.repository.CatalogRepository
@@ -23,9 +21,7 @@ import javax.inject.Inject
 
 class CatalogRepositoryImpl @Inject constructor(
     private val networkService: NetworkService,
-    private val catalogCategoryDao: CatalogCategoryDao,
-    private val catalogFilterProductsQuantityDao: CatalogFilterProductsQuantityDao,
-    private val filterValuesDialogQuantityDao: FilterValuesQuantityDao
+    private val catalogCategoryDao: CatalogCategoryDao
 ): CatalogRepository {
 
     override val catalogDataFlow: Flow<CatalogData>

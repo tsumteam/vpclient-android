@@ -11,6 +11,7 @@ import ru.mercury.vpclient.core.network.request.FilteredProductsQuantityRequest
 import ru.mercury.vpclient.core.network.request.FilteredProductsRequest
 import ru.mercury.vpclient.core.network.request.FiltersRequest
 import ru.mercury.vpclient.core.network.response.CatalogCategoriesBasicResponse
+import ru.mercury.vpclient.core.network.response.CatalogProductDetailCardV2Response
 import ru.mercury.vpclient.core.network.response.CurrentUserResponse
 import ru.mercury.vpclient.core.network.response.FilterValuesResponse
 import ru.mercury.vpclient.core.network.response.FilteredProductsQuantityResponse
@@ -1137,50 +1138,9 @@ data class CatalogProductColorFilterDto(
 )
 
 @Serializable
-data class CatalogProductDetailCardV2ActionDto(
-    val name: String? = null,
-    val isCashDesk: Boolean? = null
-)
-
-@Serializable
-data class CatalogProductDetailCardV2ColorDto(
-    val colorId: String? = null,
-    val colorName: String? = null,
-    val colorHex: String? = null,
-    val imageUrls: List<String>? = null,
-    val season: String? = null,
-    val artDescription: String? = null,
-    val areStocksAvailable: Boolean? = null,
-    val isSeasonDisplay: Boolean? = null,
-    val isSelected: Boolean? = null,
-    val oneSize: Boolean? = null,
-    val price: Double? = null,
-    val priceWithoutDiscount: Double? = null,
-    val actions: List<CatalogProductDetailCardV2ActionDto>? = null
-)
-
-@Serializable
-data class CatalogProductDetailCardV2Dto(
-    val itemId: String? = null,
-    val categoryId: Int? = null,
-    val brandId: Int? = null,
-    val brand: String? = null,
-    val urlBrandLogo: String? = null,
-    val article: String? = null,
-    val longDescription: String? = null,
-    val productionStructure: String? = null,
-    val country: String? = null,
-    val shortDescription: String? = null,
-    val technicalDescription: String? = null,
-    val ekttId: String? = null,
-    val breadcrumbs: List<String>? = null,
-    val colors: List<CatalogProductDetailCardV2ColorDto>? = null
-)
-
-@Serializable
 data class CatalogProductDetailCardV2DtoResponseDto(
     val error: ErrorDto? = null,
-    val data: CatalogProductDetailCardV2Dto? = null
+    val data: CatalogProductDetailCardV2Response? = null
 )
 
 @Serializable
@@ -2009,13 +1969,6 @@ enum class DeliveryTypeDto {
     @SerialName("employee")
     EMPLOYEE
 }
-
-@Serializable
-data class DetailCardRequestDto(
-    val itemId: String? = null,
-    val colorId: String? = null,
-    val compilationLookProductId: Int? = null
-)
 
 @Serializable
 data class DetailedStocksRequestDto(

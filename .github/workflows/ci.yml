@@ -17,7 +17,7 @@ jobs:
       KEYSTORE_KEY_ALIAS: ${{ secrets.KEYSTORE_KEY_ALIAS }}
       KEYSTORE_KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
       KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
-      IS_DETEKT_TEST: 'true'
+      IS_DETEKT_TEST: 'false'
       IS_DEBUG: 'true'
       IS_RELEASE: 'false'
       IS_RELEASE_CLOUD: 'false'
@@ -153,6 +153,13 @@ jobs:
           name: release-apk-${{ env.VERSION_CODE }}
           path: app/build/outputs/apk/release
           retention-days: 1
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ env.IS_RELEASE == 'true' }}
+        with:
+          name: mapping-${{ env.VERSION_CODE }}
+          path: app/build/outputs/mapping/
+          retention-days: 60
 
       - name: expose release apk path
         if: ${{ env.IS_RELEASE == 'true' }}

@@ -17,6 +17,8 @@ interface FilterInteractor {
 
     fun filterProductsPagingData(data: CatalogFilterProductsData): Flow<PagingData<CatalogFilterProductsEntity>>
 
+    fun catalogFilterProductFlow(id: String): Flow<CatalogFilterProductsEntity>
+
     fun filterValuesEntityFlow(chipId: String): Flow<FilterValuesEntity>
 
     fun filterValuesQuantityEntityFlow(chipId: String): Flow<FilterValuesQuantityEntity>

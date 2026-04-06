@@ -17,14 +17,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import ru.mercury.vpclient.core.ui.components.ClientButton
-import ru.mercury.vpclient.core.ui.components.ClientColumn
-import ru.mercury.vpclient.core.ui.components.ClientTextButton
+import ru.mercury.vpclient.core.ui.components.system.ClientButton
+import ru.mercury.vpclient.core.ui.components.system.ClientColumn
+import ru.mercury.vpclient.core.ui.components.system.ClientTextButton
 import ru.mercury.vpclient.core.ui.icons.Logo117
 import ru.mercury.vpclient.core.ui.theme.ClientStrings
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
 import ru.mercury.vpclient.core.ui.theme.livretMedium21
-import ru.mercury.vpclient.core.ui.theme.onBackground
 import ru.mercury.vpclient.core.ui.theme.regular16
 import ru.mercury.vpclient.features.welcome.intent.WelcomeIntent
 
@@ -65,7 +64,11 @@ private fun WelcomeScreenContent(
                 modifier = Modifier
                     .padding(start = 16.dp, top = 106.dp, end = 16.dp)
                     .fillMaxWidth(),
-                style = MaterialTheme.typography.livretMedium21.copy(textAlign = TextAlign.Center, lineHeight = 28.sp).onBackground()
+                style = MaterialTheme.typography.livretMedium21.copy(
+                    color = MaterialTheme.colorScheme.onBackground,
+                    textAlign = TextAlign.Center,
+                    lineHeight = 28.sp
+                )
             )
 
             Text(
@@ -73,7 +76,12 @@ private fun WelcomeScreenContent(
                 modifier = Modifier
                     .padding(start = 16.dp, top = 24.dp, end = 16.dp)
                     .fillMaxWidth(),
-                style = MaterialTheme.typography.regular16.copy(lineHeight = 20.sp, letterSpacing = .2.sp, textAlign = TextAlign.Center).onBackground()
+                style = MaterialTheme.typography.regular16.copy(
+                    color = MaterialTheme.colorScheme.onBackground,
+                    lineHeight = 20.sp,
+                    letterSpacing = .2.sp,
+                    textAlign = TextAlign.Center
+                )
             )
 
             ClientButton(

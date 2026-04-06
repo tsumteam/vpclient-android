@@ -44,17 +44,16 @@ import kotlinx.coroutines.launch
 import ru.mercury.vpclient.core.entity.CodeValidationError
 import ru.mercury.vpclient.core.ktx.formatCodeResendTime
 import ru.mercury.vpclient.core.ktx.formatPhoneForDisplay
-import ru.mercury.vpclient.core.ui.components.ClientButton
-import ru.mercury.vpclient.core.ui.components.ClientCenterAlignedTopAppBar
-import ru.mercury.vpclient.core.ui.components.ClientSnackbarHost
-import ru.mercury.vpclient.core.ui.components.ClientTextButton
+import ru.mercury.vpclient.core.ui.components.system.ClientButton
+import ru.mercury.vpclient.core.ui.components.system.ClientCenterAlignedTopAppBar
+import ru.mercury.vpclient.core.ui.components.system.ClientSnackbarHost
+import ru.mercury.vpclient.core.ui.components.system.ClientTextButton
 import ru.mercury.vpclient.core.ui.icons.Logo82
 import ru.mercury.vpclient.core.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.core.ui.preview.CodeModelProvider
 import ru.mercury.vpclient.core.ui.theme.ClientStrings
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
 import ru.mercury.vpclient.core.ui.theme.livretMedium21
-import ru.mercury.vpclient.core.ui.theme.onBackground
 import ru.mercury.vpclient.core.ui.theme.regular12
 import ru.mercury.vpclient.core.ui.theme.regular15
 import ru.mercury.vpclient.features.code.event.CodeEvents
@@ -144,7 +143,10 @@ private fun CodeScreenContent(
                 modifier = Modifier
                     .padding(start = 16.dp, top = 36.dp, end = 16.dp)
                     .fillMaxWidth(),
-                style = MaterialTheme.typography.livretMedium21.copy(textAlign = TextAlign.Center).onBackground()
+                style = MaterialTheme.typography.livretMedium21.copy(
+                    color = MaterialTheme.colorScheme.onBackground,
+                    textAlign = TextAlign.Center
+                )
             )
 
             Box(
@@ -173,7 +175,11 @@ private fun CodeScreenContent(
                         modifier = Modifier
                             .fillMaxWidth()
                             .align(Alignment.BottomCenter),
-                        style = MaterialTheme.typography.regular12.copy(color = MaterialTheme.colorScheme.error, letterSpacing = .2.sp, textAlign = TextAlign.Center)
+                        style = MaterialTheme.typography.regular12.copy(
+                            color = MaterialTheme.colorScheme.error,
+                            letterSpacing = .2.sp,
+                            textAlign = TextAlign.Center
+                        )
                     )
                 }
             }
@@ -190,7 +196,11 @@ private fun CodeScreenContent(
                 modifier = Modifier
                     .padding(start = 16.dp, top = 14.dp, end = 16.dp)
                     .fillMaxWidth(),
-                style = MaterialTheme.typography.regular15.copy(lineHeight = 19.sp, letterSpacing = .2.sp, textAlign = TextAlign.Center).onBackground()
+                style = MaterialTheme.typography.regular15.copy(
+                    lineHeight = 19.sp,
+                    letterSpacing = .2.sp,
+                    textAlign = TextAlign.Center
+                )
             )
 
             when {
@@ -206,7 +216,12 @@ private fun CodeScreenContent(
                         modifier = Modifier
                             .padding(start = 16.dp, top = 15.dp, end = 16.dp)
                             .fillMaxWidth(),
-                        style = MaterialTheme.typography.regular15.copy(lineHeight = 19.sp, letterSpacing = .2.sp, textAlign = TextAlign.Center).onBackground()
+                        style = MaterialTheme.typography.regular15.copy(
+                            color = MaterialTheme.colorScheme.onBackground,
+                            lineHeight = 19.sp,
+                            letterSpacing = .2.sp,
+                            textAlign = TextAlign.Center
+                        )
                     )
                 }
                 else -> {
@@ -215,7 +230,12 @@ private fun CodeScreenContent(
                         modifier = Modifier
                             .padding(start = 16.dp, top = 15.dp, end = 16.dp)
                             .fillMaxWidth(),
-                        style = MaterialTheme.typography.regular15.copy(lineHeight = 19.sp, letterSpacing = .2.sp, textAlign = TextAlign.Center).onBackground()
+                        style = MaterialTheme.typography.regular15.copy(
+                            color = MaterialTheme.colorScheme.onBackground,
+                            lineHeight = 19.sp,
+                            letterSpacing = .2.sp,
+                            textAlign = TextAlign.Center
+                        )
                     )
 
                     ClientTextButton(

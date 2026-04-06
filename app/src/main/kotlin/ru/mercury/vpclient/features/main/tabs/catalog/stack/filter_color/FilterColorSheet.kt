@@ -39,10 +39,10 @@ import ru.mercury.vpclient.core.ktx.colorValues
 import ru.mercury.vpclient.core.ktx.quantityWithThousandsSeparator
 import ru.mercury.vpclient.core.ktx.requireQuantity
 import ru.mercury.vpclient.core.ui.PlaceholderHighlight
-import ru.mercury.vpclient.core.ui.components.ClientAnimatedVisibility
-import ru.mercury.vpclient.core.ui.components.ClientButton
-import ru.mercury.vpclient.core.ui.components.ColorBox
-import ru.mercury.vpclient.core.ui.components.DragHandle
+import ru.mercury.vpclient.core.ui.components.filters.FilterColorBox
+import ru.mercury.vpclient.core.ui.components.system.ClientAnimatedVisibility
+import ru.mercury.vpclient.core.ui.components.system.ClientButton
+import ru.mercury.vpclient.core.ui.components.system.ClientDragHandle
 import ru.mercury.vpclient.core.ui.icons.Close24
 import ru.mercury.vpclient.core.ui.placeholder
 import ru.mercury.vpclient.core.ui.preview.FilterColorSheetStateProvider
@@ -80,7 +80,7 @@ private fun FilterColorSheetContent(
         sheetState = sheetState,
         sheetGesturesEnabled = false,
         containerColor = MaterialTheme.colorScheme.background,
-        dragHandle = { DragHandle() }
+        dragHandle = { ClientDragHandle() }
     ) {
         Column {
             Box(
@@ -109,7 +109,10 @@ private fun FilterColorSheetContent(
                     modifier = Modifier
                         .align(Alignment.Center)
                         .padding(horizontal = 56.dp),
-                    style = MaterialTheme.typography.livretMedium19.copy(color = MaterialTheme.colorScheme.onBackground, textAlign = TextAlign.Center)
+                    style = MaterialTheme.typography.livretMedium19.copy(
+                        color = MaterialTheme.colorScheme.onBackground,
+                        textAlign = TextAlign.Center
+                    )
                 )
 
                 ClientAnimatedVisibility(
@@ -118,11 +121,13 @@ private fun FilterColorSheetContent(
                 ) {
                     TextButton(
                         onClick = { dispatch(FilterColorIntent.ResetFilterColorValues) },
-                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp)
+                        contentPadding = PaddingValues(horizontal = 8.dp)
                     ) {
                         Text(
                             text = stringResource(ClientStrings.CommonReset),
-                            style = MaterialTheme.typography.medium16.copy(color = MaterialTheme.colorScheme.error)
+                            style = MaterialTheme.typography.medium16.copy(
+                                color = MaterialTheme.colorScheme.error
+                            )
                         )
                     }
                 }
@@ -135,7 +140,12 @@ private fun FilterColorSheetContent(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(360.dp),
-                        contentPadding = PaddingValues(start = 16.dp, top = 0.dp, end = 16.dp, bottom = 16.dp),
+                        contentPadding = PaddingValues(
+                            start = 16.dp,
+                            top = 0.dp,
+                            end = 16.dp,
+                            bottom = 16.dp
+                        ),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                         userScrollEnabled = false
@@ -195,7 +205,12 @@ private fun FilterColorSheetContent(
                         LazyVerticalGrid(
                             columns = GridCells.Fixed(3),
                             modifier = Modifier.fillMaxWidth(),
-                            contentPadding = PaddingValues(start = 16.dp, top = 0.dp, end = 16.dp, bottom = 88.dp),
+                            contentPadding = PaddingValues(
+                                start = 16.dp,
+                                top = 0.dp,
+                                end = 16.dp,
+                                bottom = 88.dp
+                            ),
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
@@ -203,7 +218,7 @@ private fun FilterColorSheetContent(
                                 items = state.entity.colorValues,
                                 key = { item -> item.id }
                             ) { item ->
-                                ColorBox(
+                                FilterColorBox(
                                     text = item.label,
                                     imageUrl = item.imageUrl,
                                     selected = item.id in state.selectedIds,

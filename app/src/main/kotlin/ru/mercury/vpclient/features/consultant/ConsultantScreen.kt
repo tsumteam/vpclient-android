@@ -30,10 +30,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.core.persistence.database.entity.EmployeeEntity
-import ru.mercury.vpclient.core.ui.components.ClientLazyColumn
-import ru.mercury.vpclient.core.ui.components.ClientSnackbarHost
-import ru.mercury.vpclient.core.ui.components.ClientTopAppBar
-import ru.mercury.vpclient.core.ui.components.ConsultantActionsRow
+import ru.mercury.vpclient.core.ui.components.consultants.ConsultantActionsRow
+import ru.mercury.vpclient.core.ui.components.system.ClientLazyColumn
+import ru.mercury.vpclient.core.ui.components.system.ClientSnackbarHost
+import ru.mercury.vpclient.core.ui.components.system.ClientTopAppBar
 import ru.mercury.vpclient.core.ui.icons.ChevronStart24
 import ru.mercury.vpclient.core.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.core.ui.preview.EmployeeEntityProvider
@@ -41,9 +41,7 @@ import ru.mercury.vpclient.core.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
 import ru.mercury.vpclient.core.ui.theme.livretMedium21
 import ru.mercury.vpclient.core.ui.theme.medium21
-import ru.mercury.vpclient.core.ui.theme.onBackground
 import ru.mercury.vpclient.core.ui.theme.regular16
-import ru.mercury.vpclient.core.ui.theme.secondary
 import ru.mercury.vpclient.core.ui.theme.secondary5
 import ru.mercury.vpclient.features.consultant.event.ConsultantEvent
 import ru.mercury.vpclient.features.consultant.intent.ConsultantIntent
@@ -144,7 +142,10 @@ private fun ConsultantScreenContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 16.dp, top = 32.dp, end = 16.dp),
-                    style = MaterialTheme.typography.medium21.copy(textAlign = TextAlign.Center).onBackground()
+                    style = MaterialTheme.typography.medium21.copy(
+                        color = MaterialTheme.colorScheme.onBackground,
+                        textAlign = TextAlign.Center
+                    )
                 )
             }
             item {
@@ -153,7 +154,10 @@ private fun ConsultantScreenContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 16.dp, top = 8.dp, end = 16.dp),
-                    style = MaterialTheme.typography.livretMedium21.copy(textAlign = TextAlign.Center).onBackground()
+                    style = MaterialTheme.typography.livretMedium21.copy(
+                        color = MaterialTheme.colorScheme.onBackground,
+                        textAlign = TextAlign.Center
+                    )
                 )
             }
             item {
@@ -162,14 +166,22 @@ private fun ConsultantScreenContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 16.dp, top = 8.dp, end = 16.dp),
-                    style = MaterialTheme.typography.regular16.copy(textAlign = TextAlign.Center).secondary()
+                    style = MaterialTheme.typography.regular16.copy(
+                        color = MaterialTheme.colorScheme.secondary,
+                        textAlign = TextAlign.Center
+                    )
                 )
             }
             item {
                 ConsultantActionsRow(
                     entity = state.employeeEntity,
                     onClick = {},
-                    modifier = Modifier.padding(start = 16.dp, top = 32.dp, end = 16.dp, bottom = 16.dp)
+                    modifier = Modifier.padding(
+                        start = 16.dp,
+                        top = 32.dp,
+                        end = 16.dp,
+                        bottom = 16.dp
+                    )
                 )
             }
         }

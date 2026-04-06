@@ -10,8 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.core.persistence.database.entity.CatalogCategoryEntity
-import ru.mercury.vpclient.core.ui.components.ClientLazyColumn
-import ru.mercury.vpclient.core.ui.components.ClothingCard
+import ru.mercury.vpclient.core.ui.components.catalog.CatalogClothingCard
+import ru.mercury.vpclient.core.ui.components.system.ClientLazyColumn
 
 @Composable
 fun CatalogClothingContent(
@@ -27,7 +27,7 @@ fun CatalogClothingContent(
             items = entities,
             key = { _, entity -> entity.id }
         ) { index, entity ->
-            ClothingCard(
+            CatalogClothingCard(
                 entity = entity,
                 modifier = Modifier.clickable { onItemClick(entity) }
             )

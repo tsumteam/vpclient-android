@@ -13,6 +13,7 @@ import ru.mercury.vpclient.core.persistence.database.dao.EmployeeDao
 import ru.mercury.vpclient.core.persistence.database.dao.FilterValuesDao
 import ru.mercury.vpclient.core.persistence.database.dao.FilterValuesQuantityDao
 import ru.mercury.vpclient.core.persistence.database.dao.PagingKeyDao
+import ru.mercury.vpclient.core.persistence.database.dao.ProductDao
 import ru.mercury.vpclient.core.persistence.database.entity.CatalogCategoryEntity
 import ru.mercury.vpclient.core.persistence.database.entity.CatalogFilterEntity
 import ru.mercury.vpclient.core.persistence.database.entity.CatalogFilterProductsEntity
@@ -22,6 +23,7 @@ import ru.mercury.vpclient.core.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.core.persistence.database.entity.FilterValuesEntity
 import ru.mercury.vpclient.core.persistence.database.entity.FilterValuesQuantityEntity
 import ru.mercury.vpclient.core.persistence.database.entity.PagingKeyEntity
+import ru.mercury.vpclient.core.persistence.database.entity.ProductEntity
 
 @Database(
     entities = [
@@ -33,7 +35,8 @@ import ru.mercury.vpclient.core.persistence.database.entity.PagingKeyEntity
         CatalogCategoryEntity::class,
         ClientEntity::class,
         EmployeeEntity::class,
-        PagingKeyEntity::class
+        PagingKeyEntity::class,
+        ProductEntity::class
     ],
     version = AppDatabase.DATABASE_VERSION,
     exportSchema = false
@@ -50,9 +53,10 @@ abstract class AppDatabase: RoomDatabase() {
     abstract fun clientDao(): ClientDao
     abstract fun employeeDao(): EmployeeDao
     abstract fun pagingKeyDao(): PagingKeyDao
+    abstract fun productDao(): ProductDao
 
     companion object {
         const val DATABASE_NAME = "vpclient.db"
-        const val DATABASE_VERSION = 32
+        const val DATABASE_VERSION = 40
     }
 }

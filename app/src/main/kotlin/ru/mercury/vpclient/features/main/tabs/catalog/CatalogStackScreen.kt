@@ -7,7 +7,7 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import ru.mercury.vpclient.core.navigation.BackRoute
-import ru.mercury.vpclient.core.ui.components.CourierNavDisplay
+import ru.mercury.vpclient.core.ui.components.system.ClientNavDisplay
 import ru.mercury.vpclient.core.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.features.main.tabs.catalog.event.CatalogStackEventManager
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.category.CategoryScreen
@@ -21,7 +21,7 @@ import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter.navigation.Fi
 fun CatalogStackScreen(
     navBackStack: NavBackStack<NavKey>
 ) {
-    CourierNavDisplay(
+    ClientNavDisplay(
         backStack = navBackStack,
         modifier = Modifier.fillMaxSize(),
         entryProvider = entryProvider {

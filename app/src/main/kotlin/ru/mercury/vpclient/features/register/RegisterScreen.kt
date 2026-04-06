@@ -41,17 +41,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.core.entity.PhoneValidationError
 import ru.mercury.vpclient.core.ui.components.AgreementText
-import ru.mercury.vpclient.core.ui.components.ClientButton
-import ru.mercury.vpclient.core.ui.components.ClientCenterAlignedTopAppBar
-import ru.mercury.vpclient.core.ui.components.ClientSnackbarHost
-import ru.mercury.vpclient.core.ui.components.ClientTextField
+import ru.mercury.vpclient.core.ui.components.system.ClientButton
+import ru.mercury.vpclient.core.ui.components.system.ClientCenterAlignedTopAppBar
+import ru.mercury.vpclient.core.ui.components.system.ClientSnackbarHost
+import ru.mercury.vpclient.core.ui.components.system.ClientTextField
 import ru.mercury.vpclient.core.ui.icons.Logo82
 import ru.mercury.vpclient.core.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.core.ui.preview.RegisterModelProvider
 import ru.mercury.vpclient.core.ui.theme.ClientStrings
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
 import ru.mercury.vpclient.core.ui.theme.livretMedium21
-import ru.mercury.vpclient.core.ui.theme.onBackground
 import ru.mercury.vpclient.core.ui.transformation.PhoneInputTransformation
 import ru.mercury.vpclient.core.ui.transformation.PhoneOutputTransformation
 import ru.mercury.vpclient.features.register.event.RegisterEvents
@@ -144,7 +143,10 @@ private fun RegisterScreenContent(
                 modifier = Modifier
                     .padding(start = 16.dp, top = 36.dp, end = 16.dp)
                     .fillMaxWidth(),
-                style = MaterialTheme.typography.livretMedium21.copy(textAlign = TextAlign.Center).onBackground()
+                style = MaterialTheme.typography.livretMedium21.copy(
+                    color = MaterialTheme.colorScheme.onBackground,
+                    textAlign = TextAlign.Center
+                )
             )
 
             ClientTextField(

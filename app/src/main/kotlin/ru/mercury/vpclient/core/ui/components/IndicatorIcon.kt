@@ -15,11 +15,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.core.ui.icons.Chat24
 import ru.mercury.vpclient.core.ui.preview.BooleanParameterProvider
+import ru.mercury.vpclient.core.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
 
 @Composable
@@ -53,14 +53,17 @@ fun IndicatorIcon(
                     modifier = Modifier
                         .padding(top = 2.dp, end = 2.dp)
                         .size(8.dp)
-                        .background(MaterialTheme.colorScheme.error, CircleShape)
+                        .background(
+                            color = MaterialTheme.colorScheme.error,
+                            shape = CircleShape
+                        )
                 )
             }
         }
     }
 }
 
-@Preview(showBackground = true)
+@FontScalePreviews
 @Composable
 private fun IndicatorIconPreview(
     @PreviewParameter(BooleanParameterProvider::class) showIndicator: Boolean

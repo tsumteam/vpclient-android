@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.core.RoomException
 import ru.mercury.vpclient.core.RoomSQLiteException
 import ru.mercury.vpclient.core.entity.CatalogFilterProductsData
@@ -30,6 +31,7 @@ import ru.mercury.vpclient.core.mvi.ClientViewModel
 import ru.mercury.vpclient.core.navigation.BackRoute
 import ru.mercury.vpclient.core.persistence.database.entity.FilterValuesEntity
 import ru.mercury.vpclient.core.persistence.database.entity.FilterValuesQuantityEntity
+import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.features.main.tabs.catalog.event.CatalogStackEventManager
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter.event.FilterEvent
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter.intent.FilterIntent
@@ -113,6 +115,7 @@ class FilterViewModel @AssistedInject constructor(
             }
             is FilterIntent.RefreshCompleted -> reduce { it.copy(isRefreshing = false) }
             is FilterIntent.BackClick -> launch { CatalogStackEventManager.send(BackRoute) }
+            is FilterIntent.ProductClick -> launch { MainEventManager.send(DetailsRoute(intent.id)) }
             is FilterIntent.ShowSortDialog -> reduce { it.copy(isSortDialogVisible = true) }
             is FilterIntent.HideSortDialog -> reduce { it.copy(isSortDialogVisible = false) }
             is FilterIntent.ShowFilterValuesDialog -> {

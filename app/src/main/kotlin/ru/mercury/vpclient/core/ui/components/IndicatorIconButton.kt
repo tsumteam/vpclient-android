@@ -4,10 +4,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import ru.mercury.vpclient.core.ui.icons.Chat24
 import ru.mercury.vpclient.core.ui.preview.BooleanParameterProvider
+import ru.mercury.vpclient.core.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
 
 @Composable
@@ -28,7 +28,7 @@ fun IndicatorIconButton(
     }
 }
 
-@Preview(showBackground = true)
+@FontScalePreviews
 @Composable
 private fun IndicatorIconButtonPreview(
     @PreviewParameter(BooleanParameterProvider::class) showIndicator: Boolean

@@ -35,7 +35,11 @@ class AuthenticationRepositoryImpl @Inject constructor(
                 networkService.authenticationRegister(request)
             },
             onSuccess = {
-                val clientEntity = ClientEntity.Empty.copy(phone = phone, name = name, codeResendTimer = System.currentTimeMillis())
+                val clientEntity = ClientEntity.Empty.copy(
+                    phone = phone,
+                    name = name,
+                    codeResendTimer = System.currentTimeMillis()
+                )
                 clientDao.upsert(clientEntity)
             },
             onFailure = { error -> throw RegisterException(error.message) }
@@ -51,7 +55,10 @@ class AuthenticationRepositoryImpl @Inject constructor(
                 networkService.authenticationLogin(request)
             },
             onSuccess = {
-                val clientEntity = ClientEntity.Empty.copy(phone = phone, codeResendTimer = System.currentTimeMillis())
+                val clientEntity = ClientEntity.Empty.copy(
+                    phone = phone,
+                    codeResendTimer = System.currentTimeMillis()
+                )
                 clientDao.upsert(clientEntity)
             },
             onFailure = { error -> throw LoginException(error.message) }
@@ -64,7 +71,10 @@ class AuthenticationRepositoryImpl @Inject constructor(
 
         handleResponse(
             request = {
-                val request = AuthenticationContinueLoginRequest(phone = formattedPhone, code = code)
+                val request = AuthenticationContinueLoginRequest(
+                    phone = formattedPhone,
+                    code = code
+                )
                 networkService.authenticationContinueLogin(request)
             },
             onSuccess = {
@@ -72,6 +82,9 @@ class AuthenticationRepositoryImpl @Inject constructor(
                 val currentUser = networkService.userCurrentUser()
                 val userId = currentUser.data?.id?.toString().orEmpty()
                 settingsDataStore.setValue(PreferenceKey.UserId, userId)
+                val activeEmployee = networkService.clientActiveEmployee()
+                val activeEmployeeId = activeEmployee.data?.employeeId.orEmpty()
+                settingsDataStore.setValue(PreferenceKey.PairedUser, activeEmployeeId)
             },
             onFailure = { error -> throw ContinueLoginException(error.message) }
         )

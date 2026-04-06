@@ -37,16 +37,16 @@ import ru.mercury.vpclient.core.ktx.quantityWithThousandsSeparator
 import ru.mercury.vpclient.core.ktx.requireQuantity
 import ru.mercury.vpclient.core.ktx.values
 import ru.mercury.vpclient.core.ui.PlaceholderHighlight
-import ru.mercury.vpclient.core.ui.components.ClientAnimatedVisibility
-import ru.mercury.vpclient.core.ui.components.ClientButton
-import ru.mercury.vpclient.core.ui.components.ClientLazyColumn
-import ru.mercury.vpclient.core.ui.components.DragHandle
-import ru.mercury.vpclient.core.ui.components.ListRow2
-import ru.mercury.vpclient.core.ui.shimmer
+import ru.mercury.vpclient.core.ui.components.filters.FilterSelectableRow
+import ru.mercury.vpclient.core.ui.components.system.ClientAnimatedVisibility
+import ru.mercury.vpclient.core.ui.components.system.ClientButton
+import ru.mercury.vpclient.core.ui.components.system.ClientDragHandle
+import ru.mercury.vpclient.core.ui.components.system.ClientLazyColumn
 import ru.mercury.vpclient.core.ui.icons.Close24
 import ru.mercury.vpclient.core.ui.placeholder
 import ru.mercury.vpclient.core.ui.preview.FilterValuesSheetStateProvider
 import ru.mercury.vpclient.core.ui.preview.annotation.FontScalePreviews
+import ru.mercury.vpclient.core.ui.shimmer
 import ru.mercury.vpclient.core.ui.theme.ClientStrings
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
 import ru.mercury.vpclient.core.ui.theme.livretMedium19
@@ -80,7 +80,7 @@ private fun FilterValuesSheetContent(
         sheetState = sheetState,
         sheetGesturesEnabled = false,
         containerColor = MaterialTheme.colorScheme.background,
-        dragHandle = { DragHandle() }
+        dragHandle = { ClientDragHandle() }
     ) {
         Column {
             Box(
@@ -109,7 +109,10 @@ private fun FilterValuesSheetContent(
                     modifier = Modifier
                         .align(Alignment.Center)
                         .padding(horizontal = 56.dp, vertical = 0.dp),
-                    style = MaterialTheme.typography.livretMedium19.copy(color = MaterialTheme.colorScheme.onBackground, textAlign = TextAlign.Center)
+                    style = MaterialTheme.typography.livretMedium19.copy(
+                        color = MaterialTheme.colorScheme.onBackground,
+                        textAlign = TextAlign.Center
+                    )
                 )
 
                 ClientAnimatedVisibility(
@@ -118,11 +121,13 @@ private fun FilterValuesSheetContent(
                 ) {
                     TextButton(
                         onClick = { dispatch(FilterValuesIntent.ResetFilterValues) },
-                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp)
+                        contentPadding = PaddingValues(horizontal = 8.dp)
                     ) {
                         Text(
                             text = stringResource(ClientStrings.CommonReset),
-                            style = MaterialTheme.typography.medium16.copy(color = MaterialTheme.colorScheme.error)
+                            style = MaterialTheme.typography.medium16.copy(
+                                color = MaterialTheme.colorScheme.error
+                            )
                         )
                     }
                 }
@@ -178,7 +183,7 @@ private fun FilterValuesSheetContent(
                                 items = state.entity.values,
                                 key = { _, item -> item.id }
                             ) { index, item ->
-                                ListRow2(
+                                FilterSelectableRow(
                                     text = item.label,
                                     selected = state.selectedIds.contains(item.id),
                                     onClick = { dispatch(FilterValuesIntent.ToggleFilterValue(item.id)) }

@@ -66,6 +66,29 @@ object ClientStrings {
     val SortPriceDescending = R.string.sort_price_descending
     val SortArrivalDateDescending = R.string.sort_arrival_date_descending
 
+    val SizeCountryRussia = R.string.size_country_russia
+    val SizeCountryItaly = R.string.size_country_italy
+    val SizeCountryFrance = R.string.size_country_france
+    val SizeCountryInternational = R.string.size_country_international
+
+    val DetailsWhatToWear = R.string.details_what_to_wear
+    val DetailsAddToBasket = R.string.details_add_to_basket
+    val DetailsSizeTitle = R.string.details_size_title
+    val DetailsSizeTable = R.string.details_size_table
+    val DetailsSizeSelect = R.string.details_size_select
+    val DetailsSizeInStock = R.string.details_size_in_stock
+    val DetailsSizeSold = R.string.details_size_sold
+    val DetailsOtherModelColors = R.string.details_other_model_colors
+    val DetailsWearWithTitle = R.string.details_wear_with_title
+    val DetailsCompleteSetTitle = R.string.details_complete_set_title
+    val DetailsFieldBrand = R.string.details_field_brand
+    val DetailsFieldColor = R.string.details_field_color
+    val DetailsFieldComposition = R.string.details_field_composition
+    val DetailsFieldCountry = R.string.details_field_country
+    val DetailsFieldItemId = R.string.details_field_item_id
+    val DetailsFieldArticle = R.string.details_field_article
+    val DetailsFieldMeasurements = R.string.details_field_measurements
+
     val ConsultantsTitle = R.string.consultants_title
     val ConsultantsActiveButton = R.string.consultants_active_button
     val ConsultantsMakeActiveButton = R.string.consultants_make_active_button

@@ -48,6 +48,8 @@ import ru.mercury.vpclient.core.persistence.database.entity.FilterValuesQuantity
 import ru.mercury.vpclient.core.repository.FilterRepository
 import javax.inject.Inject
 
+// fixme
+
 class FilterRepositoryImpl @Inject constructor(
     private val networkService: NetworkService,
     private val appDatabase: AppDatabase,
@@ -70,24 +72,30 @@ class FilterRepositoryImpl @Inject constructor(
         ) { titleCatalogCategoryEntity, subtitleCatalogCategoryEntity ->
             FilterTitleEntity(titleCatalogCategoryEntity, subtitleCatalogCategoryEntity)
         }
-        val filterRibbonDataFlow = catalogFilterDao.selectFlow(categoryId, titleCategoryId).map { catalogFilterEntity ->
+        val filterRibbonDataFlow = catalogFilterDao.selectFlow(
+            categoryId,
+            titleCategoryId
+        ).map { catalogFilterEntity ->
             when {
                 catalogFilterEntity == null -> FilterRibbonData.Empty to emptyList()
                 else -> catalogFilterEntity.toFilterRibbonData() to catalogFilterEntity.toFilterValuesPickers()
             }
         }
-        val productsQuantityFlow = catalogFilterProductsQuantityDao.selectFlow(categoryId, titleCategoryId).map { it.orEmpty }
+        val productsQuantityFlow = catalogFilterProductsQuantityDao.selectFlow(
+            categoryId,
+            titleCategoryId
+        ).map { it.orEmpty }
 
         return combine(
             filterDataFlow,
             filterRibbonDataFlow,
             productsQuantityFlow
-        ) { filterTitle, filterRibbonDataWithPickers, quantityEntity ->
+        ) { filterTitle, (filterRibbonData, filterValuesPickers), quantityEntity ->
             FilterData(
                 filterTitleEntity = filterTitle,
-                filterRibbonData = filterRibbonDataWithPickers.first, // fixme
+                filterRibbonData = filterRibbonData,
                 quantityEntity = quantityEntity,
-                filterValuesEntities = filterRibbonDataWithPickers.second // fixme
+                filterValuesEntities = filterValuesPickers
             )
         }
     }
@@ -113,6 +121,10 @@ class FilterRepositoryImpl @Inject constructor(
                 catalogFilterProductsDao.pagingSource(categoryId, titleCategoryId)
             }
         ).flow
+    }
+
+    override fun catalogFilterProductFlow(id: String): Flow<CatalogFilterProductsEntity> {
+        return catalogFilterProductsDao.selectFlow(id)
     }
 
     override fun filterValuesEntityFlow(chipId: String): Flow<FilterValuesEntity> {

@@ -19,6 +19,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
@@ -41,8 +42,11 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.PagingData
@@ -55,18 +59,20 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import ru.mercury.vpclient.core.entity.FiltersRowState
 import ru.mercury.vpclient.core.ktx.isSortChipSelected
+import ru.mercury.vpclient.core.ktx.productsQuantityWithThousandsSeparator
+import ru.mercury.vpclient.core.ktx.requireProductsQuantity
 import ru.mercury.vpclient.core.persistence.database.entity.CatalogFilterProductsEntity
-import ru.mercury.vpclient.core.ui.components.ClientCenterAlignedTopAppBar
-import ru.mercury.vpclient.core.ui.components.ClientSnackbarHost
-import ru.mercury.vpclient.core.ui.components.ClothingProductCard
-import ru.mercury.vpclient.core.ui.components.FilterProductsLoadingContent
-import ru.mercury.vpclient.core.ui.components.FilterProductsQuantityText
-import ru.mercury.vpclient.core.ui.components.FilterScreenTitle
-import ru.mercury.vpclient.core.ui.components.FiltersRow
+import ru.mercury.vpclient.core.ui.components.catalog.CatalogProductCard
+import ru.mercury.vpclient.core.ui.components.filters.FilterProductsLoadingContent
+import ru.mercury.vpclient.core.ui.components.filters.FilterScreenTitle
+import ru.mercury.vpclient.core.ui.components.filters.FiltersRow
 import ru.mercury.vpclient.core.ui.components.IndicatorIconButton
 import ru.mercury.vpclient.core.ui.components.PagingFailureBox
 import ru.mercury.vpclient.core.ui.components.PagingLoadingBox
+import ru.mercury.vpclient.core.ui.components.system.ClientCenterAlignedTopAppBar
+import ru.mercury.vpclient.core.ui.components.system.ClientSnackbarHost
 import ru.mercury.vpclient.core.ui.icons.Basket24
 import ru.mercury.vpclient.core.ui.icons.Chat24
 import ru.mercury.vpclient.core.ui.icons.ChevronStart24
@@ -80,17 +86,20 @@ import ru.mercury.vpclient.core.ui.ktx.isRefreshFailure
 import ru.mercury.vpclient.core.ui.ktx.isRefreshLoading
 import ru.mercury.vpclient.core.ui.preview.FilterModelProvider
 import ru.mercury.vpclient.core.ui.preview.annotation.FontScalePreviews
+import ru.mercury.vpclient.core.ui.theme.ClientStrings
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
+import ru.mercury.vpclient.core.ui.theme.regular15
+import ru.mercury.vpclient.core.ui.theme.secondary6
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter.event.FilterEvent
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter.intent.FilterIntent
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter.model.FilterModel
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter.navigation.FilterRoute
+import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_brand.FilterBrandSheet
+import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_brand.intent.FilterBrandIntent
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_color.FilterColorSheet
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_color.intent.FilterColorIntent
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_size.FilterSizeSheet
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_size.intent.FilterSizeIntent
-import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_brand.FilterBrandSheet
-import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_brand.intent.FilterBrandIntent
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_sort.SortSheet
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_sort.intent.SortIntent
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_values.FilterValuesSheet
@@ -218,7 +227,7 @@ private fun FilterScreenContent(
         object: NestedScrollConnection {
             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
                 if (filtersRowHeightPx == 0F) return Offset.Zero
-                val updatedOffset = (filtersRowOffsetPx - available.y).coerceIn(0f, filtersRowHeightPx)
+                val updatedOffset = (filtersRowOffsetPx - available.y).coerceIn(0F, filtersRowHeightPx)
                 filtersRowOffsetPx = updatedOffset
                 return Offset.Zero
             }
@@ -355,9 +364,21 @@ private fun FilterScreenContent(
                             item(
                                 span = { GridItemSpan(maxLineSpan) }
                             ) {
-                                FilterProductsQuantityText(
-                                    entity = state.filterData.quantityEntity,
-                                    modifier = Modifier.padding(top = 10.dp)
+                                Text(
+                                    text = pluralStringResource(
+                                        ClientStrings.FilterProductsQuantity,
+                                        state.filterData.quantityEntity.requireProductsQuantity,
+                                        state.filterData.quantityEntity.productsQuantityWithThousandsSeparator
+                                    ),
+                                    modifier = Modifier
+                                        .padding(top = 10.dp)
+                                        .fillMaxWidth(),
+                                    style = MaterialTheme.typography.regular15.copy(
+                                        color = MaterialTheme.colorScheme.secondary6,
+                                        lineHeight = 19.sp,
+                                        letterSpacing = .2.sp,
+                                        textAlign = TextAlign.Center
+                                    )
                                 )
                             }
                             items(
@@ -367,9 +388,9 @@ private fun FilterScreenContent(
                             ) { index ->
                                 val entity = pagingItems[index]
                                 if (entity != null) {
-                                    ClothingProductCard(
+                                    CatalogProductCard(
                                         entity = entity,
-                                        onClick = {},
+                                        onClick = { dispatch(FilterIntent.ProductClick(entity.id)) },
                                         onMessageClick = {},
                                         onBasketClick = {}
                                     )
@@ -418,9 +439,11 @@ private fun FilterScreenContent(
                     }
             ) {
                 FiltersRow(
-                    filterRibbonData = state.filterData.filterRibbonData,
-                    sortSelected = state.selectedSortType.isSortChipSelected,
-                    selectedFilterValueChips = state.selectedFilterValueChips,
+                    state = FiltersRowState(
+                        filterRibbonData = state.filterData.filterRibbonData,
+                        sortSelected = state.selectedSortType.isSortChipSelected,
+                        selectedFilterValueChips = state.selectedFilterValueChips
+                    ),
                     enabled = !pagingItems.isRefreshLoading,
                     onSortClick = { dispatch(FilterIntent.ShowSortDialog) },
                     onFilterChipClick = { chipId -> dispatch(FilterIntent.FilterChipClick(chipId)) },

@@ -1,9 +1,6 @@
 package ru.mercury.vpclient.core.ui.theme
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -110,6 +107,13 @@ val Typography.livretRegular11: TextStyle
         fontSize = 11.sp
     )
 
+val Typography.livretRegular15: TextStyle
+    get() = TextStyle(
+        fontWeight = FontWeight.W400,
+        fontFamily = FontFamily(Font(resId = R.font.tt_livret_subhead_regular, weight = FontWeight.W400)),
+        fontSize = 15.sp
+    )
+
 val Typography.livretRegular16: TextStyle
     get() = TextStyle(
         fontWeight = FontWeight.W400,
@@ -122,6 +126,15 @@ val Typography.livretMedium13: TextStyle
         fontWeight = FontWeight.W500,
         fontFamily = FontFamily(Font(resId = R.font.tt_livret_subhead_medium, weight = FontWeight.W500)),
         fontSize = 13.sp
+    )
+
+val Typography.livretMedium18: TextStyle
+    get() = TextStyle(
+        fontWeight = FontWeight.W500,
+        fontFamily = FontFamily(Font(resId = R.font.tt_livret_subhead_medium, weight = FontWeight.W500)),
+        fontSize = 18.sp,
+        lineHeight = 26.sp,
+        letterSpacing = .2.sp
     )
 
 val Typography.livretMedium19: TextStyle
@@ -151,38 +164,3 @@ val Typography.spanMedium14: SpanStyle
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp
     )
-
-@Composable
-fun TextStyle.onBackground(): TextStyle {
-    return copy(color = MaterialTheme.colorScheme.onBackground)
-}
-
-@Composable
-fun TextStyle.secondary(): TextStyle {
-    return copy(color = MaterialTheme.colorScheme.secondary)
-}
-
-@Composable
-fun TextStyle.white(): TextStyle {
-    return copy(color = Color.White)
-}
-
-@Composable
-fun SpanStyle.onBackground(): SpanStyle {
-    return copy(color = MaterialTheme.colorScheme.onBackground)
-}
-
-@Composable
-fun SpanStyle.secondary(): SpanStyle {
-    return copy(color = MaterialTheme.colorScheme.secondary)
-}
-
-@Composable
-fun SpanStyle.secondary3(): SpanStyle {
-    return copy(color = MaterialTheme.colorScheme.secondary3)
-}
-
-@Composable
-fun SpanStyle.error(): SpanStyle {
-    return copy(color = MaterialTheme.colorScheme.error)
-}

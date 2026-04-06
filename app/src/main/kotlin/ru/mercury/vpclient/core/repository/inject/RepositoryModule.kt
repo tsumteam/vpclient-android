@@ -8,10 +8,12 @@ import ru.mercury.vpclient.core.repository.AuthenticationRepository
 import ru.mercury.vpclient.core.repository.CatalogRepository
 import ru.mercury.vpclient.core.repository.EmployeeRepository
 import ru.mercury.vpclient.core.repository.FilterRepository
+import ru.mercury.vpclient.core.repository.ProductRepository
 import ru.mercury.vpclient.core.repository.impl.AuthenticationRepositoryImpl
 import ru.mercury.vpclient.core.repository.impl.CatalogRepositoryImpl
 import ru.mercury.vpclient.core.repository.impl.EmployeeRepositoryImpl
 import ru.mercury.vpclient.core.repository.impl.FilterRepositoryImpl
+import ru.mercury.vpclient.core.repository.impl.ProductRepositoryImpl
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -28,4 +30,7 @@ interface RepositoryModule {
 
     @Binds
     fun employeeRepository(impl: EmployeeRepositoryImpl): EmployeeRepository
+
+    @Binds
+    fun productRepository(impl: ProductRepositoryImpl): ProductRepository
 }

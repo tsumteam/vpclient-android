@@ -25,7 +25,6 @@ import ru.mercury.vpclient.core.network.env.ClientEnvironment
 import ru.mercury.vpclient.core.ui.components.RadioRow
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
 import ru.mercury.vpclient.core.ui.theme.divider2
-import ru.mercury.vpclient.core.ui.theme.onBackground
 import ru.mercury.vpclient.core.ui.theme.regular22
 import ru.mercury.vpclient.core.ui.theme.surface4
 
@@ -50,7 +49,10 @@ fun DebugEnvironmentDialog(
             Text(
                 text = "Выберите окружение",
                 modifier = Modifier.padding(start = 24.dp, top = 24.dp, end = 24.dp),
-                style = MaterialTheme.typography.regular22.copy(lineHeight = 22.sp).onBackground()
+                style = MaterialTheme.typography.regular22.copy(
+                    color = MaterialTheme.colorScheme.onBackground,
+                    lineHeight = 22.sp
+                )
             )
 
             RadioRow(

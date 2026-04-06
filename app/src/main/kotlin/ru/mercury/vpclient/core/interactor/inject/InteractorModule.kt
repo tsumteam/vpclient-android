@@ -8,10 +8,12 @@ import ru.mercury.vpclient.core.interactor.AuthenticationInteractor
 import ru.mercury.vpclient.core.interactor.CatalogInteractor
 import ru.mercury.vpclient.core.interactor.EmployeeInteractor
 import ru.mercury.vpclient.core.interactor.FilterInteractor
+import ru.mercury.vpclient.core.interactor.ProductInteractor
 import ru.mercury.vpclient.core.interactor.impl.AuthenticationInteractorImpl
 import ru.mercury.vpclient.core.interactor.impl.CatalogInteractorImpl
 import ru.mercury.vpclient.core.interactor.impl.EmployeeInteractorImpl
 import ru.mercury.vpclient.core.interactor.impl.FilterInteractorImpl
+import ru.mercury.vpclient.core.interactor.impl.ProductInteractorImpl
 import javax.inject.Singleton
 
 @Module
@@ -33,4 +35,8 @@ interface InteractorModule {
     @Binds
     @Singleton
     fun employeeInteractor(impl: EmployeeInteractorImpl): EmployeeInteractor
+
+    @Binds
+    @Singleton
+    fun productInteractor(impl: ProductInteractorImpl): ProductInteractor
 }

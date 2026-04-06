@@ -63,7 +63,6 @@ import ru.mercury.vpclient.core.network.entity.CardTypeDtoItemsDto
 import ru.mercury.vpclient.core.network.entity.CatalogBrandsResponseDto
 import ru.mercury.vpclient.core.network.entity.CatalogFashionImageCardDtoItemsDto
 import ru.mercury.vpclient.core.network.entity.CatalogItemTypeEnum
-import ru.mercury.vpclient.core.network.entity.CatalogProductDetailCardV2Dto
 import ru.mercury.vpclient.core.network.entity.CatalogProductSearchCardDtoItemsResponse
 import ru.mercury.vpclient.core.network.entity.CatalogScanHistoryDto
 import ru.mercury.vpclient.core.network.entity.ChangeActionRequestDto
@@ -96,7 +95,6 @@ import ru.mercury.vpclient.core.network.entity.DeleteMessageRequestDto
 import ru.mercury.vpclient.core.network.entity.DeleteProductFromFashionImageRequestDto
 import ru.mercury.vpclient.core.network.entity.DeleteProductsFromFolderRequestDto
 import ru.mercury.vpclient.core.network.entity.DeliveryTimesForSingleProductRequestDto
-import ru.mercury.vpclient.core.network.entity.DetailCardRequestDto
 import ru.mercury.vpclient.core.network.entity.DetailedStocksRequestDto
 import ru.mercury.vpclient.core.network.entity.DetailedStocksResponseDto
 import ru.mercury.vpclient.core.network.entity.DetermineGenderByClientIdRequestDto
@@ -239,12 +237,14 @@ import ru.mercury.vpclient.core.network.request.AuthenticationContinueLoginReque
 import ru.mercury.vpclient.core.network.request.AuthenticationLoginRequest
 import ru.mercury.vpclient.core.network.request.AuthenticationRegisterRequest
 import ru.mercury.vpclient.core.network.request.BottomCategoriesRequest
+import ru.mercury.vpclient.core.network.request.DetailCardRequest
 import ru.mercury.vpclient.core.network.request.FilterValuesRequest
 import ru.mercury.vpclient.core.network.request.FilteredProductsQuantityRequest
 import ru.mercury.vpclient.core.network.request.FilteredProductsRequest
 import ru.mercury.vpclient.core.network.request.FiltersRequest
 import ru.mercury.vpclient.core.network.response.BaseResponse
 import ru.mercury.vpclient.core.network.response.CatalogCategoriesBasicResponse
+import ru.mercury.vpclient.core.network.response.CatalogProductDetailCardV2Response
 import ru.mercury.vpclient.core.network.response.CurrentUserResponse
 import ru.mercury.vpclient.core.network.response.EmployeeBadgesResponse
 import ru.mercury.vpclient.core.network.response.EmployeeResponse
@@ -336,6 +336,14 @@ class NetworkService @Inject constructor(
         return ktorHttpClient.post("catalog/products") {
             appendQueryParameter("limit", limit)
             appendQueryParameter("offset", offset)
+            setBody(request)
+        }.body()
+    }
+
+    suspend fun catalogDetailedProduct(
+        request: DetailCardRequest
+    ): BaseResponse<CatalogProductDetailCardV2Response> {
+        return ktorHttpClient.post("catalog/detailed-product") {
             setBody(request)
         }.body()
     }
@@ -728,14 +736,6 @@ class NetworkService @Inject constructor(
         return ktorHttpClient.post("catalog/brands").body()
     }
 
-    suspend fun catalogDetailedProduct(
-        request: DetailCardRequestDto
-    ): BaseResponse<CatalogProductDetailCardV2Dto> {
-        return ktorHttpClient.post("catalog/detailed-product") {
-            setBody(request)
-        }.body()
-    }
-
     suspend fun catalogAvailableColors(
         request: AvailableColorsRequestDto
     ): BaseResponse<AvailableColorsResponseDto> {
@@ -802,7 +802,7 @@ class NetworkService @Inject constructor(
 
     suspend fun catalogScan(
         request: BarcodeScanRequestDto
-    ): BaseResponse<CatalogProductDetailCardV2Dto> {
+    ): BaseResponse<CatalogProductDetailCardV2Response> {
         return ktorHttpClient.post("catalog/scan") {
             setBody(request)
         }.body()

@@ -1,0 +1,17 @@
+package ru.mercury.vpclient.core.persistence.database.dao
+
+import androidx.room.Dao
+import androidx.room.Query
+import androidx.room.Upsert
+import kotlinx.coroutines.flow.Flow
+import ru.mercury.vpclient.core.persistence.database.entity.ProductEntity
+
+@Dao
+interface ProductDao {
+
+    @Query("SELECT * FROM Product WHERE id = :id LIMIT 1")
+    fun selectFlow(id: String): Flow<ProductEntity?>
+
+    @Upsert
+    suspend fun upsert(entity: ProductEntity)
+}

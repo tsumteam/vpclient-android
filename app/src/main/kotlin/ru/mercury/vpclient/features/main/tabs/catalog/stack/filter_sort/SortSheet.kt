@@ -34,10 +34,10 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.core.entity.SortType
 import ru.mercury.vpclient.core.ktx.isResetButtonVisible
-import ru.mercury.vpclient.core.ui.components.ClientAnimatedVisibility
-import ru.mercury.vpclient.core.ui.components.ClientButton
-import ru.mercury.vpclient.core.ui.components.DragHandle
-import ru.mercury.vpclient.core.ui.components.ListRow
+import ru.mercury.vpclient.core.ui.components.filters.FilterListRow
+import ru.mercury.vpclient.core.ui.components.system.ClientAnimatedVisibility
+import ru.mercury.vpclient.core.ui.components.system.ClientButton
+import ru.mercury.vpclient.core.ui.components.system.ClientDragHandle
 import ru.mercury.vpclient.core.ui.icons.Close24
 import ru.mercury.vpclient.core.ui.preview.SortTypeProvider
 import ru.mercury.vpclient.core.ui.theme.ClientStrings
@@ -75,7 +75,7 @@ private fun SortSheetContent(
         sheetState = sheetState,
         sheetGesturesEnabled = false,
         containerColor = Color.White,
-        dragHandle = { DragHandle() }
+        dragHandle = { ClientDragHandle() }
     ) {
         Column {
             Box(
@@ -104,7 +104,9 @@ private fun SortSheetContent(
                     modifier = Modifier
                         .align(Alignment.Center)
                         .padding(horizontal = 56.dp, vertical = 0.dp),
-                    style = MaterialTheme.typography.livretMedium19.copy(color = MaterialTheme.colorScheme.onBackground)
+                    style = MaterialTheme.typography.livretMedium19.copy(
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
                 )
 
                 ClientAnimatedVisibility(
@@ -113,17 +115,19 @@ private fun SortSheetContent(
                 ) {
                     TextButton(
                         onClick = { onSelectSortType(SortType.OurChoice) },
-                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp)
+                        contentPadding = PaddingValues(horizontal = 8.dp)
                     ) {
                         Text(
                             text = stringResource(ClientStrings.CommonReset),
-                            style = MaterialTheme.typography.medium16.copy(color = MaterialTheme.colorScheme.error)
+                            style = MaterialTheme.typography.medium16.copy(
+                                color = MaterialTheme.colorScheme.error
+                            )
                         )
                     }
                 }
             }
 
-            ListRow(
+            FilterListRow(
                 text = stringResource(ClientStrings.SortOurChoice),
                 selected = selectedSortType == SortType.OurChoice,
                 onClick = { onSelectSortType(SortType.OurChoice) }
@@ -134,7 +138,7 @@ private fun SortSheetContent(
                 color = MaterialTheme.colorScheme.secondary5
             )
 
-            ListRow(
+            FilterListRow(
                 text = stringResource(ClientStrings.SortPriceAscending),
                 selected = selectedSortType == SortType.PriceAscending,
                 onClick = { onSelectSortType(SortType.PriceAscending) }
@@ -145,7 +149,7 @@ private fun SortSheetContent(
                 color = MaterialTheme.colorScheme.secondary5
             )
 
-            ListRow(
+            FilterListRow(
                 text = stringResource(ClientStrings.SortPriceDescending),
                 selected = selectedSortType == SortType.PriceDescending,
                 onClick = { onSelectSortType(SortType.PriceDescending) }
@@ -156,7 +160,7 @@ private fun SortSheetContent(
                 color = MaterialTheme.colorScheme.secondary5
             )
 
-            ListRow(
+            FilterListRow(
                 text = stringResource(ClientStrings.SortArrivalDateDescending),
                 selected = selectedSortType == SortType.ArrivalDateDescending,
                 onClick = { onSelectSortType(SortType.ArrivalDateDescending) }

@@ -41,23 +41,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.core.entity.SizeCountry
-import ru.mercury.vpclient.core.ktx.displayLabel
 import ru.mercury.vpclient.core.ktx.quantityWithThousandsSeparator
 import ru.mercury.vpclient.core.ktx.requireQuantity
 import ru.mercury.vpclient.core.ktx.sizeValues
 import ru.mercury.vpclient.core.ui.PlaceholderHighlight
-import ru.mercury.vpclient.core.ui.components.ClientAnimatedVisibility
-import ru.mercury.vpclient.core.ui.components.ClientButton
-import ru.mercury.vpclient.core.ui.components.ClientLazyColumn
-import ru.mercury.vpclient.core.ui.components.DragHandle
-import ru.mercury.vpclient.core.ui.components.ListRow2
-import ru.mercury.vpclient.core.ui.components.SizeFrenchButton
-import ru.mercury.vpclient.core.ui.components.SizeInternationalButton
-import ru.mercury.vpclient.core.ui.components.SizeItalianButton
-import ru.mercury.vpclient.core.ui.components.SizeRussianButton
+import ru.mercury.vpclient.core.ui.components.filters.FilterSizeCountrySelector
+import ru.mercury.vpclient.core.ui.components.filters.FilterSelectableRow
+import ru.mercury.vpclient.core.ui.components.system.ClientAnimatedVisibility
+import ru.mercury.vpclient.core.ui.components.system.ClientButton
+import ru.mercury.vpclient.core.ui.components.system.ClientDragHandle
+import ru.mercury.vpclient.core.ui.components.system.ClientLazyColumn
 import ru.mercury.vpclient.core.ui.icons.Close24
 import ru.mercury.vpclient.core.ui.placeholder
 import ru.mercury.vpclient.core.ui.preview.FilterSizeSheetStateProvider
@@ -67,8 +62,6 @@ import ru.mercury.vpclient.core.ui.theme.ClientStrings
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
 import ru.mercury.vpclient.core.ui.theme.livretMedium19
 import ru.mercury.vpclient.core.ui.theme.medium16
-import ru.mercury.vpclient.core.ui.theme.regular15
-import ru.mercury.vpclient.core.ui.theme.secondary6
 import ru.mercury.vpclient.core.ui.theme.surface4
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_size.intent.FilterSizeIntent
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_size.model.FilterSizeSheetState
@@ -93,14 +86,14 @@ private fun FilterSizeSheetContent(
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
-    var selectedCountry by remember { mutableStateOf(SizeCountry.Russia) }
+    var selectedCountry by remember { mutableStateOf<SizeCountry>(SizeCountry.Russia) }
 
     ModalBottomSheet(
         onDismissRequest = { dispatch(FilterSizeIntent.HideFilterSizeDialog) },
         sheetState = sheetState,
         sheetGesturesEnabled = false,
         containerColor = MaterialTheme.colorScheme.background,
-        dragHandle = { DragHandle() }
+        dragHandle = { ClientDragHandle() }
     ) {
         Column {
             Box(
@@ -129,7 +122,10 @@ private fun FilterSizeSheetContent(
                     modifier = Modifier
                         .align(Alignment.Center)
                         .padding(horizontal = 56.dp, vertical = 0.dp),
-                    style = MaterialTheme.typography.livretMedium19.copy(color = MaterialTheme.colorScheme.onBackground, textAlign = TextAlign.Center)
+                    style = MaterialTheme.typography.livretMedium19.copy(
+                        color = MaterialTheme.colorScheme.onBackground,
+                        textAlign = TextAlign.Center
+                    )
                 )
 
                 ClientAnimatedVisibility(
@@ -138,11 +134,13 @@ private fun FilterSizeSheetContent(
                 ) {
                     TextButton(
                         onClick = { dispatch(FilterSizeIntent.ResetFilterSizeValues) },
-                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp)
+                        contentPadding = PaddingValues(horizontal = 8.dp)
                     ) {
                         Text(
                             text = stringResource(ClientStrings.CommonReset),
-                            style = MaterialTheme.typography.medium16.copy(color = MaterialTheme.colorScheme.error)
+                            style = MaterialTheme.typography.medium16.copy(
+                                color = MaterialTheme.colorScheme.error
+                            )
                         )
                     }
                 }
@@ -159,7 +157,10 @@ private fun FilterSizeSheetContent(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(top = 4.dp),
-                            horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally)
+                            horizontalArrangement = Arrangement.spacedBy(
+                                space = 16.dp,
+                                alignment = Alignment.CenterHorizontally
+                            )
                         ) {
                             repeat(4) {
                                 Box(
@@ -220,7 +221,7 @@ private fun FilterSizeSheetContent(
                 }
                 else -> {
                     val visibleSizeValues = state.entity.sizeValues.filter { item ->
-                        item.displayLabel(selectedCountry) != null
+                        selectedCountry.label(item) != null
                     }
                     Box(
                         modifier = Modifier
@@ -230,65 +231,22 @@ private fun FilterSizeSheetContent(
                         Column(
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 4.dp),
-                                horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally)
-                            ) {
-                                SizeCountry.entries.forEach { country ->
-                                    when (country) {
-                                        SizeCountry.Russia -> {
-                                            SizeRussianButton(
-                                                selected = selectedCountry == country,
-                                                onClick = { selectedCountry = country }
-                                            )
-                                        }
-                                        SizeCountry.Italy -> {
-                                            SizeItalianButton(
-                                                selected = selectedCountry == country,
-                                                onClick = { selectedCountry = country }
-                                            )
-                                        }
-                                        SizeCountry.France -> {
-                                            SizeFrenchButton(
-                                                selected = selectedCountry == country,
-                                                onClick = { selectedCountry = country }
-                                            )
-                                        }
-                                        SizeCountry.International -> {
-                                            SizeInternationalButton(
-                                                selected = selectedCountry == country,
-                                                onClick = { selectedCountry = country }
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-
-                            Text(
-                                text = selectedCountry.title,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 16.dp, bottom = 8.dp),
-                                style = MaterialTheme.typography.regular15.copy(
-                                    color = MaterialTheme.colorScheme.secondary6,
-                                    lineHeight = 19.sp,
-                                    letterSpacing = .2.sp,
-                                    textAlign = TextAlign.Center
-                                )
+                            FilterSizeCountrySelector(
+                                selectedCountry = selectedCountry,
+                                onCountryClick = { selectedCountry = it },
+                                modifier = Modifier.padding(top = 4.dp)
                             )
 
                             ClientLazyColumn(
                                 modifier = Modifier.fillMaxWidth(),
-                                contentPadding = PaddingValues(start = 0.dp, top = 0.dp, end = 0.dp, bottom = 72.dp)
+                                contentPadding = PaddingValues(bottom = 72.dp)
                             ) {
                                 itemsIndexed(
                                     items = visibleSizeValues,
                                     key = { _, item -> item.id }
                                 ) { index, item ->
-                                    ListRow2(
-                                        text = requireNotNull(item.displayLabel(selectedCountry)),
+                                    FilterSelectableRow(
+                                        text = requireNotNull(selectedCountry.label(item)),
                                         selected = state.selectedIds.contains(item.id),
                                         onClick = { dispatch(FilterSizeIntent.ToggleFilterSizeValue(item.id)) }
                                     )
@@ -314,7 +272,7 @@ private fun FilterSizeSheetContent(
                             loading = state.isProductsQuantityLoading,
                             modifier = Modifier
                                 .align(Alignment.BottomCenter)
-                                .padding(horizontal = 16.dp, vertical = 0.dp)
+                                .padding(horizontal = 16.dp)
                         )
                     }
                 }
@@ -322,17 +280,6 @@ private fun FilterSizeSheetContent(
         }
     }
 }
-
-// fixme
-private val SizeCountry.title: String
-    get() {
-        return when (this) {
-            SizeCountry.Russia -> "Россия"
-            SizeCountry.Italy -> "Италия"
-            SizeCountry.France -> "Франция"
-            SizeCountry.International -> "Международная"
-        }
-    }
 
 @FontScalePreviews
 @Composable

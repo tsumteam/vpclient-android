@@ -1,9 +1,9 @@
 package ru.mercury.vpclient.core.ui.components
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,15 +21,15 @@ fun PagingFailureBox(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box(
-        modifier = modifier.clickable(onClick = onClick),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = stringResource(ClientStrings.CommonRetry),
-            style = MaterialTheme.typography.regular15.copy(color = MaterialTheme.colorScheme.onBackground)
+    Text(
+        text = stringResource(ClientStrings.CommonRetry),
+        modifier = modifier
+            .clickable(onClick = onClick)
+            .wrapContentSize(Alignment.Center),
+        style = MaterialTheme.typography.regular15.copy(
+            color = MaterialTheme.colorScheme.onBackground
         )
-    }
+    )
 }
 
 @FontScalePreviews

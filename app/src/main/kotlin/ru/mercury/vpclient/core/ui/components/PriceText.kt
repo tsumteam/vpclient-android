@@ -16,33 +16,84 @@ import ru.mercury.vpclient.core.ktx.cardOldPrice
 import ru.mercury.vpclient.core.ktx.cardPrice
 import ru.mercury.vpclient.core.ktx.isDiscountPriceVisible
 import ru.mercury.vpclient.core.persistence.database.entity.CatalogFilterProductsEntity
+import ru.mercury.vpclient.core.persistence.database.entity.ProductEntity
 import ru.mercury.vpclient.core.ui.preview.CatalogFilterProductsEntityProvider
 import ru.mercury.vpclient.core.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
 import ru.mercury.vpclient.core.ui.theme.regular14
+
+// fixme
 
 @Composable
 fun PriceText(
     entity: CatalogFilterProductsEntity,
     modifier: Modifier = Modifier
 ) {
+    PriceText(
+        price = entity.cardPrice,
+        oldPrice = entity.cardOldPrice,
+        discountedPrice = entity.cardDiscountedPrice,
+        isDiscountPriceVisible = entity.isDiscountPriceVisible,
+        modifier = modifier
+    )
+}
+
+@Composable
+fun PriceText(
+    entity: ProductEntity,
+    modifier: Modifier = Modifier
+) {
+    PriceText(
+        price = entity.cardPrice,
+        oldPrice = entity.cardOldPrice,
+        discountedPrice = entity.cardDiscountedPrice,
+        isDiscountPriceVisible = entity.isDiscountPriceVisible,
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun PriceText(
+    price: String,
+    oldPrice: String?,
+    discountedPrice: String?,
+    isDiscountPriceVisible: Boolean,
+    modifier: Modifier = Modifier
+) {
     when {
-        entity.isDiscountPriceVisible -> {
+        isDiscountPriceVisible -> {
             Text(
                 text = buildAnnotatedString {
-                    withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onBackground, textDecoration = TextDecoration.LineThrough)) { append(entity.cardOldPrice) }
+                    withStyle(
+                        style = SpanStyle(
+                            color = MaterialTheme.colorScheme.onBackground,
+                            textDecoration = TextDecoration.LineThrough
+                        )
+                    ) { append(oldPrice.orEmpty()) }
                     append(" ")
-                    withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.error)) { append(entity.cardDiscountedPrice) }
+                    withStyle(
+                        style = SpanStyle(
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    ) { append(discountedPrice.orEmpty()) }
                 },
                 modifier = modifier,
-                style = MaterialTheme.typography.regular14.copy(color = MaterialTheme.colorScheme.onBackground, letterSpacing = .2.sp, textAlign = TextAlign.Center)
+                style = MaterialTheme.typography.regular14.copy(
+                    color = MaterialTheme.colorScheme.onBackground,
+                    letterSpacing = .2.sp,
+                    textAlign = TextAlign.Center
+                )
             )
         }
         else -> {
             Text(
-                text = entity.cardPrice,
+                text = price,
                 modifier = modifier,
-                style = MaterialTheme.typography.regular14.copy(color = MaterialTheme.colorScheme.onBackground, letterSpacing = .2.sp, textAlign = TextAlign.Center)
+                style = MaterialTheme.typography.regular14.copy(
+                    color = MaterialTheme.colorScheme.onBackground,
+                    letterSpacing = .2.sp,
+                    textAlign = TextAlign.Center
+                )
             )
         }
     }

@@ -17,6 +17,7 @@ import ru.mercury.vpclient.core.persistence.database.dao.EmployeeDao
 import ru.mercury.vpclient.core.persistence.database.dao.FilterValuesDao
 import ru.mercury.vpclient.core.persistence.database.dao.FilterValuesQuantityDao
 import ru.mercury.vpclient.core.persistence.database.dao.PagingKeyDao
+import ru.mercury.vpclient.core.persistence.database.dao.ProductDao
 import javax.inject.Singleton
 
 @Module
@@ -61,4 +62,7 @@ object DatabaseModule {
 
     @Provides
     fun pagingKeyDao(database: AppDatabase): PagingKeyDao = database.pagingKeyDao()
+
+    @Provides
+    fun productDao(database: AppDatabase): ProductDao = database.productDao()
 }

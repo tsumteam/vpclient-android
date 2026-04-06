@@ -27,11 +27,11 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.mercury.vpclient.core.persistence.database.entity.CatalogCategoryEntity
 import ru.mercury.vpclient.core.persistence.database.pojo.SubcategoryPojo
-import ru.mercury.vpclient.core.ui.components.ClientCenterAlignedTopAppBar
-import ru.mercury.vpclient.core.ui.components.ClientLazyColumn
-import ru.mercury.vpclient.core.ui.components.ClientOutlinedButton
-import ru.mercury.vpclient.core.ui.components.ClothingRow
+import ru.mercury.vpclient.core.ui.components.catalog.CatalogCategorySection
 import ru.mercury.vpclient.core.ui.components.IndicatorIconButton
+import ru.mercury.vpclient.core.ui.components.system.ClientCenterAlignedTopAppBar
+import ru.mercury.vpclient.core.ui.components.system.ClientLazyColumn
+import ru.mercury.vpclient.core.ui.components.system.ClientOutlinedButton
 import ru.mercury.vpclient.core.ui.icons.Basket24
 import ru.mercury.vpclient.core.ui.icons.Chat24
 import ru.mercury.vpclient.core.ui.icons.ChevronStart24
@@ -42,7 +42,6 @@ import ru.mercury.vpclient.core.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.core.ui.theme.ClientStrings
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
 import ru.mercury.vpclient.core.ui.theme.medium17
-import ru.mercury.vpclient.core.ui.theme.onBackground
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.category.intent.CategoryIntent
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.category.model.CategoryModel
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.category.navigation.CategoryRoute
@@ -74,7 +73,10 @@ private fun CategoryScreenContent(
                         text = state.entity.name,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        style = MaterialTheme.typography.medium17.copy(textAlign = TextAlign.Center).onBackground()
+                        style = MaterialTheme.typography.medium17.copy(
+                            color = MaterialTheme.colorScheme.onBackground,
+                            textAlign = TextAlign.Center
+                        )
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors().copy(containerColor = Color.White),
@@ -140,7 +142,7 @@ private fun CategoryScreenContent(
                         count = 4,
                         key = { index -> "category_placeholder_$index" }
                     ) { index ->
-                        ClothingRow(
+                        CatalogCategorySection(
                             pojo = SubcategoryPojo(
                                 entity = CatalogCategoryEntity.Empty,
                                 children = emptyList()
@@ -169,7 +171,7 @@ private fun CategoryScreenContent(
                         items = state.pojos,
                         key = { index, item -> "${item.entity.id}-$index" }
                     ) { index, item ->
-                        ClothingRow(
+                        CatalogCategorySection(
                             pojo = item,
                             onClick = {
                                 dispatch(

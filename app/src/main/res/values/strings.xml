@@ -72,6 +72,29 @@
     <string name="sort_price_descending">По убыванию цены</string>
     <string name="sort_arrival_date_descending">По новизне</string>
 
+    <string name="size_country_russia">Россия</string>
+    <string name="size_country_italy">Италия</string>
+    <string name="size_country_france">Франция</string>
+    <string name="size_country_international">Международная</string>
+
+    <string name="details_what_to_wear">С ЧЕМ\nНОСИТЬ</string>
+    <string name="details_add_to_basket">Добавить в корзину</string>
+    <string name="details_size_title">Размер</string>
+    <string name="details_size_table">Таблица размеров</string>
+    <string name="details_size_select">Выберите размер</string>
+    <string name="details_size_in_stock">В наличии</string>
+    <string name="details_size_sold">Продан. Размер для подбора альтернативы</string>
+    <string name="details_other_model_colors">ДРУГИЕ ЦВЕТА ЭТОЙ МОДЕЛИ</string>
+    <string name="details_wear_with_title">С ЧЕМ НОСИТЬ</string>
+    <string name="details_complete_set_title">ДОПОЛНИТЕ КОМПЛЕКТ</string>
+    <string name="details_field_brand">Бренд</string>
+    <string name="details_field_color">Цвет</string>
+    <string name="details_field_composition">Состав</string>
+    <string name="details_field_country">Страна производства</string>
+    <string name="details_field_item_id">Артикул</string>
+    <string name="details_field_article">Артикул производителя</string>
+    <string name="details_field_measurements">Замеры</string>
+
     <string name="consultants_title">Консультанты</string>
     <string name="consultants_active_button">Активный</string>
     <string name="consultants_make_active_button">Сделать активным</string>

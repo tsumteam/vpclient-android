@@ -171,6 +171,7 @@ dependencies {
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.mlkit.vision)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
     implementation(libs.androidx.compose.runtime)
     implementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.constraintlayout.compose)

@@ -18,7 +18,7 @@ import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.activity.intent.MainActivityIntent
 import ru.mercury.vpclient.core.event.CenterLoading
 import ru.mercury.vpclient.core.navigation.BackRoute
-import ru.mercury.vpclient.core.ui.components.CourierNavDisplay
+import ru.mercury.vpclient.core.ui.components.system.ClientNavDisplay
 import ru.mercury.vpclient.core.ui.components.LoadingBox
 import ru.mercury.vpclient.core.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.core.ui.ktx.rememberRequestMultiplePermissions
@@ -26,6 +26,8 @@ import ru.mercury.vpclient.features.code.CodeScreen
 import ru.mercury.vpclient.features.code.navigation.CodeRoute
 import ru.mercury.vpclient.features.consultant.ConsultantScreen
 import ru.mercury.vpclient.features.consultant.navigation.ConsultantRoute
+import ru.mercury.vpclient.features.details.DetailsScreen
+import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.features.login.LoginScreen
 import ru.mercury.vpclient.features.login.navigation.LoginRoute
 import ru.mercury.vpclient.features.main.MainScreen
@@ -48,7 +50,7 @@ fun MainActivityContent(
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        CourierNavDisplay(
+        ClientNavDisplay(
             backStack = navBackStack,
             modifier = Modifier.fillMaxSize(),
             entryProvider = entryProvider {
@@ -58,6 +60,7 @@ fun MainActivityContent(
                 entry<CodeRoute> { CodeScreen() }
                 entry<MainRoute> { MainScreen() }
                 entry<ConsultantRoute> { ConsultantScreen(it) }
+                entry<DetailsRoute> { DetailsScreen(it) }
             }
         )
 

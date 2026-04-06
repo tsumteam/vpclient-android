@@ -84,11 +84,11 @@ import kotlinx.coroutines.launch
 import ru.mercury.vpclient.core.entity.BrandFilterValue
 import ru.mercury.vpclient.core.ktx.quantityWithThousandsSeparator
 import ru.mercury.vpclient.core.ktx.requireQuantity
-import ru.mercury.vpclient.core.ui.components.ClientAnimatedVisibility
-import ru.mercury.vpclient.core.ui.components.ClientButton
-import ru.mercury.vpclient.core.ui.components.DragHandle
-import ru.mercury.vpclient.core.ui.components.FilterChip
-import ru.mercury.vpclient.core.ui.components.ListRow2
+import ru.mercury.vpclient.core.ui.components.system.ClientAnimatedVisibility
+import ru.mercury.vpclient.core.ui.components.system.ClientButton
+import ru.mercury.vpclient.core.ui.components.system.ClientDragHandle
+import ru.mercury.vpclient.core.ui.components.filters.FilterChip
+import ru.mercury.vpclient.core.ui.components.filters.FilterSelectableRow
 import ru.mercury.vpclient.core.ui.icons.Close24
 import ru.mercury.vpclient.core.ui.icons.Search24
 import ru.mercury.vpclient.core.ui.theme.ClientStrings
@@ -145,7 +145,7 @@ private fun FilterBrandSheetContent(
         sheetState = sheetState,
         sheetGesturesEnabled = false,
         containerColor = MaterialTheme.colorScheme.background,
-        dragHandle = { DragHandle() }
+        dragHandle = { ClientDragHandle() }
     ) {
         Column(
             modifier = Modifier.fillMaxSize()
@@ -392,7 +392,7 @@ private fun FilterBrandSheetContent(
                                 items = brands,
                                 key = { _, brand -> brand.id }
                             ) { index, brand ->
-                                ListRow2(
+                                FilterSelectableRow(
                                     text = brand.label,
                                     selected = brand.id in state.selectedIds,
                                     onClick = {

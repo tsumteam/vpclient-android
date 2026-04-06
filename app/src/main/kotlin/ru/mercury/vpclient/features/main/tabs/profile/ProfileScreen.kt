@@ -15,14 +15,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import ru.mercury.vpclient.core.ui.components.ClientCenterAlignedTopAppBar
-import ru.mercury.vpclient.core.ui.components.ClientLazyColumn
-import ru.mercury.vpclient.core.ui.components.ClientOutlinedButton
+import ru.mercury.vpclient.core.ui.components.system.ClientCenterAlignedTopAppBar
+import ru.mercury.vpclient.core.ui.components.system.ClientLazyColumn
+import ru.mercury.vpclient.core.ui.components.system.ClientOutlinedButton
 import ru.mercury.vpclient.core.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.core.ui.theme.ClientStrings
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
 import ru.mercury.vpclient.core.ui.theme.medium17
-import ru.mercury.vpclient.core.ui.theme.onBackground
 import ru.mercury.vpclient.features.main.tabs.profile.intent.ProfileIntent
 import ru.mercury.vpclient.features.main.tabs.profile.model.ProfileModel
 
@@ -50,7 +49,10 @@ private fun ProfileScreenContent(
                 title = {
                     Text(
                         text = stringResource(ClientStrings.ProfileTitle),
-                        style = MaterialTheme.typography.medium17.copy(textAlign = TextAlign.Center).onBackground()
+                        style = MaterialTheme.typography.medium17.copy(
+                            color = MaterialTheme.colorScheme.onBackground,
+                            textAlign = TextAlign.Center
+                        )
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors().copy(containerColor = Color.White)

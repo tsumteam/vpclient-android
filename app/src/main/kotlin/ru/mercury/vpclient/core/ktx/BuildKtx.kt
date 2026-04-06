@@ -19,7 +19,7 @@ val Context.versionCode: String
                 else -> packageInfo.versionCode.toLong()
             }
             versionCode.toString()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             BuildConfig.VERSION_CODE.toString()
         }
     }

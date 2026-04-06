@@ -150,8 +150,6 @@ object NetworkModule {
 
     private const val HTTP_CACHE_SIZE_BYTES = 52_428_800 // 1024 * 1024 * 50
 
-    private const val MAX_PREVIEW = 8192
-    private const val ERROR_TEXT_LENGTH = 1024
     private const val DEFAULT_APPLICATION_TYPE = "api"
     private const val DEFAULT_DEVICE_ID = "swagger"
 

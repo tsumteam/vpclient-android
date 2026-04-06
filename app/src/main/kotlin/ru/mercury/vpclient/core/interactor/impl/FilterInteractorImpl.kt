@@ -29,6 +29,10 @@ class FilterInteractorImpl @Inject constructor(
         return filterRepository.filterProductsPagingData(data)
     }
 
+    override fun catalogFilterProductFlow(id: String): Flow<CatalogFilterProductsEntity> {
+        return filterRepository.catalogFilterProductFlow(id)
+    }
+
     override fun filterValuesEntityFlow(chipId: String): Flow<FilterValuesEntity> {
         return filterRepository.filterValuesEntityFlow(chipId)
     }

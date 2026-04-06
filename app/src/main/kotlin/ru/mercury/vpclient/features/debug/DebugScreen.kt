@@ -31,16 +31,15 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.BuildConfig
-import ru.mercury.vpclient.core.ui.components.ClientLazyColumn
-import ru.mercury.vpclient.core.ui.components.ClientSnackbarHost
-import ru.mercury.vpclient.core.ui.components.ClientTopAppBar
+import ru.mercury.vpclient.core.ui.components.system.ClientLazyColumn
+import ru.mercury.vpclient.core.ui.components.system.ClientSnackbarHost
+import ru.mercury.vpclient.core.ui.components.system.ClientTopAppBar
 import ru.mercury.vpclient.core.ui.icons.Close24
 import ru.mercury.vpclient.core.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.core.ui.ktx.rememberNavigateToAppSettings
 import ru.mercury.vpclient.core.ui.ktx.rememberNavigateToDeveloperSettings
 import ru.mercury.vpclient.core.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.core.ui.theme.ClientTheme
-import ru.mercury.vpclient.core.ui.theme.onBackground
 import ru.mercury.vpclient.core.ui.theme.regular18
 import ru.mercury.vpclient.core.ui.theme.spanMedium14
 import ru.mercury.vpclient.core.ui.theme.spanRegular14
@@ -138,32 +137,32 @@ private fun DebugActivityContent(
                 ) {
                     Text(
                         text = buildAnnotatedString {
-                            withStyle(MaterialTheme.typography.spanMedium14.onBackground()) { append("DeviceId: ") }
-                            withStyle(MaterialTheme.typography.spanRegular14.onBackground()) { append(state.deviceId) }
+                            withStyle(MaterialTheme.typography.spanMedium14.copy(color = MaterialTheme.colorScheme.onBackground)) { append("DeviceId: ") }
+                            withStyle(MaterialTheme.typography.spanRegular14.copy(color = MaterialTheme.colorScheme.onBackground)) { append(state.deviceId) }
                         },
                         modifier = Modifier.fillMaxWidth()
                     )
 
                     Text(
                         text = buildAnnotatedString {
-                            withStyle(MaterialTheme.typography.spanMedium14.onBackground()) { append("UserToken: ") }
-                            withStyle(MaterialTheme.typography.spanRegular14.onBackground()) { append(state.userToken) }
+                            withStyle(MaterialTheme.typography.spanMedium14.copy(color = MaterialTheme.colorScheme.onBackground)) { append("UserToken: ") }
+                            withStyle(MaterialTheme.typography.spanRegular14.copy(color = MaterialTheme.colorScheme.onBackground)) { append(state.userToken) }
                         },
                         modifier = Modifier.fillMaxWidth()
                     )
 
                     Text(
                         text = buildAnnotatedString {
-                            withStyle(MaterialTheme.typography.spanMedium14.onBackground()) { append("VersionName: ") }
-                            withStyle(MaterialTheme.typography.spanRegular14.onBackground()) { append(BuildConfig.VERSION_NAME) }
+                            withStyle(MaterialTheme.typography.spanMedium14.copy(color = MaterialTheme.colorScheme.onBackground)) { append("VersionName: ") }
+                            withStyle(MaterialTheme.typography.spanRegular14.copy(color = MaterialTheme.colorScheme.onBackground)) { append(BuildConfig.VERSION_NAME) }
                         },
                         modifier = Modifier.fillMaxWidth()
                     )
 
                     Text(
                         text = buildAnnotatedString {
-                            withStyle(MaterialTheme.typography.spanMedium14.onBackground()) { append("VersionCode: ") }
-                            withStyle(MaterialTheme.typography.spanRegular14.onBackground()) { append(BuildConfig.VERSION_CODE.toString()) }
+                            withStyle(MaterialTheme.typography.spanMedium14.copy(color = MaterialTheme.colorScheme.onBackground)) { append("VersionCode: ") }
+                            withStyle(MaterialTheme.typography.spanRegular14.copy(color = MaterialTheme.colorScheme.onBackground)) { append(BuildConfig.VERSION_CODE.toString()) }
                         },
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -184,7 +183,9 @@ private fun DebugActivityContent(
                     headlineContent = {
                         Text(
                             text = "Настройки приложения",
-                            style = MaterialTheme.typography.regular18.onBackground()
+                            style = MaterialTheme.typography.regular18.copy(
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
                         )
                     },
                     colors = ListItemDefaults.colors().copy(containerColor = Color.Transparent),
@@ -205,7 +206,9 @@ private fun DebugActivityContent(
                     headlineContent = {
                         Text(
                             text = "Настройки разработчика",
-                            style = MaterialTheme.typography.regular18.onBackground()
+                            style = MaterialTheme.typography.regular18.copy(
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
                         )
                     },
                     colors = ListItemDefaults.colors().copy(containerColor = Color.Transparent),
@@ -226,7 +229,9 @@ private fun DebugActivityContent(
                     headlineContent = {
                         Text(
                             text = "Задержка API-запросов",
-                            style = MaterialTheme.typography.regular18.onBackground()
+                            style = MaterialTheme.typography.regular18.copy(
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
                         )
                     },
                     trailingContent = {
@@ -253,7 +258,9 @@ private fun DebugActivityContent(
                     headlineContent = {
                         Text(
                             text = "Очистить локальную базу данных",
-                            style = MaterialTheme.typography.regular18.onBackground()
+                            style = MaterialTheme.typography.regular18.copy(
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
                         )
                     },
                     colors = ListItemDefaults.colors().copy(containerColor = Color.Transparent),
@@ -274,13 +281,17 @@ private fun DebugActivityContent(
                     headlineContent = {
                         Text(
                             text = "Окружение",
-                            style = MaterialTheme.typography.regular18.onBackground()
+                            style = MaterialTheme.typography.regular18.copy(
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
                         )
                     },
                     trailingContent = {
                         Text(
                             text = state.environment.name,
-                            style = MaterialTheme.typography.regular18.onBackground()
+                            style = MaterialTheme.typography.regular18.copy(
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
                         )
                     },
                     colors = ListItemDefaults.colors().copy(containerColor = Color.Transparent),
