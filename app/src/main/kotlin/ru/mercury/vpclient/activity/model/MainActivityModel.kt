@@ -1,7 +1,7 @@
 package ru.mercury.vpclient.activity.model
 
 import androidx.navigation3.runtime.NavKey
-import ru.mercury.vpclient.core.mvi.Model
+import ru.mercury.vpclient.shared.mvi.Model
 
 data class MainActivityModel(
     val splashLoading: Boolean = true,

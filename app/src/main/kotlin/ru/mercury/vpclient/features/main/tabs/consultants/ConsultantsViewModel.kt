@@ -3,11 +3,11 @@ package ru.mercury.vpclient.features.main.tabs.consultants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.core.RoomException
-import ru.mercury.vpclient.core.RoomSQLiteException
-import ru.mercury.vpclient.core.exception.ClientException
-import ru.mercury.vpclient.core.interactor.Interactor
-import ru.mercury.vpclient.core.mvi.ClientViewModel
+import ru.mercury.vpclient.shared.RoomException
+import ru.mercury.vpclient.shared.RoomSQLiteException
+import ru.mercury.vpclient.shared.exception.ClientException
+import ru.mercury.vpclient.shared.interactor.Interactor
+import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.features.consultant.navigation.ConsultantRoute
 import ru.mercury.vpclient.features.main.tabs.consultants.event.ConsultantsEvents
 import ru.mercury.vpclient.features.main.tabs.consultants.intent.ConsultantsIntent

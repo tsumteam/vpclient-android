@@ -7,9 +7,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import dagger.hilt.android.AndroidEntryPoint
-import ru.mercury.vpclient.core.ui.ktx.installShortcuts
-import ru.mercury.vpclient.core.ui.ktx.setLightSystemBars
-import ru.mercury.vpclient.core.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.ktx.installShortcuts
+import ru.mercury.vpclient.shared.ui.ktx.setLightSystemBars
+import ru.mercury.vpclient.shared.ui.theme.ClientTheme
 
 @AndroidEntryPoint
 class MainActivity: ComponentActivity() {

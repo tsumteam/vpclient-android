@@ -1,7 +1,7 @@
 package ru.mercury.vpclient.features.main.tabs.catalog.stack.catalog.model
 
-import ru.mercury.vpclient.core.entity.CatalogData
-import ru.mercury.vpclient.core.mvi.Model
+import ru.mercury.vpclient.shared.entity.CatalogData
+import ru.mercury.vpclient.shared.mvi.Model
 
 data class CatalogModel(
     val catalogData: CatalogData = CatalogData()

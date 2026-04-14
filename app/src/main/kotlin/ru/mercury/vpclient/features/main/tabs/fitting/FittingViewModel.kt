@@ -1,9 +1,9 @@
 package ru.mercury.vpclient.features.main.tabs.fitting
 
 import dagger.hilt.android.lifecycle.HiltViewModel
-import ru.mercury.vpclient.core.interactor.Interactor
-import ru.mercury.vpclient.core.mvi.ClientViewModel
-import ru.mercury.vpclient.core.mvi.Event
+import ru.mercury.vpclient.shared.interactor.Interactor
+import ru.mercury.vpclient.shared.mvi.ClientViewModel
+import ru.mercury.vpclient.shared.mvi.Event
 import ru.mercury.vpclient.features.main.tabs.fitting.intent.FittingIntent
 import ru.mercury.vpclient.features.main.tabs.fitting.model.FittingModel
 import javax.inject.Inject

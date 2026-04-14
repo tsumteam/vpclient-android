@@ -2,10 +2,10 @@ package ru.mercury.vpclient.features.register
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.core.exception.RegisterException
-import ru.mercury.vpclient.core.interactor.Interactor
-import ru.mercury.vpclient.core.ktx.normalizePhoneInput
-import ru.mercury.vpclient.core.mvi.ClientViewModel
+import ru.mercury.vpclient.shared.exception.RegisterException
+import ru.mercury.vpclient.shared.interactor.Interactor
+import ru.mercury.vpclient.shared.ktx.normalizePhoneInput
+import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.features.code.navigation.CodeRoute
 import ru.mercury.vpclient.features.register.event.RegisterEvents
 import ru.mercury.vpclient.features.register.intent.RegisterIntent

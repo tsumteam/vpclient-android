@@ -1,7 +1,7 @@
 package ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_brand.model
 
-import ru.mercury.vpclient.core.entity.BrandFilterValue
-import ru.mercury.vpclient.core.persistence.database.entity.FilterValuesQuantityEntity
+import ru.mercury.vpclient.shared.entity.BrandFilterValue
+import ru.mercury.vpclient.shared.persistence.database.entity.FilterValuesQuantityEntity
 
 data class FilterBrandSheetState(
     val brands: List<BrandFilterValue>,

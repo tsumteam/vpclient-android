@@ -2,9 +2,9 @@ package ru.mercury.vpclient.features.main.tabs.profile
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.core.interactor.Interactor
-import ru.mercury.vpclient.core.mvi.ClientViewModel
-import ru.mercury.vpclient.core.mvi.Event
+import ru.mercury.vpclient.shared.interactor.Interactor
+import ru.mercury.vpclient.shared.mvi.ClientViewModel
+import ru.mercury.vpclient.shared.mvi.Event
 import ru.mercury.vpclient.features.main.tabs.profile.intent.ProfileIntent
 import ru.mercury.vpclient.features.main.tabs.profile.model.ProfileModel
 import ru.mercury.vpclient.features.welcome.navigation.WelcomeRoute

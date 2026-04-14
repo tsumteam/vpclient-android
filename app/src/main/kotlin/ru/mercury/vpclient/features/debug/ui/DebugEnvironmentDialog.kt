@@ -21,12 +21,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.mercury.vpclient.core.network.env.ClientEnvironment
-import ru.mercury.vpclient.core.ui.components.RadioRow
-import ru.mercury.vpclient.core.ui.theme.ClientTheme
-import ru.mercury.vpclient.core.ui.theme.divider2
-import ru.mercury.vpclient.core.ui.theme.regular22
-import ru.mercury.vpclient.core.ui.theme.surface4
+import ru.mercury.vpclient.shared.network.env.ClientEnvironment
+import ru.mercury.vpclient.shared.ui.components.RadioRow
+import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.theme.divider2
+import ru.mercury.vpclient.shared.ui.theme.regular22
+import ru.mercury.vpclient.shared.ui.theme.surface4
 
 @Composable
 fun DebugEnvironmentDialog(

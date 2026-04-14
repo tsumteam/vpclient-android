@@ -1,6 +1,6 @@
 package ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_brand.intent
 
-import ru.mercury.vpclient.core.mvi.Intent
+import ru.mercury.vpclient.shared.mvi.Intent
 
 sealed interface FilterBrandIntent: Intent {
     data object HideFilterBrandDialog: FilterBrandIntent

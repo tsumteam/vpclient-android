@@ -23,18 +23,18 @@ jobs:
       IS_RELEASE_CLOUD: 'false'
     steps:
       - name: checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: setup jdk 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '21'
           cache: gradle
 
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v5
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/main' }}
           cache-write-only: ${{ github.ref == 'refs/heads/main' }}
@@ -54,7 +54,7 @@ jobs:
         run: ./gradlew assembleDevDebug assembleUatDebug assembleProdDebug
         if: ${{ env.IS_DEBUG == 'true' }}
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: ${{ env.IS_DEBUG == 'true' }}
         with:
           name: debug-apk-${{ env.VERSION_CODE }}
@@ -136,10 +136,10 @@ jobs:
 
       - name: decode keystore file
         id: decode_keystore_file
-        uses: timheuer/base64-to-file@v1
-        with:
-          fileName: 'vpclient-keystore-release.jks'
-          encodedString: ${{ secrets.KEYSTORE_FILE }}
+        run: |
+          file_path="${RUNNER_TEMP}/vpclient-keystore-release.jks"
+          printf '%s' "${KEYSTORE_FILE}" | base64 --decode > "${file_path}"
+          echo "filePath=${file_path}" >> "${GITHUB_OUTPUT}"
 
       - name: set decoded keystore path
         run: echo "KEYSTORE_FILE=${{ steps.decode_keystore_file.outputs.filePath }}" >> $GITHUB_ENV
@@ -147,14 +147,14 @@ jobs:
       - run: ./gradlew assembleRelease
         if: ${{ env.IS_RELEASE == 'true' }}
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: ${{ env.IS_RELEASE == 'true' }}
         with:
           name: release-apk-${{ env.VERSION_CODE }}
           path: app/build/outputs/apk/release
           retention-days: 1
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: ${{ env.IS_RELEASE == 'true' }}
         with:
           name: mapping-${{ env.VERSION_CODE }}

@@ -1,6 +1,6 @@
 package ru.mercury.vpclient.features.code.intent
 
-import ru.mercury.vpclient.core.mvi.Intent
+import ru.mercury.vpclient.shared.mvi.Intent
 
 sealed interface CodeIntent: Intent {
     data object CollectClientEntity: CodeIntent

@@ -1,12 +1,12 @@
 package ru.mercury.vpclient.features.details.model
 
-import ru.mercury.vpclient.core.entity.DetailsField
-import ru.mercury.vpclient.core.entity.SizeSelectorState
-import ru.mercury.vpclient.core.entity.SizeState
-import ru.mercury.vpclient.core.mvi.Model
-import ru.mercury.vpclient.core.persistence.database.entity.CatalogFilterProductsEntity
-import ru.mercury.vpclient.core.persistence.database.entity.ProductEntity
-import ru.mercury.vpclient.core.persistence.database.entity.ProductRelatedItemEntity
+import ru.mercury.vpclient.shared.entity.DetailsField
+import ru.mercury.vpclient.shared.entity.SizeSelectorState
+import ru.mercury.vpclient.shared.entity.SizeState
+import ru.mercury.vpclient.shared.mvi.Model
+import ru.mercury.vpclient.shared.persistence.database.entity.CatalogFilterProductsEntity
+import ru.mercury.vpclient.shared.persistence.database.entity.ProductEntity
+import ru.mercury.vpclient.shared.persistence.database.entity.ProductRelatedItemEntity
 
 // fixme
 

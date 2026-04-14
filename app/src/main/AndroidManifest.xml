@@ -55,7 +55,7 @@
             tools:replace="android:authorities">
 
             <meta-data
-                android:name="ru.mercury.vpclient.core.analytics.AppMetricaInitializer"
+                android:name="ru.mercury.vpclient.shared.analytics.AppMetricaInitializer"
                 android:value="androidx.startup" />
 
         </provider>

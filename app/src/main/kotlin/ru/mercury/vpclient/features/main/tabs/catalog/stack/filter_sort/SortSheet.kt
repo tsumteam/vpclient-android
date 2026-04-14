@@ -32,19 +32,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.core.entity.SortType
-import ru.mercury.vpclient.core.ktx.isResetButtonVisible
-import ru.mercury.vpclient.core.ui.components.filters.FilterListRow
-import ru.mercury.vpclient.core.ui.components.system.ClientAnimatedVisibility
-import ru.mercury.vpclient.core.ui.components.system.ClientButton
-import ru.mercury.vpclient.core.ui.components.system.ClientDragHandle
-import ru.mercury.vpclient.core.ui.icons.Close24
-import ru.mercury.vpclient.core.ui.preview.SortTypeProvider
-import ru.mercury.vpclient.core.ui.theme.ClientStrings
-import ru.mercury.vpclient.core.ui.theme.ClientTheme
-import ru.mercury.vpclient.core.ui.theme.livretMedium19
-import ru.mercury.vpclient.core.ui.theme.medium16
-import ru.mercury.vpclient.core.ui.theme.secondary5
+import ru.mercury.vpclient.shared.entity.SortType
+import ru.mercury.vpclient.shared.ktx.isResetButtonVisible
+import ru.mercury.vpclient.shared.ui.components.filters.FilterListRow
+import ru.mercury.vpclient.shared.ui.components.system.ClientAnimatedVisibility
+import ru.mercury.vpclient.shared.ui.components.system.ClientButton
+import ru.mercury.vpclient.shared.ui.components.system.ClientDragHandle
+import ru.mercury.vpclient.shared.ui.icons.Close24
+import ru.mercury.vpclient.shared.ui.preview.SortTypeProvider
+import ru.mercury.vpclient.shared.ui.theme.ClientStrings
+import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.theme.livretMedium19
+import ru.mercury.vpclient.shared.ui.theme.medium16
+import ru.mercury.vpclient.shared.ui.theme.secondary5
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_sort.intent.SortIntent
 
 @Composable

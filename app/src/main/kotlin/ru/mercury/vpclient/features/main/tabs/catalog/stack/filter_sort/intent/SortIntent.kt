@@ -1,7 +1,7 @@
 package ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_sort.intent
 
-import ru.mercury.vpclient.core.entity.SortType
-import ru.mercury.vpclient.core.mvi.Intent
+import ru.mercury.vpclient.shared.entity.SortType
+import ru.mercury.vpclient.shared.mvi.Intent
 
 sealed interface SortIntent: Intent {
     data object HideSortDialog: SortIntent

@@ -1,9 +1,9 @@
 package ru.mercury.vpclient.features.register.model
 
-import ru.mercury.vpclient.core.entity.NameValidationError
-import ru.mercury.vpclient.core.entity.PhoneValidationError
-import ru.mercury.vpclient.core.ktx.isValidPhoneNumber
-import ru.mercury.vpclient.core.mvi.Model
+import ru.mercury.vpclient.shared.entity.NameValidationError
+import ru.mercury.vpclient.shared.entity.PhoneValidationError
+import ru.mercury.vpclient.shared.ktx.isValidPhoneNumber
+import ru.mercury.vpclient.shared.mvi.Model
 
 data class RegisterModel(
     val name: String = "",

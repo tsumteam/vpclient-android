@@ -43,36 +43,36 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import ru.mercury.vpclient.core.ui.PlaceholderHighlight
-import ru.mercury.vpclient.core.ui.components.IndicatorIconButton
-import ru.mercury.vpclient.core.ui.components.details.DetailsColorImageSelector
-import ru.mercury.vpclient.core.ui.components.details.DetailsCompleteSetSection
-import ru.mercury.vpclient.core.ui.components.details.DetailsFieldRow
-import ru.mercury.vpclient.core.ui.components.details.DetailsOutfitButton
-import ru.mercury.vpclient.core.ui.components.details.DetailsPagerIndicator
-import ru.mercury.vpclient.core.ui.components.details.DetailsProductInfoBox
-import ru.mercury.vpclient.core.ui.components.details.DetailsSizeSelector
-import ru.mercury.vpclient.core.ui.components.details.DetailsWearWithSection
-import ru.mercury.vpclient.core.ui.components.system.ClientAsyncImage
-import ru.mercury.vpclient.core.ui.components.system.ClientButton
-import ru.mercury.vpclient.core.ui.components.system.ClientCenterAlignedTopAppBar
-import ru.mercury.vpclient.core.ui.components.system.ClientLazyColumn
-import ru.mercury.vpclient.core.ui.components.system.ClientOutlinedButton
-import ru.mercury.vpclient.core.ui.icons.Basket24
-import ru.mercury.vpclient.core.ui.icons.Chat24
-import ru.mercury.vpclient.core.ui.icons.ChevronStart24
-import ru.mercury.vpclient.core.ui.icons.FittingShirt24
-import ru.mercury.vpclient.core.ui.placeholder
-import ru.mercury.vpclient.core.ui.preview.DetailsModelProvider
-import ru.mercury.vpclient.core.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.core.ui.shimmer
-import ru.mercury.vpclient.core.ui.theme.ClientStrings
-import ru.mercury.vpclient.core.ui.theme.ClientTheme
-import ru.mercury.vpclient.core.ui.theme.regular14
-import ru.mercury.vpclient.core.ui.theme.surface4
 import ru.mercury.vpclient.features.details.intent.DetailsIntent
 import ru.mercury.vpclient.features.details.model.DetailsModel
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
+import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
+import ru.mercury.vpclient.shared.ui.components.IndicatorIconButton
+import ru.mercury.vpclient.shared.ui.components.details.DetailsColorImageSelector
+import ru.mercury.vpclient.shared.ui.components.details.DetailsCompleteSetSection
+import ru.mercury.vpclient.shared.ui.components.details.DetailsFieldRow
+import ru.mercury.vpclient.shared.ui.components.details.DetailsOutfitButton
+import ru.mercury.vpclient.shared.ui.components.details.DetailsPagerIndicator
+import ru.mercury.vpclient.shared.ui.components.details.DetailsProductInfoBox
+import ru.mercury.vpclient.shared.ui.components.details.DetailsSizeSelector
+import ru.mercury.vpclient.shared.ui.components.details.DetailsWearWithSection
+import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
+import ru.mercury.vpclient.shared.ui.components.system.ClientButton
+import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
+import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
+import ru.mercury.vpclient.shared.ui.components.system.ClientOutlinedButton
+import ru.mercury.vpclient.shared.ui.icons.Basket24
+import ru.mercury.vpclient.shared.ui.icons.Chat24
+import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
+import ru.mercury.vpclient.shared.ui.icons.FittingShirt24
+import ru.mercury.vpclient.shared.ui.placeholder
+import ru.mercury.vpclient.shared.ui.preview.DetailsModelProvider
+import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
+import ru.mercury.vpclient.shared.ui.shimmer
+import ru.mercury.vpclient.shared.ui.theme.ClientStrings
+import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.theme.regular14
+import ru.mercury.vpclient.shared.ui.theme.surface4
 
 // fixme
 
@@ -394,7 +394,7 @@ private fun DetailsScreenContent(
                         item {
                             DetailsWearWithSection(
                                 products = state.wearWithProducts,
-                                modifier = Modifier.fillMaxWidth()
+                                onProductClick = { id -> dispatch(DetailsIntent.ProductClick(id)) }
                             )
                         }
                     }
@@ -402,7 +402,7 @@ private fun DetailsScreenContent(
                         item {
                             DetailsCompleteSetSection(
                                 products = state.completeSetProducts,
-                                modifier = Modifier.fillMaxWidth()
+                                onProductClick = { id -> dispatch(DetailsIntent.ProductClick(id)) }
                             )
                         }
                     }

@@ -15,13 +15,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import ru.mercury.vpclient.core.ui.components.system.ClientCenterAlignedTopAppBar
-import ru.mercury.vpclient.core.ui.components.system.ClientLazyColumn
-import ru.mercury.vpclient.core.ui.components.system.ClientOutlinedButton
-import ru.mercury.vpclient.core.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.core.ui.theme.ClientStrings
-import ru.mercury.vpclient.core.ui.theme.ClientTheme
-import ru.mercury.vpclient.core.ui.theme.medium17
+import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
+import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
+import ru.mercury.vpclient.shared.ui.components.system.ClientOutlinedButton
+import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
+import ru.mercury.vpclient.shared.ui.theme.ClientStrings
+import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.theme.medium17
 import ru.mercury.vpclient.features.main.tabs.profile.intent.ProfileIntent
 import ru.mercury.vpclient.features.main.tabs.profile.model.ProfileModel
 

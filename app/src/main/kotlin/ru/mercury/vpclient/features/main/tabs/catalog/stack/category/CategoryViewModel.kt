@@ -6,10 +6,10 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.core.interactor.Interactor
-import ru.mercury.vpclient.core.mvi.ClientViewModel
-import ru.mercury.vpclient.core.mvi.Event
-import ru.mercury.vpclient.core.navigation.BackRoute
+import ru.mercury.vpclient.shared.interactor.Interactor
+import ru.mercury.vpclient.shared.mvi.ClientViewModel
+import ru.mercury.vpclient.shared.mvi.Event
+import ru.mercury.vpclient.shared.navigation.BackRoute
 import ru.mercury.vpclient.features.main.tabs.catalog.event.CatalogStackEventManager
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.category.intent.CategoryIntent
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.category.model.CategoryModel

@@ -1,6 +1,6 @@
 package ru.mercury.vpclient.features.main.model
 
-import ru.mercury.vpclient.core.mvi.Model
+import ru.mercury.vpclient.shared.mvi.Model
 import androidx.navigation3.runtime.NavKey
 import ru.mercury.vpclient.features.main.tabs.home.navigation.HomeRoute
 

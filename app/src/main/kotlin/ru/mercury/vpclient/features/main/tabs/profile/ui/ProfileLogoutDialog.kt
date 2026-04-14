@@ -23,12 +23,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.mercury.vpclient.core.ui.theme.ClientStrings
-import ru.mercury.vpclient.core.ui.theme.ClientTheme
-import ru.mercury.vpclient.core.ui.theme.medium14
-import ru.mercury.vpclient.core.ui.theme.regular14
-import ru.mercury.vpclient.core.ui.theme.regular22
-import ru.mercury.vpclient.core.ui.theme.surface4
+import ru.mercury.vpclient.shared.ui.theme.ClientStrings
+import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.theme.medium14
+import ru.mercury.vpclient.shared.ui.theme.regular14
+import ru.mercury.vpclient.shared.ui.theme.regular22
+import ru.mercury.vpclient.shared.ui.theme.surface4
 
 @Composable
 fun ProfileLogoutDialog(

@@ -1,6 +1,6 @@
 package ru.mercury.vpclient.features.main.tabs.consultants.intent
 
-import ru.mercury.vpclient.core.mvi.Intent
+import ru.mercury.vpclient.shared.mvi.Intent
 
 sealed interface ConsultantsIntent: Intent {
     data object CollectEmployees: ConsultantsIntent

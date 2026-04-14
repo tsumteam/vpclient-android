@@ -1,7 +1,7 @@
 package ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_color.model
 
-import ru.mercury.vpclient.core.persistence.database.entity.FilterValuesEntity
-import ru.mercury.vpclient.core.persistence.database.entity.FilterValuesQuantityEntity
+import ru.mercury.vpclient.shared.persistence.database.entity.FilterValuesEntity
+import ru.mercury.vpclient.shared.persistence.database.entity.FilterValuesQuantityEntity
 
 data class FilterColorSheetState(
     val entity: FilterValuesEntity,

@@ -1,8 +1,8 @@
 package ru.mercury.vpclient.features.main.tabs.catalog.stack.category.model
 
-import ru.mercury.vpclient.core.mvi.Model
-import ru.mercury.vpclient.core.persistence.database.entity.CatalogCategoryEntity
-import ru.mercury.vpclient.core.persistence.database.pojo.SubcategoryPojo
+import ru.mercury.vpclient.shared.mvi.Model
+import ru.mercury.vpclient.shared.persistence.database.entity.CatalogCategoryEntity
+import ru.mercury.vpclient.shared.persistence.database.pojo.SubcategoryPojo
 
 data class CategoryModel(
     val entity: CatalogCategoryEntity = CatalogCategoryEntity.Empty,

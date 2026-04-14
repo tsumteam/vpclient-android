@@ -6,9 +6,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
-import ru.mercury.vpclient.core.navigation.BackRoute
-import ru.mercury.vpclient.core.ui.components.system.ClientNavDisplay
-import ru.mercury.vpclient.core.ui.ktx.ObserveAsEvents
+import ru.mercury.vpclient.shared.navigation.BackRoute
+import ru.mercury.vpclient.shared.ui.components.system.ClientNavDisplay
+import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.features.main.tabs.catalog.event.CatalogStackEventManager
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.category.CategoryScreen
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.category.navigation.CategoryRoute

@@ -7,13 +7,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.activity.event.MainEventManager
-import ru.mercury.vpclient.core.interactor.Interactor
-import ru.mercury.vpclient.core.mvi.ClientViewModel
-import ru.mercury.vpclient.core.mvi.Event
-import ru.mercury.vpclient.core.navigation.BackRoute
 import ru.mercury.vpclient.features.details.intent.DetailsIntent
 import ru.mercury.vpclient.features.details.model.DetailsModel
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
+import ru.mercury.vpclient.shared.interactor.Interactor
+import ru.mercury.vpclient.shared.mvi.ClientViewModel
+import ru.mercury.vpclient.shared.mvi.Event
+import ru.mercury.vpclient.shared.navigation.BackRoute
 
 // fixme
 
@@ -43,6 +43,7 @@ class DetailsViewModel @AssistedInject constructor(
                 val size = stateFlow.value.productEntity.availableSizes?.items?.getOrNull(intent.index)
                 reduce { it.copy(selectedSizeId = size?.sizeId) }
             }
+            is DetailsIntent.ProductClick -> launch { MainEventManager.send(DetailsRoute(intent.id)) }
         }
     }
 

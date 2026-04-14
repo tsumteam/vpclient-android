@@ -14,12 +14,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import ru.mercury.vpclient.core.ui.components.system.ClientCenterAlignedTopAppBar
-import ru.mercury.vpclient.core.ui.components.system.ClientLazyColumn
-import ru.mercury.vpclient.core.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.core.ui.theme.ClientStrings
-import ru.mercury.vpclient.core.ui.theme.ClientTheme
-import ru.mercury.vpclient.core.ui.theme.medium17
+import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
+import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
+import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
+import ru.mercury.vpclient.shared.ui.theme.ClientStrings
+import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.theme.medium17
 import ru.mercury.vpclient.features.main.tabs.fitting.intent.FittingIntent
 import ru.mercury.vpclient.features.main.tabs.fitting.model.FittingModel
 

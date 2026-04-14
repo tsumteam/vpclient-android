@@ -5,9 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import dagger.hilt.android.AndroidEntryPoint
-import ru.mercury.vpclient.core.ui.ktx.reportShortcutUsed
-import ru.mercury.vpclient.core.ui.ktx.setLightSystemBars
-import ru.mercury.vpclient.core.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.ktx.reportShortcutUsed
+import ru.mercury.vpclient.shared.ui.ktx.setLightSystemBars
+import ru.mercury.vpclient.shared.ui.theme.ClientTheme
 
 @AndroidEntryPoint
 class DebugActivity: ComponentActivity() {

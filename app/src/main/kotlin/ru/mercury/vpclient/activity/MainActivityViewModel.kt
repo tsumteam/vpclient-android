@@ -2,10 +2,10 @@ package ru.mercury.vpclient.activity
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.core.mvi.ClientViewModel
-import ru.mercury.vpclient.core.mvi.Event
-import ru.mercury.vpclient.core.persistence.datastore.PreferenceKey
-import ru.mercury.vpclient.core.persistence.datastore.SettingsDataStore
+import ru.mercury.vpclient.shared.mvi.ClientViewModel
+import ru.mercury.vpclient.shared.mvi.Event
+import ru.mercury.vpclient.shared.persistence.datastore.PreferenceKey
+import ru.mercury.vpclient.shared.persistence.datastore.SettingsDataStore
 import ru.mercury.vpclient.features.main.navigation.MainRoute
 import ru.mercury.vpclient.features.welcome.navigation.WelcomeRoute
 import ru.mercury.vpclient.activity.intent.MainActivityIntent

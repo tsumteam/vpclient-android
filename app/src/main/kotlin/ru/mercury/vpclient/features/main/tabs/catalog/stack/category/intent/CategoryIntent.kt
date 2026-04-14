@@ -1,6 +1,6 @@
 package ru.mercury.vpclient.features.main.tabs.catalog.stack.category.intent
 
-import ru.mercury.vpclient.core.mvi.Intent
+import ru.mercury.vpclient.shared.mvi.Intent
 
 sealed interface CategoryIntent: Intent {
     data object CollectCategoryEntity: CategoryIntent
