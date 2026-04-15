@@ -1,9 +1,9 @@
 package ru.mercury.vpclient.shared.ui.preview
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import ru.mercury.vpclient.shared.entity.FilterChip
-import ru.mercury.vpclient.shared.entity.FilterRibbonData
-import ru.mercury.vpclient.shared.entity.FiltersRowState
+import ru.mercury.vpclient.shared.data.entity.FilterChip
+import ru.mercury.vpclient.shared.data.entity.FilterRibbonData
+import ru.mercury.vpclient.shared.data.entity.FiltersRowState
 
 class FiltersRowStateProvider: PreviewParameterProvider<FiltersRowState> {
 

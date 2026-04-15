@@ -25,8 +25,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import ru.mercury.vpclient.shared.persistence.database.entity.CatalogCategoryEntity
-import ru.mercury.vpclient.shared.persistence.database.pojo.SubcategoryPojo
+import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogCategoryEntity
+import ru.mercury.vpclient.shared.data.persistence.database.pojo.SubcategoryPojo
 import ru.mercury.vpclient.shared.ui.components.catalog.CatalogCategorySection
 import ru.mercury.vpclient.shared.ui.components.IndicatorIconButton
 import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar

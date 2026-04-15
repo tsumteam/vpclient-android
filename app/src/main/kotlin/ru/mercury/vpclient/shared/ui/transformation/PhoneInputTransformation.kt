@@ -2,7 +2,7 @@ package ru.mercury.vpclient.shared.ui.transformation
 
 import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.TextFieldBuffer
-import ru.mercury.vpclient.shared.ktx.normalizePhoneInput
+import ru.mercury.vpclient.shared.domain.mapper.normalizePhoneInput
 
 class PhoneInputTransformation(
     private val maxDigits: Int = 13

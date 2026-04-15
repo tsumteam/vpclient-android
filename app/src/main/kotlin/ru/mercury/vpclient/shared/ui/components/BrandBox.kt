@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.theme.ClientTheme
-import ru.mercury.vpclient.shared.ui.theme.medium16
+import ru.mercury.vpclient.shared.ui.theme.livretMedium21
 
 @Composable
 fun BrandBox(
@@ -29,7 +29,7 @@ fun BrandBox(
             urlBrandLogo.isNullOrEmpty() -> {
                 Text(
                     text = brand,
-                    style = MaterialTheme.typography.medium16.copy( // fixme Какой тут шрифт?
+                    style = MaterialTheme.typography.livretMedium21.copy(
                         color = MaterialTheme.colorScheme.onBackground,
                         textAlign = TextAlign.Center
                     )

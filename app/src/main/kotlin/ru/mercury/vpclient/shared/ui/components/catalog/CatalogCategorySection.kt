@@ -19,10 +19,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import ru.mercury.vpclient.shared.ktx.isEmpty
-import ru.mercury.vpclient.shared.ktx.isNotEmpty
-import ru.mercury.vpclient.shared.persistence.database.entity.CatalogCategoryEntity
-import ru.mercury.vpclient.shared.persistence.database.pojo.SubcategoryPojo
+import ru.mercury.vpclient.shared.domain.mapper.isEmpty
+import ru.mercury.vpclient.shared.domain.mapper.isNotEmpty
+import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogCategoryEntity
+import ru.mercury.vpclient.shared.data.persistence.database.pojo.SubcategoryPojo
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.SubcategoryPojoProvider

@@ -1,8 +1,8 @@
 package ru.mercury.vpclient.shared.ui.preview
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import ru.mercury.vpclient.shared.network.response.CatalogCategoryResponse
-import ru.mercury.vpclient.shared.persistence.database.entity.CatalogCategoryEntity
+import ru.mercury.vpclient.shared.data.network.response.CatalogCategoryResponse
+import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogCategoryEntity
 
 class CatalogCategoryEntityProvider: PreviewParameterProvider<CatalogCategoryEntity> {
     override val values: Sequence<CatalogCategoryEntity> = sequenceOf(

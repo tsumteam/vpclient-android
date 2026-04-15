@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.shared.persistence.database.entity.CatalogCategoryEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogCategoryEntity
 import ru.mercury.vpclient.shared.ui.components.catalog.CatalogClothingCard
 import ru.mercury.vpclient.shared.ui.components.catalog.CatalogTabRow
 import ru.mercury.vpclient.shared.ui.components.IndicatorIconButton

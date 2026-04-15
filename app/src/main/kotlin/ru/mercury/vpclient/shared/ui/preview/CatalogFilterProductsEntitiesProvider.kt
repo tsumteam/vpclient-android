@@ -1,7 +1,7 @@
 package ru.mercury.vpclient.shared.ui.preview
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import ru.mercury.vpclient.shared.persistence.database.entity.CatalogFilterProductsEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 
 class CatalogFilterProductsEntitiesProvider: PreviewParameterProvider<List<CatalogFilterProductsEntity>> {
     override val values: Sequence<List<CatalogFilterProductsEntity>> = sequenceOf(
@@ -19,7 +19,8 @@ class CatalogFilterProductsEntitiesProvider: PreviewParameterProvider<List<Catal
                 brand = "SAINT LAURENT",
                 urlBrandLogo = "https://example.com/brand-logo.png",
                 imageUrl = "",
-                imageUrls = listOf("", "")
+                imageUrls = listOf("", ""),
+                additionalColorPhotoUrls = emptyList()
             ),
             CatalogFilterProductsEntity(
                 categoryId = 1,
@@ -34,7 +35,8 @@ class CatalogFilterProductsEntitiesProvider: PreviewParameterProvider<List<Catal
                 brand = "BRUNELLO CUCINELLI",
                 urlBrandLogo = null,
                 imageUrl = "",
-                imageUrls = listOf("")
+                imageUrls = listOf(""),
+                additionalColorPhotoUrls = emptyList()
             ),
             CatalogFilterProductsEntity(
                 categoryId = 1,
@@ -49,7 +51,8 @@ class CatalogFilterProductsEntitiesProvider: PreviewParameterProvider<List<Catal
                 brand = "TOM FORD",
                 urlBrandLogo = null,
                 imageUrl = "",
-                imageUrls = emptyList()
+                imageUrls = emptyList(),
+                additionalColorPhotoUrls = emptyList()
             ),
             CatalogFilterProductsEntity(
                 categoryId = 1,
@@ -64,7 +67,8 @@ class CatalogFilterProductsEntitiesProvider: PreviewParameterProvider<List<Catal
                 brand = "LORO PIANA",
                 urlBrandLogo = null,
                 imageUrl = "",
-                imageUrls = listOf("", "", "")
+                imageUrls = listOf("", "", ""),
+                additionalColorPhotoUrls = emptyList()
             )
         ),
         listOf(

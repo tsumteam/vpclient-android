@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.shared.entity.PhoneValidationError
+import ru.mercury.vpclient.shared.data.entity.PhoneValidationError
 import ru.mercury.vpclient.shared.ui.components.AgreementText
 import ru.mercury.vpclient.shared.ui.components.system.ClientButton
 import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar

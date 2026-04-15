@@ -1,7 +1,7 @@
 package ru.mercury.vpclient.shared.ui.preview
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import ru.mercury.vpclient.shared.entity.FilterTitleEntity
+import ru.mercury.vpclient.shared.data.entity.FilterTitleEntity
 
 class FilterTitleEntityProvider: PreviewParameterProvider<FilterTitleEntity> {
     private val titleCatalogCategoryEntity = CatalogCategoryEntityProvider().values.first()

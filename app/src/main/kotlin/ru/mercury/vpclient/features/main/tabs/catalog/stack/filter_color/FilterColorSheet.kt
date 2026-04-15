@@ -35,9 +35,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.shared.ktx.colorValues
-import ru.mercury.vpclient.shared.ktx.quantityWithThousandsSeparator
-import ru.mercury.vpclient.shared.ktx.requireQuantity
+import ru.mercury.vpclient.shared.domain.mapper.colorValues
+import ru.mercury.vpclient.shared.domain.mapper.quantityWithThousandsSeparator
+import ru.mercury.vpclient.shared.domain.mapper.requireQuantity
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.filters.FilterColorBox
 import ru.mercury.vpclient.shared.ui.components.system.ClientAnimatedVisibility

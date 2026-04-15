@@ -42,10 +42,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.shared.entity.SizeCountry
-import ru.mercury.vpclient.shared.ktx.quantityWithThousandsSeparator
-import ru.mercury.vpclient.shared.ktx.requireQuantity
-import ru.mercury.vpclient.shared.ktx.sizeValues
+import ru.mercury.vpclient.shared.data.entity.SizeCountry
+import ru.mercury.vpclient.shared.domain.mapper.quantityWithThousandsSeparator
+import ru.mercury.vpclient.shared.domain.mapper.requireQuantity
+import ru.mercury.vpclient.shared.domain.mapper.sizeValues
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.filters.FilterSizeCountrySelector
 import ru.mercury.vpclient.shared.ui.components.filters.FilterSelectableRow

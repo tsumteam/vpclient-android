@@ -2,6 +2,8 @@ package ru.mercury.vpclient.shared.ui.components.catalog
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -27,10 +30,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import ru.mercury.vpclient.shared.ktx.cardDiscountLabel
-import ru.mercury.vpclient.shared.ktx.imagePages
-import ru.mercury.vpclient.shared.ktx.isDiscountLabelVisible
-import ru.mercury.vpclient.shared.persistence.database.entity.CatalogFilterProductsEntity
+import ru.mercury.vpclient.shared.domain.mapper.cardDiscountLabel
+import ru.mercury.vpclient.shared.domain.mapper.imagePages
+import ru.mercury.vpclient.shared.domain.mapper.isDiscountLabelVisible
+import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.ui.components.BrandBox
 import ru.mercury.vpclient.shared.ui.components.DiscountBadge
 import ru.mercury.vpclient.shared.ui.components.HorizontalPagerIndicator
@@ -132,22 +135,34 @@ fun CatalogProductCard(
             }
         )
 
-        Text(
-            text = entity.name,
+        Row(
             modifier = Modifier.constrainAs(title) {
                 width = Dimension.fillToConstraints
                 start.linkTo(parent.start, 16.dp)
                 top.linkTo(brand.bottom, 1.dp)
                 end.linkTo(parent.end, 16.dp)
             },
-            overflow = TextOverflow.Ellipsis,
-            maxLines = 2,
-            style = MaterialTheme.typography.regular14.copy(
-                color = MaterialTheme.colorScheme.onBackground,
-                letterSpacing = .2.sp,
-                textAlign = TextAlign.Center
+            horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = entity.name,
+                modifier = Modifier.weight(1F, fill = false),
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
+                style = MaterialTheme.typography.regular14.copy(
+                    color = MaterialTheme.colorScheme.onBackground,
+                    letterSpacing = .2.sp,
+                    textAlign = TextAlign.Center
+                )
             )
-        )
+
+            if (entity.additionalColorPhotoUrls.isNotEmpty()) {
+                CatalogProductColorsRow(
+                    colorPhotoUrls = entity.additionalColorPhotoUrls
+                )
+            }
+        }
 
         PriceText(
             entity = entity,

@@ -21,7 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.mercury.vpclient.shared.network.env.ClientEnvironment
+import ru.mercury.vpclient.shared.data.network.env.ClientEnvironment
 import ru.mercury.vpclient.shared.ui.components.RadioRow
 import ru.mercury.vpclient.shared.ui.theme.ClientTheme
 import ru.mercury.vpclient.shared.ui.theme.divider2

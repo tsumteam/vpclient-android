@@ -19,7 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import ru.mercury.vpclient.shared.persistence.database.entity.EmployeeEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.placeholder

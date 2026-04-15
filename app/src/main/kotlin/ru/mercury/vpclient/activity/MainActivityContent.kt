@@ -16,7 +16,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.activity.intent.MainActivityIntent
-import ru.mercury.vpclient.shared.event.CenterLoading
+import ru.mercury.vpclient.shared.data.event.CenterLoading
 import ru.mercury.vpclient.shared.navigation.BackRoute
 import ru.mercury.vpclient.shared.ui.components.system.ClientNavDisplay
 import ru.mercury.vpclient.shared.ui.components.LoadingBox

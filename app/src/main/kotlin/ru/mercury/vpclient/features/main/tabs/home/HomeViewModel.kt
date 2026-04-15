@@ -1,7 +1,7 @@
 package ru.mercury.vpclient.features.main.tabs.home
 
 import dagger.hilt.android.lifecycle.HiltViewModel
-import ru.mercury.vpclient.shared.interactor.Interactor
+import ru.mercury.vpclient.shared.domain.interactor.Interactor
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.mvi.Event
 import ru.mercury.vpclient.features.main.tabs.home.intent.HomeIntent

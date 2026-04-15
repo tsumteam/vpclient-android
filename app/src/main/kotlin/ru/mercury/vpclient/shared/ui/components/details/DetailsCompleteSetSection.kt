@@ -14,7 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import ru.mercury.vpclient.shared.persistence.database.entity.CatalogFilterProductsEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.ui.components.catalog.CatalogProductCard
 import ru.mercury.vpclient.shared.ui.preview.CatalogFilterProductsEntitiesProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews

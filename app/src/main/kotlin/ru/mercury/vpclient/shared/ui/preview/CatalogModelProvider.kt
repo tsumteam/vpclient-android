@@ -1,7 +1,7 @@
 package ru.mercury.vpclient.shared.ui.preview
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import ru.mercury.vpclient.shared.entity.CatalogData
+import ru.mercury.vpclient.shared.data.entity.CatalogData
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.catalog.model.CatalogModel
 
 class CatalogModelProvider: PreviewParameterProvider<CatalogModel> {

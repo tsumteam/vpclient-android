@@ -10,7 +10,7 @@ import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.features.details.intent.DetailsIntent
 import ru.mercury.vpclient.features.details.model.DetailsModel
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
-import ru.mercury.vpclient.shared.interactor.Interactor
+import ru.mercury.vpclient.shared.domain.interactor.Interactor
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.mvi.Event
 import ru.mercury.vpclient.shared.navigation.BackRoute

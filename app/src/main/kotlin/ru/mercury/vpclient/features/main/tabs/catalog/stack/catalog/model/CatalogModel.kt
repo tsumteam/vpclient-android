@@ -1,6 +1,6 @@
 package ru.mercury.vpclient.features.main.tabs.catalog.stack.catalog.model
 
-import ru.mercury.vpclient.shared.entity.CatalogData
+import ru.mercury.vpclient.shared.data.entity.CatalogData
 import ru.mercury.vpclient.shared.mvi.Model
 
 data class CatalogModel(

@@ -1,7 +1,7 @@
 package ru.mercury.vpclient.shared.ui.preview
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import ru.mercury.vpclient.shared.entity.PhoneValidationError
+import ru.mercury.vpclient.shared.data.entity.PhoneValidationError
 import ru.mercury.vpclient.features.login.model.LoginModel
 
 class LoginModelProvider: PreviewParameterProvider<LoginModel> {

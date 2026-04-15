@@ -59,11 +59,11 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.shared.entity.FiltersRowState
-import ru.mercury.vpclient.shared.ktx.isSortChipSelected
-import ru.mercury.vpclient.shared.ktx.productsQuantityWithThousandsSeparator
-import ru.mercury.vpclient.shared.ktx.requireProductsQuantity
-import ru.mercury.vpclient.shared.persistence.database.entity.CatalogFilterProductsEntity
+import ru.mercury.vpclient.shared.data.entity.FiltersRowState
+import ru.mercury.vpclient.shared.domain.mapper.isSortChipSelected
+import ru.mercury.vpclient.shared.domain.mapper.productsQuantityWithThousandsSeparator
+import ru.mercury.vpclient.shared.domain.mapper.requireProductsQuantity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.ui.components.catalog.CatalogProductCard
 import ru.mercury.vpclient.shared.ui.components.filters.FilterProductsLoadingContent
 import ru.mercury.vpclient.shared.ui.components.filters.FilterScreenTitle

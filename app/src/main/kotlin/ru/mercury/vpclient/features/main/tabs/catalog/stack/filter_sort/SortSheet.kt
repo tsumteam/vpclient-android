@@ -32,8 +32,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.shared.entity.SortType
-import ru.mercury.vpclient.shared.ktx.isResetButtonVisible
+import ru.mercury.vpclient.shared.data.entity.SortType
+import ru.mercury.vpclient.shared.domain.mapper.isResetButtonVisible
 import ru.mercury.vpclient.shared.ui.components.filters.FilterListRow
 import ru.mercury.vpclient.shared.ui.components.system.ClientAnimatedVisibility
 import ru.mercury.vpclient.shared.ui.components.system.ClientButton

@@ -1,8 +1,8 @@
 package ru.mercury.vpclient.shared.ui.preview
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import ru.mercury.vpclient.shared.persistence.database.entity.CatalogCategoryEntity
-import ru.mercury.vpclient.shared.persistence.database.pojo.SubcategoryPojo
+import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogCategoryEntity
+import ru.mercury.vpclient.shared.data.persistence.database.pojo.SubcategoryPojo
 
 class SubcategoryPojoProvider: PreviewParameterProvider<SubcategoryPojo> {
     private val catalogCategoryEntity = CatalogCategoryEntityProvider().values.first()

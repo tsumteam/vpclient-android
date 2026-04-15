@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.shared.persistence.database.entity.EmployeeEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.ui.components.consultants.ConsultantCard
 import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
 import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn

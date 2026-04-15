@@ -81,9 +81,9 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.shared.entity.BrandFilterValue
-import ru.mercury.vpclient.shared.ktx.quantityWithThousandsSeparator
-import ru.mercury.vpclient.shared.ktx.requireQuantity
+import ru.mercury.vpclient.shared.data.entity.BrandFilterValue
+import ru.mercury.vpclient.shared.domain.mapper.quantityWithThousandsSeparator
+import ru.mercury.vpclient.shared.domain.mapper.requireQuantity
 import ru.mercury.vpclient.shared.ui.components.system.ClientAnimatedVisibility
 import ru.mercury.vpclient.shared.ui.components.system.ClientButton
 import ru.mercury.vpclient.shared.ui.components.system.ClientDragHandle

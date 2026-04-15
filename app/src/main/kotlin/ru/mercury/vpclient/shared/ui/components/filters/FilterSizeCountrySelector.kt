@@ -14,7 +14,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.mercury.vpclient.shared.entity.SizeCountry
+import ru.mercury.vpclient.shared.data.entity.SizeCountry
 import ru.mercury.vpclient.shared.ui.preview.SizeCountryProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.theme.ClientTheme

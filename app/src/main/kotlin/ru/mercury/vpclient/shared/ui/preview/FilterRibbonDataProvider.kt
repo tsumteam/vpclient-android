@@ -1,8 +1,8 @@
 package ru.mercury.vpclient.shared.ui.preview
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import ru.mercury.vpclient.shared.entity.FilterChip
-import ru.mercury.vpclient.shared.entity.FilterRibbonData
+import ru.mercury.vpclient.shared.data.entity.FilterChip
+import ru.mercury.vpclient.shared.data.entity.FilterRibbonData
 
 class FilterRibbonDataProvider: PreviewParameterProvider<FilterRibbonData> {
     override val values: Sequence<FilterRibbonData> = sequenceOf(

@@ -1,8 +1,8 @@
 package ru.mercury.vpclient.shared.ui.preview
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import ru.mercury.vpclient.shared.entity.NameValidationError
-import ru.mercury.vpclient.shared.entity.PhoneValidationError
+import ru.mercury.vpclient.shared.data.entity.NameValidationError
+import ru.mercury.vpclient.shared.data.entity.PhoneValidationError
 import ru.mercury.vpclient.features.register.model.RegisterModel
 
 class RegisterModelProvider: PreviewParameterProvider<RegisterModel> {

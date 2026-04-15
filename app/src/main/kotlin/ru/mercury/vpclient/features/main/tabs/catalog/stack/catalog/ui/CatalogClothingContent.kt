@@ -9,7 +9,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import ru.mercury.vpclient.shared.persistence.database.entity.CatalogCategoryEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogCategoryEntity
 import ru.mercury.vpclient.shared.ui.components.catalog.CatalogClothingCard
 import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
 

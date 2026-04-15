@@ -35,7 +35,7 @@ fun ClientTextButton(
         enabled = !isLoading,
         modifier = modifier
             .fillMaxWidth()
-            .height(56.dp),
+            .height(52.dp),
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Transparent,

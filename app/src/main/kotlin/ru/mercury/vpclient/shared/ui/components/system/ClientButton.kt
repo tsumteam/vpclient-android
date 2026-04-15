@@ -31,7 +31,7 @@ fun ClientButton(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .height(56.dp),
+            .height(52.dp),
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,
@@ -75,7 +75,7 @@ fun ClientButton(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .height(56.dp),
+            .height(52.dp),
         enabled = enabled,
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
@@ -87,11 +87,11 @@ fun ClientButton(
     ) {
         Text(
             text = text,
+            maxLines = 1,
+            autoSize = textAutoSize,
             style = MaterialTheme.typography.medium16.copy(
                 textAlign = TextAlign.Center
-            ),
-            maxLines = 1,
-            autoSize = textAutoSize
+            )
         )
     }
 }
@@ -122,7 +122,7 @@ fun ClientButton(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .height(56.dp),
+            .height(52.dp),
         enabled = !loading,
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
@@ -182,7 +182,7 @@ fun ClientButton(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .height(56.dp),
+            .height(52.dp),
         enabled = isEnabled,
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(

@@ -1,7 +1,7 @@
 package ru.mercury.vpclient.shared.ui.preview
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import ru.mercury.vpclient.shared.persistence.database.entity.EmployeeEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 
 class EmployeeEntityProvider: PreviewParameterProvider<EmployeeEntity> {
     override val values: Sequence<EmployeeEntity> = sequenceOf(

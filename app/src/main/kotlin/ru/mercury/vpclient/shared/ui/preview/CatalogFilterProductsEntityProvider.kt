@@ -1,7 +1,7 @@
 package ru.mercury.vpclient.shared.ui.preview
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import ru.mercury.vpclient.shared.persistence.database.entity.CatalogFilterProductsEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 
 class CatalogFilterProductsEntityProvider: PreviewParameterProvider<CatalogFilterProductsEntity> {
     override val values: Sequence<CatalogFilterProductsEntity> = sequenceOf(
@@ -18,7 +18,14 @@ class CatalogFilterProductsEntityProvider: PreviewParameterProvider<CatalogFilte
             brand = "SAINT LAURENT",
             urlBrandLogo = "https://example.com/brand-logo.png",
             imageUrl = "",
-            imageUrls = listOf("", "")
+            imageUrls = listOf("", ""),
+            additionalColorPhotoUrls = listOf(
+                "https://st.vip-platinum.ru/catalog/ColorSearchCard/Blue.png",
+                "https://st.vip-platinum.ru/catalog/ColorSearchCard/Bordo.png",
+                "https://st.vip-platinum.ru/catalog/ColorSearchCard/Black.png",
+                "https://st.vip-platinum.ru/catalog/ColorSearchCard/Grey.png",
+                "https://st.vip-platinum.ru/catalog/ColorSearchCard/Green.png"
+            )
         ),
         CatalogFilterProductsEntity(
             categoryId = 1,
@@ -33,7 +40,8 @@ class CatalogFilterProductsEntityProvider: PreviewParameterProvider<CatalogFilte
             brand = "BRUNELLO CUCINELLI",
             urlBrandLogo = null,
             imageUrl = "",
-            imageUrls = listOf("")
+            imageUrls = listOf(""),
+            additionalColorPhotoUrls = emptyList()
         )
     )
 }

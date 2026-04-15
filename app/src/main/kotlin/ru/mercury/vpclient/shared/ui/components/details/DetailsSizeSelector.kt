@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import ru.mercury.vpclient.shared.entity.SizeSelectorState
+import ru.mercury.vpclient.shared.data.entity.SizeSelectorState
 import ru.mercury.vpclient.shared.ui.preview.SizeSelectorStateProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings

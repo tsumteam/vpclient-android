@@ -1,7 +1,7 @@
 package ru.mercury.vpclient.shared.ui.preview
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import ru.mercury.vpclient.shared.persistence.database.entity.ProductEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
 
 class InfoRowProvider: PreviewParameterProvider<ProductEntity> {
     override val values: Sequence<ProductEntity> = sequenceOf(

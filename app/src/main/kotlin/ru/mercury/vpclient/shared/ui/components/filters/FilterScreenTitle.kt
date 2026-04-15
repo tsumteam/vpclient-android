@@ -16,8 +16,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.mercury.vpclient.shared.entity.FilterTitleEntity
-import ru.mercury.vpclient.shared.ktx.isEmpty
+import ru.mercury.vpclient.shared.data.entity.FilterTitleEntity
+import ru.mercury.vpclient.shared.domain.mapper.isEmpty
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
 import ru.mercury.vpclient.shared.ui.ktx.clickableWithoutRipple

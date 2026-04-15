@@ -55,6 +55,7 @@ import ru.mercury.vpclient.shared.ui.components.details.DetailsOutfitButton
 import ru.mercury.vpclient.shared.ui.components.details.DetailsPagerIndicator
 import ru.mercury.vpclient.shared.ui.components.details.DetailsProductInfoBox
 import ru.mercury.vpclient.shared.ui.components.details.DetailsSizeSelector
+import ru.mercury.vpclient.shared.ui.components.details.DetailsVideoPlayer
 import ru.mercury.vpclient.shared.ui.components.details.DetailsWearWithSection
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.components.system.ClientButton
@@ -94,18 +95,20 @@ private fun DetailsScreenContent(
     state: DetailsModel,
     dispatch: (DetailsIntent) -> Unit
 ) {
-    val pagerImages = remember(state.productEntity.colorImageUrls, state.productEntity.urlItemVideo) {
-        state.productEntity.colorImageUrls + listOfNotNull(state.productEntity.urlItemVideo)
+    val pagerItems = remember(state.productEntity.colorImageUrls, state.productEntity.urlItemVideo) {
+        val images = state.productEntity.colorImageUrls.map { DetailsMediaItem.Image(it) }
+        val video = state.productEntity.urlItemVideo?.let { listOf(DetailsMediaItem.Video(it)) }.orEmpty()
+        images + video
     }
     val pagerState = rememberPagerState(
         initialPage = 0,
-        pageCount = { if (pagerImages.isEmpty()) 0 else Int.MAX_VALUE }
+        pageCount = { if (pagerItems.isEmpty()) 0 else Int.MAX_VALUE }
     )
 
-    LaunchedEffect(pagerImages.size) {
-        if (pagerImages.isNotEmpty()) {
+    LaunchedEffect(pagerItems.size) {
+        if (pagerItems.isNotEmpty()) {
             val mid = Int.MAX_VALUE / 2
-            pagerState.scrollToPage(mid - mid % pagerImages.size)
+            pagerState.scrollToPage(mid - mid % pagerItems.size)
         }
     }
 
@@ -296,13 +299,26 @@ private fun DetailsScreenContent(
                             HorizontalPager(
                                 state = pagerState,
                                 modifier = Modifier.fillMaxSize(),
-                                userScrollEnabled = pagerImages.size > 1
+                                userScrollEnabled = pagerItems.size > 1
                             ) { page ->
-                                ClientAsyncImage(
-                                    imageUrl = pagerImages[page % pagerImages.size],
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentScale = ContentScale.Fit
-                                )
+                                when (val item = pagerItems[page % pagerItems.size]) {
+                                    is DetailsMediaItem.Image -> {
+                                        ClientAsyncImage(
+                                            imageUrl = item.url,
+                                            modifier = Modifier.fillMaxSize(),
+                                            contentScale = ContentScale.Fit
+                                        )
+                                    }
+                                    is DetailsMediaItem.Video -> {
+                                        DetailsVideoPlayer(
+                                            videoUrl = item.url,
+                                            isVisible = pagerState.currentPage == page,
+                                            modifier = Modifier
+                                                .padding(horizontal = 16.dp)
+                                                .fillMaxSize()
+                                        )
+                                    }
+                                }
                             }
 
                             DetailsOutfitButton(
@@ -321,8 +337,8 @@ private fun DetailsScreenContent(
                     item {
                         DetailsPagerIndicator(
                             pagerState = pagerState,
-                            pageCount = pagerImages.size,
-                            pageIndexMapping = { it % pagerImages.size },
+                            pageCount = pagerItems.size,
+                            pageIndexMapping = { it % pagerItems.size },
                             showVideoIcon = state.hasVideo,
                             modifier = Modifier
                                 .fillMaxWidth()

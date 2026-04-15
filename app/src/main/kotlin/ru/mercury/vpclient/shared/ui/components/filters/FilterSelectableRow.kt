@@ -32,8 +32,8 @@ fun FilterSelectableRow(
         modifier = Modifier
             .fillMaxWidth()
             .height(48.dp)
-            .padding(horizontal = 16.dp)
-            .clickable(onClick = onClick),
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp),
         contentAlignment = Alignment.CenterStart
     ) {
         ClientAnimatedVisibility(

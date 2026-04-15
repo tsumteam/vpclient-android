@@ -2,9 +2,9 @@ package ru.mercury.vpclient.features.login
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.shared.exception.LoginException
-import ru.mercury.vpclient.shared.interactor.Interactor
-import ru.mercury.vpclient.shared.ktx.normalizePhoneInput
+import ru.mercury.vpclient.shared.data.error.LoginException
+import ru.mercury.vpclient.shared.domain.interactor.Interactor
+import ru.mercury.vpclient.shared.domain.mapper.normalizePhoneInput
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.features.code.navigation.CodeRoute
 import ru.mercury.vpclient.features.login.event.LoginEvents

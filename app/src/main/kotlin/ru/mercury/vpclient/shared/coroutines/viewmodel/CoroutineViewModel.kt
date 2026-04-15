@@ -8,7 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
-import ru.mercury.vpclient.shared.ktx.log
+import ru.mercury.vpclient.shared.domain.mapper.log
 import timber.log.Timber
 import kotlin.coroutines.CoroutineContext
 

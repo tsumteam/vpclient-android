@@ -1,8 +1,8 @@
 package ru.mercury.vpclient.shared.ui.preview
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import ru.mercury.vpclient.shared.persistence.database.entity.FilterValuesEntity
-import ru.mercury.vpclient.shared.persistence.database.entity.FilterValuesQuantityEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesQuantityEntity
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_color.model.FilterColorSheetState
 
 class FilterColorSheetStateProvider: PreviewParameterProvider<FilterColorSheetState> {

@@ -2,8 +2,8 @@ package ru.mercury.vpclient.shared.ui.preview
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import kotlinx.coroutines.Job
-import ru.mercury.vpclient.shared.entity.CodeValidationError
-import ru.mercury.vpclient.shared.persistence.database.entity.ClientEntity
+import ru.mercury.vpclient.shared.data.entity.CodeValidationError
+import ru.mercury.vpclient.shared.data.persistence.database.entity.ClientEntity
 import ru.mercury.vpclient.features.code.model.CodeModel
 
 class CodeModelProvider: PreviewParameterProvider<CodeModel> {

@@ -39,7 +39,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.mercury.vpclient.shared.CODE_LENGTH
+import ru.mercury.vpclient.shared.data.CODE_LENGTH
 import ru.mercury.vpclient.shared.ui.theme.ClientTheme
 import ru.mercury.vpclient.shared.ui.theme.medium21
 

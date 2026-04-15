@@ -29,7 +29,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.shared.persistence.database.entity.EmployeeEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.ui.components.consultants.ConsultantActionsRow
 import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
 import ru.mercury.vpclient.shared.ui.components.system.ClientSnackbarHost

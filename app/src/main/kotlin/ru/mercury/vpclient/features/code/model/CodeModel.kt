@@ -1,10 +1,10 @@
 package ru.mercury.vpclient.features.code.model
 
 import kotlinx.coroutines.Job
-import ru.mercury.vpclient.shared.CODE_LENGTH
-import ru.mercury.vpclient.shared.entity.CodeValidationError
+import ru.mercury.vpclient.shared.data.CODE_LENGTH
+import ru.mercury.vpclient.shared.data.entity.CodeValidationError
 import ru.mercury.vpclient.shared.mvi.Model
-import ru.mercury.vpclient.shared.persistence.database.entity.ClientEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.ClientEntity
 
 data class CodeModel(
     val code: String = "",

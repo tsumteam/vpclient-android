@@ -41,9 +41,9 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.shared.entity.CodeValidationError
-import ru.mercury.vpclient.shared.ktx.formatCodeResendTime
-import ru.mercury.vpclient.shared.ktx.formatPhoneForDisplay
+import ru.mercury.vpclient.shared.data.entity.CodeValidationError
+import ru.mercury.vpclient.shared.domain.mapper.formatCodeResendTime
+import ru.mercury.vpclient.shared.domain.mapper.formatPhoneForDisplay
 import ru.mercury.vpclient.shared.ui.components.system.ClientButton
 import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
 import ru.mercury.vpclient.shared.ui.components.system.ClientSnackbarHost

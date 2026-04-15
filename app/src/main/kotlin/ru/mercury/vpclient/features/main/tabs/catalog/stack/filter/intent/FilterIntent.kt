@@ -1,6 +1,6 @@
 package ru.mercury.vpclient.features.main.tabs.catalog.stack.filter.intent
 
-import ru.mercury.vpclient.shared.entity.SortType
+import ru.mercury.vpclient.shared.data.entity.SortType
 import ru.mercury.vpclient.shared.mvi.Intent
 
 sealed interface FilterIntent: Intent {

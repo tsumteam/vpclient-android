@@ -1,7 +1,7 @@
 package ru.mercury.vpclient.features.debug.intent
 
 import ru.mercury.vpclient.shared.mvi.Intent
-import ru.mercury.vpclient.shared.network.env.ClientEnvironment
+import ru.mercury.vpclient.shared.data.network.env.ClientEnvironment
 
 sealed interface DebugIntent: Intent {
     data object BackClick: DebugIntent

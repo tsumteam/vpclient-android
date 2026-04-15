@@ -25,10 +25,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.shared.entity.FilterChip
-import ru.mercury.vpclient.shared.entity.FiltersRowState
-import ru.mercury.vpclient.shared.ktx.isEmpty
-import ru.mercury.vpclient.shared.ktx.isNotEmpty
+import ru.mercury.vpclient.shared.data.entity.FilterChip
+import ru.mercury.vpclient.shared.data.entity.FiltersRowState
+import ru.mercury.vpclient.shared.domain.mapper.isEmpty
+import ru.mercury.vpclient.shared.domain.mapper.isNotEmpty
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.FiltersRowStateProvider

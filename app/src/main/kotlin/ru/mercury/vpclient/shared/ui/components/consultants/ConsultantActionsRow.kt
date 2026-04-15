@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import ru.mercury.vpclient.shared.persistence.database.entity.EmployeeEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.icons.Basket24
 import ru.mercury.vpclient.shared.ui.icons.Chat24

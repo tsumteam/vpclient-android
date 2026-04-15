@@ -20,7 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.mercury.vpclient.shared.entity.SizeState
+import ru.mercury.vpclient.shared.data.entity.SizeState
 import ru.mercury.vpclient.shared.ui.preview.SizeStateProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.theme.ClientTheme

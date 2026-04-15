@@ -1,17 +1,17 @@
 package ru.mercury.vpclient.features.main.tabs.catalog.stack.filter.model
 
 import kotlinx.coroutines.Job
-import ru.mercury.vpclient.shared.entity.FilterChip
-import ru.mercury.vpclient.shared.entity.FilterData
-import ru.mercury.vpclient.shared.entity.SortType
-import ru.mercury.vpclient.shared.ktx.isFilterValuesDialogChipId
-import ru.mercury.vpclient.shared.ktx.isEmpty
-import ru.mercury.vpclient.shared.ktx.isRequestAffectingCatalogFilterValueChipId
+import ru.mercury.vpclient.shared.data.entity.FilterChip
+import ru.mercury.vpclient.shared.data.entity.FilterData
+import ru.mercury.vpclient.shared.data.entity.SortType
+import ru.mercury.vpclient.shared.domain.mapper.isFilterValuesDialogChipId
+import ru.mercury.vpclient.shared.domain.mapper.isEmpty
+import ru.mercury.vpclient.shared.domain.mapper.isRequestAffectingCatalogFilterValueChipId
 import ru.mercury.vpclient.shared.mvi.Model
-import ru.mercury.vpclient.shared.network.request.CatalogFilterRequest
-import ru.mercury.vpclient.shared.persistence.database.entity.FilterValuesEntity
-import ru.mercury.vpclient.shared.persistence.database.entity.FilterValuesQuantityEntity
-import ru.mercury.vpclient.shared.ktx.brandValues
+import ru.mercury.vpclient.shared.data.network.request.CatalogFilterRequest
+import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesQuantityEntity
+import ru.mercury.vpclient.shared.domain.mapper.brandValues
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_brand.model.FilterBrandSheetState
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_color.model.FilterColorSheetState
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_size.model.FilterSizeSheetState

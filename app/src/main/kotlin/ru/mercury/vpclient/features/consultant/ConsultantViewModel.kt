@@ -6,10 +6,10 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.shared.RoomException
-import ru.mercury.vpclient.shared.RoomSQLiteException
-import ru.mercury.vpclient.shared.exception.ClientException
-import ru.mercury.vpclient.shared.interactor.Interactor
+import ru.mercury.vpclient.shared.data.persistence.database.RoomException
+import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
+import ru.mercury.vpclient.shared.data.error.ClientException
+import ru.mercury.vpclient.shared.domain.interactor.Interactor
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.navigation.BackRoute
 import ru.mercury.vpclient.features.consultant.event.ConsultantEvent

@@ -24,8 +24,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.shared.entity.DetailsField
-import ru.mercury.vpclient.shared.persistence.database.entity.ProductEntity
+import ru.mercury.vpclient.shared.data.entity.DetailsField
+import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
 import ru.mercury.vpclient.shared.ui.icons.Copy24
 import ru.mercury.vpclient.shared.ui.preview.InfoRowProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
