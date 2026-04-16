@@ -34,8 +34,8 @@ fun ClientTopAppBar(
 
 @Composable
 fun ClientTopAppBar(
-    title: @Composable () -> Unit,
     modifier: Modifier = Modifier,
+    title: @Composable () -> Unit = {},
     navigationIcon: @Composable () -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {}
 ) {

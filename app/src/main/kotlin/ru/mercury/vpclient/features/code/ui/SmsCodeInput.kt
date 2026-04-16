@@ -37,25 +37,29 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.data.CODE_LENGTH
+import ru.mercury.vpclient.shared.data.entity.SmsCodeInputState
+import ru.mercury.vpclient.shared.ui.preview.SmsCodeInputStateProvider
 import ru.mercury.vpclient.shared.ui.theme.ClientTheme
-import ru.mercury.vpclient.shared.ui.theme.medium21
+import ru.mercury.vpclient.shared.ui.theme.black1
+import ru.mercury.vpclient.shared.ui.theme.medium17
+import ru.mercury.vpclient.shared.ui.theme.surface3
 
 @Composable
 fun SmsCodeInput(
-    value: String,
+    state: SmsCodeInputState,
     onValueChange: (String) -> Unit,
     focusRequester: FocusRequester,
-    isErrorVisible: Boolean,
     modifier: Modifier = Modifier,
     keyboardActions: KeyboardActions = KeyboardActions.Default
 ) {
     var isFocused by remember { mutableStateOf(false) }
     val interactionSource = remember { MutableInteractionSource() }
     val keyboardController = LocalSoftwareKeyboardController.current
-    val filteredValue = value.filter(Char::isDigit).take(CODE_LENGTH)
+    val filteredValue = state.value.filter(Char::isDigit).take(CODE_LENGTH)
     val infiniteTransition = rememberInfiniteTransition(label = "sms_code_cursor_transition")
     val cursorAlpha by infiniteTransition.animateFloat(
         initialValue = 1F,
@@ -96,25 +100,25 @@ fun SmsCodeInput(
                     ) {
                         focusRequester.requestFocus()
                         keyboardController?.show()
-                    },
-                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                },
+                horizontalArrangement = Arrangement.spacedBy(9.dp, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 repeat(CODE_LENGTH) { index ->
                     val symbol = filteredValue.getOrNull(index)?.toString().orEmpty()
                     val activeIndex = filteredValue.length.takeIf { it < CODE_LENGTH }
-                    val shouldShowCursor = isFocused && !isErrorVisible && activeIndex == index
+                    val shouldShowCursor = isFocused && activeIndex == index
 
                     Box(
                         modifier = Modifier
-                            .size(width = 52.dp, height = 56.dp)
+                            .size(56.dp)
                             .background(
-                                color = MaterialTheme.colorScheme.surface,
+                                color = MaterialTheme.colorScheme.surface3,
                                 shape = RoundedCornerShape(8.dp)
                             )
                             .border(
                                 width = 1.dp,
-                                color = if (isErrorVisible) MaterialTheme.colorScheme.error else Color.Transparent,
+                                color = if (state.isErrorVisible) MaterialTheme.colorScheme.error else Color.Transparent,
                                 shape = RoundedCornerShape(8.dp)
                             ),
                         contentAlignment = Alignment.Center
@@ -122,9 +126,8 @@ fun SmsCodeInput(
                         if (symbol.isNotEmpty()) {
                             Text(
                                 text = symbol,
-                                style = MaterialTheme.typography.medium21.copy(
-                                    color = MaterialTheme.colorScheme.onBackground,
-                                    lineHeight = 21.sp
+                                style = MaterialTheme.typography.medium17.copy(
+                                    color = MaterialTheme.colorScheme.black1
                                 )
                             )
                         }
@@ -134,7 +137,11 @@ fun SmsCodeInput(
                                 modifier = Modifier
                                     .align(Alignment.Center)
                                     .size(width = 2.dp, height = 20.dp)
-                                    .background(MaterialTheme.colorScheme.onBackground.copy(alpha = cursorAlpha))
+                                    .background(
+                                        MaterialTheme.colorScheme.error.copy(
+                                            alpha = cursorAlpha
+                                        )
+                                    )
                             )
                         }
                     }
@@ -146,13 +153,14 @@ fun SmsCodeInput(
 
 @Preview
 @Composable
-private fun SmsCodeInputPreview() {
+private fun SmsCodeInputPreview(
+    @PreviewParameter(SmsCodeInputStateProvider::class) state: SmsCodeInputState
+) {
     ClientTheme {
         SmsCodeInput(
-            value = "123",
+            state = state,
             onValueChange = {},
-            focusRequester = remember { FocusRequester() },
-            isErrorVisible = false
+            focusRequester = remember { FocusRequester() }
         )
     }
 }

@@ -8,6 +8,8 @@ import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,12 +42,14 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.ktx.keyboardActionHandler
 import ru.mercury.vpclient.shared.ui.ktx.rememberSyncedTextFieldState
 import ru.mercury.vpclient.shared.ui.theme.ClientTheme
-import ru.mercury.vpclient.shared.ui.theme.green
 import ru.mercury.vpclient.shared.ui.theme.medium16
+import ru.mercury.vpclient.shared.ui.theme.regular12
+import ru.mercury.vpclient.shared.ui.theme.surface3
 
 @Composable
 fun ClientTextField(
@@ -73,6 +77,7 @@ fun ClientTextField(
         state = textState,
         modifier = modifier
             .fillMaxWidth()
+            .heightIn(min = 52.dp)
             .onSizeChanged { size ->
                 if (!isErrorVisible) {
                     normalHeightPx = size.height
@@ -102,26 +107,18 @@ fun ClientTextField(
             )
         },
         trailingIcon = {
-            when {
-                isErrorVisible && currentValue.isNotEmpty() -> {
+            ClientAnimatedVisibility(
+                visible = isFocused && currentValue.isNotEmpty()
+            ) {
+                IconButton(
+                    onClick = { textState.setTextAndPlaceCursorAtEnd("") }
+                ) {
                     Icon(
                         imageVector = Close24,
                         contentDescription = null,
                         modifier = Modifier.size(24.dp),
-                        tint = MaterialTheme.colorScheme.error
+                        tint = MaterialTheme.colorScheme.secondary
                     )
-                }
-                isFocused && currentValue.isNotEmpty() -> {
-                    IconButton(
-                        onClick = { textState.setTextAndPlaceCursorAtEnd("") }
-                    ) {
-                        Icon(
-                            imageVector = Close24,
-                            contentDescription = null,
-                            modifier = Modifier.size(24.dp),
-                            tint = MaterialTheme.colorScheme.secondary
-                        )
-                    }
                 }
             }
         },
@@ -130,12 +127,17 @@ fun ClientTextField(
                 {
                     Text(
                         text = error,
-                        color = MaterialTheme.colorScheme.error
+                        style = MaterialTheme.typography.regular12.copy(
+                            color = MaterialTheme.colorScheme.error,
+                            lineHeight = 16.sp,
+                            letterSpacing = .2.sp
+                        )
                     )
                 }
             }
             else -> null
         },
+        isError = isErrorVisible,
         keyboardOptions = keyboardOptions,
         onKeyboardAction = keyboardActionHandler(keyboardOptions, keyboardActions),
         lineLimits = TextFieldLineLimits.SingleLine,
@@ -144,11 +146,14 @@ fun ClientTextField(
         colors = TextFieldDefaults.colors().copy(
             focusedTextColor = MaterialTheme.colorScheme.onBackground,
             unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
-            cursorColor = MaterialTheme.colorScheme.onBackground,
-            focusedContainerColor = MaterialTheme.colorScheme.surface,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+            cursorColor = MaterialTheme.colorScheme.error,
+            focusedContainerColor = MaterialTheme.colorScheme.surface3,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface3,
+            errorContainerColor = MaterialTheme.colorScheme.surface3,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
+            errorIndicatorColor = Color.Transparent,
+            errorSupportingTextColor = MaterialTheme.colorScheme.error,
             focusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
             unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -175,7 +180,9 @@ fun ClientTextField(
 
     TextField(
         state = textState,
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .height(52.dp),
         enabled = enabled,
         textStyle = MaterialTheme.typography.medium16.copy(
             color = MaterialTheme.colorScheme.onBackground
@@ -187,26 +194,18 @@ fun ClientTextField(
             )
         },
         trailingIcon = {
-            when {
-                accepted -> {
+            ClientAnimatedVisibility(
+                visible = isFocused && currentValue.isNotEmpty()
+            ) {
+                IconButton(
+                    onClick = { textState.setTextAndPlaceCursorAtEnd("") }
+                ) {
                     Icon(
                         imageVector = Close24,
                         contentDescription = null,
                         modifier = Modifier.size(24.dp),
-                        tint = MaterialTheme.colorScheme.green
+                        tint = MaterialTheme.colorScheme.secondary
                     )
-                }
-                isFocused && currentValue.isNotEmpty() -> {
-                    IconButton(
-                        onClick = { textState.setTextAndPlaceCursorAtEnd("") }
-                    ) {
-                        Icon(
-                            imageVector = Close24,
-                            contentDescription = null,
-                            modifier = Modifier.size(24.dp),
-                            tint = MaterialTheme.colorScheme.secondary
-                        )
-                    }
                 }
             }
         },
@@ -219,10 +218,10 @@ fun ClientTextField(
         colors = TextFieldDefaults.colors().copy(
             focusedTextColor = MaterialTheme.colorScheme.onBackground,
             unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
-            cursorColor = MaterialTheme.colorScheme.onBackground,
-            focusedContainerColor = Color.White,
-            unfocusedContainerColor = Color.White,
-            disabledContainerColor = Color.White,
+            cursorColor = MaterialTheme.colorScheme.error,
+            focusedContainerColor = MaterialTheme.colorScheme.surface3,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface3,
+            disabledContainerColor = MaterialTheme.colorScheme.surface3,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
             disabledIndicatorColor = Color.Transparent,
@@ -260,6 +259,7 @@ fun ClientTextField(
         state = textState,
         modifier = modifier
             .fillMaxWidth()
+            .heightIn(min = 52.dp)
             .onSizeChanged { size ->
                 if (!isErrorVisible) {
                     normalHeightPx = size.height
@@ -289,7 +289,9 @@ fun ClientTextField(
             )
         },
         trailingIcon = {
-            if (isFocused && currentValue.isNotEmpty()) {
+            ClientAnimatedVisibility(
+                visible = isFocused && currentValue.isNotEmpty()
+            ) {
                 IconButton(
                     onClick = { textState.setTextAndPlaceCursorAtEnd("") }
                 ) {
@@ -307,12 +309,17 @@ fun ClientTextField(
                 {
                     Text(
                         text = error,
-                        color = MaterialTheme.colorScheme.error
+                        style = MaterialTheme.typography.regular12.copy(
+                            color = MaterialTheme.colorScheme.error,
+                            lineHeight = 16.sp,
+                            letterSpacing = .2.sp
+                        )
                     )
                 }
             }
             else -> null
         },
+        isError = isErrorVisible,
         inputTransformation = inputTransformation,
         outputTransformation = outputTransformation,
         keyboardOptions = keyboardOptions,
@@ -323,11 +330,14 @@ fun ClientTextField(
         colors = TextFieldDefaults.colors().copy(
             focusedTextColor = MaterialTheme.colorScheme.onBackground,
             unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
-            cursorColor = MaterialTheme.colorScheme.onBackground,
-            focusedContainerColor = MaterialTheme.colorScheme.surface,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+            cursorColor = MaterialTheme.colorScheme.error,
+            focusedContainerColor = MaterialTheme.colorScheme.surface3,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface3,
+            errorContainerColor = MaterialTheme.colorScheme.surface3,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
+            errorIndicatorColor = Color.Transparent,
+            errorSupportingTextColor = MaterialTheme.colorScheme.error,
             focusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
             unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
         )

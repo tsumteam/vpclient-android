@@ -15,10 +15,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.theme.ClientTheme
 import ru.mercury.vpclient.shared.ui.theme.disabled
-import ru.mercury.vpclient.shared.ui.theme.medium16
+import ru.mercury.vpclient.shared.ui.theme.medium15
 import ru.mercury.vpclient.shared.ui.theme.onDisabled
 
 @Composable
@@ -42,8 +43,9 @@ fun ClientButton(
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.medium16.copy(
-                textAlign = TextAlign.Center
+            style = MaterialTheme.typography.medium15.copy(
+                textAlign = TextAlign.Center,
+                letterSpacing = .3.sp
             )
         )
     }
@@ -89,8 +91,9 @@ fun ClientButton(
             text = text,
             maxLines = 1,
             autoSize = textAutoSize,
-            style = MaterialTheme.typography.medium16.copy(
-                textAlign = TextAlign.Center
+            style = MaterialTheme.typography.medium15.copy(
+                textAlign = TextAlign.Center,
+                letterSpacing = .3.sp
             )
         )
     }
@@ -143,8 +146,9 @@ fun ClientButton(
             else -> {
                 Text(
                     text = text,
-                    style = MaterialTheme.typography.medium16.copy(
-                        textAlign = TextAlign.Center
+                    style = MaterialTheme.typography.medium15.copy(
+                        textAlign = TextAlign.Center,
+                        letterSpacing = .3.sp
                     )
                 )
             }
@@ -203,8 +207,9 @@ fun ClientButton(
             else -> {
                 Text(
                     text = text,
-                    style = MaterialTheme.typography.medium16.copy(
-                        textAlign = TextAlign.Center
+                    style = MaterialTheme.typography.medium15.copy(
+                        textAlign = TextAlign.Center,
+                        letterSpacing = .3.sp
                     )
                 )
             }

@@ -2,7 +2,6 @@ package ru.mercury.vpclient.features.register.model
 
 import ru.mercury.vpclient.shared.data.entity.NameValidationError
 import ru.mercury.vpclient.shared.data.entity.PhoneValidationError
-import ru.mercury.vpclient.shared.domain.mapper.isValidPhoneNumber
 import ru.mercury.vpclient.shared.mvi.Model
 
 data class RegisterModel(
@@ -14,5 +13,5 @@ data class RegisterModel(
 ): Model {
 
     val isRegisterEnabled: Boolean
-        get() = name.isNotBlank() && phone.isValidPhoneNumber() && !isLoading
+        get() = !isLoading
 }

@@ -9,5 +9,6 @@ sealed interface DetailsIntent: Intent {
     data object MessageClick: DetailsIntent
     data object SizeTableClick: DetailsIntent
     data class SizeClick(val index: Int): DetailsIntent
+    data class ColorClick(val index: Int): DetailsIntent
     data class ProductClick(val id: String): DetailsIntent
 }

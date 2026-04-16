@@ -69,6 +69,12 @@ val Typography.medium14: TextStyle
         fontSize = 14.sp
     )
 
+val Typography.medium15: TextStyle
+    get() = TextStyle(
+        fontWeight = FontWeight.Medium,
+        fontSize = 15.sp
+    )
+
 val Typography.medium16: TextStyle
     get() = TextStyle(
         fontWeight = FontWeight.Medium,
@@ -79,6 +85,30 @@ val Typography.medium17: TextStyle
     get() = TextStyle(
         fontWeight = FontWeight.Medium,
         fontSize = 17.sp
+    )
+
+val Typography.medium18: TextStyle
+    get() = TextStyle(
+        fontWeight = FontWeight.Medium,
+        fontSize = 18.sp
+    )
+
+val Typography.regular21: TextStyle
+    get() = TextStyle(
+        fontWeight = FontWeight.W400,
+        fontSize = 21.sp
+    )
+
+val Typography.regular32: TextStyle
+    get() = TextStyle(
+        fontWeight = FontWeight.W400,
+        fontSize = 32.sp
+    )
+
+val Typography.medium19: TextStyle
+    get() = TextStyle(
+        fontWeight = FontWeight.Medium,
+        fontSize = 19.sp
     )
 
 val Typography.medium21: TextStyle

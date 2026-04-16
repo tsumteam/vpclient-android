@@ -43,6 +43,10 @@ class DetailsViewModel @AssistedInject constructor(
                 val size = stateFlow.value.productEntity.availableSizes?.items?.getOrNull(intent.index)
                 reduce { it.copy(selectedSizeId = size?.sizeId) }
             }
+            is DetailsIntent.ColorClick -> reduce { model ->
+                val newIndex = if (intent.index == model.selectedOtherColorIndex) null else intent.index
+                model.copy(selectedOtherColorIndex = newIndex)
+            }
             is DetailsIntent.ProductClick -> launch { MainEventManager.send(DetailsRoute(intent.id)) }
         }
     }

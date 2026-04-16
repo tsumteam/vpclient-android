@@ -20,17 +20,21 @@ object ClientStrings {
     val RegisterTitle = R.string.register_title
     val RegisterNameLabel = R.string.register_name_label
     val RegisterPhoneLabel = R.string.register_phone_label
+    val RegisterNameEmptyError = R.string.register_name_empty_error
+    val RegisterPhoneEmptyError = R.string.register_phone_empty_error
     val RegisterPhoneInvalidError = R.string.register_phone_invalid_error
     val RegisterButton = R.string.register_button
     val RegisterAgreementText = R.string.register_agreement_text
 
     val LoginTitle = R.string.login_title
     val LoginPhoneLabel = R.string.login_phone_label
+    val LoginPhoneEmptyError = R.string.login_phone_empty_error
     val LoginPhoneInvalidError = R.string.login_phone_invalid_error
     val LoginButton = R.string.login_button
     val LoginAgreementText = R.string.login_agreement_text
 
     val CodeTitle = R.string.code_title
+    val CodeEmptyError = R.string.code_empty_error
     val CodeInvalidError = R.string.code_invalid_error
     val CodeButton = R.string.code_button
     val CodeSentDescription = R.string.code_sent_description

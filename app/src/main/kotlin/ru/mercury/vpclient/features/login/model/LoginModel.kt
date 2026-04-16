@@ -1,7 +1,6 @@
 package ru.mercury.vpclient.features.login.model
 
 import ru.mercury.vpclient.shared.data.entity.PhoneValidationError
-import ru.mercury.vpclient.shared.domain.mapper.isValidPhoneNumber
 import ru.mercury.vpclient.shared.mvi.Model
 
 data class LoginModel(
@@ -11,5 +10,5 @@ data class LoginModel(
 ): Model {
 
     val isLoginEnabled: Boolean
-        get() = phone.isValidPhoneNumber() && !isLoading
+        get() = !isLoading
 }

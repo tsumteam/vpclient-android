@@ -1,5 +1,6 @@
 package ru.mercury.vpclient.shared.ui.components.details
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -8,7 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,11 +28,10 @@ import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.ClientTheme
 import ru.mercury.vpclient.shared.ui.theme.livretMedium19
 
-// fixme добавить клик на шмотку чтобы отображать ее
-
 @Composable
 fun DetailsColorImageSelector(
     colorImageUrls: List<String>,
+    onColorClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -62,14 +62,15 @@ fun DetailsColorImageSelector(
                 alignment = Alignment.CenterHorizontally
             )
         ) {
-            items(
+            itemsIndexed(
                 items = colorImageUrls
-            ) { colorImageUrl ->
+            ) { index, colorImageUrl ->
                 ClientAsyncImage(
                     imageUrl = colorImageUrl,
                     modifier = Modifier
                         .size(width = 64.dp, height = 99.dp)
-                        .clip(RoundedCornerShape(4.dp)),
+                        .clip(RoundedCornerShape(4.dp))
+                        .clickable { onColorClick(index) },
                     contentScale = ContentScale.Fit
                 )
             }
@@ -82,7 +83,8 @@ fun DetailsColorImageSelector(
 private fun DetailsColorImageSelectorPreview() {
     ClientTheme {
         DetailsColorImageSelector(
-            colorImageUrls = listOf("", "", "", "")
+            colorImageUrls = listOf("", "", "", ""),
+            onColorClick = {}
         )
     }
 }

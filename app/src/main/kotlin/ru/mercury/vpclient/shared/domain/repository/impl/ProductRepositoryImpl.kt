@@ -12,6 +12,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilter
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductAvailableSizeEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductAvailableSizesEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductOtherColorEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductRelatedItemEntity
 import ru.mercury.vpclient.shared.domain.repository.ProductRepository
 import javax.inject.Inject
@@ -65,11 +66,11 @@ class ProductRepositoryImpl @Inject constructor(
                     priceWithoutDiscount = selectedColor?.priceWithoutDiscount,
                     breadcrumbs = response.breadcrumbs.orEmpty(),
                     colorImageUrls = selectedColor?.imageUrls.orEmpty(),
-                    otherColorImageUrls = if ((response.colors?.size ?: 0) > 1) {
+                    otherColors = if ((response.colors?.size ?: 0) > 1) {
                         response.colors
                             .orEmpty()
                             .filter { it.colorId != selectedColor?.colorId }
-                            .mapNotNull { it.imageUrls?.firstOrNull() }
+                            .map { ProductOtherColorEntity(imageUrls = it.imageUrls.orEmpty(), urlItemVideo = it.urlItemVideo) }
                     } else {
                         emptyList()
                     },

@@ -15,27 +15,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
-import ru.mercury.vpclient.shared.ui.components.system.ClientNavDisplay
-import ru.mercury.vpclient.shared.ui.icons.Brands24
-import ru.mercury.vpclient.shared.ui.icons.Catalog24
-import ru.mercury.vpclient.shared.ui.icons.Consultants24
-import ru.mercury.vpclient.shared.ui.icons.Fitting24
-import ru.mercury.vpclient.shared.ui.icons.Home24
-import ru.mercury.vpclient.shared.ui.icons.Profile24
-import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
-import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.regular11
-import ru.mercury.vpclient.shared.ui.theme.secondary4
 import ru.mercury.vpclient.features.main.event.MainTabsEventManager
 import ru.mercury.vpclient.features.main.intent.MainIntent
 import ru.mercury.vpclient.features.main.model.MainModel
@@ -52,6 +45,18 @@ import ru.mercury.vpclient.features.main.tabs.home.HomeScreen
 import ru.mercury.vpclient.features.main.tabs.home.navigation.HomeRoute
 import ru.mercury.vpclient.features.main.tabs.profile.ProfileScreen
 import ru.mercury.vpclient.features.main.tabs.profile.navigation.ProfileRoute
+import ru.mercury.vpclient.shared.ui.components.system.ClientNavDisplay
+import ru.mercury.vpclient.shared.ui.icons.Brands24
+import ru.mercury.vpclient.shared.ui.icons.Catalog24
+import ru.mercury.vpclient.shared.ui.icons.Consultants24
+import ru.mercury.vpclient.shared.ui.icons.Fitting24
+import ru.mercury.vpclient.shared.ui.icons.Home24
+import ru.mercury.vpclient.shared.ui.icons.Profile24
+import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
+import ru.mercury.vpclient.shared.ui.theme.ClientStrings
+import ru.mercury.vpclient.shared.ui.theme.regular11
+import ru.mercury.vpclient.shared.ui.theme.secondary4
+import ru.mercury.vpclient.shared.ui.theme.secondary5
 
 @Composable
 fun MainScreen(
@@ -89,11 +94,22 @@ private fun MainScreenContent(
     navBackStack: NavBackStack<NavKey>,
     catalogNavBackStack: NavBackStack<NavKey>
 ) {
+    val dividerColor = MaterialTheme.colorScheme.secondary5
+
     NavigationSuiteScaffold(
         modifier = Modifier.fillMaxSize(),
         navigationItems = {
             BottomAppBar(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .drawWithContent {
+                        drawContent()
+                        drawRect(
+                            color = dividerColor,
+                            size = Size(size.width, 1.dp.toPx()),
+                            topLeft = Offset.Zero
+                        )
+                    },
                 containerColor = Color.White
             ) {
                 NavigationBarItem(

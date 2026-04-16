@@ -19,18 +19,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import coil.compose.SubcomposeAsyncImage
+import ru.mercury.vpclient.shared.data.entity.ConsultantAvatarPlaceholderStyle
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
-import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
+import ru.mercury.vpclient.shared.ui.components.BrandBox
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.EmployeeEntityProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.ClientTheme
-import ru.mercury.vpclient.shared.ui.theme.medium16
+import ru.mercury.vpclient.shared.ui.theme.regular15
 import ru.mercury.vpclient.shared.ui.theme.secondary5
-
-// fixme
 
 @Composable
 fun ConsultantCard(
@@ -40,8 +41,6 @@ fun ConsultantCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val displayName = if (employee == EmployeeEntity.Empty) "Имя\nФамилия" else "${employee.employeeName}\n${employee.employeeSurname}"
-
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -59,8 +58,9 @@ fun ConsultantCard(
                     .padding(top = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ClientAsyncImage(
-                    imageUrl = employee.photoUrl.ifEmpty { employee.previewPhotoUrl },
+                SubcomposeAsyncImage(
+                    model = employee.photoUrl.ifEmpty { employee.previewPhotoUrl },
+                    contentDescription = null,
                     modifier = Modifier
                         .size(72.dp)
                         .clip(CircleShape)
@@ -69,11 +69,16 @@ fun ConsultantCard(
                             highlight = PlaceholderHighlight.shimmer(),
                             shape = CircleShape
                         ),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Crop,
+                    error = {
+                        ConsultantAvatarPlaceholder(
+                            name = employee.employeeName,
+                            style = ConsultantAvatarPlaceholderStyle.Card
+                        )
+                    }
                 )
 
-                Text(
-                    text = displayName,
+                Column(
                     modifier = Modifier
                         .weight(1F)
                         .padding(start = 16.dp, end = 8.dp)
@@ -81,12 +86,22 @@ fun ConsultantCard(
                             visible = employee == EmployeeEntity.Empty,
                             highlight = PlaceholderHighlight.shimmer(),
                             shape = RoundedCornerShape(4.dp)
-                        ),
-                    maxLines = 2,
-                    style = MaterialTheme.typography.medium16.copy(
-                        color = MaterialTheme.colorScheme.onBackground
+                        )
+                ) {
+                    Text(
+                        text = "${employee.employeeName} ${employee.employeeSurname}".trim(),
+                        maxLines = 1,
+                        style = MaterialTheme.typography.regular15.copy(
+                            color = MaterialTheme.colorScheme.onBackground,
+                            lineHeight = 19.sp,
+                            letterSpacing = .2.sp
+                        )
                     )
-                )
+                    BrandBox(
+                        brand = employee.employeeBrand,
+                        urlBrandLogo = null
+                    )
+                }
 
                 when {
                     employee.isActive -> {

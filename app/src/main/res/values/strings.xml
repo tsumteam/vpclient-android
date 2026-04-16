@@ -8,25 +8,29 @@
     <string name="agreement_terms_of_use">Условиями пользования</string>
     <string name="agreement_privacy_policy">Политикой конфиденциальности</string>
 
-    <string name="welcome_title">ЭКСКЛЮЗИВНЫЙ СЕРВИС БУТИКА В ВАШЕМ СМАРТФОНЕ</string>
-    <string name="welcome_description">Получите доступ к Каталогу, Корзине, а также к уникальной возможности общения с персональным консультантом</string>
+    <string name="welcome_title">ЭКСКЛЮЗИВНЫЙ СЕРВИС\nБУТИКА В ВАШЕМ СМАРТФОНЕ</string>
+    <string name="welcome_description">Получите доступ к Каталогу, Корзине,\nа также к уникальной возможности общения\nс персональным консультантом</string>
     <string name="welcome_register">Зарегистрироваться</string>
     <string name="welcome_login">Войти</string>
 
     <string name="register_title">РЕГИСТРАЦИЯ</string>
     <string name="register_name_label">Имя</string>
     <string name="register_phone_label">Телефон</string>
+    <string name="register_name_empty_error">Поле \"Имя\" не заполнено</string>
+    <string name="register_phone_empty_error">Поле \"Телефон\" не заполнено</string>
     <string name="register_phone_invalid_error">Укажите корректный номер телефона</string>
     <string name="register_button">Зарегистрироваться</string>
-    <string name="register_agreement_text">Регистрируясь, вы соглашаетесь с %1$s, %2$s и %3$s</string>
+    <string name="register_agreement_text">Регистрируясь, вы соглашаетесь с %1$s, %2$s\nи %3$s</string>
 
     <string name="login_title">ВХОД</string>
     <string name="login_phone_label">Телефон</string>
+    <string name="login_phone_empty_error">Поле \"Телефон\" не заполнено</string>
     <string name="login_phone_invalid_error">Укажите корректный номер телефона</string>
     <string name="login_button">Войти</string>
-    <string name="login_agreement_text">При входе, вы соглашаетесь с %1$s, %2$s и %3$s</string>
+    <string name="login_agreement_text">При входе, вы соглашаетесь с %1$s, %2$s\nи %3$s</string>
 
     <string name="code_title">УКАЖИТЕ КОД ИЗ СМС</string>
+    <string name="code_empty_error">Введите код из смс</string>
     <string name="code_invalid_error">Указан неверный код. Попробуйте ввести заново</string>
     <string name="code_button">Подтвердить</string>
     <string name="code_sent_description">Код подтверждения отправлен на номер\n%s</string>
@@ -38,7 +42,7 @@
     <string name="main_tab_brands">Бренды</string>
     <string name="main_tab_catalog">Каталог</string>
     <string name="main_tab_fitting">Подборки</string>
-    <string name="main_tab_consultants">Консуль\n-танты</string>
+    <string name="main_tab_consultants">Консуль-\nтанты</string>
     <string name="main_tab_profile">Профиль</string>
 
     <string name="catalog_watch_all">Смотреть\nвсё</string>

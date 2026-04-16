@@ -1,50 +1,34 @@
 package ru.mercury.vpclient.features.main.tabs.catalog.stack.category
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ru.mercury.vpclient.features.main.tabs.catalog.stack.category.intent.CategoryIntent
+import ru.mercury.vpclient.features.main.tabs.catalog.stack.category.model.CategoryModel
+import ru.mercury.vpclient.features.main.tabs.catalog.stack.category.navigation.CategoryRoute
+import ru.mercury.vpclient.shared.data.entity.TopBarState
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogCategoryEntity
 import ru.mercury.vpclient.shared.data.persistence.database.pojo.SubcategoryPojo
 import ru.mercury.vpclient.shared.ui.components.catalog.CatalogCategorySection
-import ru.mercury.vpclient.shared.ui.components.IndicatorIconButton
 import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
 import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
 import ru.mercury.vpclient.shared.ui.components.system.ClientOutlinedButton
-import ru.mercury.vpclient.shared.ui.icons.Basket24
-import ru.mercury.vpclient.shared.ui.icons.Chat24
-import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
-import ru.mercury.vpclient.shared.ui.icons.FittingShirt24
-import ru.mercury.vpclient.shared.ui.icons.Search24
 import ru.mercury.vpclient.shared.ui.preview.CategoryModelProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.ClientTheme
-import ru.mercury.vpclient.shared.ui.theme.medium17
-import ru.mercury.vpclient.features.main.tabs.catalog.stack.category.intent.CategoryIntent
-import ru.mercury.vpclient.features.main.tabs.catalog.stack.category.model.CategoryModel
-import ru.mercury.vpclient.features.main.tabs.catalog.stack.category.navigation.CategoryRoute
 
 @Composable
 fun CategoryScreen(
@@ -68,63 +52,11 @@ private fun CategoryScreenContent(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             ClientCenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = state.entity.name,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        style = MaterialTheme.typography.medium17.copy(
-                            color = MaterialTheme.colorScheme.onBackground,
-                            textAlign = TextAlign.Center
-                        )
-                    )
-                },
-                colors = TopAppBarDefaults.topAppBarColors().copy(containerColor = Color.White),
-                navigationIcon = {
-                    Row {
-                        IconButton(
-                            onClick = { dispatch(CategoryIntent.BackClick) }
-                        ) {
-                            Icon(
-                                imageVector = ChevronStart24,
-                                contentDescription = null,
-                                modifier = Modifier.size(24.dp),
-                                tint = MaterialTheme.colorScheme.onBackground
-                            )
-                        }
-
-                        IconButton(
-                            onClick = {}
-                        ) {
-                            Icon(
-                                imageVector = Search24,
-                                contentDescription = null,
-                                modifier = Modifier.size(24.dp),
-                                tint = MaterialTheme.colorScheme.onBackground
-                            )
-                        }
-                    }
-                },
-                actions = {
-                    IndicatorIconButton(
-                        icon = FittingShirt24,
-                        showIndicator = true,
-                        onClick = {}
-                    )
-
-                    IndicatorIconButton(
-                        icon = Basket24,
-                        showIndicator = true,
-                        onClick = {}
-                    )
-
-                    IndicatorIconButton(
-                        icon = Chat24,
-                        showIndicator = true,
-                        onClick = {},
-                        modifier = Modifier.padding(end = 8.dp)
-                    )
-                }
+                state = TopBarState.Category(
+                    title = state.entity.name,
+                    navigationClick = { dispatch(CategoryIntent.BackClick) },
+                    searchClick = {}
+                )
             )
         }
     ) { innerPadding ->

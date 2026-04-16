@@ -19,28 +19,30 @@ import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.data.entity.FilterTitleEntity
 import ru.mercury.vpclient.shared.domain.mapper.isEmpty
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
-import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
 import ru.mercury.vpclient.shared.ui.ktx.clickableWithoutRipple
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.FilterTitleEntityProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.ClientTheme
-import ru.mercury.vpclient.shared.ui.theme.regular15
-import ru.mercury.vpclient.shared.ui.theme.regular16
+import ru.mercury.vpclient.shared.ui.theme.medium15
+import ru.mercury.vpclient.shared.ui.theme.regular14
 import ru.mercury.vpclient.shared.ui.theme.secondary6
 import ru.mercury.vpclient.shared.ui.theme.surface4
 
 @Composable
 fun FilterScreenTitle(
     entity: FilterTitleEntity,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val isTitlePlaceholderVisible = entity.titleCatalogCategoryEntity.isEmpty
     val isSubtitlePlaceholderVisible = entity.subtitleCatalogCategoryEntity.isEmpty
 
     Column(
-        modifier = Modifier.clickableWithoutRipple(onClick),
+        modifier = modifier
+            .clickableWithoutRipple(onClick)
+            .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(3.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -62,10 +64,9 @@ fun FilterScreenTitle(
                 ),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            style = MaterialTheme.typography.regular16.copy(
+            style = MaterialTheme.typography.medium15.copy(
                 color = MaterialTheme.colorScheme.onBackground,
-                lineHeight = 20.sp,
-                letterSpacing = .2.sp,
+                letterSpacing = .3.sp,
                 textAlign = TextAlign.Center
             )
         )
@@ -88,9 +89,8 @@ fun FilterScreenTitle(
                 ),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            style = MaterialTheme.typography.regular15.copy(
+            style = MaterialTheme.typography.regular14.copy(
                 color = MaterialTheme.colorScheme.secondary6,
-                lineHeight = 19.sp,
                 letterSpacing = .2.sp,
                 textAlign = TextAlign.Center
             )
@@ -104,13 +104,9 @@ private fun FilterScreenTitlePreview(
     @PreviewParameter(FilterTitleEntityProvider::class) entity: FilterTitleEntity
 ) {
     ClientTheme {
-        ClientCenterAlignedTopAppBar(
-            title = {
-                FilterScreenTitle(
-                    entity = entity,
-                    onClick = {}
-                )
-            }
+        FilterScreenTitle(
+            entity = entity,
+            onClick = {}
         )
     }
 }

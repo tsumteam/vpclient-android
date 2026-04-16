@@ -39,11 +39,6 @@ val Brands24: ImageVector
                 curveTo(13.668F, 23.691F, 13.035F, 23.691F, 12.644F, 23.3F)
                 lineTo(0.984F, 11.641F)
                 close()
-            }
-            path(
-                fill = SolidColor(Color(0xFFFFFFFF)),
-                pathFillType = PathFillType.NonZero
-            ) {
                 moveTo(11.134F, 4.847F)
                 lineTo(17.215F, 10.928F)
                 arcTo(0.482F, 0.482F, 0F, false, true, 17.215F, 11.609F)
@@ -54,11 +49,6 @@ val Brands24: ImageVector
                 lineTo(10.452F, 4.847F)
                 arcTo(0.482F, 0.482F, 90F, false, true, 11.134F, 4.847F)
                 close()
-            }
-            path(
-                fill = SolidColor(Color(0xFFFFFFFF)),
-                pathFillType = PathFillType.NonZero
-            ) {
                 moveTo(8.404F, 7.633F)
                 lineTo(15.848F, 15.076F)
                 arcTo(0.482F, 0.482F, 90F, false, true, 15.848F, 15.758F)
@@ -69,11 +59,6 @@ val Brands24: ImageVector
                 lineTo(7.722F, 7.633F)
                 arcTo(0.482F, 0.482F, 90F, false, true, 8.404F, 7.633F)
                 close()
-            }
-            path(
-                fill = SolidColor(Color(0xFFFFFFFF)),
-                pathFillType = PathFillType.NonZero
-            ) {
                 moveTo(5.692F, 10.347F)
                 lineTo(10.41F, 15.065F)
                 arcTo(0.482F, 0.482F, 90F, false, true, 10.41F, 15.746F)
@@ -97,8 +82,7 @@ private fun Brands24Preview() {
     ClientTheme {
         Icon(
             imageVector = Brands24,
-            contentDescription = null,
-            tint = Color.Unspecified
+            contentDescription = null
         )
     }
 }

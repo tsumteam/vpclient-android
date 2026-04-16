@@ -3,6 +3,7 @@ package ru.mercury.vpclient.shared.data.persistence.database.converter
 import androidx.room.TypeConverter
 import kotlinx.serialization.json.Json
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductAvailableSizesEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductOtherColorEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductRelatedItemEntity
 
 // fixme
@@ -18,6 +19,19 @@ class Converter {
 
     @TypeConverter
     fun toList(data: String): List<String> {
+        return when {
+            data.isEmpty() -> emptyList()
+            else -> json.decodeFromString(data)
+        }
+    }
+
+    @TypeConverter
+    fun fromProductOtherColorEntityList(list: List<ProductOtherColorEntity>): String {
+        return json.encodeToString(list)
+    }
+
+    @TypeConverter
+    fun toProductOtherColorEntityList(data: String): List<ProductOtherColorEntity> {
         return when {
             data.isEmpty() -> emptyList()
             else -> json.decodeFromString(data)

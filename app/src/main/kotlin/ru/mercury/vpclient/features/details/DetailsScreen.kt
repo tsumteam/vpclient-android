@@ -15,19 +15,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -35,7 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -46,8 +43,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.mercury.vpclient.features.details.intent.DetailsIntent
 import ru.mercury.vpclient.features.details.model.DetailsModel
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
+import ru.mercury.vpclient.shared.data.entity.TopBarState
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
-import ru.mercury.vpclient.shared.ui.components.IndicatorIconButton
 import ru.mercury.vpclient.shared.ui.components.details.DetailsColorImageSelector
 import ru.mercury.vpclient.shared.ui.components.details.DetailsCompleteSetSection
 import ru.mercury.vpclient.shared.ui.components.details.DetailsFieldRow
@@ -62,10 +59,6 @@ import ru.mercury.vpclient.shared.ui.components.system.ClientButton
 import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
 import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
 import ru.mercury.vpclient.shared.ui.components.system.ClientOutlinedButton
-import ru.mercury.vpclient.shared.ui.icons.Basket24
-import ru.mercury.vpclient.shared.ui.icons.Chat24
-import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
-import ru.mercury.vpclient.shared.ui.icons.FittingShirt24
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.DetailsModelProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
@@ -95,9 +88,11 @@ private fun DetailsScreenContent(
     state: DetailsModel,
     dispatch: (DetailsIntent) -> Unit
 ) {
-    val pagerItems = remember(state.productEntity.colorImageUrls, state.productEntity.urlItemVideo) {
-        val images = state.productEntity.colorImageUrls.map { DetailsMediaItem.Image(it) }
-        val video = state.productEntity.urlItemVideo?.let { listOf(DetailsMediaItem.Video(it)) }.orEmpty()
+    val lazyListState = rememberLazyListState()
+
+    val pagerItems = remember(state.productEntity.colorImageUrls, state.productEntity.otherColors, state.productEntity.urlItemVideo, state.selectedOtherColorIndex) {
+        val images = state.pagerImageUrls.map { DetailsMediaItem.Image(it) }
+        val video = state.selectedColorVideoUrl?.let { listOf(DetailsMediaItem.Video(it)) }.orEmpty()
         images + video
     }
     val pagerState = rememberPagerState(
@@ -112,44 +107,19 @@ private fun DetailsScreenContent(
         }
     }
 
+    LaunchedEffect(state.selectedOtherColorIndex) {
+        if (state.selectedOtherColorIndex != null) {
+            lazyListState.scrollToItem(0)
+        }
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             ClientCenterAlignedTopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
-                title = {},
-                navigationIcon = {
-                    IconButton(
-                        onClick = { dispatch(DetailsIntent.BackClick) }
-                    ) {
-                        Icon(
-                            imageVector = ChevronStart24,
-                            contentDescription = null,
-                            modifier = Modifier.size(24.dp),
-                            tint = MaterialTheme.colorScheme.onBackground
-                        )
-                    }
-                },
-                actions = {
-                    IndicatorIconButton(
-                        icon = FittingShirt24,
-                        showIndicator = true,
-                        onClick = {}
-                    )
-
-                    IndicatorIconButton(
-                        icon = Basket24,
-                        showIndicator = true,
-                        onClick = {}
-                    )
-
-                    IndicatorIconButton(
-                        icon = Chat24,
-                        showIndicator = true,
-                        onClick = {},
-                        modifier = Modifier.padding(end = 8.dp)
-                    )
-                }
+                state = TopBarState.Details(
+                    navigationClick = { dispatch(DetailsIntent.BackClick) }
+                )
             )
         },
         floatingActionButton = {
@@ -282,6 +252,7 @@ private fun DetailsScreenContent(
             }
             else -> {
                 ClientLazyColumn(
+                    state = lazyListState,
                     modifier = Modifier
                         .fillMaxSize()
                         .background(MaterialTheme.colorScheme.background),
@@ -374,7 +345,8 @@ private fun DetailsScreenContent(
                         }
                         item {
                             DetailsColorImageSelector(
-                                colorImageUrls = state.productEntity.otherColorImageUrls
+                                colorImageUrls = state.selectorColorImageUrls,
+                                onColorClick = { dispatch(DetailsIntent.ColorClick(it)) }
                             )
                         }
                     }
@@ -442,7 +414,6 @@ private fun DetailsScreenContent(
         }
     }
 }
-
 
 @FontScalePreviews
 @Composable

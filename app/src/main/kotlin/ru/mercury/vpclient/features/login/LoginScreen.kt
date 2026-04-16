@@ -1,15 +1,12 @@
 package ru.mercury.vpclient.features.login
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
@@ -24,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.autofill.ContentType
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentType
@@ -38,13 +34,17 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
+import ru.mercury.vpclient.features.login.event.LoginEvents
+import ru.mercury.vpclient.features.login.intent.LoginIntent
+import ru.mercury.vpclient.features.login.model.LoginModel
 import ru.mercury.vpclient.shared.data.entity.PhoneValidationError
+import ru.mercury.vpclient.shared.data.entity.TopBarState
 import ru.mercury.vpclient.shared.ui.components.AgreementText
 import ru.mercury.vpclient.shared.ui.components.system.ClientButton
 import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
+import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
 import ru.mercury.vpclient.shared.ui.components.system.ClientSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.system.ClientTextField
-import ru.mercury.vpclient.shared.ui.icons.Logo82
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.preview.LoginModelProvider
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
@@ -52,9 +52,6 @@ import ru.mercury.vpclient.shared.ui.theme.ClientTheme
 import ru.mercury.vpclient.shared.ui.theme.livretMedium21
 import ru.mercury.vpclient.shared.ui.transformation.PhoneInputTransformation
 import ru.mercury.vpclient.shared.ui.transformation.PhoneOutputTransformation
-import ru.mercury.vpclient.features.login.event.LoginEvents
-import ru.mercury.vpclient.features.login.intent.LoginIntent
-import ru.mercury.vpclient.features.login.model.LoginModel
 
 @Composable
 fun LoginScreen(
@@ -95,19 +92,17 @@ private fun LoginScreenContent(
 ) {
     val phoneInputTransformation = remember { PhoneInputTransformation() }
     val phoneOutputTransformation = remember { PhoneOutputTransformation() }
+    val phoneError = when (state.phoneValidationError) {
+        PhoneValidationError.Empty -> stringResource(ClientStrings.LoginPhoneEmptyError)
+        PhoneValidationError.Invalid -> stringResource(ClientStrings.LoginPhoneInvalidError)
+        null -> ""
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             ClientCenterAlignedTopAppBar(
-                title = {
-                    Icon(
-                        imageVector = Logo82,
-                        contentDescription = null,
-                        modifier = Modifier.size(82.dp, 57.dp),
-                        tint = Color.Black
-                    )
-                }
+                state = TopBarState.Logo
             )
         },
         bottomBar = {
@@ -130,51 +125,55 @@ private fun LoginScreenContent(
             )
         }
     ) { innerPadding ->
-        Column(
+        ClientLazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = stringResource(ClientStrings.LoginTitle),
-                modifier = Modifier
-                    .padding(start = 16.dp, top = 36.dp, end = 16.dp)
-                    .fillMaxWidth(),
-                style = MaterialTheme.typography.livretMedium21.copy(
-                    color = MaterialTheme.colorScheme.onBackground,
-                    textAlign = TextAlign.Center
+            item {
+                Text(
+                    text = stringResource(ClientStrings.LoginTitle),
+                    modifier = Modifier
+                        .padding(start = 16.dp, top = 36.dp, end = 16.dp)
+                        .fillMaxWidth(),
+                    style = MaterialTheme.typography.livretMedium21.copy(
+                        color = MaterialTheme.colorScheme.onBackground,
+                        textAlign = TextAlign.Center
+                    )
                 )
-            )
-
-            ClientTextField(
-                value = state.phone,
-                onValueChange = { dispatch(LoginIntent.EnterPhone(it)) },
-                label = stringResource(ClientStrings.LoginPhoneLabel),
-                isErrorVisible = state.phoneValidationError == PhoneValidationError.Invalid,
-                error = stringResource(ClientStrings.LoginPhoneInvalidError),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, top = 40.dp, end = 16.dp)
-                    .focusRequester(focusRequester)
-                    .semantics { contentType = ContentType.PhoneNumber },
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Phone,
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(
-                    onDone = { dispatch(LoginIntent.OnKeyboardDone) }
-                ),
-                inputTransformation = phoneInputTransformation,
-                outputTransformation = phoneOutputTransformation
-            )
-
-            AgreementText(
-                agreementTextRes = ClientStrings.LoginAgreementText,
-                modifier = Modifier
-                    .padding(start = 16.dp, top = 24.dp, end = 16.dp)
-                    .fillMaxWidth()
-            )
+            }
+            item {
+                ClientTextField(
+                    value = state.phone,
+                    onValueChange = { dispatch(LoginIntent.EnterPhone(it)) },
+                    label = stringResource(ClientStrings.LoginPhoneLabel),
+                    isErrorVisible = state.phoneValidationError != null,
+                    error = phoneError,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, top = 40.dp, end = 16.dp)
+                        .focusRequester(focusRequester)
+                        .semantics { contentType = ContentType.PhoneNumber },
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Phone,
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = { dispatch(LoginIntent.OnKeyboardDone) }
+                    ),
+                    inputTransformation = phoneInputTransformation,
+                    outputTransformation = phoneOutputTransformation
+                )
+            }
+            item {
+                AgreementText(
+                    agreementTextRes = ClientStrings.LoginAgreementText,
+                    modifier = Modifier
+                        .padding(start = 16.dp, top = 24.dp, end = 16.dp)
+                        .fillMaxWidth()
+                )
+            }
         }
     }
 }

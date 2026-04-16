@@ -12,20 +12,43 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductRelate
 
 data class DetailsModel(
     val productEntity: ProductEntity = ProductEntity.Empty,
-    val selectedSizeId: String? = null
+    val selectedSizeId: String? = null,
+    val selectedOtherColorIndex: Int? = null
 ): Model {
+
+    val pagerImageUrls: List<String>
+        get() {
+            val idx = selectedOtherColorIndex ?: return productEntity.colorImageUrls
+            return productEntity.otherColors.getOrNull(idx)?.imageUrls.orEmpty()
+        }
+
+    val selectedColorVideoUrl: String?
+        get() {
+            val idx = selectedOtherColorIndex ?: return productEntity.urlItemVideo
+            return productEntity.otherColors.getOrNull(idx)?.urlItemVideo
+        }
+
+    val selectorColorImageUrls: List<String>
+        get() {
+            val idx = selectedOtherColorIndex
+            val mainImage = productEntity.colorImageUrls.firstOrNull()
+            return productEntity.otherColors.mapIndexed { i, color ->
+                if (i == idx) mainImage ?: color.imageUrls.firstOrNull() ?: ""
+                else color.imageUrls.firstOrNull() ?: ""
+            }
+        }
 
     val isLoading: Boolean
         get() = productEntity == ProductEntity.Empty
 
     val hasVideo: Boolean
-        get() = productEntity.urlItemVideo != null
+        get() = selectedColorVideoUrl != null
 
     val isSizePickerVisible: Boolean
         get() = productEntity.availableSizes?.items?.isNotEmpty() == true
 
     val isProductColorImagesBoxVisible: Boolean
-        get() = productEntity.otherColorImageUrls.isNotEmpty()
+        get() = productEntity.otherColors.isNotEmpty()
 
     val descriptionText: String?
         get() = listOf(productEntity.artDescription, productEntity.longDescription)

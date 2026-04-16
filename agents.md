@@ -15,3 +15,12 @@
 - For Compose `padding(...)`, order named parameters the same way as in the method signature: `start`, `top`, `end`, `bottom`
 - Do not place classes or constants inside MVI classes; declare them at file level or in dedicated files/packages
 - Place experimental opt-in annotations only at file level, for example `@file:OptIn(ExperimentalMaterial3Api::class)`, not on individual declarations
+
+
+<claude-mem-context>
+# Memory Context
+
+# $CMEM vpclient-android 2026-04-16 9:31pm GMT+3
+
+No previous sessions found.
+</claude-mem-context>

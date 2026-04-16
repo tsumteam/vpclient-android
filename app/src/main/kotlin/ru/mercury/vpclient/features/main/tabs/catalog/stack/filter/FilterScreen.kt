@@ -4,23 +4,18 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
@@ -59,37 +54,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.shared.data.entity.FiltersRowState
-import ru.mercury.vpclient.shared.domain.mapper.isSortChipSelected
-import ru.mercury.vpclient.shared.domain.mapper.productsQuantityWithThousandsSeparator
-import ru.mercury.vpclient.shared.domain.mapper.requireProductsQuantity
-import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
-import ru.mercury.vpclient.shared.ui.components.catalog.CatalogProductCard
-import ru.mercury.vpclient.shared.ui.components.filters.FilterProductsLoadingContent
-import ru.mercury.vpclient.shared.ui.components.filters.FilterScreenTitle
-import ru.mercury.vpclient.shared.ui.components.filters.FiltersRow
-import ru.mercury.vpclient.shared.ui.components.IndicatorIconButton
-import ru.mercury.vpclient.shared.ui.components.PagingFailureBox
-import ru.mercury.vpclient.shared.ui.components.PagingLoadingBox
-import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
-import ru.mercury.vpclient.shared.ui.components.system.ClientSnackbarHost
-import ru.mercury.vpclient.shared.ui.icons.Basket24
-import ru.mercury.vpclient.shared.ui.icons.Chat24
-import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
-import ru.mercury.vpclient.shared.ui.icons.FittingShirt24
-import ru.mercury.vpclient.shared.ui.icons.Search24
-import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
-import ru.mercury.vpclient.shared.ui.ktx.isContentVisible
-import ru.mercury.vpclient.shared.ui.ktx.isPagingFailure
-import ru.mercury.vpclient.shared.ui.ktx.isPagingLoading
-import ru.mercury.vpclient.shared.ui.ktx.isRefreshFailure
-import ru.mercury.vpclient.shared.ui.ktx.isRefreshLoading
-import ru.mercury.vpclient.shared.ui.preview.FilterModelProvider
-import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
-import ru.mercury.vpclient.shared.ui.theme.regular15
-import ru.mercury.vpclient.shared.ui.theme.secondary6
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter.event.FilterEvent
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter.intent.FilterIntent
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter.model.FilterModel
@@ -104,6 +68,31 @@ import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_sort.SortShee
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_sort.intent.SortIntent
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_values.FilterValuesSheet
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_values.intent.FilterValuesIntent
+import ru.mercury.vpclient.shared.data.entity.FiltersRowState
+import ru.mercury.vpclient.shared.data.entity.TopBarState
+import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
+import ru.mercury.vpclient.shared.domain.mapper.isSortChipSelected
+import ru.mercury.vpclient.shared.domain.mapper.productsQuantityWithThousandsSeparator
+import ru.mercury.vpclient.shared.domain.mapper.requireProductsQuantity
+import ru.mercury.vpclient.shared.ui.components.PagingFailureBox
+import ru.mercury.vpclient.shared.ui.components.PagingLoadingBox
+import ru.mercury.vpclient.shared.ui.components.catalog.CatalogProductCard
+import ru.mercury.vpclient.shared.ui.components.filters.FilterProductsLoadingContent
+import ru.mercury.vpclient.shared.ui.components.filters.FiltersRow
+import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
+import ru.mercury.vpclient.shared.ui.components.system.ClientSnackbarHost
+import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
+import ru.mercury.vpclient.shared.ui.ktx.isContentVisible
+import ru.mercury.vpclient.shared.ui.ktx.isPagingFailure
+import ru.mercury.vpclient.shared.ui.ktx.isPagingLoading
+import ru.mercury.vpclient.shared.ui.ktx.isRefreshFailure
+import ru.mercury.vpclient.shared.ui.ktx.isRefreshLoading
+import ru.mercury.vpclient.shared.ui.preview.FilterModelProvider
+import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
+import ru.mercury.vpclient.shared.ui.theme.ClientStrings
+import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.theme.regular15
+import ru.mercury.vpclient.shared.ui.theme.secondary6
 import kotlin.math.max
 
 @Composable
@@ -238,63 +227,17 @@ private fun FilterScreenContent(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             ClientCenterAlignedTopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
-                title = {
-                    FilterScreenTitle(
-                        entity = state.filterData.filterTitleEntity,
-                        onClick = {
-                            filtersRowOffsetPx = 0F
-                            if (pagingItems.isContentVisible) {
-                                scope.launch { gridState.animateScrollToItem(0) }
-                            }
+                state = TopBarState.Filter(
+                    entity = state.filterData.filterTitleEntity,
+                    onClick = {
+                        filtersRowOffsetPx = 0F
+                        if (pagingItems.isContentVisible) {
+                            scope.launch { gridState.animateScrollToItem(0) }
                         }
-                    )
-                },
-                navigationIcon = {
-                    Row {
-                        IconButton(
-                            onClick = { dispatch(FilterIntent.BackClick) }
-                        ) {
-                            Icon(
-                                imageVector = ChevronStart24,
-                                contentDescription = null,
-                                modifier = Modifier.size(24.dp),
-                                tint = MaterialTheme.colorScheme.onBackground
-                            )
-                        }
-
-                        IconButton(
-                            onClick = {}
-                        ) {
-                            Icon(
-                                imageVector = Search24,
-                                contentDescription = null,
-                                modifier = Modifier.size(24.dp),
-                                tint = MaterialTheme.colorScheme.onBackground
-                            )
-                        }
-                    }
-                },
-                actions = {
-                    IndicatorIconButton(
-                        icon = FittingShirt24,
-                        showIndicator = true,
-                        onClick = {}
-                    )
-
-                    IndicatorIconButton(
-                        icon = Basket24,
-                        showIndicator = true,
-                        onClick = {}
-                    )
-
-                    IndicatorIconButton(
-                        icon = Chat24,
-                        showIndicator = true,
-                        onClick = {},
-                        modifier = Modifier.padding(end = 8.dp)
-                    )
-                }
+                    },
+                    navigationClick = { dispatch(FilterIntent.BackClick) },
+                    searchClick = {}
+                )
             )
         },
         snackbarHost = {
