@@ -38,7 +38,7 @@ fun FilterSortChip(
 
     Box(
         modifier = modifier
-            .size(40.dp)
+            .size(34.dp)
             .clip(RoundedCornerShape(10.dp))
             .background(backgroundColor)
             .border(

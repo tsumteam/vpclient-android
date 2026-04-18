@@ -81,14 +81,17 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_brand.intent.FilterBrandIntent
+import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_brand.model.FilterBrandSheetState
 import ru.mercury.vpclient.shared.data.entity.BrandFilterValue
 import ru.mercury.vpclient.shared.domain.mapper.quantityWithThousandsSeparator
 import ru.mercury.vpclient.shared.domain.mapper.requireQuantity
+import ru.mercury.vpclient.shared.ui.components.filters.FilterBrandSectionHeader
+import ru.mercury.vpclient.shared.ui.components.filters.FilterChip
+import ru.mercury.vpclient.shared.ui.components.filters.FilterSelectableRow
 import ru.mercury.vpclient.shared.ui.components.system.ClientAnimatedVisibility
 import ru.mercury.vpclient.shared.ui.components.system.ClientButton
 import ru.mercury.vpclient.shared.ui.components.system.ClientDragHandle
-import ru.mercury.vpclient.shared.ui.components.filters.FilterChip
-import ru.mercury.vpclient.shared.ui.components.filters.FilterSelectableRow
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.icons.Search24
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
@@ -100,8 +103,6 @@ import ru.mercury.vpclient.shared.ui.theme.regular16
 import ru.mercury.vpclient.shared.ui.theme.secondary5
 import ru.mercury.vpclient.shared.ui.theme.secondary6
 import ru.mercury.vpclient.shared.ui.theme.surface3
-import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_brand.intent.FilterBrandIntent
-import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_brand.model.FilterBrandSheetState
 
 // fixme
 
@@ -175,7 +176,7 @@ private fun FilterBrandSheetContent(
                     text = stringResource(ClientStrings.FilterBrandTitle),
                     modifier = Modifier
                         .align(Alignment.Center)
-                        .padding(horizontal = 56.dp, vertical = 0.dp),
+                        .padding(horizontal = 56.dp),
                     style = MaterialTheme.typography.livretMedium19.copy(
                         color = MaterialTheme.colorScheme.onBackground,
                         textAlign = TextAlign.Center
@@ -191,7 +192,7 @@ private fun FilterBrandSheetContent(
                             focusManager.clearFocus()
                             dispatch(FilterBrandIntent.ResetFilterBrandValues)
                         },
-                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp)
+                        contentPadding = PaddingValues(horizontal = 8.dp)
                     ) {
                         Text(
                             text = stringResource(ClientStrings.CommonReset),
@@ -311,7 +312,7 @@ private fun FilterBrandSheetContent(
                     if (searchText.isBlank()) {
                         if (favoriteBrands.isNotEmpty()) {
                             item {
-                                BrandSectionHeader(
+                                FilterBrandSectionHeader(
                                     title = stringResource(ClientStrings.FilterBrandFavoritesHeader),
                                     showSelectAll = !favoriteBrands.all { it.id in state.selectedIds },
                                     onSelectAll = {
@@ -334,7 +335,7 @@ private fun FilterBrandSheetContent(
 
                         if (topBrands.isNotEmpty()) {
                             item {
-                                BrandSectionHeader(
+                                FilterBrandSectionHeader(
                                     title = stringResource(ClientStrings.FilterBrandTopHeader),
                                     showSelectAll = !topBrands.all { it.id in state.selectedIds },
                                     onSelectAll = {
@@ -356,7 +357,7 @@ private fun FilterBrandSheetContent(
                         }
 
                         item {
-                            BrandSectionHeader(
+                            FilterBrandSectionHeader(
                                 title = stringResource(ClientStrings.FilterBrandAllHeader),
                                 showSelectAll = false,
                                 onSelectAll = {}
@@ -385,7 +386,9 @@ private fun FilterBrandSheetContent(
                         }
                     } else {
                         brandsByLetter.forEach { (letter, brands) ->
-                            stickyHeader(key = "header_$letter") {
+                            stickyHeader(
+                                key = "header_$letter"
+                            ) {
                                 LetterHeader(letter = letter)
                             }
                             itemsIndexed(
@@ -432,7 +435,7 @@ private fun FilterBrandSheetContent(
                                 awaitEachGesture {
                                     var currentLetter: String? = null
                                     fun scrollToY(y: Float) {
-                                        if (scrubberHeight == 0f || letters.isEmpty()) return
+                                        if (scrubberHeight == 0F || letters.isEmpty()) return
                                         val idx = (y / scrubberHeight * letters.size)
                                             .toInt()
                                             .coerceIn(0, letters.lastIndex)
@@ -457,7 +460,10 @@ private fun FilterBrandSheetContent(
                         letters.forEach { letter ->
                             Text(
                                 text = letter,
-                                style = MaterialTheme.typography.regular12.copy(color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center)
+                                style = MaterialTheme.typography.regular12.copy(
+                                    color = MaterialTheme.colorScheme.error,
+                                    textAlign = TextAlign.Center
+                                )
                             )
                         }
                     }
@@ -480,7 +486,7 @@ private fun FilterBrandSheetContent(
                         loading = state.isProductsQuantityLoading,
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
-                            .padding(horizontal = 16.dp, vertical = 0.dp)
+                            .padding(horizontal = 16.dp)
                     )
                 }
             }
@@ -572,48 +578,6 @@ private fun BrandSearchField(
 }
 
 @Composable
-private fun BrandSectionHeader(
-    title: String,
-    showSelectAll: Boolean,
-    onSelectAll: () -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(44.dp)
-            .padding(horizontal = 16.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.livretMedium19.copy(
-                color = MaterialTheme.colorScheme.error,
-                lineHeight = 26.sp,
-                letterSpacing = .2.sp
-            )
-        )
-
-        ClientAnimatedVisibility(
-            visible = showSelectAll,
-            modifier = Modifier.align(Alignment.CenterEnd)
-        ) {
-            TextButton(
-                onClick = onSelectAll,
-                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp)
-            ) {
-                Text(
-                    text = stringResource(ClientStrings.FilterBrandSelectAll),
-                    style = MaterialTheme.typography.medium16.copy(
-                        color = MaterialTheme.colorScheme.error,
-                        letterSpacing = .3.sp
-                    )
-                )
-            }
-        }
-    }
-}
-
-@Composable
 private fun LetterHeader(letter: String) {
     Box(
         modifier = Modifier
@@ -659,7 +623,9 @@ private fun BrandChipsGrid(
                     )
                 }
                 repeat(3 - rowBrands.size) {
-                    Spacer(modifier = Modifier.weight(1F))
+                    Spacer(
+                        modifier = Modifier.weight(1F)
+                    )
                 }
             }
         }

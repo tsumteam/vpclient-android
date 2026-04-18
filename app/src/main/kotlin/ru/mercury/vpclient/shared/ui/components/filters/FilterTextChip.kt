@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.theme.ClientTheme
-import ru.mercury.vpclient.shared.ui.theme.regular16
+import ru.mercury.vpclient.shared.ui.theme.regular14
 
 @Composable
 fun FilterTextChip(
@@ -42,7 +42,7 @@ fun FilterTextChip(
     Text(
         text = text.uppercase(),
         modifier = modifier
-            .height(40.dp)
+            .height(34.dp)
             .border(
                 width = 1.dp,
                 color = MaterialTheme.colorScheme.onBackground,
@@ -53,7 +53,7 @@ fun FilterTextChip(
             .clickable(enabled = enabled, onClick = onClick)
             .padding(horizontal = 8.dp)
             .wrapContentSize(Alignment.Center),
-        style = MaterialTheme.typography.regular16.copy(
+        style = MaterialTheme.typography.regular14.copy(
             color = contentColor,
             lineHeight = 20.sp,
             letterSpacing = .2.sp,

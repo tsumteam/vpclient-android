@@ -19,17 +19,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import ru.mercury.vpclient.shared.domain.mapper.isEmpty
-import ru.mercury.vpclient.shared.domain.mapper.isNotEmpty
+import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogCategoryEntity
 import ru.mercury.vpclient.shared.data.persistence.database.pojo.SubcategoryPojo
+import ru.mercury.vpclient.shared.domain.mapper.isEmpty
+import ru.mercury.vpclient.shared.domain.mapper.isNotEmpty
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.SubcategoryPojoProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.ClientTheme
-import ru.mercury.vpclient.shared.ui.theme.livretMedium19
+import ru.mercury.vpclient.shared.ui.theme.livretMedium18
 
 @Composable
 fun CatalogCategorySection(
@@ -79,8 +80,10 @@ fun CatalogCategorySection(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 16.dp, top = 9.dp, end = 16.dp),
-                    style = MaterialTheme.typography.livretMedium19.copy(
+                    style = MaterialTheme.typography.livretMedium18.copy(
                         color = MaterialTheme.colorScheme.onBackground,
+                        lineHeight = 26.sp,
+                        letterSpacing = .2.sp,
                         textAlign = TextAlign.Center
                     )
                 )

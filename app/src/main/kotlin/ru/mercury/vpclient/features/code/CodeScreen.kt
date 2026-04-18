@@ -1,5 +1,6 @@
 package ru.mercury.vpclient.features.code
 
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -23,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.autofill.ContentType
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentType
@@ -78,7 +80,9 @@ fun CodeScreen(
         snackbarHostStateError = snackbarHostStateError
     )
 
-    ObserveAsEvents(flow = viewModel.eventFlow) { event ->
+    ObserveAsEvents(
+        flow = viewModel.eventFlow
+    ) { event ->
         when (event) {
             is CodeEvents.ClearFocus -> focusManager.clearFocus()
             is CodeEvents.SnackbarMessage -> {
@@ -99,7 +103,11 @@ private fun CodeScreenContent(
     snackbarHostStateError: SnackbarHostState
 ) {
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = { dispatch(CodeIntent.HideKeyboard) })
+            },
         topBar = {
             ClientCenterAlignedTopAppBar(
                 state = TopBarState.Logo

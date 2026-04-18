@@ -28,7 +28,6 @@ import ru.mercury.vpclient.shared.ui.preview.TopBarStateProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.ClientTheme
-import ru.mercury.vpclient.shared.ui.theme.medium17
 import ru.mercury.vpclient.shared.ui.theme.medium18
 
 @Composable
@@ -49,7 +48,7 @@ fun ClientCenterAlignedTopAppBar(
                 is TopBarState.Title -> {
                     Text(
                         text = stringResource(ClientStrings.MainTabBrands),
-                        style = MaterialTheme.typography.medium17.copy(
+                        style = MaterialTheme.typography.medium18.copy(
                             color = MaterialTheme.colorScheme.onBackground,
                             textAlign = TextAlign.Center
                         )
@@ -58,7 +57,7 @@ fun ClientCenterAlignedTopAppBar(
                 is TopBarState.Catalog -> {
                     Text(
                         text = stringResource(ClientStrings.MainTabCatalog),
-                        style = MaterialTheme.typography.medium17.copy(
+                        style = MaterialTheme.typography.medium18.copy(
                             color = MaterialTheme.colorScheme.onBackground,
                             textAlign = TextAlign.Center
                         )
@@ -183,7 +182,10 @@ fun ClientCenterAlignedTopAppBar(
             )*/ // fixme
         },
         colors = TopAppBarDefaults.topAppBarColors().copy(
-            containerColor = Color.Transparent
+            containerColor = when (state) {
+                is TopBarState.Filter -> Color.White
+                else -> Color.Transparent
+            }
         )
     )
 }

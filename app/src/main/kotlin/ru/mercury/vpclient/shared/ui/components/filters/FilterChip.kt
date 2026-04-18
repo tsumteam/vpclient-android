@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.ui.icons.Cancel14
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.theme.ClientTheme
-import ru.mercury.vpclient.shared.ui.theme.regular16
+import ru.mercury.vpclient.shared.ui.theme.regular14
 
 @Composable
 fun FilterChip(
@@ -49,7 +49,7 @@ fun FilterChip(
 
     Box(
         modifier = modifier
-            .height(40.dp)
+            .height(34.dp)
             .clip(RoundedCornerShape(10.dp))
             .background(backgroundColor)
             .border(
@@ -67,7 +67,7 @@ fun FilterChip(
         ) {
             Text(
                 text = text.uppercase(),
-                style = MaterialTheme.typography.regular16.copy(
+                style = MaterialTheme.typography.regular14.copy(
                     color = contentColor,
                     lineHeight = 20.sp,
                     letterSpacing = .2.sp,

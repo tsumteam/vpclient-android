@@ -3,6 +3,7 @@ package ru.mercury.vpclient.shared.ui.components.filters
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -37,22 +38,27 @@ fun FilterColorBox(
         targetValue = if (selected) 1.dp else 0.dp,
         label = "color_box_border_size"
     )
+    val cornerSize by animateDpAsState(
+        targetValue = if (selected) 14.dp else 12.dp,
+        label = "color_box_corner_size"
+    )
     val imageSize by animateDpAsState(
-        targetValue = if (selected) 61.dp else 67.dp,
+        targetValue = if (selected) 63.dp else 69.dp,
         label = "color_box_image_size"
     )
 
     Column(
         modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
             modifier = Modifier
-                .size(67.dp)
+                .size(69.dp)
                 .border(
                     width = borderSize,
                     color = if (selected) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.background,
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(cornerSize)
                 )
                 .clip(RoundedCornerShape(12.dp))
                 .clickable(onClick = onClick),
@@ -70,7 +76,6 @@ fun FilterColorBox(
 
         Text(
             text = text.uppercase(),
-            modifier = Modifier.padding(top = 8.dp),
             style = MaterialTheme.typography.livretRegular11.copy(
                 color = MaterialTheme.colorScheme.onBackground,
                 textAlign = TextAlign.Center

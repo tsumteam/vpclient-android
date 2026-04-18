@@ -2,15 +2,15 @@ package ru.mercury.vpclient.features.login
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.shared.data.error.LoginException
-import ru.mercury.vpclient.shared.domain.interactor.Interactor
-import ru.mercury.vpclient.shared.domain.mapper.normalizePhoneInput
-import ru.mercury.vpclient.shared.mvi.ClientViewModel
+import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.features.code.navigation.CodeRoute
 import ru.mercury.vpclient.features.login.event.LoginEvents
 import ru.mercury.vpclient.features.login.intent.LoginIntent
 import ru.mercury.vpclient.features.login.model.LoginModel
-import ru.mercury.vpclient.activity.event.MainEventManager
+import ru.mercury.vpclient.shared.data.error.LoginException
+import ru.mercury.vpclient.shared.domain.interactor.Interactor
+import ru.mercury.vpclient.shared.domain.mapper.normalizePhoneInput
+import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,7 +23,9 @@ class LoginViewModel @Inject constructor(
             is LoginIntent.LoginClick -> {
                 val phoneValidationError = interactor.validateRequiredPhone(stateFlow.value.phone)
                 when {
-                    phoneValidationError != null -> reduce { it.copy(phoneValidationError = phoneValidationError) }
+                    phoneValidationError != null -> {
+                        reduce { it.copy(phoneValidationError = phoneValidationError) }
+                    }
                     else -> {
                         launch {
                             reduce { it.copy(phoneValidationError = null, isLoading = true) }
@@ -33,6 +35,7 @@ class LoginViewModel @Inject constructor(
                     }
                 }
             }
+            is LoginIntent.HideKeyboard -> launch { send(LoginEvents.ClearFocus) }
             is LoginIntent.EnterPhone -> reduce { it.copy(phone = normalizePhoneInput(intent.phone), phoneValidationError = null) }
             is LoginIntent.OnKeyboardDone -> {
                 launch {

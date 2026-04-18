@@ -10,15 +10,10 @@ plugins {
     alias(libs.plugins.detekt) apply false
 }
 
-private val libsCatalog: VersionCatalog = extensions.getByType<VersionCatalogsExtension>().named("libs")
-
 subprojects {
     apply(plugin = "io.gitlab.arturbosch.detekt")
     extensions.configure<DetektExtension> {
-        config.setFrom(rootProject.file("config/detekt/detekt.yml"))
+        config.setFrom(rootProject.file(".github/detekt.yml"))
         buildUponDefaultConfig = true
-    }
-    dependencies {
-        add("detektPlugins", libsCatalog.findLibrary("detekt-rules").get())
     }
 }

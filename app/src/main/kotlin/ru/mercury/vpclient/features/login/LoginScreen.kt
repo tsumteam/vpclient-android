@@ -1,5 +1,6 @@
 package ru.mercury.vpclient.features.login
 
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -21,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.autofill.ContentType
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentType
@@ -70,7 +72,9 @@ fun LoginScreen(
         snackbarHostStateError = snackbarHostStateError
     )
 
-    ObserveAsEvents(flow = viewModel.eventFlow) { event ->
+    ObserveAsEvents(
+        flow = viewModel.eventFlow
+    ) { event ->
         when (event) {
             is LoginEvents.ClearFocus -> focusManager.clearFocus()
             is LoginEvents.SnackbarMessage -> {
@@ -99,7 +103,11 @@ private fun LoginScreenContent(
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = { dispatch(LoginIntent.HideKeyboard) })
+            },
         topBar = {
             ClientCenterAlignedTopAppBar(
                 state = TopBarState.Logo

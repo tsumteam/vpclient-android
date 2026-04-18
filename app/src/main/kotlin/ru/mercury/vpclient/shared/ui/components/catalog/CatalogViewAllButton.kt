@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.ClientTheme
-import ru.mercury.vpclient.shared.ui.theme.livretRegular16
+import ru.mercury.vpclient.shared.ui.theme.livretRegular15
 
 @Composable
 fun CatalogViewAllButton(
@@ -29,7 +29,7 @@ fun CatalogViewAllButton(
     Text(
         text = stringResource(ClientStrings.CatalogWatchAll),
         modifier = modifier
-            .size(96.dp)
+            .size(86.dp)
             .clip(RoundedCornerShape(18.dp))
             .background(MaterialTheme.colorScheme.background)
             .border(
@@ -39,7 +39,7 @@ fun CatalogViewAllButton(
             )
             .clickable(onClick = onClick)
             .wrapContentSize(Alignment.Center),
-        style = MaterialTheme.typography.livretRegular16.copy(
+        style = MaterialTheme.typography.livretRegular15.copy(
             color = MaterialTheme.colorScheme.onBackground,
             textAlign = TextAlign.Center
         )

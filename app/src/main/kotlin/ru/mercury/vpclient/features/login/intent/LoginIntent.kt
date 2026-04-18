@@ -4,6 +4,7 @@ import ru.mercury.vpclient.shared.mvi.Intent
 
 sealed interface LoginIntent: Intent {
     data object LoginClick: LoginIntent
+    data object HideKeyboard: LoginIntent
     data object OnKeyboardDone: LoginIntent
     data class EnterPhone(val phone: String): LoginIntent
 }

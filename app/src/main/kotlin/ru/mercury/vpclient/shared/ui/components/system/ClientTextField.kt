@@ -47,8 +47,8 @@ import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.ktx.keyboardActionHandler
 import ru.mercury.vpclient.shared.ui.ktx.rememberSyncedTextFieldState
 import ru.mercury.vpclient.shared.ui.theme.ClientTheme
-import ru.mercury.vpclient.shared.ui.theme.medium16
 import ru.mercury.vpclient.shared.ui.theme.regular12
+import ru.mercury.vpclient.shared.ui.theme.regular15
 import ru.mercury.vpclient.shared.ui.theme.surface3
 
 @Composable
@@ -98,8 +98,10 @@ fun ClientTextField(
                     )
                 }
             },
-        textStyle = MaterialTheme.typography.medium16.copy(
-            color = MaterialTheme.colorScheme.onBackground
+        textStyle = MaterialTheme.typography.regular15.copy(
+            color = MaterialTheme.colorScheme.onBackground,
+            lineHeight = 19.sp,
+            letterSpacing = .2.sp
         ),
         label = {
             Text(
@@ -184,8 +186,10 @@ fun ClientTextField(
             .fillMaxWidth()
             .height(52.dp),
         enabled = enabled,
-        textStyle = MaterialTheme.typography.medium16.copy(
-            color = MaterialTheme.colorScheme.onBackground
+        textStyle = MaterialTheme.typography.regular15.copy(
+            color = MaterialTheme.colorScheme.onBackground,
+            lineHeight = 19.sp,
+            letterSpacing = .2.sp
         ),
         placeholder = {
             Text(
@@ -280,8 +284,10 @@ fun ClientTextField(
                     )
                 }
             },
-        textStyle = MaterialTheme.typography.medium16.copy(
-            color = MaterialTheme.colorScheme.onBackground
+        textStyle = MaterialTheme.typography.regular15.copy(
+            color = MaterialTheme.colorScheme.onBackground,
+            lineHeight = 19.sp,
+            letterSpacing = .2.sp
         ),
         label = {
             Text(

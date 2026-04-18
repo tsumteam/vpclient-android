@@ -4,6 +4,7 @@ import ru.mercury.vpclient.shared.mvi.Intent
 
 sealed interface RegisterIntent: Intent {
     data object RegisterClick: RegisterIntent
+    data object HideKeyboard: RegisterIntent
     data object MoveFocusDown: RegisterIntent
     data object OnKeyboardDone: RegisterIntent
     data class EnterName(val name: String): RegisterIntent

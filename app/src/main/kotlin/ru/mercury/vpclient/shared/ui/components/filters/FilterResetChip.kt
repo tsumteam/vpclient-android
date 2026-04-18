@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.ClientTheme
-import ru.mercury.vpclient.shared.ui.theme.medium16
+import ru.mercury.vpclient.shared.ui.theme.medium15
 
 @Composable
 fun FilterResetChip(
@@ -30,16 +30,15 @@ fun FilterResetChip(
     Text(
         text = stringResource(ClientStrings.CommonReset),
         modifier = modifier
-            .height(40.dp)
+            .height(34.dp)
             .clip(RoundedCornerShape(10.dp))
             .background(MaterialTheme.colorScheme.background)
             .clickable(enabled = enabled, onClick = onClick)
             .padding(horizontal = 8.dp)
             .wrapContentSize(Alignment.Center),
-        style = MaterialTheme.typography.medium16.copy(
+        style = MaterialTheme.typography.medium15.copy(
             color = MaterialTheme.colorScheme.error,
-            lineHeight = 20.sp,
-            letterSpacing = .2.sp,
+            letterSpacing = .3.sp,
             textAlign = TextAlign.Center
         )
     )
