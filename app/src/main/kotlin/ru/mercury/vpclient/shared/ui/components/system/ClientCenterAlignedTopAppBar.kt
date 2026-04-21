@@ -183,7 +183,7 @@ fun ClientCenterAlignedTopAppBar(
         },
         colors = TopAppBarDefaults.topAppBarColors().copy(
             containerColor = when (state) {
-                is TopBarState.Filter -> Color.White
+                is TopBarState.Filter, is TopBarState.Category -> Color.White
                 else -> Color.Transparent
             }
         )

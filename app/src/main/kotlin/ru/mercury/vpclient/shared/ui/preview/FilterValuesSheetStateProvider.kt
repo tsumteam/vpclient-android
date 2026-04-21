@@ -1,6 +1,7 @@
 package ru.mercury.vpclient.shared.ui.preview
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValueItemEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesQuantityEntity
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_values.model.FilterValuesSheetState
@@ -11,8 +12,12 @@ class FilterValuesSheetStateProvider: PreviewParameterProvider<FilterValuesSheet
             entity = FilterValuesEntity(
                 chipId = "attribute_length",
                 title = "ДЛИНА",
-                valueIds = listOf("attribute_length_mini", "attribute_length_midi", "attribute_length_maxi", "attribute_length_ankle"),
-                valueLabels = listOf("Мини", "Миди", "Макси", "До щиколотки")
+                items = listOf(
+                    FilterValueItemEntity(id = "attribute_length_mini", label = "Мини"),
+                    FilterValueItemEntity(id = "attribute_length_midi", label = "Миди"),
+                    FilterValueItemEntity(id = "attribute_length_maxi", label = "Макси"),
+                    FilterValueItemEntity(id = "attribute_length_ankle", label = "До щиколотки")
+                )
             ),
             selectedIds = setOf("attribute_length_midi", "attribute_length_maxi"),
             quantityEntity = FilterValuesQuantityEntity(
@@ -25,9 +30,7 @@ class FilterValuesSheetStateProvider: PreviewParameterProvider<FilterValuesSheet
         FilterValuesSheetState(
             entity = FilterValuesEntity(
                 chipId = "attribute_length",
-                title = "ДЛИНА",
-                valueIds = emptyList(),
-                valueLabels = emptyList()
+                title = "ДЛИНА"
             ),
             selectedIds = emptySet(),
             quantityEntity = FilterValuesQuantityEntity.Empty,

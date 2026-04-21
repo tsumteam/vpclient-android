@@ -62,10 +62,12 @@ import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_brand.FilterB
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_brand.intent.FilterBrandIntent
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_color.FilterColorSheet
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_color.intent.FilterColorIntent
+import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_price.FilterPriceSheet
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_size.FilterSizeSheet
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_size.intent.FilterSizeIntent
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_sort.SortSheet
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_sort.intent.SortIntent
+import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_tree.FilterTreeSheet
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_values.FilterValuesSheet
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_values.intent.FilterValuesIntent
 import ru.mercury.vpclient.shared.data.entity.FiltersRowState
@@ -137,6 +139,12 @@ fun FilterScreen(
             }
         )
     }
+    if (state.isFilterPriceDialogVisible) {
+        FilterPriceSheet(
+            state = requireNotNull(state.filterPriceSheetState),
+            dispatch = viewModel::dispatch
+        )
+    }
     if (state.isFilterSizeDialogVisible) {
         FilterSizeSheet(
             state = requireNotNull(state.filterSizeSheetState),
@@ -148,6 +156,12 @@ fun FilterScreen(
                     is FilterSizeIntent.ToggleFilterSizeValue -> viewModel.dispatch(FilterIntent.ToggleFilterDialogValue(intent.valueId))
                 }
             }
+        )
+    }
+    if (state.isFilterTreeDialogVisible) {
+        FilterTreeSheet(
+            state = requireNotNull(state.filterTreeSheetState),
+            dispatch = viewModel::dispatch
         )
     }
     if (state.isFilterColorDialogVisible) {

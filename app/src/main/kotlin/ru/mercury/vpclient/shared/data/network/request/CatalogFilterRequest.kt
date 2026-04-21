@@ -19,6 +19,7 @@ data class CatalogFilterRequest(
         const val CATEGORY = "category"
         const val BRAND = "brand"
         const val COLOR = "color"
+        const val PRICE = "price"
         const val SIZE = "size"
     }
 }

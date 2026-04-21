@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import ru.mercury.vpclient.shared.data.entity.CatalogTabData
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.CatalogTabsProvider
@@ -29,7 +30,7 @@ import ru.mercury.vpclient.shared.ui.theme.surface4
 
 @Composable
 fun CatalogTabRow(
-    tabs: List<String>,
+    tabs: List<CatalogTabData>,
     selectedTabIndex: Int,
     onTabClick: (Int) -> Unit,
     modifier: Modifier = Modifier
@@ -81,7 +82,7 @@ fun CatalogTabRow(
                     )
                 }
             ) {
-                tabs.forEachIndexed { index, title ->
+                tabs.forEachIndexed { index, tab ->
                     Tab(
                         selected = selectedTabIndex == index,
                         onClick = { onTabClick(index) },
@@ -89,7 +90,7 @@ fun CatalogTabRow(
                         unselectedContentColor = MaterialTheme.colorScheme.onBackground,
                         text = {
                             Text(
-                                text = title.uppercase(),
+                                text = tab.title.uppercase(),
                                 style = MaterialTheme.typography.livretRegular14
                             )
                         }
@@ -103,7 +104,7 @@ fun CatalogTabRow(
 @FontScalePreviews
 @Composable
 private fun CatalogTabRowPreview(
-    @PreviewParameter(CatalogTabsProvider::class) tabs: List<String>
+    @PreviewParameter(CatalogTabsProvider::class) tabs: List<CatalogTabData>
 ) {
     ClientTheme {
         CatalogTabRow(

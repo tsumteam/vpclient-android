@@ -166,11 +166,20 @@ class FilterRepositoryImpl @Inject constructor(
         val titleCategoryId = data.titleCategoryId
         val chipId = data.chipId
         val categoryEntity = catalogCategoryDao.select(categoryId)
+        val existingPicker = catalogFilterDao.select(categoryId, titleCategoryId)
+            ?.toFilterValuesPickers()
+            ?.firstOrNull { picker -> picker.chipId == chipId }
         val requestFilters = data.selectedFilterValueChipIds.requests(categoryEntity.id)
         val filterType = chipId.substringBefore("_")
         val filterSubtype = chipId.substringAfter("_", "").ifBlank { null }
         val filterTypeDto = when (filterType) {
-            CatalogFilterRequest.ACTION, CatalogFilterRequest.ATTRIBUTE, CatalogFilterRequest.BRAND, CatalogFilterRequest.COLOR, CatalogFilterRequest.SIZE -> filterType
+            CatalogFilterRequest.ACTION,
+            CatalogFilterRequest.ATTRIBUTE,
+            CatalogFilterRequest.BRAND,
+            CatalogFilterRequest.CATEGORY,
+            CatalogFilterRequest.COLOR,
+            CatalogFilterRequest.PRICE,
+            CatalogFilterRequest.SIZE -> filterType
             else -> throw FiltersNotSupportedException()
         }
 
@@ -189,7 +198,10 @@ class FilterRepositoryImpl @Inject constructor(
             onSuccess = { data ->
                 val filterValuesEntity = data.filterValues.orEmpty().toFilterValuesEntity(
                     chipId = chipId,
-                    title = chipId.substringAfter("_", chipId)
+                    title = existingPicker?.title ?: chipId.substringAfter("_", chipId),
+                    valueType = existingPicker?.valueType,
+                    showSearchBar = existingPicker?.showSearchBar == true,
+                    showSidePanelWithLetters = existingPicker?.showSidePanelWithLetters == true
                 )
                 filterValuesDao.upsert(filterValuesEntity)
             }

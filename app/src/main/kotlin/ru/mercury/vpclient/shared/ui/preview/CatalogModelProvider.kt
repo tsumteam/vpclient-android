@@ -2,6 +2,7 @@ package ru.mercury.vpclient.shared.ui.preview
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import ru.mercury.vpclient.shared.data.entity.CatalogData
+import ru.mercury.vpclient.shared.data.entity.CatalogTabData
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.catalog.model.CatalogModel
 
 class CatalogModelProvider: PreviewParameterProvider<CatalogModel> {
@@ -9,7 +10,11 @@ class CatalogModelProvider: PreviewParameterProvider<CatalogModel> {
         CatalogModel(),
         CatalogModel(
             catalogData = CatalogData(
-                tabs = listOf("Мужская", "Женская", "Детская"),
+                tabs = listOf(
+                    CatalogTabData(title = "Мужская", rootId = 3, selected = true),
+                    CatalogTabData(title = "Женская", rootId = 2, selected = false),
+                    CatalogTabData(title = "Детская", rootId = 4, selected = false)
+                ),
                 pages = listOf(
                     listOf(
                         CatalogCategoryEntityProvider().values.first(),

@@ -23,9 +23,11 @@ import ru.mercury.vpclient.shared.data.entity.FilterRequestData
 import ru.mercury.vpclient.shared.data.entity.FilterValuesRequestData
 import ru.mercury.vpclient.shared.data.entity.SortType
 import ru.mercury.vpclient.shared.data.error.ClientException
+import ru.mercury.vpclient.shared.data.network.request.CatalogFilterRequest
 import ru.mercury.vpclient.shared.domain.interactor.Interactor
 import ru.mercury.vpclient.shared.domain.mapper.isEmpty
 import ru.mercury.vpclient.shared.domain.mapper.isRequestAffectingCatalogFilterValueChipId
+import ru.mercury.vpclient.shared.domain.mapper.toPriceRangeChipData
 import ru.mercury.vpclient.shared.domain.mapper.values
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.navigation.BackRoute
@@ -121,6 +123,10 @@ class FilterViewModel @AssistedInject constructor(
             is FilterIntent.ShowFilterValuesDialog -> {
                 val currentState = stateFlow.value
                 val chip = currentState.filterValuesDialogChip(intent.chipId) ?: return
+                val selectedValueIds = currentState.selectedFilterValueIds(chip.id)
+                val priceRangeChipData = selectedValueIds.firstNotNullOfOrNull { valueId ->
+                    valueId.toPriceRangeChipData()
+                }
                 currentState.filterValuesDialogProductsQuantityJob?.cancel()
                 currentState.filterValuesDialogQuantityCollectionJob?.cancel()
                 currentState.filterValuesDialogPickerCollectionJob?.cancel()
@@ -130,11 +136,13 @@ class FilterViewModel @AssistedInject constructor(
                         filterValuesEntity = FilterValuesEntity(
                             chipId = chip.id,
                             title = chip.label,
-                            valueIds = emptyList(),
-                            valueLabels = emptyList()
+                            items = emptyList()
                         ),
                         filterValuesDialogProductsQuantity = FilterValuesQuantityEntity.Empty,
-                        filterValuesDialogSelectedValueIds = it.selectedFilterValueIds(chip.id),
+                        filterValuesDialogSelectedValueIds = selectedValueIds,
+                        filterPriceFrom = priceRangeChipData?.from?.toString().orEmpty(),
+                        filterPriceTo = priceRangeChipData?.to?.toString().orEmpty(),
+                        filterTreePath = emptyList(),
                         filterValuesDialogProductsQuantityJob = null,
                         filterValuesDialogPickerCollectionJob = null,
                         filterValuesDialogQuantityCollectionJob = null
@@ -197,7 +205,11 @@ class FilterViewModel @AssistedInject constructor(
                 reduce {
                     it.copy(
                         filterValuesEntity = FilterValuesEntity.Empty,
+                        filterValuesDialogSelectedValueIds = emptySet(),
                         filterValuesDialogProductsQuantity = FilterValuesQuantityEntity.Empty,
+                        filterPriceFrom = "",
+                        filterPriceTo = "",
+                        filterTreePath = emptyList(),
                         isFilterValuesDialogLoading = false,
                         isFilterValuesDialogProductsQuantityLoading = false,
                         filterValuesDialogProductsQuantityJob = null,
@@ -227,6 +239,9 @@ class FilterViewModel @AssistedInject constructor(
                         currentState.copy(
                             filterValuesEntity = FilterValuesEntity.Empty,
                             filterValuesDialogProductsQuantity = FilterValuesQuantityEntity.Empty,
+                            filterPriceFrom = "",
+                            filterPriceTo = "",
+                            filterTreePath = emptyList(),
                             isFilterValuesDialogLoading = false,
                             isFilterValuesDialogProductsQuantityLoading = false,
                             filterValuesDialogProductsQuantityJob = null,
@@ -246,6 +261,9 @@ class FilterViewModel @AssistedInject constructor(
                                 currentState.copy(
                                     filterValuesEntity = FilterValuesEntity.Empty,
                                     filterValuesDialogProductsQuantity = FilterValuesQuantityEntity.Empty,
+                                    filterPriceFrom = "",
+                                    filterPriceTo = "",
+                                    filterTreePath = emptyList(),
                                     isFilterValuesDialogLoading = false,
                                     isFilterValuesDialogProductsQuantityLoading = false,
                                     filterValuesDialogProductsQuantityJob = null,
@@ -261,6 +279,9 @@ class FilterViewModel @AssistedInject constructor(
                                     selectedFilterValueChips = preservedSelectedFilterValueChips + selectedValueChips,
                                     filterValuesEntity = FilterValuesEntity.Empty,
                                     filterValuesDialogProductsQuantity = FilterValuesQuantityEntity.Empty,
+                                    filterPriceFrom = "",
+                                    filterPriceTo = "",
+                                    filterTreePath = emptyList(),
                                     isFilterValuesDialogLoading = false,
                                     isFilterValuesDialogProductsQuantityLoading = false,
                                     filterValuesDialogProductsQuantityJob = null,
@@ -279,6 +300,45 @@ class FilterViewModel @AssistedInject constructor(
                     dispatch(FilterIntent.LoadCatalogFilters)
                     dispatch(FilterIntent.LoadProductsQuantity)
                 }
+            }
+            is FilterIntent.ConfirmPrice -> {
+                val currentState = stateFlow.value
+                val previousRequestAffectingIds = currentState.selectedRequestAffectingFilterValueChipIds
+                val chipId = currentState.filterValuesEntity.chipId
+                val priceChip = currentState.priceFilterChip()
+                currentState.filterValuesDialogProductsQuantityJob?.cancel()
+                currentState.filterValuesDialogPickerCollectionJob?.cancel()
+                currentState.filterValuesDialogQuantityCollectionJob?.cancel()
+                val updatedState = currentState.copy(
+                    selectedFilterValueChips = currentState.selectedFilterValueChips
+                        .filterNot { chip -> chip.id.startsWith("${chipId}_") }
+                        .let { chips -> if (priceChip != null) chips + priceChip else chips },
+                    filterValuesEntity = FilterValuesEntity.Empty,
+                    filterValuesDialogSelectedValueIds = emptySet(),
+                    filterValuesDialogProductsQuantity = FilterValuesQuantityEntity.Empty,
+                    filterPriceFrom = "",
+                    filterPriceTo = "",
+                    filterTreePath = emptyList(),
+                    isFilterValuesDialogLoading = false,
+                    isFilterValuesDialogProductsQuantityLoading = false,
+                    filterValuesDialogProductsQuantityJob = null,
+                    filterValuesDialogPickerCollectionJob = null,
+                    filterValuesDialogQuantityCollectionJob = null
+                )
+                reduce { updatedState }
+                if (previousRequestAffectingIds != updatedState.selectedRequestAffectingFilterValueChipIds) {
+                    dispatch(FilterIntent.LoadCatalogFilters)
+                    dispatch(FilterIntent.LoadProductsQuantity)
+                }
+            }
+            is FilterIntent.ResetPrice -> {
+                reduce {
+                    it.copy(
+                        filterPriceFrom = "",
+                        filterPriceTo = ""
+                    )
+                }
+                dispatch(FilterIntent.UpdateFilterValuesSelection(emptySet()))
             }
             is FilterIntent.UpdateFilterValuesSelection -> {
                 val currentState = stateFlow.value
@@ -308,7 +368,11 @@ class FilterViewModel @AssistedInject constructor(
                         reduce { model ->
                             when {
                                 model.filterValuesDialogProductsQuantityJob != job -> model
-                                model.isFilterValuesDialogVisible || model.isFilterColorDialogVisible || model.isFilterSizeDialogVisible -> model.copy(
+                                model.isFilterValuesDialogVisible ||
+                                    model.isFilterColorDialogVisible ||
+                                    model.isFilterPriceDialogVisible ||
+                                    model.isFilterSizeDialogVisible ||
+                                    model.isFilterTreeDialogVisible -> model.copy(
                                     isFilterValuesDialogProductsQuantityLoading = false,
                                     filterValuesDialogProductsQuantityJob = null
                                 )
@@ -318,6 +382,40 @@ class FilterViewModel @AssistedInject constructor(
                     }
                 }
                 reduce { it.copy(filterValuesDialogProductsQuantityJob = productsQuantityJob) }
+            }
+            is FilterIntent.UpdatePriceFrom -> {
+                val priceFrom = intent.value.onlyDigits()
+                val updatedPriceTo = stateFlow.value.filterPriceTo.onlyDigits()
+                reduce {
+                    it.copy(
+                        filterPriceFrom = priceFrom,
+                        filterPriceTo = updatedPriceTo
+                    )
+                }
+                dispatch(FilterIntent.UpdateFilterValuesSelection(priceSelectionIds(priceFrom, updatedPriceTo)))
+            }
+            is FilterIntent.UpdatePriceTo -> {
+                val updatedPriceFrom = stateFlow.value.filterPriceFrom.onlyDigits()
+                val priceTo = intent.value.onlyDigits()
+                reduce {
+                    it.copy(
+                        filterPriceFrom = updatedPriceFrom,
+                        filterPriceTo = priceTo
+                    )
+                }
+                dispatch(FilterIntent.UpdateFilterValuesSelection(priceSelectionIds(updatedPriceFrom, priceTo)))
+            }
+            is FilterIntent.SelectPricePreset -> {
+                val priceRangeChipData = intent.valueId.toPriceRangeChipData() ?: return
+                val priceFrom = priceRangeChipData.from?.toString().orEmpty()
+                val priceTo = priceRangeChipData.to?.toString().orEmpty()
+                reduce {
+                    it.copy(
+                        filterPriceFrom = priceFrom,
+                        filterPriceTo = priceTo
+                    )
+                }
+                dispatch(FilterIntent.UpdateFilterValuesSelection(setOf(intent.valueId)))
             }
             is FilterIntent.ToggleFilterValueChip -> {
                 val currentState = stateFlow.value
@@ -358,6 +456,92 @@ class FilterViewModel @AssistedInject constructor(
                 }
                 dispatch(FilterIntent.UpdateFilterValuesSelection(updatedSelectedValueIds))
             }
+            is FilterIntent.NavigateInFilterTree -> {
+                val selectedItem = stateFlow.value.filterValuesEntity.items.firstOrNull { item -> item.id == intent.valueId } ?: return
+                if (selectedItem.hasChildren) {
+                    reduce { it.copy(filterTreePath = it.filterTreePath + intent.valueId) }
+                } else {
+                    dispatch(FilterIntent.ToggleFilterDialogValue(intent.valueId))
+                }
+            }
+            is FilterIntent.NavigateBackInFilterTree -> {
+                val currentPath = stateFlow.value.filterTreePath
+                if (currentPath.isNotEmpty()) {
+                    reduce { it.copy(filterTreePath = currentPath.dropLast(1)) }
+                }
+            }
+        }
+    }
+
+    private fun FilterModel.priceFilterChip(): FilterChip? {
+        val priceSelectionIds = priceSelectionIds(filterPriceFrom, filterPriceTo)
+        val chipId = priceSelectionIds.firstOrNull() ?: return null
+        val label = buildPriceChipLabel(filterPriceFrom, filterPriceTo)
+
+        return FilterChip(
+            id = chipId,
+            label = label
+        )
+    }
+
+    private fun priceSelectionIds(
+        priceFrom: String,
+        priceTo: String
+    ): Set<String> {
+        val (normalizedPriceFrom, normalizedPriceTo) = normalizePriceRange(
+            priceFrom = priceFrom.onlyDigits(),
+            priceTo = priceTo.onlyDigits()
+        )
+
+        if (normalizedPriceFrom.isEmpty() && normalizedPriceTo.isEmpty()) {
+            return emptySet()
+        }
+        return setOf(
+            buildPriceChipId(
+                priceFrom = normalizedPriceFrom,
+                priceTo = normalizedPriceTo
+            )
+        )
+    }
+
+    private fun buildPriceChipId(
+        priceFrom: String,
+        priceTo: String
+    ): String {
+        val fromToken = priceFrom.ifBlank { "-" }
+        val toToken = priceTo.ifBlank { "-" }
+        return "${CatalogFilterRequest.PRICE}_range_${fromToken}_$toToken"
+    }
+
+    private fun buildPriceChipLabel(
+        priceFrom: String,
+        priceTo: String
+    ): String {
+        val (normalizedPriceFrom, normalizedPriceTo) = normalizePriceRange(priceFrom, priceTo)
+        return when {
+            normalizedPriceFrom.isNotEmpty() && normalizedPriceTo.isNotEmpty() -> "$normalizedPriceFrom - $normalizedPriceTo"
+            normalizedPriceFrom.isNotEmpty() -> "$normalizedPriceFrom+"
+            normalizedPriceTo.isNotEmpty() -> "<= $normalizedPriceTo"
+            else -> ""
+        }
+    }
+
+    private fun normalizePriceRange(
+        priceFrom: String,
+        priceTo: String
+    ): Pair<String, String> {
+        val fromValue = priceFrom.toIntOrNull()
+        val toValue = priceTo.toIntOrNull()
+
+        return when {
+            fromValue != null && toValue != null && fromValue > toValue -> Pair(
+                first = toValue.toString(),
+                second = fromValue.toString()
+            )
+            else -> Pair(
+                first = priceFrom,
+                second = priceTo
+            )
         }
     }
 
@@ -373,4 +557,8 @@ class FilterViewModel @AssistedInject constructor(
     interface Factory {
         fun create(route: FilterRoute): FilterViewModel
     }
+}
+
+private fun String.onlyDigits(): String {
+    return filter(Char::isDigit)
 }

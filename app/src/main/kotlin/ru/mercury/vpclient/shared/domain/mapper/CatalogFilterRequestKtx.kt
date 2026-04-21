@@ -1,5 +1,8 @@
 package ru.mercury.vpclient.shared.domain.mapper
 
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import ru.mercury.vpclient.shared.data.network.request.CatalogFilterRequest
 import ru.mercury.vpclient.shared.data.network.request.CatalogFilterValueRequest
 
@@ -7,7 +10,13 @@ import ru.mercury.vpclient.shared.data.network.request.CatalogFilterValueRequest
 
 fun String.isFilterValuesDialogChipId(): Boolean {
     return when (substringBefore("_")) {
-        CatalogFilterRequest.ACTION, CatalogFilterRequest.ATTRIBUTE, CatalogFilterRequest.BRAND, CatalogFilterRequest.COLOR, CatalogFilterRequest.SIZE -> true
+        CatalogFilterRequest.ACTION,
+        CatalogFilterRequest.ATTRIBUTE,
+        CatalogFilterRequest.BRAND,
+        CatalogFilterRequest.CATEGORY,
+        CatalogFilterRequest.COLOR,
+        CatalogFilterRequest.PRICE,
+        CatalogFilterRequest.SIZE -> true
         else -> false
     }
 }
@@ -16,112 +25,172 @@ fun String.isRequestAffectingCatalogFilterValueChipId(): Boolean {
     return startsWith("${CatalogFilterRequest.CATEGORY}_") ||
         startsWith("${CatalogFilterRequest.BRAND}_") ||
         startsWith("${CatalogFilterRequest.COLOR}_") ||
+        startsWith("${CatalogFilterRequest.PRICE}_") ||
         startsWith("${CatalogFilterRequest.SIZE}_") ||
         startsWith("${CatalogFilterRequest.ACTION}_") ||
         startsWith("${CatalogFilterRequest.ATTRIBUTE}_")
 }
 
 fun Set<String>.requests(categoryId: Int): List<CatalogFilterRequest> {
-    val actionValues = mutableListOf<CatalogFilterValueRequest>()
-    val categoryValues = mutableListOf<CatalogFilterValueRequest>()
-    val brandValues = mutableListOf<CatalogFilterValueRequest>()
-    val colorValues = mutableListOf<CatalogFilterValueRequest>()
-    val sizeValues = mutableListOf<CatalogFilterValueRequest>()
-    val attributeValuesBySubtype = mutableMapOf<String, MutableList<CatalogFilterValueRequest>>()
+    val valuesByRequestKey = mutableMapOf<RequestKey, MutableList<CatalogFilterValueRequest>>()
 
     for (chipId in sorted()) {
-        when {
-            chipId.startsWith("${CatalogFilterRequest.ACTION}_") -> {
-                val value = chipId.substringAfter("${CatalogFilterRequest.ACTION}_").toIntOrNull()
-                if (value != null) {
-                    actionValues.add(CatalogFilterValueRequest(CatalogFilterValueRequest.ID, value))
-                }
-            }
-            chipId.startsWith("${CatalogFilterRequest.CATEGORY}_") -> {
-                val value = chipId.substringAfter("${CatalogFilterRequest.CATEGORY}_").toIntOrNull()
-                if (value != null) {
-                    categoryValues.add(CatalogFilterValueRequest(CatalogFilterValueRequest.ID_TREE, value))
-                }
-            }
-            chipId.startsWith("${CatalogFilterRequest.BRAND}_") -> {
-                val value = chipId.substringAfter("${CatalogFilterRequest.BRAND}_").toIntOrNull()
-                if (value != null) {
-                    brandValues.add(CatalogFilterValueRequest(CatalogFilterValueRequest.BRAND, value))
-                }
-            }
-            chipId.startsWith("${CatalogFilterRequest.COLOR}_") -> {
-                val value = chipId.substringAfter("${CatalogFilterRequest.COLOR}_").toIntOrNull()
-                if (value != null) {
-                    colorValues.add(CatalogFilterValueRequest(CatalogFilterValueRequest.ID, value))
-                }
-            }
-            chipId.startsWith("${CatalogFilterRequest.SIZE}_") -> {
-                val value = chipId.substringAfter("${CatalogFilterRequest.SIZE}_").toIntOrNull()
-                if (value != null) {
-                    sizeValues.add(CatalogFilterValueRequest(CatalogFilterValueRequest.CATALOG_PRODUCT_SIZE, value))
-                }
-            }
-            chipId.startsWith("${CatalogFilterRequest.ATTRIBUTE}_") -> {
-                val rawValue = chipId.substringAfter("${CatalogFilterRequest.ATTRIBUTE}_")
-                val filterSubtype = rawValue.substringBeforeLast("_", "")
-                val value = rawValue.substringAfterLast("_").toIntOrNull()
-
-                if (filterSubtype.isNotBlank() && value != null) {
-                    attributeValuesBySubtype.getOrPut(filterSubtype) { mutableListOf() }
-                        .add(CatalogFilterValueRequest(CatalogFilterValueRequest.ID, value))
-                }
-            }
-        }
+        val requestEntry = chipId.toCatalogFilterRequestEntry() ?: continue
+        valuesByRequestKey.getOrPut(requestEntry.key) { mutableListOf() }
+            .add(requestEntry.value)
     }
-    if (categoryValues.isEmpty()) {
-        categoryValues.add(CatalogFilterValueRequest(CatalogFilterValueRequest.ID_TREE, categoryId))
+    val categoryRequestKey = RequestKey(filterType = CatalogFilterRequest.CATEGORY, filterSubtype = null)
+    if (valuesByRequestKey[categoryRequestKey].isNullOrEmpty()) {
+        valuesByRequestKey.getOrPut(categoryRequestKey) { mutableListOf() }
+            .add(CatalogFilterValueRequest(CatalogFilterValueRequest.ID_TREE, JsonPrimitive(categoryId)))
     }
     return buildList {
-        val categoryCatalogFilterRequest = CatalogFilterRequest(
-            filterType = CatalogFilterRequest.CATEGORY,
-            filterSubtype = null,
-            values = categoryValues.distinct()
-        )
-        add(categoryCatalogFilterRequest)
-        if (actionValues.isNotEmpty()) {
-            val actionCatalogFilterRequest = CatalogFilterRequest(
-                filterType = CatalogFilterRequest.ACTION,
-                filterSubtype = null,
-                values = actionValues.distinct()
-            )
-            add(actionCatalogFilterRequest)
-        }
-        if (brandValues.isNotEmpty()) {
-            val brandCatalogFilterRequest = CatalogFilterRequest(
-                filterType = CatalogFilterRequest.BRAND,
-                filterSubtype = null,
-                values = brandValues.distinct()
-            )
-            add(brandCatalogFilterRequest)
-        }
-        if (colorValues.isNotEmpty()) {
-            val colorCatalogFilterRequest = CatalogFilterRequest(
-                filterType = CatalogFilterRequest.COLOR,
-                filterSubtype = null,
-                values = colorValues.distinct()
-            )
-            add(colorCatalogFilterRequest)
-        }
-        if (sizeValues.isNotEmpty()) {
-            val sizeCatalogFilterRequest = CatalogFilterRequest(
-                filterType = CatalogFilterRequest.SIZE,
-                filterSubtype = null,
-                values = sizeValues.distinct()
-            )
-            add(sizeCatalogFilterRequest)
-        }
-        attributeValuesBySubtype.toSortedMap().forEach { (filterSubtype, values) ->
+        valuesByRequestKey.toSortedMap(compareBy<RequestKey> { it.filterType }.thenBy { it.filterSubtype.orEmpty() })
+            .forEach { (requestKey, values) ->
             val catalogFilterRequest = CatalogFilterRequest(
-                filterType = CatalogFilterRequest.ATTRIBUTE,
-                filterSubtype = filterSubtype,
+                filterType = requestKey.filterType,
+                filterSubtype = requestKey.filterSubtype,
                 values = values.distinct()
             )
             add(catalogFilterRequest)
-        }
+            }
     }
 }
+
+private fun String.toCatalogFilterRequestEntry(): RequestEntry? {
+    return when {
+        startsWith("${CatalogFilterRequest.ACTION}_") -> {
+            simpleRequestEntry(
+                chipId = this,
+                filterType = CatalogFilterRequest.ACTION,
+                valueType = CatalogFilterValueRequest.ID
+            )
+        }
+        startsWith("${CatalogFilterRequest.CATEGORY}_") -> {
+            categoryRequestEntry(chipId = this)
+        }
+        startsWith("${CatalogFilterRequest.BRAND}_") -> {
+            simpleRequestEntry(
+                chipId = this,
+                filterType = CatalogFilterRequest.BRAND,
+                valueType = CatalogFilterValueRequest.BRAND
+            )
+        }
+        startsWith("${CatalogFilterRequest.COLOR}_") -> {
+            simpleRequestEntry(
+                chipId = this,
+                filterType = CatalogFilterRequest.COLOR,
+                valueType = CatalogFilterValueRequest.ID
+            )
+        }
+        startsWith("${CatalogFilterRequest.PRICE}_range_") -> {
+            priceRequestEntry(chipId = this)
+        }
+        startsWith("${CatalogFilterRequest.SIZE}_") -> {
+            simpleRequestEntry(
+                chipId = this,
+                filterType = CatalogFilterRequest.SIZE,
+                valueType = CatalogFilterValueRequest.CATALOG_PRODUCT_SIZE
+            )
+        }
+        startsWith("${CatalogFilterRequest.ATTRIBUTE}_") -> {
+            attributeRequestEntry(chipId = this)
+        }
+        else -> null
+    }
+}
+
+private fun categoryRequestEntry(chipId: String): RequestEntry? {
+    val rawValue = chipId.substringAfter("${CatalogFilterRequest.CATEGORY}_")
+    val valueString = when {
+        rawValue.startsWith("tree_") -> rawValue.substringAfter("tree_")
+        else -> rawValue
+    }
+    val value = valueString.toIntOrNull() ?: return null
+    return RequestEntry(
+        key = RequestKey(filterType = CatalogFilterRequest.CATEGORY, filterSubtype = null),
+        value = CatalogFilterValueRequest(
+            valueType = CatalogFilterValueRequest.ID_TREE,
+            value = JsonPrimitive(value)
+        )
+    )
+}
+
+private fun simpleRequestEntry(
+    chipId: String,
+    filterType: String,
+    valueType: String
+): RequestEntry? {
+    val value = chipId.substringAfter("${filterType}_").toIntOrNull() ?: return null
+    return RequestEntry(
+        key = RequestKey(filterType = filterType, filterSubtype = null),
+        value = CatalogFilterValueRequest(
+            valueType = valueType,
+            value = JsonPrimitive(value)
+        )
+    )
+}
+
+private fun priceRequestEntry(chipId: String): RequestEntry? {
+    val value = chipId.substringAfter("${CatalogFilterRequest.PRICE}_range_")
+    val fromToken = value.substringBefore("_", "").ifBlank { "-" }
+    val toToken = value.substringAfter("_", "").ifBlank { "-" }
+    val fromValue = fromToken.takeIf { it != "-" }?.toDoubleOrNull()
+    val toValue = toToken.takeIf { it != "-" }?.toDoubleOrNull()
+
+    if (fromValue == null && toValue == null) {
+        return null
+    }
+    return RequestEntry(
+        key = RequestKey(filterType = CatalogFilterRequest.PRICE, filterSubtype = null),
+        value = CatalogFilterValueRequest(
+            valueType = CatalogFilterValueRequest.DECIMAL_RANGE,
+            value = buildJsonObject {
+                if (fromValue != null) {
+                    put("from", fromValue)
+                }
+                if (toValue != null) {
+                    put("to", toValue)
+                }
+            }
+        )
+    )
+}
+
+private fun attributeRequestEntry(chipId: String): RequestEntry? {
+    val rawValue = chipId.substringAfter("${CatalogFilterRequest.ATTRIBUTE}_")
+    val treeSeparator = "_tree_"
+    val filterSubtype = when {
+        rawValue.contains(treeSeparator) -> rawValue.substringBefore(treeSeparator)
+        else -> rawValue.substringBeforeLast("_", "")
+    }
+    if (filterSubtype.isBlank()) {
+        return null
+    }
+    val valueString = when {
+        rawValue.contains(treeSeparator) -> rawValue.substringAfter(treeSeparator)
+        else -> rawValue.substringAfterLast("_")
+    }
+    val value = valueString.toIntOrNull() ?: return null
+    val valueType = when {
+        rawValue.contains(treeSeparator) -> CatalogFilterValueRequest.ID_TREE
+        else -> CatalogFilterValueRequest.ID
+    }
+    return RequestEntry(
+        key = RequestKey(filterType = CatalogFilterRequest.ATTRIBUTE, filterSubtype = filterSubtype),
+        value = CatalogFilterValueRequest(
+            valueType = valueType,
+            value = JsonPrimitive(value)
+        )
+    )
+}
+
+private data class RequestEntry(
+    val key: RequestKey,
+    val value: CatalogFilterValueRequest
+)
+
+private data class RequestKey(
+    val filterType: String,
+    val filterSubtype: String?
+)

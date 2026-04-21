@@ -10,11 +10,17 @@ import ru.mercury.vpclient.shared.domain.mapper.isRequestAffectingCatalogFilterV
 import ru.mercury.vpclient.shared.mvi.Model
 import ru.mercury.vpclient.shared.data.network.request.CatalogFilterRequest
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValueTypeEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesQuantityEntity
 import ru.mercury.vpclient.shared.domain.mapper.brandValues
+import ru.mercury.vpclient.shared.domain.mapper.toPriceRangeChipData
+import ru.mercury.vpclient.shared.domain.mapper.values
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_brand.model.FilterBrandSheetState
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_color.model.FilterColorSheetState
+import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_price.model.FilterPriceSheetState
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_size.model.FilterSizeSheetState
+import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_tree.model.FilterTreeSheetState
+import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_tree.model.FilterTreeValue
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_values.model.FilterValuesSheetState
 
 data class FilterModel(
@@ -26,6 +32,9 @@ data class FilterModel(
     val isFilterValuesDialogLoading: Boolean = false,
     val filterValuesEntity: FilterValuesEntity = FilterValuesEntity.Empty,
     val filterValuesDialogSelectedValueIds: Set<String> = emptySet(),
+    val filterPriceFrom: String = "",
+    val filterPriceTo: String = "",
+    val filterTreePath: List<String> = emptyList(),
     val filterValuesDialogProductsQuantity: FilterValuesQuantityEntity = FilterValuesQuantityEntity.Empty,
     val isFilterValuesDialogProductsQuantityLoading: Boolean = false,
     val filterValuesDialogProductsQuantityJob: Job? = null,
@@ -73,11 +82,34 @@ data class FilterModel(
                 picker.isEmpty -> return null
                 picker.chipId == CatalogFilterRequest.BRAND -> return null
                 picker.chipId == CatalogFilterRequest.COLOR -> return null
+                picker.chipId == CatalogFilterRequest.PRICE -> return null
                 picker.chipId == CatalogFilterRequest.SIZE -> return null
+                picker.valueType == FilterValueTypeEntity.ID_TREE -> return null
             }
             return FilterValuesSheetState(
                 entity = picker.copy(title = picker.title.uppercase()),
                 selectedIds = filterValuesDialogSelectedValueIds,
+                quantityEntity = filterValuesDialogProductsQuantity,
+                isProductsQuantityLoading = isFilterValuesDialogProductsQuantityLoading,
+                isLoading = isFilterValuesDialogLoading
+            )
+        }
+
+    val filterPriceSheetState: FilterPriceSheetState?
+        get() {
+            val picker = filterValuesEntity
+            if (picker.isEmpty || picker.chipId != CatalogFilterRequest.PRICE) {
+                return null
+            }
+            val selectedPresetId = filterValuesDialogSelectedValueIds.firstOrNull { valueId ->
+                picker.values.any { chip -> chip.id == valueId }
+            }
+            return FilterPriceSheetState(
+                title = picker.title,
+                presets = picker.values,
+                selectedPresetId = selectedPresetId,
+                priceFrom = filterPriceFrom,
+                priceTo = filterPriceTo,
                 quantityEntity = filterValuesDialogProductsQuantity,
                 isProductsQuantityLoading = isFilterValuesDialogProductsQuantityLoading,
                 isLoading = isFilterValuesDialogLoading
@@ -92,6 +124,36 @@ data class FilterModel(
             }
             return FilterSizeSheetState(
                 entity = picker.copy(title = picker.title),
+                selectedIds = filterValuesDialogSelectedValueIds,
+                quantityEntity = filterValuesDialogProductsQuantity,
+                isProductsQuantityLoading = isFilterValuesDialogProductsQuantityLoading,
+                isLoading = isFilterValuesDialogLoading
+            )
+        }
+
+    val filterTreeSheetState: FilterTreeSheetState?
+        get() {
+            val picker = filterValuesEntity
+            if (picker.isEmpty || picker.valueType != FilterValueTypeEntity.ID_TREE) {
+                return null
+            }
+            val currentParentId = filterTreePath.lastOrNull()
+            val currentParentLabel = picker.items.firstOrNull { item -> item.id == currentParentId }?.label
+            val values = picker.items
+                .filter { item -> item.parentId == currentParentId }
+                .sortedBy { item -> item.order }
+                .map { item ->
+                    FilterTreeValue(
+                        id = item.id,
+                        label = item.label,
+                        hasChildren = item.hasChildren
+                    )
+                }
+            return FilterTreeSheetState(
+                title = picker.title,
+                currentParentId = currentParentId,
+                currentParentLabel = currentParentLabel,
+                values = values,
                 selectedIds = filterValuesDialogSelectedValueIds,
                 quantityEntity = filterValuesDialogProductsQuantity,
                 isProductsQuantityLoading = isFilterValuesDialogProductsQuantityLoading,
@@ -120,8 +182,14 @@ data class FilterModel(
     val isFilterValuesDialogVisible: Boolean
         get() = filterValuesSheetState != null
 
+    val isFilterPriceDialogVisible: Boolean
+        get() = filterPriceSheetState != null
+
     val isFilterSizeDialogVisible: Boolean
         get() = filterSizeSheetState != null
+
+    val isFilterTreeDialogVisible: Boolean
+        get() = filterTreeSheetState != null
 
     val isFilterColorDialogVisible: Boolean
         get() = filterColorSheetState != null
@@ -138,5 +206,15 @@ data class FilterModel(
         return selectedFilterValueChipIds
             .filterNot { chipId -> chipId.startsWith("${picker.chipId}_") }
             .toSet() + filterValuesDialogSelectedValueIds
+    }
+
+    fun filterValuesDialogPriceRange(): Pair<String, String> {
+        val priceRangeChipData = filterValuesDialogSelectedValueIds.firstNotNullOfOrNull { valueId ->
+            valueId.toPriceRangeChipData()
+        }
+        return Pair(
+            first = priceRangeChipData?.from?.toString().orEmpty(),
+            second = priceRangeChipData?.to?.toString().orEmpty()
+        )
     }
 }

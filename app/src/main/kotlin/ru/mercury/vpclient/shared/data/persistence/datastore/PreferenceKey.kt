@@ -2,6 +2,7 @@ package ru.mercury.vpclient.shared.data.persistence.datastore
 
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 
@@ -18,4 +19,5 @@ sealed class PreferenceKey<T>(
     data object EnvironmentUat: PreferenceKey<String>(stringPreferencesKey("environmentUat"))
     data object EnvironmentDev: PreferenceKey<String>(stringPreferencesKey("environmentDev"))
     data object Autofill: PreferenceKey<Boolean>(booleanPreferencesKey("autofill"))
+    data object LastCatalogRootId: PreferenceKey<Int>(intPreferencesKey("lastCatalogRootId"))
 }

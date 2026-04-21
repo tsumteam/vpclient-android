@@ -6,6 +6,7 @@ import ru.mercury.vpclient.shared.data.entity.FilterData
 import ru.mercury.vpclient.shared.data.entity.FilterRibbonData
 import ru.mercury.vpclient.shared.data.entity.FilterTitleEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValueItemEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesEntity
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter.model.FilterModel
 
@@ -65,8 +66,11 @@ class FilterModelProvider: PreviewParameterProvider<Pair<FilterModel, List<Catal
                     FilterValuesEntity(
                         chipId = "attribute_length",
                         title = "Длина",
-                        valueIds = listOf("attribute_length_mini", "attribute_length_midi", "attribute_length_maxi"),
-                        valueLabels = listOf("Мини", "Миди", "Макси")
+                        items = listOf(
+                            FilterValueItemEntity(id = "attribute_length_mini", label = "Мини"),
+                            FilterValueItemEntity(id = "attribute_length_midi", label = "Миди"),
+                            FilterValueItemEntity(id = "attribute_length_maxi", label = "Макси")
+                        )
                     )
                 )
             )

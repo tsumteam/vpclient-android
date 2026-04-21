@@ -13,15 +13,20 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.catalog.event.CatalogEvent
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.catalog.intent.CatalogIntent
@@ -70,8 +75,29 @@ private fun CatalogScreenContent(
     dispatch: (CatalogIntent) -> Unit,
     snackbarHostStateError: SnackbarHostState
 ) {
+    val selectedTabIndex = state.catalogData.tabs.indexOfFirst { it.selected }.takeIf { it >= 0 } ?: 0
     val pagerState = rememberPagerState(pageCount = { state.catalogData.pages.size.coerceAtLeast(1) })
     val scope = rememberCoroutineScope()
+    var selectionInitialized by remember(state.catalogData.tabs) { mutableStateOf(false) }
+
+    LaunchedEffect(selectedTabIndex, state.catalogData.tabs) {
+        if (state.catalogData.tabs.getOrNull(selectedTabIndex) != null && pagerState.currentPage != selectedTabIndex) {
+            pagerState.scrollToPage(selectedTabIndex)
+        }
+        selectionInitialized = state.catalogData.tabs.getOrNull(selectedTabIndex) != null
+    }
+
+    LaunchedEffect(pagerState, state.catalogData.tabs, selectionInitialized) {
+        if (selectionInitialized) {
+            snapshotFlow { pagerState.currentPage }
+                .distinctUntilChanged()
+                .collect { page ->
+                    if (state.catalogData.tabs.getOrNull(page) != null) {
+                        dispatch(CatalogIntent.SelectTab(page))
+                    }
+                }
+        }
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -81,7 +107,9 @@ private fun CatalogScreenContent(
             ) {
                 ClientCenterAlignedTopAppBar(
                     state = TopBarState.Catalog(
-                        navigationClick = {}
+                        navigationClick = {
+                            // fixme
+                        }
                     )
                 )
 

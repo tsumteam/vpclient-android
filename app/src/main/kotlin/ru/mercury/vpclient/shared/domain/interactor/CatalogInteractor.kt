@@ -13,6 +13,8 @@ interface CatalogInteractor {
 
     fun subcategoryPojosFlow(parentId: Int): Flow<List<SubcategoryPojo>>
 
+    suspend fun setLastCatalogRootId(rootId: Int)
+
     suspend fun loadCatalogCategoriesBasic()
 
     suspend fun loadCatalogCategoriesTop()

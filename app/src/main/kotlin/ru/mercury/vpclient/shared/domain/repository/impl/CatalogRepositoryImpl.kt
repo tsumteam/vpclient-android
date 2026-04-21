@@ -1,8 +1,16 @@
 package ru.mercury.vpclient.shared.domain.repository.impl
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import ru.mercury.vpclient.shared.data.entity.CatalogData
+import ru.mercury.vpclient.shared.data.entity.CatalogTabData
+import ru.mercury.vpclient.shared.data.network.NetworkService
+import ru.mercury.vpclient.shared.data.network.request.BottomCategoriesRequest
+import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogCategoryDao
+import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogCategoryEntity
+import ru.mercury.vpclient.shared.data.persistence.database.pojo.SubcategoryPojo
+import ru.mercury.vpclient.shared.data.persistence.datastore.PreferenceKey
+import ru.mercury.vpclient.shared.data.persistence.datastore.SettingsDataStore
 import ru.mercury.vpclient.shared.domain.mapper.basicEntity
 import ru.mercury.vpclient.shared.domain.mapper.bottomEntity
 import ru.mercury.vpclient.shared.domain.mapper.childEntity
@@ -11,34 +19,43 @@ import ru.mercury.vpclient.shared.domain.mapper.isBasic
 import ru.mercury.vpclient.shared.domain.mapper.isTop
 import ru.mercury.vpclient.shared.domain.mapper.orEmpty
 import ru.mercury.vpclient.shared.domain.mapper.topEntity
-import ru.mercury.vpclient.shared.data.network.NetworkService
-import ru.mercury.vpclient.shared.data.network.request.BottomCategoriesRequest
-import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogCategoryDao
-import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogCategoryEntity
-import ru.mercury.vpclient.shared.data.persistence.database.pojo.SubcategoryPojo
 import ru.mercury.vpclient.shared.domain.repository.CatalogRepository
 import javax.inject.Inject
 
 class CatalogRepositoryImpl @Inject constructor(
     private val networkService: NetworkService,
-    private val catalogCategoryDao: CatalogCategoryDao
+    private val catalogCategoryDao: CatalogCategoryDao,
+    private val settingsDataStore: SettingsDataStore
 ): CatalogRepository {
 
     override val catalogDataFlow: Flow<CatalogData>
-        get() {
-            return catalogCategoryDao.selectAllFlow().map { entities ->
-                val basicCategories = entities
-                    .filter(CatalogCategoryEntity::isBasic)
-                    .sortedBy(CatalogCategoryEntity::position)
-                val itemsByParentId = entities
-                    .filter(CatalogCategoryEntity::isTop)
-                    .groupBy(CatalogCategoryEntity::parentId)
-                    .mapValues { (_, items) -> items.sortedBy(CatalogCategoryEntity::position) }
-                CatalogData(
-                    tabs = basicCategories.map(CatalogCategoryEntity::name),
-                    pages = basicCategories.map { basicCategory -> itemsByParentId[basicCategory.id].orEmpty() }
-                )
+        get() = combine(
+            catalogCategoryDao.selectAllFlow(),
+            settingsDataStore.getValueFlow(PreferenceKey.LastCatalogRootId)
+        ) { entities, selectedRootId ->
+            val basicCategories = entities
+                .filter(CatalogCategoryEntity::isBasic)
+                .sortedBy(CatalogCategoryEntity::position)
+            val itemsByParentId = entities
+                .filter(CatalogCategoryEntity::isTop)
+                .groupBy(CatalogCategoryEntity::parentId)
+                .mapValues { (_, items) -> items.sortedBy(CatalogCategoryEntity::position) }
+            val resolvedSelectedRootId = when {
+                basicCategories.any { it.id == selectedRootId } -> selectedRootId
+                else -> basicCategories.firstOrNull()?.id
             }
+            CatalogData(
+                tabs = basicCategories.map { basicCategory ->
+                    CatalogTabData(
+                        title = basicCategory.name,
+                        rootId = basicCategory.id,
+                        selected = basicCategory.id == resolvedSelectedRootId
+                    )
+                },
+                pages = basicCategories.map { basicCategory ->
+                    itemsByParentId[basicCategory.id].orEmpty()
+                }
+            )
         }
 
     override fun catalogCategoryFlow(id: Int): Flow<CatalogCategoryEntity> {
@@ -47,6 +64,10 @@ class CatalogRepositoryImpl @Inject constructor(
 
     override fun subcategoryPojosFlow(parentId: Int): Flow<List<SubcategoryPojo>> {
         return catalogCategoryDao.selectPojosFlow(parentId)
+    }
+
+    override suspend fun setLastCatalogRootId(rootId: Int) {
+        settingsDataStore.setValue(PreferenceKey.LastCatalogRootId, rootId)
     }
 
     override suspend fun loadCatalogCategoriesBasic() {

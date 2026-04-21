@@ -12,50 +12,50 @@ val FilterValuesEntity.isEmpty: Boolean
 // fixme
 
 val FilterValuesEntity.values: List<FilterChip>
-    get() = valueIds.zip(valueLabels).map { (id, label) -> FilterChip(id = id, label = label) }
+    get() = items.map { item -> FilterChip(id = item.id, label = item.label) }
 
 val FilterValuesEntity.colorValues: List<ColorFilterValue>
-    get() = valueIds.mapIndexedNotNull { index, valueId ->
-        val valueLabel = valueLabels.getOrNull(index).orEmpty()
+    get() = items.mapNotNull { item ->
+        val valueLabel = item.label
         if (valueLabel.isBlank()) {
             null
         } else {
             ColorFilterValue(
-                id = valueId,
+                id = item.id,
                 label = valueLabel,
-                imageUrl = valueLabelPhotoUrls.getOrNull(index).orEmpty().ifBlank { null }
+                imageUrl = item.labelPhotoUrl.ifBlank { null }
             )
         }
     }
 
 val FilterValuesEntity.sizeValues: List<SizeFilterValue>
-    get() = valueIds.mapIndexedNotNull { index, valueId ->
-        val valueLabel = valueLabels.getOrNull(index).orEmpty()
+    get() = items.mapNotNull { item ->
+        val valueLabel = item.label
         if (valueLabel.isBlank()) {
             null
         } else {
             SizeFilterValue(
-                id = valueId,
+                id = item.id,
                 labelRu = valueLabel,
-                labelItalian = valueLabelsItalian.getOrNull(index).orEmpty().ifBlank { null },
-                labelFrench = valueLabelsFrench.getOrNull(index).orEmpty().ifBlank { null },
-                labelInternational = valueLabelsInternational.getOrNull(index).orEmpty().ifBlank { null }
+                labelItalian = item.labelItalian.ifBlank { null },
+                labelFrench = item.labelFrench.ifBlank { null },
+                labelInternational = item.labelInternational.ifBlank { null }
             )
         }
     }
 
 val FilterValuesEntity.brandValues: List<BrandFilterValue>
-    get() = valueIds.mapIndexedNotNull { index, valueId ->
-        val valueLabel = valueLabels.getOrNull(index).orEmpty()
+    get() = items.mapNotNull { item ->
+        val valueLabel = item.label
         if (valueLabel.isBlank()) {
             null
         } else {
             BrandFilterValue(
-                id = valueId,
+                id = item.id,
                 label = valueLabel,
-                labelPhotoUrl = valueLabelPhotoUrls.getOrNull(index).orEmpty().ifBlank { null },
-                isFavorite = valueIsFavorites.getOrNull(index) == "true",
-                isTopBrand = valueIsTopBrands.getOrNull(index) == "true"
+                labelPhotoUrl = item.labelPhotoUrl.ifBlank { null },
+                isFavorite = item.isFavorite,
+                isTopBrand = item.isTopBrand
             )
         }
     }

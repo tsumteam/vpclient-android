@@ -11,6 +11,7 @@ import ru.mercury.vpclient.shared.data.entity.FilterRibbonData
 import ru.mercury.vpclient.shared.data.network.response.FilterRibbonResponse
 import ru.mercury.vpclient.shared.data.network.response.FilterRibbonValueResponse
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValueItemEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesEntity
 
 // fixme
@@ -48,17 +49,14 @@ fun CatalogFilterEntity.toFilterValuesPickers(): List<FilterValuesEntity> {
     return filterDtoList.mapNotNull { dto ->
         val chipId = dto.chipId ?: return@mapNotNull null
         val title = dto.label.orEmpty().ifBlank { return@mapNotNull null }
-        val values = dto.values.orEmpty().toFilterValueChips(chipId)
-
-        when {
-            values.isEmpty() -> null
-            else -> FilterValuesEntity(
-                chipId = chipId,
-                title = title,
-                valueIds = values.map { it.id },
-                valueLabels = values.map { it.label }
-            )
-        }
+        FilterValuesEntity(
+            chipId = chipId,
+            title = title,
+            valueType = dto.valueType,
+            showSearchBar = dto.valuePickerViewSettings?.showSearchBar == true,
+            showSidePanelWithLetters = dto.valuePickerViewSettings?.showSidePanelWithLetters == true,
+            items = dto.values.orEmpty().toFilterValueItemEntities(chipId)
+        )
     }
 }
 
@@ -80,6 +78,10 @@ fun List<JsonElement>.toFilterValueChipsFromJsonElements(chipId: String): List<F
 
 fun List<FilterRibbonValueResponse>.toFilterValueChips(chipId: String): List<FilterChip> {
     return mapNotNull { valueResponse -> valueResponse.toFilterValueChip(chipId) }
+}
+
+fun List<FilterRibbonValueResponse>.toFilterValueItemEntities(chipId: String): List<FilterValueItemEntity> {
+    return mapNotNull { valueResponse -> valueResponse.toFilterValueItemEntity(chipId) }
 }
 
 private fun CatalogFilterEntity.filterRibbonResponseList(): List<FilterRibbonResponse>? {
@@ -164,6 +166,20 @@ private fun FilterRibbonValueResponse.toFilterValueChip(chipId: String): FilterC
             label = label
         )
     }
+}
+
+private fun FilterRibbonValueResponse.toFilterValueItemEntity(chipId: String): FilterValueItemEntity? {
+    val label = label.orEmpty()
+    val valueId = value.filterValueId ?: return null
+
+    if (label.isBlank()) {
+        return null
+    }
+    return FilterValueItemEntity(
+        id = "${chipId}_$valueId",
+        label = label,
+        order = ribbonSettings?.order ?: Int.MAX_VALUE
+    )
 }
 
 private val JsonElement?.filterValueId: String?

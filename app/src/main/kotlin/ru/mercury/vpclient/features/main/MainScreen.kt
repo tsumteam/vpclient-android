@@ -19,6 +19,7 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -29,6 +30,7 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
+import ru.mercury.vpclient.R
 import ru.mercury.vpclient.features.main.event.MainTabsEventManager
 import ru.mercury.vpclient.features.main.intent.MainIntent
 import ru.mercury.vpclient.features.main.model.MainModel
@@ -48,7 +50,6 @@ import ru.mercury.vpclient.features.main.tabs.profile.navigation.ProfileRoute
 import ru.mercury.vpclient.shared.ui.components.system.ClientNavDisplay
 import ru.mercury.vpclient.shared.ui.icons.Brands24
 import ru.mercury.vpclient.shared.ui.icons.Catalog24
-import ru.mercury.vpclient.shared.ui.icons.Consultants24
 import ru.mercury.vpclient.shared.ui.icons.Fitting24
 import ru.mercury.vpclient.shared.ui.icons.Home24
 import ru.mercury.vpclient.shared.ui.icons.Profile24
@@ -133,10 +134,12 @@ private fun MainScreenContent(
                         Text(
                             text = stringResource(ClientStrings.MainTabHome),
                             modifier = Modifier.fillMaxWidth(),
-                            style = MaterialTheme.typography.regular11.copy(textAlign = TextAlign.Center),
                             minLines = 2,
                             maxLines = 2,
-                            overflow = TextOverflow.Ellipsis
+                            overflow = TextOverflow.Ellipsis,
+                            style = MaterialTheme.typography.regular11.copy(
+                                textAlign = TextAlign.Center
+                            )
                         )
                     },
                     colors = NavigationBarItemDefaults.colors().copy(
@@ -172,7 +175,9 @@ private fun MainScreenContent(
                             minLines = 2,
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
-                            style = MaterialTheme.typography.regular11.copy(textAlign = TextAlign.Center)
+                            style = MaterialTheme.typography.regular11.copy(
+                                textAlign = TextAlign.Center
+                            )
                         )
                     },
                     colors = NavigationBarItemDefaults.colors().copy(
@@ -207,10 +212,12 @@ private fun MainScreenContent(
                         Text(
                             text = stringResource(ClientStrings.MainTabCatalog),
                             modifier = Modifier.fillMaxWidth(),
-                            style = MaterialTheme.typography.regular11.copy(textAlign = TextAlign.Center),
                             minLines = 2,
                             maxLines = 2,
-                            overflow = TextOverflow.Ellipsis
+                            overflow = TextOverflow.Ellipsis,
+                            style = MaterialTheme.typography.regular11.copy(
+                                textAlign = TextAlign.Center
+                            )
                         )
                     },
                     colors = NavigationBarItemDefaults.colors().copy(
@@ -243,10 +250,12 @@ private fun MainScreenContent(
                         Text(
                             text = stringResource(ClientStrings.MainTabFitting),
                             modifier = Modifier.fillMaxWidth(),
-                            style = MaterialTheme.typography.regular11.copy(textAlign = TextAlign.Center),
                             minLines = 2,
                             maxLines = 2,
-                            overflow = TextOverflow.Ellipsis
+                            overflow = TextOverflow.Ellipsis,
+                            style = MaterialTheme.typography.regular11.copy(
+                                textAlign = TextAlign.Center
+                            )
                         )
                     },
                     colors = NavigationBarItemDefaults.colors().copy(
@@ -271,24 +280,27 @@ private fun MainScreenContent(
                     },
                     icon = {
                         Icon(
-                            imageVector = Consultants24,
-                            contentDescription = null
+                            painter = painterResource(if (state.selectedRoute == ConsultantsRoute) R.drawable.ic_consultants_active_24 else R.drawable.ic_consultants_inactive_24),
+                            contentDescription = null,
+                            tint = Color.Unspecified
                         )
                     },
                     label = {
                         Text(
                             text = stringResource(ClientStrings.MainTabConsultants),
                             modifier = Modifier.fillMaxWidth(),
-                            style = MaterialTheme.typography.regular11.copy(textAlign = TextAlign.Center),
                             minLines = 2,
                             maxLines = 2,
-                            overflow = TextOverflow.Ellipsis
+                            overflow = TextOverflow.Ellipsis,
+                            style = MaterialTheme.typography.regular11.copy(
+                                textAlign = TextAlign.Center
+                            )
                         )
                     },
                     colors = NavigationBarItemDefaults.colors().copy(
-                        selectedIconColor = MaterialTheme.colorScheme.primary,
+                        selectedIconColor = Color.Unspecified,
                         selectedTextColor = MaterialTheme.colorScheme.primary,
-                        unselectedIconColor = MaterialTheme.colorScheme.secondary4,
+                        unselectedIconColor = Color.Unspecified,
                         unselectedTextColor = MaterialTheme.colorScheme.secondary4,
                         selectedIndicatorColor = Color.Transparent
                     )
@@ -315,10 +327,12 @@ private fun MainScreenContent(
                         Text(
                             text = stringResource(ClientStrings.MainTabProfile),
                             modifier = Modifier.fillMaxWidth(),
-                            style = MaterialTheme.typography.regular11.copy(textAlign = TextAlign.Center),
                             minLines = 2,
                             maxLines = 2,
-                            overflow = TextOverflow.Ellipsis
+                            overflow = TextOverflow.Ellipsis,
+                            style = MaterialTheme.typography.regular11.copy(
+                                textAlign = TextAlign.Center
+                            )
                         )
                     },
                     colors = NavigationBarItemDefaults.colors().copy(
