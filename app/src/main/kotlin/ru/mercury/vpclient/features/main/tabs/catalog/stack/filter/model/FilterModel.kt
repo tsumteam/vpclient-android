@@ -27,6 +27,7 @@ data class FilterModel(
     val filterData: FilterData = FilterData.Empty,
     val selectedSortType: SortType = SortType.OurChoice,
     val selectedFilterValueChips: List<FilterChip> = emptyList(),
+    val isBrandFavorited: Boolean = false,
     val isRefreshing: Boolean = false,
     val isSortDialogVisible: Boolean = false,
     val isFilterValuesDialogLoading: Boolean = false,

@@ -4,5 +4,7 @@ data class FilterValuesRequestData(
     val categoryId: Int,
     val titleCategoryId: Int,
     val chipId: String,
-    val selectedFilterValueChipIds: Set<String>
+    val selectedFilterValueChipIds: Set<String>,
+    val includeDefaultCategory: Boolean = true,
+    val viewTypeOverride: String? = null
 )

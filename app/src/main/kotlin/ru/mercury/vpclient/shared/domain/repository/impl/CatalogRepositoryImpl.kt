@@ -66,6 +66,10 @@ class CatalogRepositoryImpl @Inject constructor(
         return catalogCategoryDao.selectPojosFlow(parentId)
     }
 
+    override suspend fun catalogCategory(id: Int): CatalogCategoryEntity? {
+        return catalogCategoryDao.selectOrNull(id)
+    }
+
     override suspend fun setLastCatalogRootId(rootId: Int) {
         settingsDataStore.setValue(PreferenceKey.LastCatalogRootId, rootId)
     }

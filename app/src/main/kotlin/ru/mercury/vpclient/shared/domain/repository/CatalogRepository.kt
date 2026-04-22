@@ -13,6 +13,8 @@ interface CatalogRepository {
 
     fun subcategoryPojosFlow(parentId: Int): Flow<List<SubcategoryPojo>>
 
+    suspend fun catalogCategory(id: Int): CatalogCategoryEntity?
+
     suspend fun setLastCatalogRootId(rootId: Int)
 
     suspend fun loadCatalogCategoriesBasic()

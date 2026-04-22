@@ -19,6 +19,8 @@ data class CatalogProductDetailCardV2ColorResponse(
     val actions: List<CatalogProductDetailCardV2ActionResponse>? = null,
     val urlItemVideo: String? = null,
     val availableSizes: CatalogProductDetailCardV2AvailableSizesResponse? = null,
+    val hasWearWith: Boolean? = null,
+    val wearWithButtonEnabled: Boolean? = null,
     val wearWith: List<CatalogProductSearchCardV2Response>? = null,
     val kits: List<CatalogProductSearchCardV2Response>? = null
 )

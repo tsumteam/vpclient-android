@@ -26,8 +26,6 @@ import ru.mercury.vpclient.features.code.CodeScreen
 import ru.mercury.vpclient.features.code.navigation.CodeRoute
 import ru.mercury.vpclient.features.consultant.ConsultantScreen
 import ru.mercury.vpclient.features.consultant.navigation.ConsultantRoute
-import ru.mercury.vpclient.features.details.DetailsScreen
-import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.features.login.LoginScreen
 import ru.mercury.vpclient.features.login.navigation.LoginRoute
 import ru.mercury.vpclient.features.main.MainScreen
@@ -60,7 +58,6 @@ fun MainActivityContent(
                 entry<CodeRoute> { CodeScreen() }
                 entry<MainRoute> { MainScreen() }
                 entry<ConsultantRoute> { ConsultantScreen(it) }
-                entry<DetailsRoute> { DetailsScreen(it) }
             }
         )
 

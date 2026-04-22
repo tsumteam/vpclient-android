@@ -25,6 +25,10 @@ class CatalogInteractorImpl @Inject constructor(
         return catalogRepository.subcategoryPojosFlow(parentId)
     }
 
+    override suspend fun catalogCategory(id: Int): CatalogCategoryEntity? {
+        return withContext(dispatchers.io) { catalogRepository.catalogCategory(id) }
+    }
+
     override suspend fun setLastCatalogRootId(rootId: Int) {
         withContext(dispatchers.io) { catalogRepository.setLastCatalogRootId(rootId) }
     }

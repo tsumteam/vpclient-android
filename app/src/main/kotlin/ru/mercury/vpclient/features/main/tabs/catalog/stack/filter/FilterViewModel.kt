@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
 import ru.mercury.vpclient.shared.data.entity.CatalogFilterProductsData
@@ -46,14 +45,25 @@ import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter.navigation.Fi
 class FilterViewModel @AssistedInject constructor(
     @Assisted private val route: FilterRoute,
     private val interactor: Interactor
-): ClientViewModel<FilterIntent, FilterModel, FilterEvent>(FilterModel()) {
+): ClientViewModel<FilterIntent, FilterModel, FilterEvent>(
+    FilterModel(
+        selectedFilterValueChips = route.initialSelectedFilterValueChips
+    )
+) {
+    private val includeDefaultCategory: Boolean
+        get() = route.viewTypeOverride != BRAND_VIEW_TYPE
+
+    private val requestFilterValueChipIds: Set<String>
+        get() = stateFlow.value.selectedRequestAffectingFilterValueChipIds + route.hiddenFilterValueChipIds.toSet()
 
     val productsPagingFlow = stateFlow
         .map { state ->
             CatalogFilterProductsData(
                 categoryId = route.categoryId,
                 titleCategoryId = route.titleCategoryId,
-                selectedFilterValueChipIds = state.selectedRequestAffectingFilterValueChipIds,
+                selectedFilterValueChipIds = state.selectedRequestAffectingFilterValueChipIds + route.hiddenFilterValueChipIds.toSet(),
+                includeDefaultCategory = includeDefaultCategory,
+                viewTypeOverride = route.viewTypeOverride,
                 sortType = state.selectedSortType
             )
         }
@@ -90,7 +100,9 @@ class FilterViewModel @AssistedInject constructor(
                         CatalogFilterRequestData2(
                             categoryId = route.categoryId,
                             titleCategoryId = route.titleCategoryId,
-                            selectedFilterValueChipIds = stateFlow.value.selectedRequestAffectingFilterValueChipIds
+                            selectedFilterValueChipIds = requestFilterValueChipIds,
+                            includeDefaultCategory = includeDefaultCategory,
+                            viewTypeOverride = route.viewTypeOverride
                         )
                     )
                 }
@@ -102,7 +114,9 @@ class FilterViewModel @AssistedInject constructor(
                         CatalogFilterRequestData2(
                             categoryId = route.categoryId,
                             titleCategoryId = route.titleCategoryId,
-                            selectedFilterValueChipIds = stateFlow.value.selectedRequestAffectingFilterValueChipIds
+                            selectedFilterValueChipIds = requestFilterValueChipIds,
+                            includeDefaultCategory = includeDefaultCategory,
+                            viewTypeOverride = route.viewTypeOverride
                         )
                     )
                 }.also { launchedJob ->
@@ -117,7 +131,7 @@ class FilterViewModel @AssistedInject constructor(
             }
             is FilterIntent.RefreshCompleted -> reduce { it.copy(isRefreshing = false) }
             is FilterIntent.BackClick -> launch { CatalogStackEventManager.send(BackRoute) }
-            is FilterIntent.ProductClick -> launch { MainEventManager.send(DetailsRoute(intent.id)) }
+            is FilterIntent.ProductClick -> launch { CatalogStackEventManager.send(DetailsRoute(intent.id)) }
             is FilterIntent.ShowSortDialog -> reduce { it.copy(isSortDialogVisible = true) }
             is FilterIntent.HideSortDialog -> reduce { it.copy(isSortDialogVisible = false) }
             is FilterIntent.ShowFilterValuesDialog -> {
@@ -191,7 +205,9 @@ class FilterViewModel @AssistedInject constructor(
                             categoryId = route.categoryId,
                             titleCategoryId = route.titleCategoryId,
                             chipId = chip.id,
-                            selectedFilterValueChipIds = stateFlow.value.selectedRequestAffectingFilterValueChipIds
+                            selectedFilterValueChipIds = requestFilterValueChipIds,
+                            includeDefaultCategory = includeDefaultCategory,
+                            viewTypeOverride = route.viewTypeOverride
                         )
                     )
                 }
@@ -360,7 +376,9 @@ class FilterViewModel @AssistedInject constructor(
                         data = CatalogFilterRequestData2(
                             categoryId = route.categoryId,
                             titleCategoryId = route.titleCategoryId,
-                            selectedFilterValueChipIds = stateFlow.value.currentDialogSelectedFilterValueChipIds()
+                            selectedFilterValueChipIds = stateFlow.value.currentDialogSelectedFilterValueChipIds() + route.hiddenFilterValueChipIds.toSet(),
+                            includeDefaultCategory = includeDefaultCategory,
+                            viewTypeOverride = route.viewTypeOverride
                         )
                     )
                 }.also { job ->
@@ -470,6 +488,9 @@ class FilterViewModel @AssistedInject constructor(
                     reduce { it.copy(filterTreePath = currentPath.dropLast(1)) }
                 }
             }
+            is FilterIntent.ToggleBrandFavorited -> {
+                reduce { it.copy(isBrandFavorited = !it.isBrandFavorited) }
+            }
         }
     }
 
@@ -558,6 +579,8 @@ class FilterViewModel @AssistedInject constructor(
         fun create(route: FilterRoute): FilterViewModel
     }
 }
+
+private const val BRAND_VIEW_TYPE = "brand"
 
 private fun String.onlyDigits(): String {
     return filter(Char::isDigit)

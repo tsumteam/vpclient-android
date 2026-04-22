@@ -9,7 +9,10 @@ sealed interface TopBarState {
         val navigationClick: () -> Unit
     ): TopBarState
     data class Details(
-        val navigationClick: () -> Unit
+        val navigationClick: () -> Unit,
+        val onClick: () -> Unit,
+        val entity: BrandEntity,
+        val showBrandBox: Boolean
     ): TopBarState
     data class Category(
         val title: String,
@@ -19,6 +22,11 @@ sealed interface TopBarState {
     data class Filter(
         val entity: FilterTitleEntity,
         val onClick: () -> Unit,
+        val navigationClick: () -> Unit,
+        val searchClick: () -> Unit
+    ): TopBarState
+    data class FilterBrand(
+        val entity: BrandEntity,
         val navigationClick: () -> Unit,
         val searchClick: () -> Unit
     ): TopBarState

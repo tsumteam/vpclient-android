@@ -18,6 +18,7 @@ sealed interface FilterIntent: Intent {
     data object ConfirmPrice: FilterIntent
     data object ResetPrice: FilterIntent
     data object NavigateBackInFilterTree: FilterIntent
+    data object ToggleBrandFavorited: FilterIntent
     data class ProductClick(val id: String): FilterIntent
     data class ConfirmSort(val sortType: SortType): FilterIntent
     data class ShowFilterValuesDialog(val chipId: String): FilterIntent

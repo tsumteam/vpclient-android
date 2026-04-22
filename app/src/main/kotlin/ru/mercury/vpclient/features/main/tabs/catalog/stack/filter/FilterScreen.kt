@@ -3,6 +3,7 @@ package ru.mercury.vpclient.features.main.tabs.catalog.stack.filter
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -79,6 +80,7 @@ import ru.mercury.vpclient.shared.domain.mapper.requireProductsQuantity
 import ru.mercury.vpclient.shared.ui.components.PagingFailureBox
 import ru.mercury.vpclient.shared.ui.components.PagingLoadingBox
 import ru.mercury.vpclient.shared.ui.components.catalog.CatalogProductCard
+import ru.mercury.vpclient.shared.ui.components.filters.FilterBrandFavoritesBar
 import ru.mercury.vpclient.shared.ui.components.filters.FilterProductsLoadingContent
 import ru.mercury.vpclient.shared.ui.components.filters.FiltersRow
 import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
@@ -108,6 +110,7 @@ fun FilterScreen(
     val snackbarHostStateError = remember { SnackbarHostState() }
 
     FilterScreenContent(
+        route = route,
         state = state,
         pagingItems = pagingItems,
         dispatch = viewModel::dispatch,
@@ -215,6 +218,7 @@ fun FilterScreen(
 
 @Composable
 private fun FilterScreenContent(
+    route: FilterRoute,
     state: FilterModel,
     pagingItems: LazyPagingItems<CatalogFilterProductsEntity>,
     dispatch: (FilterIntent) -> Unit,
@@ -241,17 +245,35 @@ private fun FilterScreenContent(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             ClientCenterAlignedTopAppBar(
-                state = TopBarState.Filter(
-                    entity = state.filterData.filterTitleEntity,
-                    onClick = {
-                        filtersRowOffsetPx = 0F
-                        if (pagingItems.isContentVisible) {
-                            scope.launch { gridState.animateScrollToItem(0) }
-                        }
-                    },
-                    navigationClick = { dispatch(FilterIntent.BackClick) },
-                    searchClick = {}
-                )
+                state = when {
+                    route.brandEntity != null -> {
+                        TopBarState.FilterBrand(
+                            entity = route.brandEntity,
+                            navigationClick = { dispatch(FilterIntent.BackClick) },
+                            searchClick = {}
+                        )
+                    }
+                    route.isSingleLineTitle -> {
+                        TopBarState.Category(
+                            title = state.filterData.filterTitleEntity.titleCatalogCategoryEntity.name,
+                            navigationClick = { dispatch(FilterIntent.BackClick) },
+                            searchClick = {}
+                        )
+                    }
+                    else -> {
+                        TopBarState.Filter(
+                            entity = state.filterData.filterTitleEntity,
+                            onClick = {
+                                filtersRowOffsetPx = 0F
+                                if (pagingItems.isContentVisible) {
+                                    scope.launch { gridState.animateScrollToItem(0) }
+                                }
+                            },
+                            navigationClick = { dispatch(FilterIntent.BackClick) },
+                            searchClick = {}
+                        )
+                    }
+                }
             )
         },
         snackbarHost = {
@@ -395,18 +417,27 @@ private fun FilterScreenContent(
                         filtersRowOffsetPx = filtersRowOffsetPx.coerceIn(0F, filtersRowHeightPx)
                     }
             ) {
-                FiltersRow(
-                    state = FiltersRowState(
-                        filterRibbonData = state.filterData.filterRibbonData,
-                        sortSelected = state.selectedSortType.isSortChipSelected,
-                        selectedFilterValueChips = state.selectedFilterValueChips
-                    ),
-                    enabled = !pagingItems.isRefreshLoading,
-                    onSortClick = { dispatch(FilterIntent.ShowSortDialog) },
-                    onFilterChipClick = { chipId -> dispatch(FilterIntent.FilterChipClick(chipId)) },
-                    onFilterValueChipClick = { chipId -> dispatch(FilterIntent.ToggleFilterValueChip(chipId)) },
-                    onReset = { dispatch(FilterIntent.ResetFilters) }
-                )
+                Column {
+                    if (route.brandEntity != null) {
+                        FilterBrandFavoritesBar(
+                            isFavorited = state.isBrandFavorited,
+                            onClick = { dispatch(FilterIntent.ToggleBrandFavorited) }
+                        )
+                    }
+
+                    FiltersRow(
+                        state = FiltersRowState(
+                            filterRibbonData = state.filterData.filterRibbonData,
+                            sortSelected = state.selectedSortType.isSortChipSelected,
+                            selectedFilterValueChips = state.selectedFilterValueChips
+                        ),
+                        enabled = !pagingItems.isRefreshLoading,
+                        onSortClick = { dispatch(FilterIntent.ShowSortDialog) },
+                        onFilterChipClick = { chipId -> dispatch(FilterIntent.FilterChipClick(chipId)) },
+                        onFilterValueChipClick = { chipId -> dispatch(FilterIntent.ToggleFilterValueChip(chipId)) },
+                        onReset = { dispatch(FilterIntent.ResetFilters) }
+                    )
+                }
             }
         }
     }
@@ -423,6 +454,7 @@ private fun FilterScreenPreview(
 
     ClientTheme {
         FilterScreenContent(
+            route = FilterRoute(categoryId = 0, titleCategoryId = 0, subtitleCategoryId = 0),
             state = state.first,
             pagingItems = pagingItems,
             dispatch = {},

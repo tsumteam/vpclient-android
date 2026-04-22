@@ -57,8 +57,11 @@ data class DetailsModel(
     val isDescriptionTextVisible: Boolean
         get() = !descriptionText.isNullOrEmpty()
 
+    val isWearWithButtonVisible: Boolean
+        get() = productEntity.hasWearWith && productEntity.wearWithButtonEnabled
+
     val isWearWithBoxVisible: Boolean
-        get() = wearWithProducts.isNotEmpty()
+        get() = productEntity.hasWearWith && wearWithProducts.isNotEmpty()
 
     val isCompleteSetBoxVisible: Boolean
         get() = completeSetProducts.isNotEmpty()

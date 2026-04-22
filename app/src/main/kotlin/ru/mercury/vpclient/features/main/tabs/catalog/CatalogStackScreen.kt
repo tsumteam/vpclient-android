@@ -6,6 +6,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
+import ru.mercury.vpclient.features.details.DetailsScreen
+import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.shared.navigation.BackRoute
 import ru.mercury.vpclient.shared.ui.components.system.ClientNavDisplay
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
@@ -28,6 +30,7 @@ fun CatalogStackScreen(
             entry<CatalogRoute> { CatalogScreen() }
             entry<CategoryRoute> { CategoryScreen(it) }
             entry<FilterRoute> { FilterScreen(it) }
+            entry<DetailsRoute> { DetailsScreen(it) }
         }
     )
 
@@ -37,6 +40,7 @@ fun CatalogStackScreen(
         when (event) {
             is CategoryRoute -> navBackStack.add(event)
             is FilterRoute -> navBackStack.add(event)
+            is DetailsRoute -> navBackStack.add(event)
             is BackRoute -> navBackStack.removeLastOrNull()
         }
     }

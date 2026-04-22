@@ -51,8 +51,8 @@ fun DetailsSizeButton(
             )
             .clip(RoundedCornerShape(4.dp))
             .background(MaterialTheme.colorScheme.background)
-            .padding(top = 8.dp)
-            .clickable(onClick = onClick),
+            .clickable(onClick = onClick)
+            .padding(top = 8.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

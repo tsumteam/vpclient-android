@@ -11,9 +11,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
+import androidx.compose.material3.adaptive.navigationsuite.rememberNavigationSuiteScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
@@ -31,6 +34,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import ru.mercury.vpclient.R
+import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.features.main.event.MainTabsEventManager
 import ru.mercury.vpclient.features.main.intent.MainIntent
 import ru.mercury.vpclient.features.main.model.MainModel
@@ -96,6 +100,22 @@ private fun MainScreenContent(
     catalogNavBackStack: NavBackStack<NavKey>
 ) {
     val dividerColor = MaterialTheme.colorScheme.secondary5
+    val navigationSuiteScaffoldState = rememberNavigationSuiteScaffoldState()
+    val isBottomBarVisible by remember(state.selectedRoute, catalogNavBackStack) {
+        derivedStateOf {
+            when {
+                state.selectedRoute != CatalogStackRoute -> true
+                else -> catalogNavBackStack.lastOrNull() !is DetailsRoute
+            }
+        }
+    }
+
+    LaunchedEffect(isBottomBarVisible) {
+        when {
+            isBottomBarVisible -> navigationSuiteScaffoldState.show()
+            else -> navigationSuiteScaffoldState.hide()
+        }
+    }
 
     NavigationSuiteScaffold(
         modifier = Modifier.fillMaxSize(),
@@ -348,7 +368,8 @@ private fun MainScreenContent(
         navigationSuiteType = NavigationSuiteType.ShortNavigationBarCompact,
         navigationSuiteColors = NavigationSuiteDefaults.colors(
             shortNavigationBarContainerColor = Color.White
-        )
+        ),
+        state = navigationSuiteScaffoldState
     ) {
         ClientNavDisplay(
             backStack = navBackStack,

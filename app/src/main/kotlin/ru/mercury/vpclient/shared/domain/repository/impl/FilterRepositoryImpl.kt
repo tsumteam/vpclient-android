@@ -20,13 +20,6 @@ import ru.mercury.vpclient.shared.data.entity.FilterRibbonData
 import ru.mercury.vpclient.shared.data.entity.FilterTitleEntity
 import ru.mercury.vpclient.shared.data.entity.FilterValuesRequestData
 import ru.mercury.vpclient.shared.data.error.FiltersNotSupportedException
-import ru.mercury.vpclient.shared.domain.mapper.handleResponse
-import ru.mercury.vpclient.shared.domain.mapper.orEmpty
-import ru.mercury.vpclient.shared.domain.mapper.requests
-import ru.mercury.vpclient.shared.domain.mapper.toFilterRibbonData
-import ru.mercury.vpclient.shared.domain.mapper.toFilterValuesEntity
-import ru.mercury.vpclient.shared.domain.mapper.toFilterValuesPickers
-import ru.mercury.vpclient.shared.domain.mapper.viewType
 import ru.mercury.vpclient.shared.data.network.NetworkService
 import ru.mercury.vpclient.shared.data.network.request.CatalogFilterRequest
 import ru.mercury.vpclient.shared.data.network.request.FilterValuesRequest
@@ -45,6 +38,13 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilter
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsQuantityEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesQuantityEntity
+import ru.mercury.vpclient.shared.domain.mapper.handleResponse
+import ru.mercury.vpclient.shared.domain.mapper.orEmpty
+import ru.mercury.vpclient.shared.domain.mapper.requests
+import ru.mercury.vpclient.shared.domain.mapper.toFilterRibbonData
+import ru.mercury.vpclient.shared.domain.mapper.toFilterValuesEntity
+import ru.mercury.vpclient.shared.domain.mapper.toFilterValuesPickers
+import ru.mercury.vpclient.shared.domain.mapper.viewType
 import ru.mercury.vpclient.shared.domain.repository.FilterRepository
 import javax.inject.Inject
 
@@ -142,10 +142,14 @@ class FilterRepositoryImpl @Inject constructor(
 
         handleResponse(
             request = {
+                val viewType = data.viewTypeOverride ?: categoryEntity.viewType(categoryId, titleCategoryId)
                 val request = FiltersRequest(
-                    viewType = categoryEntity.viewType(categoryId, titleCategoryId),
+                    viewType = viewType,
                     hasUserInteractedWithStandartSizesFilter = false,
-                    filters = data.selectedFilterValueChipIds.requests(categoryEntity.id)
+                    filters = data.selectedFilterValueChipIds.requests(
+                        categoryId = categoryEntity.id,
+                        includeDefaultCategory = data.includeDefaultCategory
+                    )
                 )
                 networkService.catalogFilters(request)
             },
@@ -169,7 +173,10 @@ class FilterRepositoryImpl @Inject constructor(
         val existingPicker = catalogFilterDao.select(categoryId, titleCategoryId)
             ?.toFilterValuesPickers()
             ?.firstOrNull { picker -> picker.chipId == chipId }
-        val requestFilters = data.selectedFilterValueChipIds.requests(categoryEntity.id)
+        val requestFilters = data.selectedFilterValueChipIds.requests(
+            categoryId = categoryEntity.id,
+            includeDefaultCategory = data.includeDefaultCategory
+        )
         val filterType = chipId.substringBefore("_")
         val filterSubtype = chipId.substringAfter("_", "").ifBlank { null }
         val filterTypeDto = when (filterType) {
@@ -185,11 +192,12 @@ class FilterRepositoryImpl @Inject constructor(
 
         handleResponse(
             request = {
+                val viewType = data.viewTypeOverride ?: categoryEntity.viewType(categoryId, titleCategoryId)
                 val request = FilterValuesRequest(
                     filterType = filterTypeDto,
                     filterSubtype = filterSubtype,
                     filterTreeValuesLevel = 0,
-                    viewType = categoryEntity.viewType(categoryId, titleCategoryId),
+                    viewType = viewType,
                     hasUserInteractedWithStandartSizesFilter = false,
                     filters = requestFilters
                 )
@@ -215,10 +223,14 @@ class FilterRepositoryImpl @Inject constructor(
 
         handleResponse(
             request = {
+                val viewType = data.viewTypeOverride ?: categoryEntity.viewType(categoryId, titleCategoryId)
                 val request = FilteredProductsQuantityRequest(
-                    viewType = categoryEntity.viewType(categoryId, titleCategoryId),
+                    viewType = viewType,
                     hasUserInteractedWithStandartSizesFilter = false,
-                    filters = data.selectedFilterValueChipIds.requests(categoryEntity.id)
+                    filters = data.selectedFilterValueChipIds.requests(
+                        categoryId = categoryEntity.id,
+                        includeDefaultCategory = data.includeDefaultCategory
+                    )
                 )
                 networkService.catalogFilterProductsQuantity(request)
             },
@@ -240,15 +252,22 @@ class FilterRepositoryImpl @Inject constructor(
 
         handleResponse(
             request = {
+                val viewType = data.viewTypeOverride ?: categoryEntity.viewType(categoryId, titleCategoryId)
                 val request = FilteredProductsQuantityRequest(
-                    viewType = categoryEntity.viewType(categoryId, titleCategoryId),
+                    viewType = viewType,
                     hasUserInteractedWithStandartSizesFilter = false,
-                    filters = data.selectedFilterValueChipIds.requests(categoryEntity.id)
+                    filters = data.selectedFilterValueChipIds.requests(
+                        categoryId = categoryEntity.id,
+                        includeDefaultCategory = data.includeDefaultCategory
+                    )
                 )
                 networkService.catalogFilterProductsQuantity(request)
             },
             onSuccess = { response ->
-                val filterValuesQuantityEntity = FilterValuesQuantityEntity(chipId = chipId, quantity = response.quantity)
+                val filterValuesQuantityEntity = FilterValuesQuantityEntity(
+                    chipId = chipId,
+                    quantity = response.quantity
+                )
                 filterValuesQuantityDao.upsert(filterValuesQuantityEntity)
             }
         )

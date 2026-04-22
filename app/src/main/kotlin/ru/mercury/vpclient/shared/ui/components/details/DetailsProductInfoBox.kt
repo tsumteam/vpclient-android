@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.domain.mapper.cardDiscountLabel
 import ru.mercury.vpclient.shared.domain.mapper.isDiscountLabelVisible
+import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
 import ru.mercury.vpclient.shared.ui.components.BrandBox
 import ru.mercury.vpclient.shared.ui.components.DiscountBadge
@@ -53,8 +54,10 @@ fun DetailsProductInfoBox(
         }
 
         BrandBox(
-            brand = productEntity.brand.orEmpty(),
-            urlBrandLogo = productEntity.urlBrandLogo,
+            entity = BrandEntity(
+                brand = productEntity.brand.orEmpty(),
+                urlBrandLogo = productEntity.urlBrandLogo
+            ),
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .size(width = 180.dp, height = 50.dp)

@@ -31,7 +31,10 @@ fun String.isRequestAffectingCatalogFilterValueChipId(): Boolean {
         startsWith("${CatalogFilterRequest.ATTRIBUTE}_")
 }
 
-fun Set<String>.requests(categoryId: Int): List<CatalogFilterRequest> {
+fun Set<String>.requests(
+    categoryId: Int,
+    includeDefaultCategory: Boolean = true
+): List<CatalogFilterRequest> {
     val valuesByRequestKey = mutableMapOf<RequestKey, MutableList<CatalogFilterValueRequest>>()
 
     for (chipId in sorted()) {
@@ -40,7 +43,7 @@ fun Set<String>.requests(categoryId: Int): List<CatalogFilterRequest> {
             .add(requestEntry.value)
     }
     val categoryRequestKey = RequestKey(filterType = CatalogFilterRequest.CATEGORY, filterSubtype = null)
-    if (valuesByRequestKey[categoryRequestKey].isNullOrEmpty()) {
+    if (includeDefaultCategory && valuesByRequestKey[categoryRequestKey].isNullOrEmpty()) {
         valuesByRequestKey.getOrPut(categoryRequestKey) { mutableListOf() }
             .add(CatalogFilterValueRequest(CatalogFilterValueRequest.ID_TREE, JsonPrimitive(categoryId)))
     }

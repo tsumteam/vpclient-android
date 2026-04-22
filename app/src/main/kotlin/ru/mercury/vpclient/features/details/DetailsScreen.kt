@@ -28,21 +28,26 @@ import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.details.intent.DetailsIntent
 import ru.mercury.vpclient.features.details.model.DetailsModel
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
+import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.entity.TopBarState
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.details.DetailsColorImageSelector
@@ -62,6 +67,7 @@ import ru.mercury.vpclient.shared.ui.components.system.ClientOutlinedButton
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.DetailsModelProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
+import ru.mercury.vpclient.shared.ui.preview.annotation.HightPreview
 import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.ClientTheme
@@ -89,8 +95,24 @@ private fun DetailsScreenContent(
     dispatch: (DetailsIntent) -> Unit
 ) {
     val lazyListState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
+    val toolbarBrandOffsetPx = with(LocalDensity.current) { 52.dp.roundToPx() }
+    val isToolbarBrandVisible by remember(lazyListState, toolbarBrandOffsetPx) {
+        derivedStateOf {
+            when {
+                lazyListState.firstVisibleItemIndex > 4 -> true
+                lazyListState.firstVisibleItemIndex < 4 -> false
+                else -> lazyListState.firstVisibleItemScrollOffset >= toolbarBrandOffsetPx
+            }
+        }
+    }
 
-    val pagerItems = remember(state.productEntity.colorImageUrls, state.productEntity.otherColors, state.productEntity.urlItemVideo, state.selectedOtherColorIndex) {
+    val pagerItems = remember(
+        state.productEntity.colorImageUrls,
+        state.productEntity.otherColors,
+        state.productEntity.urlItemVideo,
+        state.selectedOtherColorIndex
+    ) {
         val images = state.pagerImageUrls.map { DetailsMediaItem.Image(it) }
         val video = state.selectedColorVideoUrl?.let { listOf(DetailsMediaItem.Video(it)) }.orEmpty()
         images + video
@@ -107,9 +129,25 @@ private fun DetailsScreenContent(
         }
     }
 
-    LaunchedEffect(state.selectedOtherColorIndex) {
-        if (state.selectedOtherColorIndex != null) {
-            lazyListState.scrollToItem(0)
+    val topBarState = when {
+        state.isLoading -> {
+            TopBarState.Details(
+                navigationClick = { dispatch(DetailsIntent.BackClick) },
+                onClick = {},
+                entity = BrandEntity.Empty,
+                showBrandBox = false
+            )
+        }
+        else -> {
+            TopBarState.Details(
+                navigationClick = { dispatch(DetailsIntent.BackClick) },
+                onClick = { scope.launch { lazyListState.animateScrollToItem(0) } },
+                entity = BrandEntity(
+                    brand = state.productEntity.brand.orEmpty(),
+                    urlBrandLogo = state.productEntity.urlBrandLogo
+                ),
+                showBrandBox = isToolbarBrandVisible
+            )
         }
     }
 
@@ -117,9 +155,7 @@ private fun DetailsScreenContent(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             ClientCenterAlignedTopAppBar(
-                state = TopBarState.Details(
-                    navigationClick = { dispatch(DetailsIntent.BackClick) }
-                )
+                state = topBarState
             )
         },
         floatingActionButton = {
@@ -292,12 +328,14 @@ private fun DetailsScreenContent(
                                 }
                             }
 
-                            DetailsOutfitButton(
-                                onClick = {},
-                                modifier = Modifier
-                                    .align(Alignment.BottomEnd)
-                                    .padding(end = 16.dp, bottom = 39.dp)
-                            )
+                            if (state.isWearWithButtonVisible) {
+                                DetailsOutfitButton(
+                                    onClick = {},
+                                    modifier = Modifier
+                                        .align(Alignment.BottomEnd)
+                                        .padding(end = 16.dp, bottom = 39.dp)
+                                )
+                            }
                         }
                     }
                     item {
@@ -346,7 +384,12 @@ private fun DetailsScreenContent(
                         item {
                             DetailsColorImageSelector(
                                 colorImageUrls = state.selectorColorImageUrls,
-                                onColorClick = { dispatch(DetailsIntent.ColorClick(it)) }
+                                onColorClick = {
+                                    scope.launch {
+                                        lazyListState.animateScrollToItem(0)
+                                    }
+                                    dispatch(DetailsIntent.ColorClick(it))
+                                }
                             )
                         }
                     }
@@ -394,18 +437,14 @@ private fun DetailsScreenContent(
                             )
                         }
                     }
-                    state.productEntity.breadcrumbs.forEachIndexed { index, breadcrumb ->
+                    state.productEntity.buttons.forEachIndexed { index, button ->
                         item {
                             ClientOutlinedButton(
-                                onClick = {},
-                                text = breadcrumb,
+                                onClick = { dispatch(DetailsIntent.ButtonClick(index)) },
+                                text = button.title,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(
-                                        start = 16.dp,
-                                        top = if (index == 0) 24.dp else 16.dp,
-                                        end = 16.dp
-                                    )
+                                    .padding(start = 16.dp, top = 16.dp, end = 16.dp)
                             )
                         }
                     }
@@ -416,6 +455,7 @@ private fun DetailsScreenContent(
 }
 
 @FontScalePreviews
+@HightPreview
 @Composable
 private fun DetailsScreenContentPreview(
     @PreviewParameter(DetailsModelProvider::class) state: DetailsModel

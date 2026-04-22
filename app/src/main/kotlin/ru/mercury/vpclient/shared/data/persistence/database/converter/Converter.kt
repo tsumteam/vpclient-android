@@ -4,6 +4,7 @@ import androidx.room.TypeConverter
 import kotlinx.serialization.json.Json
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValueItemEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductAvailableSizesEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductButtonEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductOtherColorEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductRelatedItemEntity
 
@@ -59,6 +60,19 @@ class Converter {
 
     @TypeConverter
     fun toProductRelatedItemEntityList(data: String): List<ProductRelatedItemEntity> {
+        return when {
+            data.isEmpty() -> emptyList()
+            else -> json.decodeFromString(data)
+        }
+    }
+
+    @TypeConverter
+    fun fromProductButtonEntityList(list: List<ProductButtonEntity>): String {
+        return json.encodeToString(list)
+    }
+
+    @TypeConverter
+    fun toProductButtonEntityList(data: String): List<ProductButtonEntity> {
         return when {
             data.isEmpty() -> emptyList()
             else -> json.decodeFromString(data)

@@ -18,5 +18,6 @@ data class CatalogProductDetailCardV2Response(
     val technicalDescription: String? = null,
     val ekttId: String? = null,
     val breadcrumbs: List<String>? = null,
+    val buttons: List<CatalogProductDetailCardV2ButtonResponse>? = null,
     val colors: List<CatalogProductDetailCardV2ColorResponse>? = null
 )

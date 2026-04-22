@@ -5,7 +5,6 @@ import ru.mercury.vpclient.shared.data.FORMAT_PHONE_NUMBER
 import ru.mercury.vpclient.shared.data.error.ContinueLoginException
 import ru.mercury.vpclient.shared.data.error.LoginException
 import ru.mercury.vpclient.shared.data.error.RegisterException
-import ru.mercury.vpclient.shared.domain.mapper.handleResponse
 import ru.mercury.vpclient.shared.data.network.NetworkService
 import ru.mercury.vpclient.shared.data.network.request.AuthenticationContinueLoginRequest
 import ru.mercury.vpclient.shared.data.network.request.AuthenticationLoginRequest
@@ -14,6 +13,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.dao.ClientDao
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ClientEntity
 import ru.mercury.vpclient.shared.data.persistence.datastore.PreferenceKey
 import ru.mercury.vpclient.shared.data.persistence.datastore.SettingsDataStore
+import ru.mercury.vpclient.shared.domain.mapper.handleResponse
 import ru.mercury.vpclient.shared.domain.repository.AuthenticationRepository
 import java.util.Locale
 import javax.inject.Inject
@@ -122,7 +122,10 @@ class AuthenticationRepositoryImpl @Inject constructor(
                         networkService.authenticationLogin(request)
                     },
                     onSuccess = {
-                        clientDao.update(clientEntity.copy(codeResendTimer = System.currentTimeMillis()))
+                        val updatedClientEntity = clientEntity.copy(
+                            codeResendTimer = System.currentTimeMillis()
+                        )
+                        clientDao.update(updatedClientEntity)
                     },
                     onFailure = { error -> throw LoginException(error.message) }
                 )
@@ -130,11 +133,17 @@ class AuthenticationRepositoryImpl @Inject constructor(
             else -> {
                 handleResponse(
                     request = {
-                        val request = AuthenticationRegisterRequest(phone = formattedPhone, name = clientEntity.name)
+                        val request = AuthenticationRegisterRequest(
+                            phone = formattedPhone,
+                            name = clientEntity.name
+                        )
                         networkService.authenticationRegister(request)
                     },
                     onSuccess = {
-                        clientDao.update(clientEntity.copy(codeResendTimer = System.currentTimeMillis()))
+                        val updatedClientEntity = clientEntity.copy(
+                            codeResendTimer = System.currentTimeMillis()
+                        )
+                        clientDao.update(updatedClientEntity)
                     },
                     onFailure = { error -> throw RegisterException(error.message) }
                 )

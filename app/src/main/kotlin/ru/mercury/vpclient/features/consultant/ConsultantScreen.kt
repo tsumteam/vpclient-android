@@ -31,6 +31,7 @@ import ru.mercury.vpclient.features.consultant.event.ConsultantEvent
 import ru.mercury.vpclient.features.consultant.intent.ConsultantIntent
 import ru.mercury.vpclient.features.consultant.model.ConsultantModel
 import ru.mercury.vpclient.features.consultant.navigation.ConsultantRoute
+import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.entity.ConsultantAvatarPlaceholderStyle
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.ui.components.BrandBox
@@ -151,8 +152,10 @@ private fun ConsultantScreenContent(
             }
             item {
                 BrandBox(
-                    brand = state.employeeEntity.employeeBrand,
-                    urlBrandLogo = null,
+                    entity = BrandEntity(
+                        brand = state.employeeEntity.employeeBrand,
+                        urlBrandLogo = null
+                    ),
                     modifier = Modifier.padding(vertical = 3.dp)
                 )
             }

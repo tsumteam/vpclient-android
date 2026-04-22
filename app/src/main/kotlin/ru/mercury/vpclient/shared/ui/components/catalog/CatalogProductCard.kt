@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.domain.mapper.cardDiscountLabel
 import ru.mercury.vpclient.shared.domain.mapper.imagePages
 import ru.mercury.vpclient.shared.domain.mapper.isDiscountLabelVisible
@@ -126,8 +127,10 @@ fun CatalogProductCard(
         )
 
         BrandBox(
-            brand = entity.brand,
-            urlBrandLogo = entity.urlBrandLogo,
+            entity = BrandEntity(
+                brand = entity.brand,
+                urlBrandLogo = entity.urlBrandLogo
+            ),
             modifier = Modifier.constrainAs(brand) {
                 start.linkTo(parent.start)
                 top.linkTo(pagerIndicator.bottom, 3.dp)

@@ -20,10 +20,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.data.entity.TopBarState
+import ru.mercury.vpclient.shared.ui.components.BrandBox
 import ru.mercury.vpclient.shared.ui.components.filters.FilterScreenTitle
 import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
 import ru.mercury.vpclient.shared.ui.icons.Logo82
 import ru.mercury.vpclient.shared.ui.icons.Search24
+import ru.mercury.vpclient.shared.ui.ktx.clickableWithoutRipple
 import ru.mercury.vpclient.shared.ui.preview.TopBarStateProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
@@ -79,8 +81,25 @@ fun ClientCenterAlignedTopAppBar(
                         modifier = Modifier.padding(end = 80.dp)
                     )
                 }
-                else -> {}
+                is TopBarState.FilterBrand -> {
+                    BrandBox(
+                        entity = state.entity
+                    )
+                }
+                is TopBarState.Details -> {
+                    ClientAnimatedVisibility(
+                        visible = state.showBrandBox
+                    ) {
+                        BrandBox(
+                            entity = state.entity
+                        )
+                    }
+                }
             }
+        },
+        modifier = when (state) {
+            is TopBarState.Details -> Modifier.clickableWithoutRipple(onClick = state.onClick)
+            else -> Modifier
         },
         navigationIcon = {
             when (state) {
@@ -158,6 +177,31 @@ fun ClientCenterAlignedTopAppBar(
                         }
                     }
                 }
+                is TopBarState.FilterBrand -> {
+                    Row {
+                        IconButton(
+                            onClick = state.navigationClick
+                        ) {
+                            Icon(
+                                imageVector = ChevronStart24,
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp),
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+
+                        IconButton(
+                            onClick = state.searchClick
+                        ) {
+                            Icon(
+                                imageVector = Search24,
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp),
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+                    }
+                }
                 else -> {}
             }
         },
@@ -183,7 +227,10 @@ fun ClientCenterAlignedTopAppBar(
         },
         colors = TopAppBarDefaults.topAppBarColors().copy(
             containerColor = when (state) {
-                is TopBarState.Filter, is TopBarState.Category -> Color.White
+                is TopBarState.Category,
+                is TopBarState.Filter,
+                is TopBarState.FilterBrand,
+                is TopBarState.Details -> Color.White
                 else -> Color.Transparent
             }
         )

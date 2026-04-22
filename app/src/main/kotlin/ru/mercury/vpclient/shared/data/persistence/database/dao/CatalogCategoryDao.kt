@@ -24,6 +24,9 @@ interface CatalogCategoryDao {
     @Query("SELECT * FROM CatalogCategory WHERE id = :id LIMIT 1")
     suspend fun select(id: Int): CatalogCategoryEntity
 
+    @Query("SELECT * FROM CatalogCategory WHERE id = :id LIMIT 1")
+    suspend fun selectOrNull(id: Int): CatalogCategoryEntity?
+
     @Upsert
     suspend fun upsert(entities: List<CatalogCategoryEntity>)
 }

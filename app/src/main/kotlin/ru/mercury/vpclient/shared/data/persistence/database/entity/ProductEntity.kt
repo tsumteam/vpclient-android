@@ -26,11 +26,14 @@ data class ProductEntity(
     val price: Double?,
     val priceWithoutDiscount: Double?,
     val breadcrumbs: List<String>,
+    val buttons: List<ProductButtonEntity>,
     val colorImageUrls: List<String>,
     val otherColors: List<ProductOtherColorEntity>,
     val urlItemVideo: String?,
     val cashboxActions: List<String>,
     val availableSizes: ProductAvailableSizesEntity?,
+    val hasWearWith: Boolean,
+    val wearWithButtonEnabled: Boolean,
     val wearWithProducts: List<ProductRelatedItemEntity>,
     val completeSetProducts: List<ProductRelatedItemEntity>
 ) {
@@ -55,11 +58,14 @@ data class ProductEntity(
             price = null,
             priceWithoutDiscount = null,
             breadcrumbs = emptyList(),
+            buttons = emptyList(),
             colorImageUrls = emptyList(),
             otherColors = emptyList(),
             urlItemVideo = null,
             cashboxActions = emptyList(),
             availableSizes = null,
+            hasWearWith = false,
+            wearWithButtonEnabled = false,
             wearWithProducts = emptyList(),
             completeSetProducts = emptyList()
         )
