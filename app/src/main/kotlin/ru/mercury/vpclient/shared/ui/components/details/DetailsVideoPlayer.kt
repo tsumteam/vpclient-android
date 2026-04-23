@@ -1,10 +1,14 @@
 package ru.mercury.vpclient.shared.ui.components.details
 
 import android.view.TextureView
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
@@ -13,16 +17,19 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.VideoSize
 import androidx.media3.exoplayer.ExoPlayer
 
 @Composable
 fun DetailsVideoPlayer(
     videoUrl: String,
     isVisible: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    keepAspectRatio: Boolean = false
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
+    var videoAspectRatio by remember(videoUrl) { mutableFloatStateOf(16F / 9F) }
 
     val exoPlayer = remember(videoUrl) {
         ExoPlayer.Builder(context).build().apply {
@@ -34,6 +41,18 @@ fun DetailsVideoPlayer(
 
     LaunchedEffect(isVisible) {
         if (isVisible) exoPlayer.play() else exoPlayer.pause()
+    }
+
+    DisposableEffect(exoPlayer) {
+        val listener = object : Player.Listener {
+            override fun onVideoSizeChanged(videoSize: VideoSize) {
+                val width = videoSize.width.takeIf { it > 0 } ?: return
+                val height = videoSize.height.takeIf { it > 0 } ?: return
+                videoAspectRatio = width.toFloat() * videoSize.pixelWidthHeightRatio / height.toFloat()
+            }
+        }
+        exoPlayer.addListener(listener)
+        onDispose { exoPlayer.removeListener(listener) }
     }
 
     DisposableEffect(lifecycleOwner) {
@@ -57,6 +76,9 @@ fun DetailsVideoPlayer(
                 exoPlayer.setVideoTextureView(textureView)
             }
         },
-        modifier = modifier
+        modifier = when {
+            keepAspectRatio -> modifier.aspectRatio(videoAspectRatio)
+            else -> modifier
+        }
     )
 }

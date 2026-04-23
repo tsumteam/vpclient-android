@@ -27,28 +27,32 @@ import ru.mercury.vpclient.shared.ui.theme.regular14
 @Composable
 fun PriceText(
     entity: CatalogFilterProductsEntity,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    textAlign: TextAlign = TextAlign.Center
 ) {
     PriceText(
         price = entity.cardPrice,
         oldPrice = entity.cardOldPrice,
         discountedPrice = entity.cardDiscountedPrice,
         isDiscountPriceVisible = entity.isDiscountPriceVisible,
-        modifier = modifier
+        modifier = modifier,
+        textAlign = textAlign
     )
 }
 
 @Composable
 fun PriceText(
     entity: ProductEntity,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    textAlign: TextAlign = TextAlign.Center
 ) {
     PriceText(
         price = entity.cardPrice,
         oldPrice = entity.cardOldPrice,
         discountedPrice = entity.cardDiscountedPrice,
         isDiscountPriceVisible = entity.isDiscountPriceVisible,
-        modifier = modifier
+        modifier = modifier,
+        textAlign = textAlign
     )
 }
 
@@ -58,7 +62,8 @@ private fun PriceText(
     oldPrice: String?,
     discountedPrice: String?,
     isDiscountPriceVisible: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    textAlign: TextAlign = TextAlign.Center
 ) {
     when {
         isDiscountPriceVisible -> {
@@ -81,7 +86,7 @@ private fun PriceText(
                 style = MaterialTheme.typography.regular14.copy(
                     color = MaterialTheme.colorScheme.onBackground,
                     letterSpacing = .2.sp,
-                    textAlign = TextAlign.Center
+                    textAlign = textAlign
                 )
             )
         }
@@ -92,7 +97,7 @@ private fun PriceText(
                 style = MaterialTheme.typography.regular14.copy(
                     color = MaterialTheme.colorScheme.onBackground,
                     letterSpacing = .2.sp,
-                    textAlign = TextAlign.Center
+                    textAlign = textAlign
                 )
             )
         }

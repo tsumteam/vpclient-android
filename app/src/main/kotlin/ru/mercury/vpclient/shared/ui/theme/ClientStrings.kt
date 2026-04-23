@@ -84,6 +84,9 @@ object ClientStrings {
     val DetailsSizeSold = R.string.details_size_sold
     val DetailsOtherModelColors = R.string.details_other_model_colors
     val DetailsWearWithTitle = R.string.details_wear_with_title
+    val DetailsMessageSheetTitle = R.string.details_message_sheet_title
+    val DetailsMessageCommentPlaceholder = R.string.details_message_comment_placeholder
+    val DetailsMessageProductArticle = R.string.details_message_product_article
     val DetailsCompleteSetTitle = R.string.details_complete_set_title
     val DetailsFieldBrand = R.string.details_field_brand
     val DetailsFieldColor = R.string.details_field_color

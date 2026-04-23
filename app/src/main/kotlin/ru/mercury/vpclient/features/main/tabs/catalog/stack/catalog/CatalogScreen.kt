@@ -1,12 +1,12 @@
 package ru.mercury.vpclient.features.main.tabs.catalog.stack.catalog
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.MaterialTheme
@@ -131,34 +131,26 @@ private fun CatalogScreenContent(
         when {
             state.isLoading -> {
                 ClientLazyColumn(
-                    modifier = Modifier
-                        .padding(top = innerPadding.calculateTopPadding())
-                        .fillMaxSize(),
-                    contentPadding = PaddingValues(top = 8.dp),
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = innerPadding + PaddingValues(top = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
                     userScrollEnabled = false
                 ) {
                     items(
                         count = 6,
                         key = { index -> "catalog_placeholder_$index" }
-                    ) { index ->
+                    ) {
                         CatalogClothingCard(
                             entity = CatalogCategoryEntity.Empty
                         )
-
-                        if (index != 6) {
-                            Spacer(
-                                modifier = Modifier.height(8.dp)
-                            )
-                        }
                     }
                 }
             }
             else -> {
                 HorizontalPager(
                     state = pagerState,
-                    modifier = Modifier
-                        .padding(top = innerPadding.calculateTopPadding())
-                        .fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(top = innerPadding.calculateTopPadding()),
                     pageSpacing = 8.dp
                 ) { page ->
                     val pageData = state.catalogData.pages.getOrNull(page)

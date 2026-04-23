@@ -1,6 +1,7 @@
 package ru.mercury.vpclient.features.main.tabs.catalog.stack.filter.model
 
 import kotlinx.coroutines.Job
+import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.entity.FilterChip
 import ru.mercury.vpclient.shared.data.entity.FilterData
 import ru.mercury.vpclient.shared.data.entity.SortType
@@ -27,6 +28,8 @@ data class FilterModel(
     val filterData: FilterData = FilterData.Empty,
     val selectedSortType: SortType = SortType.OurChoice,
     val selectedFilterValueChips: List<FilterChip> = emptyList(),
+    val brandEntity: BrandEntity? = null,
+    val isSingleLineTitle: Boolean = false,
     val isBrandFavorited: Boolean = false,
     val isRefreshing: Boolean = false,
     val isSortDialogVisible: Boolean = false,

@@ -12,6 +12,9 @@ interface FilterValuesDao {
     @Query("SELECT * FROM FilterValues WHERE chipId = :chipId LIMIT 1")
     fun selectFlow(chipId: String): Flow<FilterValuesEntity?>
 
+    @Query("SELECT * FROM FilterValues WHERE chipId = :chipId LIMIT 1")
+    suspend fun select(chipId: String): FilterValuesEntity?
+
     @Upsert
     suspend fun upsert(entity: FilterValuesEntity)
 }

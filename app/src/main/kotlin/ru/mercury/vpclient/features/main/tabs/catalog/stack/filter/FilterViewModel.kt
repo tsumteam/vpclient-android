@@ -13,8 +13,12 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.shared.data.persistence.database.RoomException
-import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
+import ru.mercury.vpclient.features.details.navigation.DetailsRoute
+import ru.mercury.vpclient.features.main.tabs.catalog.event.CatalogStackEventManager
+import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter.event.FilterEvent
+import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter.intent.FilterIntent
+import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter.model.FilterModel
+import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter.navigation.FilterRoute
 import ru.mercury.vpclient.shared.data.entity.CatalogFilterProductsData
 import ru.mercury.vpclient.shared.data.entity.CatalogFilterRequestData2
 import ru.mercury.vpclient.shared.data.entity.FilterChip
@@ -22,47 +26,38 @@ import ru.mercury.vpclient.shared.data.entity.FilterRequestData
 import ru.mercury.vpclient.shared.data.entity.FilterValuesRequestData
 import ru.mercury.vpclient.shared.data.entity.SortType
 import ru.mercury.vpclient.shared.data.error.ClientException
-import ru.mercury.vpclient.shared.data.network.request.CatalogFilterRequest
+import ru.mercury.vpclient.shared.data.persistence.database.RoomException
+import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
+import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesQuantityEntity
 import ru.mercury.vpclient.shared.domain.interactor.Interactor
+import ru.mercury.vpclient.shared.domain.mapper.includeDefaultCategory
 import ru.mercury.vpclient.shared.domain.mapper.isEmpty
 import ru.mercury.vpclient.shared.domain.mapper.isRequestAffectingCatalogFilterValueChipId
+import ru.mercury.vpclient.shared.domain.mapper.onlyDigits
+import ru.mercury.vpclient.shared.domain.mapper.priceFilterChip
+import ru.mercury.vpclient.shared.domain.mapper.priceSelectionIds
+import ru.mercury.vpclient.shared.domain.mapper.requestFilterValueChipIds
 import ru.mercury.vpclient.shared.domain.mapper.toPriceRangeChipData
+import ru.mercury.vpclient.shared.domain.mapper.topBarBrandChipId
+import ru.mercury.vpclient.shared.domain.mapper.topBarBrandId
 import ru.mercury.vpclient.shared.domain.mapper.values
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.navigation.BackRoute
-import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesEntity
-import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesQuantityEntity
-import ru.mercury.vpclient.features.details.navigation.DetailsRoute
-import ru.mercury.vpclient.features.main.tabs.catalog.event.CatalogStackEventManager
-import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter.event.FilterEvent
-import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter.intent.FilterIntent
-import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter.model.FilterModel
-import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter.navigation.FilterRoute
-
-// fixme
 
 @HiltViewModel(assistedFactory = FilterViewModel.Factory::class)
 class FilterViewModel @AssistedInject constructor(
     @Assisted private val route: FilterRoute,
     private val interactor: Interactor
-): ClientViewModel<FilterIntent, FilterModel, FilterEvent>(
-    FilterModel(
-        selectedFilterValueChips = route.initialSelectedFilterValueChips
-    )
-) {
-    private val includeDefaultCategory: Boolean
-        get() = route.viewTypeOverride != BRAND_VIEW_TYPE
-
-    private val requestFilterValueChipIds: Set<String>
-        get() = stateFlow.value.selectedRequestAffectingFilterValueChipIds + route.hiddenFilterValueChipIds.toSet()
+): ClientViewModel<FilterIntent, FilterModel, FilterEvent>(FilterModel()) {
 
     val productsPagingFlow = stateFlow
         .map { state ->
             CatalogFilterProductsData(
                 categoryId = route.categoryId,
                 titleCategoryId = route.titleCategoryId,
-                selectedFilterValueChipIds = state.selectedRequestAffectingFilterValueChipIds + route.hiddenFilterValueChipIds.toSet(),
-                includeDefaultCategory = includeDefaultCategory,
+                selectedFilterValueChipIds = route.requestFilterValueChipIds(state.selectedRequestAffectingFilterValueChipIds),
+                includeDefaultCategory = route.includeDefaultCategory(),
                 viewTypeOverride = route.viewTypeOverride,
                 sortType = state.selectedSortType
             )
@@ -72,13 +67,22 @@ class FilterViewModel @AssistedInject constructor(
         .cachedIn(this)
 
     init {
+        dispatch(FilterIntent.InitializeState)
         dispatch(FilterIntent.CollectFilterData)
         dispatch(FilterIntent.LoadCatalogFilters)
         dispatch(FilterIntent.LoadProductsQuantity)
+        dispatch(FilterIntent.InitializeBrandFavoriteStatus)
     }
 
     override fun dispatch(intent: FilterIntent) {
         when (intent) {
+            is FilterIntent.InitializeState -> reduce {
+                it.copy(
+                    selectedFilterValueChips = route.initialSelectedFilterValueChips,
+                    brandEntity = route.brandEntity,
+                    isSingleLineTitle = route.isSingleLineTitle
+                )
+            }
             is FilterIntent.CollectFilterData -> {
                 launch {
                     interactor.filterDataFlow(
@@ -100,8 +104,8 @@ class FilterViewModel @AssistedInject constructor(
                         CatalogFilterRequestData2(
                             categoryId = route.categoryId,
                             titleCategoryId = route.titleCategoryId,
-                            selectedFilterValueChipIds = requestFilterValueChipIds,
-                            includeDefaultCategory = includeDefaultCategory,
+                            selectedFilterValueChipIds = route.requestFilterValueChipIds(stateFlow.value.selectedRequestAffectingFilterValueChipIds),
+                            includeDefaultCategory = route.includeDefaultCategory(),
                             viewTypeOverride = route.viewTypeOverride
                         )
                     )
@@ -114,8 +118,8 @@ class FilterViewModel @AssistedInject constructor(
                         CatalogFilterRequestData2(
                             categoryId = route.categoryId,
                             titleCategoryId = route.titleCategoryId,
-                            selectedFilterValueChipIds = requestFilterValueChipIds,
-                            includeDefaultCategory = includeDefaultCategory,
+                            selectedFilterValueChipIds = route.requestFilterValueChipIds(stateFlow.value.selectedRequestAffectingFilterValueChipIds),
+                            includeDefaultCategory = route.includeDefaultCategory(),
                             viewTypeOverride = route.viewTypeOverride
                         )
                     )
@@ -205,8 +209,8 @@ class FilterViewModel @AssistedInject constructor(
                             categoryId = route.categoryId,
                             titleCategoryId = route.titleCategoryId,
                             chipId = chip.id,
-                            selectedFilterValueChipIds = requestFilterValueChipIds,
-                            includeDefaultCategory = includeDefaultCategory,
+                            selectedFilterValueChipIds = route.requestFilterValueChipIds(stateFlow.value.selectedRequestAffectingFilterValueChipIds),
+                            includeDefaultCategory = route.includeDefaultCategory(),
                             viewTypeOverride = route.viewTypeOverride
                         )
                     )
@@ -376,8 +380,8 @@ class FilterViewModel @AssistedInject constructor(
                         data = CatalogFilterRequestData2(
                             categoryId = route.categoryId,
                             titleCategoryId = route.titleCategoryId,
-                            selectedFilterValueChipIds = stateFlow.value.currentDialogSelectedFilterValueChipIds() + route.hiddenFilterValueChipIds.toSet(),
-                            includeDefaultCategory = includeDefaultCategory,
+                            selectedFilterValueChipIds = route.requestFilterValueChipIds(stateFlow.value.currentDialogSelectedFilterValueChipIds()),
+                            includeDefaultCategory = route.includeDefaultCategory(),
                             viewTypeOverride = route.viewTypeOverride
                         )
                     )
@@ -488,81 +492,35 @@ class FilterViewModel @AssistedInject constructor(
                     reduce { it.copy(filterTreePath = currentPath.dropLast(1)) }
                 }
             }
-            is FilterIntent.ToggleBrandFavorited -> {
-                reduce { it.copy(isBrandFavorited = !it.isBrandFavorited) }
+            is FilterIntent.LoadBrandFavoriteStatus -> {
+                launch {
+                    val isFavorite = interactor.loadBrandFavoriteStatus(
+                        brandId = intent.brandId,
+                        categoryId = intent.categoryId
+                    ) ?: false
+                    reduce { it.copy(isBrandFavorited = isFavorite) }
+                }
             }
-        }
-    }
-
-    private fun FilterModel.priceFilterChip(): FilterChip? {
-        val priceSelectionIds = priceSelectionIds(filterPriceFrom, filterPriceTo)
-        val chipId = priceSelectionIds.firstOrNull() ?: return null
-        val label = buildPriceChipLabel(filterPriceFrom, filterPriceTo)
-
-        return FilterChip(
-            id = chipId,
-            label = label
-        )
-    }
-
-    private fun priceSelectionIds(
-        priceFrom: String,
-        priceTo: String
-    ): Set<String> {
-        val (normalizedPriceFrom, normalizedPriceTo) = normalizePriceRange(
-            priceFrom = priceFrom.onlyDigits(),
-            priceTo = priceTo.onlyDigits()
-        )
-
-        if (normalizedPriceFrom.isEmpty() && normalizedPriceTo.isEmpty()) {
-            return emptySet()
-        }
-        return setOf(
-            buildPriceChipId(
-                priceFrom = normalizedPriceFrom,
-                priceTo = normalizedPriceTo
-            )
-        )
-    }
-
-    private fun buildPriceChipId(
-        priceFrom: String,
-        priceTo: String
-    ): String {
-        val fromToken = priceFrom.ifBlank { "-" }
-        val toToken = priceTo.ifBlank { "-" }
-        return "${CatalogFilterRequest.PRICE}_range_${fromToken}_$toToken"
-    }
-
-    private fun buildPriceChipLabel(
-        priceFrom: String,
-        priceTo: String
-    ): String {
-        val (normalizedPriceFrom, normalizedPriceTo) = normalizePriceRange(priceFrom, priceTo)
-        return when {
-            normalizedPriceFrom.isNotEmpty() && normalizedPriceTo.isNotEmpty() -> "$normalizedPriceFrom - $normalizedPriceTo"
-            normalizedPriceFrom.isNotEmpty() -> "$normalizedPriceFrom+"
-            normalizedPriceTo.isNotEmpty() -> "<= $normalizedPriceTo"
-            else -> ""
-        }
-    }
-
-    private fun normalizePriceRange(
-        priceFrom: String,
-        priceTo: String
-    ): Pair<String, String> {
-        val fromValue = priceFrom.toIntOrNull()
-        val toValue = priceTo.toIntOrNull()
-
-        return when {
-            fromValue != null && toValue != null && fromValue > toValue -> Pair(
-                first = toValue.toString(),
-                second = fromValue.toString()
-            )
-            else -> Pair(
-                first = priceFrom,
-                second = priceTo
-            )
+            is FilterIntent.InitializeBrandFavoriteStatus -> {
+                if (route.brandEntity == null) return
+                val brandId = route.topBarBrandId() ?: return
+                dispatch(FilterIntent.LoadBrandFavoriteStatus(brandId, route.categoryId))
+            }
+            is FilterIntent.ToggleBrandFavorited -> {
+                val brandId = route.topBarBrandId() ?: return
+                val chipId = route.topBarBrandChipId() ?: return
+                launch {
+                    val currentIsFavorite = stateFlow.value.isBrandFavorited
+                    val nextIsFavorite = !currentIsFavorite
+                    interactor.toggleBrandFavorite(
+                        chipId = chipId,
+                        brandId = brandId,
+                        categoryId = route.categoryId,
+                        isFavorite = nextIsFavorite
+                    )
+                    reduce { it.copy(isBrandFavorited = nextIsFavorite) }
+                }
+            }
         }
     }
 
@@ -578,10 +536,4 @@ class FilterViewModel @AssistedInject constructor(
     interface Factory {
         fun create(route: FilterRoute): FilterViewModel
     }
-}
-
-private const val BRAND_VIEW_TYPE = "brand"
-
-private fun String.onlyDigits(): String {
-    return filter(Char::isDigit)
 }

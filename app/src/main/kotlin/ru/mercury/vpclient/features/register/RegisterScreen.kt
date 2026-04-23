@@ -1,11 +1,13 @@
 package ru.mercury.vpclient.features.register
 
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
@@ -141,16 +143,15 @@ private fun RegisterScreenContent(
         },
     ) { innerPadding ->
         ClientLazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = innerPadding + PaddingValues(horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
                 Text(
                     text = stringResource(ClientStrings.RegisterTitle),
                     modifier = Modifier
-                        .padding(start = 16.dp, top = 36.dp, end = 16.dp)
+                        .padding(top = 36.dp)
                         .fillMaxWidth(),
                     style = MaterialTheme.typography.livretMedium21.copy(
                         color = MaterialTheme.colorScheme.onBackground,
@@ -167,7 +168,7 @@ private fun RegisterScreenContent(
                     error = nameError,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 16.dp, top = 40.dp, end = 16.dp)
+                        .padding(top = 40.dp)
                         .focusRequester(focusRequester)
                         .semantics { contentType = ContentType.PersonFullName },
                     keyboardOptions = KeyboardOptions.Default.copy(
@@ -187,7 +188,7 @@ private fun RegisterScreenContent(
                     error = phoneError,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 16.dp, top = 24.dp, end = 16.dp)
+                        .padding(top = 24.dp)
                         .semantics { contentType = ContentType.PhoneNumber },
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Phone,
@@ -204,7 +205,7 @@ private fun RegisterScreenContent(
                 AgreementText(
                     agreementTextRes = ClientStrings.RegisterAgreementText,
                     modifier = Modifier
-                        .padding(start = 16.dp, top = 28.dp, end = 16.dp)
+                        .padding(top = 28.dp)
                         .fillMaxWidth()
                 )
             }

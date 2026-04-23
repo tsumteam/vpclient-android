@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.ui.icons.Favorited40
+import ru.mercury.vpclient.shared.ui.icons.Unfavorited40
 import ru.mercury.vpclient.shared.ui.ktx.clickableWithoutRipple
 import ru.mercury.vpclient.shared.ui.preview.BooleanParameterProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
@@ -30,7 +31,7 @@ fun FilterBrandFavoritesBar(
         contentAlignment = Alignment.Center
     ) {
         Icon(
-            imageVector = Favorited40,
+            imageVector = if (isFavorited) Favorited40 else Unfavorited40,
             contentDescription = null,
             modifier = Modifier
                 .size(40.dp)

@@ -21,6 +21,7 @@ import ru.mercury.vpclient.shared.data.entity.FilterTitleEntity
 import ru.mercury.vpclient.shared.data.entity.FilterValuesRequestData
 import ru.mercury.vpclient.shared.data.error.FiltersNotSupportedException
 import ru.mercury.vpclient.shared.data.network.NetworkService
+import ru.mercury.vpclient.shared.data.network.request.CatalogBrandFavoriteRequest
 import ru.mercury.vpclient.shared.data.network.request.CatalogFilterRequest
 import ru.mercury.vpclient.shared.data.network.request.FilterValuesRequest
 import ru.mercury.vpclient.shared.data.network.request.FilteredProductsQuantityRequest
@@ -276,5 +277,39 @@ class FilterRepositoryImpl @Inject constructor(
     override suspend fun resetFilterValuesQuantity(chipId: String) {
         val entity = FilterValuesQuantityEntity(chipId = chipId, quantity = null)
         filterValuesQuantityDao.upsert(entity)
+    }
+
+    override suspend fun toggleBrandFavorite(chipId: String, brandId: Int, categoryId: Int, isFavorite: Boolean) {
+        val pickerChipId = chipId.substringBefore("_")
+        val entity = filterValuesDao.select(pickerChipId)
+        val updatedEntity = entity?.copy(
+            items = entity.items.map { item ->
+                if (item.requestValue == brandId.toString()) item.copy(isFavorite = isFavorite) else item
+            }
+        )
+        if (updatedEntity != null) {
+            filterValuesDao.upsert(updatedEntity)
+        }
+        handleResponse(
+            request = {
+                val request = CatalogBrandFavoriteRequest(brandId = brandId, categoryId = categoryId)
+                if (isFavorite) networkService.catalogBrandsLike(request)
+                else networkService.catalogBrandsUnlike(request)
+            },
+            onFailure = {
+                if (entity != null) {
+                    filterValuesDao.upsert(entity)
+                }
+            }
+        )
+    }
+
+    override suspend fun loadBrandFavoriteStatus(brandId: Int, categoryId: Int): Boolean? {
+        var result: Boolean? = null
+        handleResponse(
+            request = { networkService.catalogBrandsIsFavorite(brandId, categoryId) },
+            onSuccess = { isFavorite -> result = isFavorite }
+        )
+        return result
     }
 }

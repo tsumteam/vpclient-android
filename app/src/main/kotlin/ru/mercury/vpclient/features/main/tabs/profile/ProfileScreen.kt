@@ -54,9 +54,8 @@ private fun ProfileScreenContent(
         }
     ) { innerPadding ->
         ClientLazyColumn(
-            modifier = Modifier
-                .padding(top = innerPadding.calculateTopPadding())
-                .fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = innerPadding
         ) {
             item {}
         }

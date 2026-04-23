@@ -1,19 +1,23 @@
 package ru.mercury.vpclient.features.details.model
 
+import ru.mercury.vpclient.shared.domain.mapper.toField
 import ru.mercury.vpclient.shared.data.entity.DetailsField
 import ru.mercury.vpclient.shared.data.entity.SizeSelectorState
 import ru.mercury.vpclient.shared.data.entity.SizeState
-import ru.mercury.vpclient.shared.mvi.Model
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
-import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductRelatedItemEntity
+import ru.mercury.vpclient.shared.domain.mapper.toCatalogFilterProductsEntity
+import ru.mercury.vpclient.shared.mvi.Model
 
 // fixme
 
 data class DetailsModel(
     val productEntity: ProductEntity = ProductEntity.Empty,
     val selectedSizeId: String? = null,
-    val selectedOtherColorIndex: Int? = null
+    val selectedOtherColorIndex: Int? = null,
+    val isSizePickerSheetVisible: Boolean = false,
+    val isWearWithSheetVisible: Boolean = false,
+    val isMessageSheetVisible: Boolean = false
 ): Model {
 
     val pagerImageUrls: List<String>
@@ -101,27 +105,4 @@ data class DetailsModel(
                 isSizeTableVisible = !availableSizes.sizeTableTitle.isNullOrEmpty() && !availableSizes.sizeTableUrl.isNullOrEmpty()
             )
         }
-}
-
-private fun String.toField(factory: (String) -> DetailsField): DetailsField? {
-    return trim().takeIf { it.isNotEmpty() }?.let(factory)
-}
-
-private fun ProductRelatedItemEntity.toCatalogFilterProductsEntity(position: Int): CatalogFilterProductsEntity {
-    return CatalogFilterProductsEntity(
-        categoryId = 0,
-        titleCategoryId = 0,
-        id = id,
-        itemId = itemId,
-        colorId = colorId,
-        name = name.orEmpty(),
-        price = price,
-        priceWithoutDiscount = priceWithoutDiscount,
-        brand = brand.orEmpty(),
-        urlBrandLogo = urlBrandLogo,
-        imageUrl = imageUrl.orEmpty(),
-        imageUrls = imageUrls,
-        additionalColorPhotoUrls = emptyList(),
-        position = position
-    )
 }

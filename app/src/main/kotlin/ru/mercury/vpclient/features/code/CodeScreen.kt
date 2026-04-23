@@ -3,6 +3,7 @@ package ru.mercury.vpclient.features.code
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -134,16 +136,15 @@ private fun CodeScreenContent(
         }
     ) { innerPadding ->
         ClientLazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = innerPadding + PaddingValues(horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
                 Text(
                     text = stringResource(ClientStrings.CodeTitle),
                     modifier = Modifier
-                        .padding(start = 16.dp, top = 36.dp, end = 16.dp)
+                        .padding(top = 36.dp)
                         .fillMaxWidth(),
                     style = MaterialTheme.typography.livretMedium21.copy(
                         color = MaterialTheme.colorScheme.onBackground,
@@ -155,7 +156,7 @@ private fun CodeScreenContent(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 16.dp, top = 46.dp, end = 16.dp)
+                        .padding(top = 46.dp)
                         .height(84.dp)
                 ) {
                     SmsCodeInput(
@@ -203,7 +204,7 @@ private fun CodeScreenContent(
                         append(codeSentDescription.substring(phoneStart + formattedPhone.length))
                     },
                     modifier = Modifier
-                        .padding(start = 16.dp, top = 14.dp, end = 16.dp)
+                        .padding(top = 14.dp)
                         .fillMaxWidth(),
                     style = MaterialTheme.typography.regular15.copy(
                         lineHeight = 19.sp,
@@ -224,7 +225,7 @@ private fun CodeScreenContent(
                                 }
                             },
                             modifier = Modifier
-                                .padding(start = 16.dp, top = 4.dp, end = 16.dp)
+                                .padding(top = 4.dp)
                                 .fillMaxWidth(),
                             style = MaterialTheme.typography.regular15.copy(
                                 color = MaterialTheme.colorScheme.onBackground,
@@ -237,7 +238,7 @@ private fun CodeScreenContent(
                     else -> {
                         Row(
                             modifier = Modifier
-                                .padding(start = 16.dp, top = 2.dp, end = 16.dp)
+                                .padding(top = 2.dp)
                                 .fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(
                                 space = 2.dp,

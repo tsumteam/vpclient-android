@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -110,7 +111,6 @@ fun FilterScreen(
     val snackbarHostStateError = remember { SnackbarHostState() }
 
     FilterScreenContent(
-        route = route,
         state = state,
         pagingItems = pagingItems,
         dispatch = viewModel::dispatch,
@@ -218,7 +218,6 @@ fun FilterScreen(
 
 @Composable
 private fun FilterScreenContent(
-    route: FilterRoute,
     state: FilterModel,
     pagingItems: LazyPagingItems<CatalogFilterProductsEntity>,
     dispatch: (FilterIntent) -> Unit,
@@ -246,14 +245,14 @@ private fun FilterScreenContent(
         topBar = {
             ClientCenterAlignedTopAppBar(
                 state = when {
-                    route.brandEntity != null -> {
+                    state.brandEntity != null -> {
                         TopBarState.FilterBrand(
-                            entity = route.brandEntity,
+                            entity = state.brandEntity,
                             navigationClick = { dispatch(FilterIntent.BackClick) },
                             searchClick = {}
                         )
                     }
-                    route.isSingleLineTitle -> {
+                    state.isSingleLineTitle -> {
                         TopBarState.Category(
                             title = state.filterData.filterTitleEntity.titleCatalogCategoryEntity.name,
                             navigationClick = { dispatch(FilterIntent.BackClick) },
@@ -292,11 +291,11 @@ private fun FilterScreenContent(
             when {
                 pagingItems.isRefreshLoading -> {
                     FilterProductsLoadingContent(
-                        contentPadding = PaddingValues(
+                        contentPadding = innerPadding + PaddingValues(
                             start = 4.dp,
-                            top = innerPadding.calculateTopPadding() + visibleFiltersRowHeightDp,
+                            top = visibleFiltersRowHeightDp,
                             end = 4.dp,
-                            bottom = innerPadding.calculateBottomPadding().plus(16.dp)
+                            bottom = 16.dp
                         ),
                         modifier = Modifier.fillMaxSize()
                     )
@@ -333,11 +332,11 @@ private fun FilterScreenContent(
                                 .nestedScroll(nestedScrollConnection),
                             horizontalArrangement = Arrangement.spacedBy(4.dp),
                             verticalArrangement = Arrangement.spacedBy(4.dp),
-                            contentPadding = PaddingValues(
+                            contentPadding = innerPadding + PaddingValues(
                                 start = 4.dp,
-                                top = innerPadding.calculateTopPadding() + visibleFiltersRowHeightDp,
+                                top = visibleFiltersRowHeightDp,
                                 end = 4.dp,
-                                bottom = innerPadding.calculateBottomPadding() + 16.dp
+                                bottom = 16.dp
                             )
                         ) {
                             item(
@@ -418,7 +417,7 @@ private fun FilterScreenContent(
                     }
             ) {
                 Column {
-                    if (route.brandEntity != null) {
+                    if (state.brandEntity != null) {
                         FilterBrandFavoritesBar(
                             isFavorited = state.isBrandFavorited,
                             onClick = { dispatch(FilterIntent.ToggleBrandFavorited) }
@@ -454,7 +453,6 @@ private fun FilterScreenPreview(
 
     ClientTheme {
         FilterScreenContent(
-            route = FilterRoute(categoryId = 0, titleCategoryId = 0, subtitleCategoryId = 0),
             state = state.first,
             pagingItems = pagingItems,
             dispatch = {},

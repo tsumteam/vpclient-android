@@ -32,6 +32,8 @@ import ru.mercury.vpclient.features.main.MainScreen
 import ru.mercury.vpclient.features.main.navigation.MainRoute
 import ru.mercury.vpclient.features.register.RegisterScreen
 import ru.mercury.vpclient.features.register.navigation.RegisterRoute
+import ru.mercury.vpclient.features.mediaviewer.MediaViewerScreen
+import ru.mercury.vpclient.features.mediaviewer.navigation.MediaViewerRoute
 import ru.mercury.vpclient.features.welcome.WelcomeScreen
 import ru.mercury.vpclient.features.welcome.navigation.WelcomeRoute
 
@@ -58,6 +60,7 @@ fun MainActivityContent(
                 entry<CodeRoute> { CodeScreen() }
                 entry<MainRoute> { MainScreen() }
                 entry<ConsultantRoute> { ConsultantScreen(it) }
+                entry<MediaViewerRoute> { MediaViewerScreen(it) }
             }
         )
 

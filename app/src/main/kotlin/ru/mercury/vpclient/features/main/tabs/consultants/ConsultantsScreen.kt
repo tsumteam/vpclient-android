@@ -1,6 +1,5 @@
 package ru.mercury.vpclient.features.main.tabs.consultants
 
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
@@ -81,10 +80,8 @@ private fun ConsultantsScreenContent(
         }
     ) { innerPadding ->
         ClientLazyColumn(
-            modifier = Modifier
-                .padding(top = innerPadding.calculateTopPadding())
-                .fillMaxSize(),
-            contentPadding = PaddingValues(bottom = innerPadding.calculateBottomPadding())
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = innerPadding
         ) {
             if (state.isLoading && state.employees.isEmpty()) {
                 items(

@@ -7,6 +7,7 @@ sealed interface FilterIntent: Intent {
     data object CollectFilterData: FilterIntent
     data object LoadCatalogFilters: FilterIntent
     data object LoadProductsQuantity: FilterIntent
+    data object InitializeState: FilterIntent
     data object PullToRefresh: FilterIntent
     data object RefreshCompleted: FilterIntent
     data object BackClick: FilterIntent
@@ -19,6 +20,7 @@ sealed interface FilterIntent: Intent {
     data object ResetPrice: FilterIntent
     data object NavigateBackInFilterTree: FilterIntent
     data object ToggleBrandFavorited: FilterIntent
+    data object InitializeBrandFavoriteStatus: FilterIntent
     data class ProductClick(val id: String): FilterIntent
     data class ConfirmSort(val sortType: SortType): FilterIntent
     data class ShowFilterValuesDialog(val chipId: String): FilterIntent
@@ -30,4 +32,5 @@ sealed interface FilterIntent: Intent {
     data class FilterChipClick(val chipId: String): FilterIntent
     data class ToggleFilterDialogValue(val valueId: String): FilterIntent
     data class NavigateInFilterTree(val valueId: String): FilterIntent
+    data class LoadBrandFavoriteStatus(val brandId: Int, val categoryId: Int): FilterIntent
 }

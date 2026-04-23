@@ -234,6 +234,7 @@ import ru.mercury.vpclient.shared.data.network.entity.UserProfileUploadPhotoPost
 import ru.mercury.vpclient.shared.data.network.entity.VerifyLinkCardRequestDto
 import ru.mercury.vpclient.shared.data.network.entity.ViewHistoryDto
 import ru.mercury.vpclient.shared.data.network.request.AuthenticationContinueLoginRequest
+import ru.mercury.vpclient.shared.data.network.request.CatalogBrandFavoriteRequest
 import ru.mercury.vpclient.shared.data.network.request.AuthenticationLoginRequest
 import ru.mercury.vpclient.shared.data.network.request.AuthenticationRegisterRequest
 import ru.mercury.vpclient.shared.data.network.request.BottomCategoriesRequest
@@ -734,6 +735,31 @@ class NetworkService @Inject constructor(
 
     suspend fun catalogBrands(): BaseResponse<CatalogBrandsResponseDto> {
         return ktorHttpClient.post("catalog/brands").body()
+    }
+
+    suspend fun catalogBrandsLike(
+        request: CatalogBrandFavoriteRequest
+    ): BaseResponse<JsonElement> {
+        return ktorHttpClient.post("catalog/brands/like") {
+            setBody(request)
+        }.body()
+    }
+
+    suspend fun catalogBrandsUnlike(
+        request: CatalogBrandFavoriteRequest
+    ): BaseResponse<JsonElement> {
+        return ktorHttpClient.post("catalog/brands/unlike") {
+            setBody(request)
+        }.body()
+    }
+
+    suspend fun catalogBrandsIsFavorite(
+        brandId: Int,
+        categoryId: Int
+    ): BaseResponse<Boolean> {
+        return ktorHttpClient.post("catalog/brands/is-favorite") {
+            setBody(CatalogBrandFavoriteRequest(brandId = brandId, categoryId = categoryId))
+        }.body()
     }
 
     suspend fun catalogAvailableColors(

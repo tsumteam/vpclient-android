@@ -1,6 +1,6 @@
 package ru.mercury.vpclient.features.details
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
@@ -48,17 +49,21 @@ import ru.mercury.vpclient.features.details.intent.DetailsIntent
 import ru.mercury.vpclient.features.details.model.DetailsModel
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
+import ru.mercury.vpclient.shared.data.entity.DetailsMediaItem
 import ru.mercury.vpclient.shared.data.entity.TopBarState
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.details.DetailsColorImageSelector
 import ru.mercury.vpclient.shared.ui.components.details.DetailsCompleteSetSection
 import ru.mercury.vpclient.shared.ui.components.details.DetailsFieldRow
+import ru.mercury.vpclient.shared.ui.components.details.DetailsMessageSheet
 import ru.mercury.vpclient.shared.ui.components.details.DetailsOutfitButton
 import ru.mercury.vpclient.shared.ui.components.details.DetailsPagerIndicator
 import ru.mercury.vpclient.shared.ui.components.details.DetailsProductInfoBox
+import ru.mercury.vpclient.shared.ui.components.details.DetailsSizePickerSheet
 import ru.mercury.vpclient.shared.ui.components.details.DetailsSizeSelector
 import ru.mercury.vpclient.shared.ui.components.details.DetailsVideoPlayer
 import ru.mercury.vpclient.shared.ui.components.details.DetailsWearWithSection
+import ru.mercury.vpclient.shared.ui.components.details.DetailsWearWithSheet
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.components.system.ClientButton
 import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
@@ -151,6 +156,32 @@ private fun DetailsScreenContent(
         }
     }
 
+    if (state.isMessageSheetVisible) {
+        DetailsMessageSheet(
+            productEntity = state.productEntity,
+            onSendClick = { dispatch(DetailsIntent.HideMessageSheet) },
+            onDismissRequest = { dispatch(DetailsIntent.HideMessageSheet) }
+        )
+    }
+
+    if (state.isWearWithSheetVisible) {
+        DetailsWearWithSheet(
+            products = state.wearWithProducts,
+            onProductClick = { dispatch(DetailsIntent.ProductClick(it)) },
+            onDismissRequest = { dispatch(DetailsIntent.HideWearWithSheet) }
+        )
+    }
+
+    if (state.isSizePickerSheetVisible) {
+        DetailsSizePickerSheet(
+            state = state.sizePickerState,
+            onSizeClick = { dispatch(DetailsIntent.SizeClick(it)) },
+            onSizeTableClick = { dispatch(DetailsIntent.SizeTableClick) },
+            onAddToBasketClick = { dispatch(DetailsIntent.HideSizePicker) },
+            onDismissRequest = { dispatch(DetailsIntent.HideSizePicker) }
+        )
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -160,7 +191,7 @@ private fun DetailsScreenContent(
         },
         floatingActionButton = {
             ClientButton(
-                onClick = {},
+                onClick = { dispatch(DetailsIntent.AddToBasketClick) },
                 text = stringResource(ClientStrings.DetailsAddToBasket),
                 modifier = Modifier
                     .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
@@ -174,15 +205,14 @@ private fun DetailsScreenContent(
             )
         },
         floatingActionButtonPosition = FabPosition.Center,
+        containerColor = MaterialTheme.colorScheme.background,
         contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal)
     ) { innerPadding ->
         when {
             state.isLoading -> {
                 ClientLazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.background),
-                    contentPadding = PaddingValues(top = innerPadding.calculateTopPadding()),
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = innerPadding,
                     userScrollEnabled = false
                 ) {
                     item {
@@ -289,13 +319,8 @@ private fun DetailsScreenContent(
             else -> {
                 ClientLazyColumn(
                     state = lazyListState,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.background),
-                    contentPadding = PaddingValues(
-                        top = innerPadding.calculateTopPadding(),
-                        bottom = innerPadding.calculateBottomPadding().plus(120.dp)
-                    )
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = innerPadding + PaddingValues(bottom = 120.dp)
                 ) {
                     item {
                         Box(
@@ -312,7 +337,9 @@ private fun DetailsScreenContent(
                                     is DetailsMediaItem.Image -> {
                                         ClientAsyncImage(
                                             imageUrl = item.url,
-                                            modifier = Modifier.fillMaxSize(),
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .clickable { dispatch(DetailsIntent.OpenMediaViewer(page % pagerItems.size)) },
                                             contentScale = ContentScale.Fit
                                         )
                                     }
@@ -330,7 +357,7 @@ private fun DetailsScreenContent(
 
                             if (state.isWearWithButtonVisible) {
                                 DetailsOutfitButton(
-                                    onClick = {},
+                                    onClick = { dispatch(DetailsIntent.ShowWearWithSheet) },
                                     modifier = Modifier
                                         .align(Alignment.BottomEnd)
                                         .padding(end = 16.dp, bottom = 39.dp)

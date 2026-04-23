@@ -1,8 +1,10 @@
 package ru.mercury.vpclient.features.welcome
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -45,9 +47,8 @@ private fun WelcomeScreenContent(
         containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
         ClientLazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = innerPadding + PaddingValues(horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
@@ -64,7 +65,7 @@ private fun WelcomeScreenContent(
                 Text(
                     text = stringResource(ClientStrings.WelcomeTitle),
                     modifier = Modifier
-                        .padding(start = 16.dp, top = 106.dp, end = 16.dp)
+                        .padding(top = 106.dp)
                         .fillMaxWidth(),
                     style = MaterialTheme.typography.livretMedium21.copy(
                         color = MaterialTheme.colorScheme.onBackground,
@@ -77,7 +78,7 @@ private fun WelcomeScreenContent(
                 Text(
                     text = stringResource(ClientStrings.WelcomeDescription),
                     modifier = Modifier
-                        .padding(start = 16.dp, top = 24.dp, end = 16.dp)
+                        .padding(top = 24.dp)
                         .fillMaxWidth(),
                     style = MaterialTheme.typography.regular16.copy(
                         color = MaterialTheme.colorScheme.onBackground,
@@ -90,14 +91,14 @@ private fun WelcomeScreenContent(
             item {
                 ClientButton(
                     onClick = { dispatch(WelcomeIntent.RegisterClick) },
-                    modifier = Modifier.padding(start = 16.dp, top = 61.dp, end = 16.dp),
+                    modifier = Modifier.padding(top = 61.dp),
                     text = stringResource(ClientStrings.WelcomeRegister)
                 )
             }
             item {
                 ClientTextButton(
                     onClick = { dispatch(WelcomeIntent.LoginClick) },
-                    modifier = Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp),
+                    modifier = Modifier.padding(top = 8.dp),
                     text = stringResource(ClientStrings.WelcomeLogin)
                 )
             }

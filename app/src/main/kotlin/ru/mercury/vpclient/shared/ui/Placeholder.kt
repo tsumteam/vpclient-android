@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.DrawScope
@@ -204,6 +205,10 @@ private fun DrawScope.drawPlaceholder(
     lastLayoutDirection: LayoutDirection?,
     lastSize: Size?
 ): Outline? {
+    if (!size.isValidPlaceholderSize) {
+        return if (shape === RectangleShape) null else lastOutline
+    }
+
     if (shape === RectangleShape) {
         drawRect(color = color)
 
@@ -238,8 +243,10 @@ private data class Shimmer(
     override val animationSpec: InfiniteRepeatableSpec<Float>
 ): PlaceholderHighlight {
     override fun brush(progress: Float, size: Size): Brush {
-        val shimmerWidth = size.width * .4F
-        val x = progress * (size.width + shimmerWidth) - shimmerWidth
+        val width = size.width.takeIf { it.isFinite() && it > 0F } ?: return SolidColor(highlightColor)
+        val safeProgress = progress.takeIf { it.isFinite() }?.coerceIn(0F, 1F) ?: 0F
+        val shimmerWidth = (width * .4F).coerceAtLeast(1F)
+        val x = safeProgress * (width + shimmerWidth) - shimmerWidth
         return Brush.linearGradient(
             colors = listOf(Color.Transparent, highlightColor, Color.Transparent),
             start = Offset(x = x, y = 0F),
@@ -258,3 +265,6 @@ private inline fun DrawScope.withLayer(
     drawBlock()
     canvas.restore()
 }
+
+private val Size.isValidPlaceholderSize: Boolean
+    get() = width.isFinite() && height.isFinite() && width > 0F && height > 0F

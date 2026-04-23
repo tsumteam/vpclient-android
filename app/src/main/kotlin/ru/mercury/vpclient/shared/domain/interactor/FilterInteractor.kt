@@ -32,4 +32,8 @@ interface FilterInteractor {
     suspend fun loadCatalogFiltersProductsQuantity(chipId: String, data: CatalogFilterRequestData2)
 
     suspend fun resetFilterValuesQuantity(chipId: String)
+
+    suspend fun toggleBrandFavorite(chipId: String, brandId: Int, categoryId: Int, isFavorite: Boolean)
+
+    suspend fun loadBrandFavoriteStatus(brandId: Int, categoryId: Int): Boolean?
 }

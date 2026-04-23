@@ -5,9 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,6 +29,10 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.BuildConfig
+import ru.mercury.vpclient.features.debug.event.DebugEvent
+import ru.mercury.vpclient.features.debug.intent.DebugIntent
+import ru.mercury.vpclient.features.debug.model.DebugModel
+import ru.mercury.vpclient.features.debug.ui.DebugEnvironmentDialog
 import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
 import ru.mercury.vpclient.shared.ui.components.system.ClientSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.system.ClientTopAppBar
@@ -43,10 +45,6 @@ import ru.mercury.vpclient.shared.ui.theme.ClientTheme
 import ru.mercury.vpclient.shared.ui.theme.regular18
 import ru.mercury.vpclient.shared.ui.theme.spanMedium14
 import ru.mercury.vpclient.shared.ui.theme.spanRegular14
-import ru.mercury.vpclient.features.debug.event.DebugEvent
-import ru.mercury.vpclient.features.debug.intent.DebugIntent
-import ru.mercury.vpclient.features.debug.model.DebugModel
-import ru.mercury.vpclient.features.debug.ui.DebugEnvironmentDialog
 
 @Composable
 fun DebugScreen(
@@ -124,10 +122,8 @@ private fun DebugActivityContent(
         }
     ) { innerPadding ->
         ClientLazyColumn(
-            modifier = Modifier
-                .padding(innerPadding)
-                .navigationBarsPadding(),
-            state = rememberLazyListState()
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = innerPadding
         ) {
             item {
                 Column(

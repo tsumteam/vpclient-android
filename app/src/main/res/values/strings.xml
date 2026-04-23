@@ -90,6 +90,9 @@
     <string name="details_size_sold">Продан. Размер для подбора альтернативы</string>
     <string name="details_other_model_colors">ДРУГИЕ ЦВЕТА ЭТОЙ МОДЕЛИ</string>
     <string name="details_wear_with_title">С ЧЕМ НОСИТЬ</string>
+    <string name="details_message_sheet_title">ОТПРАВИТЬ КОНСУЛЬТАНТУ</string>
+    <string name="details_message_comment_placeholder">Добавить комментарий</string>
+    <string name="details_message_product_article">Артикул: %1$s</string>
     <string name="details_complete_set_title">ДОПОЛНИТЕ КОМПЛЕКТ</string>
     <string name="details_field_brand">Бренд</string>
     <string name="details_field_color">Цвет</string>

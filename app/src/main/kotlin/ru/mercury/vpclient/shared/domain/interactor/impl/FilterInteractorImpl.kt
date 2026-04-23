@@ -60,4 +60,12 @@ class FilterInteractorImpl @Inject constructor(
     override suspend fun resetFilterValuesQuantity(chipId: String) {
         withContext(dispatchers.io) { filterRepository.resetFilterValuesQuantity(chipId) }
     }
+
+    override suspend fun toggleBrandFavorite(chipId: String, brandId: Int, categoryId: Int, isFavorite: Boolean) {
+        withContext(dispatchers.io) { filterRepository.toggleBrandFavorite(chipId, brandId, categoryId, isFavorite) }
+    }
+
+    override suspend fun loadBrandFavoriteStatus(brandId: Int, categoryId: Int): Boolean? {
+        return withContext(dispatchers.io) { filterRepository.loadBrandFavoriteStatus(brandId, categoryId) }
+    }
 }

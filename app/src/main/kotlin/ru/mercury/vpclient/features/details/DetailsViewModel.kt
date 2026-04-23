@@ -10,11 +10,13 @@ import ru.mercury.vpclient.features.details.intent.DetailsIntent
 import ru.mercury.vpclient.features.details.model.DetailsModel
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.features.main.tabs.catalog.event.CatalogStackEventManager
-import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter.navigation.FilterRoute
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
-import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogCategoryEntity
 import ru.mercury.vpclient.shared.domain.interactor.Interactor
+import ru.mercury.vpclient.features.mediaviewer.navigation.MediaViewerRoute
+import ru.mercury.vpclient.shared.domain.mapper.BRAND_VIEW_TYPE
 import ru.mercury.vpclient.shared.domain.mapper.toCatalogLinkData
+import ru.mercury.vpclient.shared.domain.mapper.toFilterRoute
+import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.mvi.Event
 import ru.mercury.vpclient.shared.navigation.BackRoute
@@ -41,8 +43,28 @@ class DetailsViewModel @AssistedInject constructor(
             }
             is DetailsIntent.LoadProduct -> launch { interactor.loadProduct(route.id) }
             is DetailsIntent.BackClick -> launch { CatalogStackEventManager.send(BackRoute) }
-            is DetailsIntent.MessageClick -> Unit
+            is DetailsIntent.MessageClick -> reduce { it.copy(isMessageSheetVisible = true) }
             is DetailsIntent.SizeTableClick -> Unit
+            is DetailsIntent.AddToBasketClick -> {
+                val state = stateFlow.value
+                if (state.selectedSizeId == null && state.isSizePickerVisible) {
+                    val selectedSizeId = state.productEntity.availableSizes?.items
+                        ?.firstOrNull { it.inStock }
+                        ?.sizeId
+                        ?: state.productEntity.availableSizes?.items?.firstOrNull()?.sizeId
+                    reduce {
+                        it.copy(
+                            selectedSizeId = selectedSizeId,
+                            isSizePickerSheetVisible = true
+                        )
+                    }
+                }
+            }
+            is DetailsIntent.HideSizePicker -> reduce { it.copy(isSizePickerSheetVisible = false) }
+            is DetailsIntent.ShowWearWithSheet -> reduce { it.copy(isWearWithSheetVisible = true) }
+            is DetailsIntent.HideWearWithSheet -> reduce { it.copy(isWearWithSheetVisible = false) }
+            is DetailsIntent.ShowMessageSheet -> reduce { it.copy(isMessageSheetVisible = true) }
+            is DetailsIntent.HideMessageSheet -> reduce { it.copy(isMessageSheetVisible = false) }
             is DetailsIntent.SizeClick -> {
                 val size = stateFlow.value.productEntity.availableSizes?.items?.getOrNull(intent.index)
                 reduce { it.copy(selectedSizeId = size?.sizeId) }
@@ -93,52 +115,24 @@ class DetailsViewModel @AssistedInject constructor(
                 }
             }
             is DetailsIntent.ProductClick -> launch { CatalogStackEventManager.send(DetailsRoute(intent.id)) }
+            is DetailsIntent.OpenMediaViewer -> launch {
+                val state = stateFlow.value
+                val totalCount = state.pagerImageUrls.size + if (state.selectedColorVideoUrl != null) 1 else 0
+                if (totalCount > 0) {
+                    MainEventManager.send(
+                        MediaViewerRoute(
+                            imageUrls = state.pagerImageUrls,
+                            videoUrl = state.selectedColorVideoUrl,
+                            initialPage = intent.initialPage.coerceIn(0, totalCount - 1)
+                        )
+                    )
+                }
+            }
         }
     }
 
     @AssistedFactory
     interface Factory {
         fun create(route: DetailsRoute): DetailsViewModel
-    }
-}
-
-private const val BRAND_VIEW_TYPE = "brand"
-
-private fun CatalogCategoryEntity.toFilterRoute(
-    brandEntity: BrandEntity?
-): FilterRoute? {
-    return when {
-        parentId == null -> {
-            FilterRoute(
-                categoryId = id,
-                titleCategoryId = id,
-                subtitleCategoryId = id,
-                brandEntity = brandEntity
-            )
-        }
-        level == CatalogCategoryEntity.LEVEL_TOP -> {
-            FilterRoute(
-                categoryId = id,
-                titleCategoryId = rootId,
-                subtitleCategoryId = id,
-                brandEntity = brandEntity
-            )
-        }
-        level == CatalogCategoryEntity.LEVEL_BOTTOM -> {
-            FilterRoute(
-                categoryId = id,
-                titleCategoryId = parentId,
-                subtitleCategoryId = id,
-                brandEntity = brandEntity
-            )
-        }
-        else -> {
-            FilterRoute(
-                categoryId = id,
-                titleCategoryId = id,
-                subtitleCategoryId = parentId,
-                brandEntity = brandEntity
-            )
-        }
     }
 }
