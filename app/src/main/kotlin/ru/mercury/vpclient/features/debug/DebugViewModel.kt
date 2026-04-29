@@ -36,13 +36,11 @@ class DebugViewModel @Inject constructor(
             is DebugIntent.FetchSettings -> {
                 launch {
                     combine(
-                        settingsDataStore.get().getValueFlow(PreferenceKey.DeviceId),
                         settingsDataStore.get().getValueFlow(PreferenceKey.UserToken),
                         settingsDataStore.get().getValueFlow(environmentPreferenceKey()),
                         settingsDataStore.get().getValueFlow(PreferenceKey.RequestDelay)
-                    ) { deviceId, userToken, environment, requestDelay ->
+                    ) { userToken, environment, requestDelay ->
                         DebugModel(
-                            deviceId = deviceId.orEmpty(),
                             userToken = userToken.orEmpty(),
                             environment = resolveEnvironment(environment),
                             requestDelayEnabled = requestDelay.orEmpty > 0F

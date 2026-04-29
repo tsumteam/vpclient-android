@@ -344,13 +344,23 @@ private fun DetailsScreenContent(
                                         )
                                     }
                                     is DetailsMediaItem.Video -> {
-                                        DetailsVideoPlayer(
-                                            videoUrl = item.url,
-                                            isVisible = pagerState.currentPage == page,
+                                        Box(
                                             modifier = Modifier
                                                 .padding(horizontal = 16.dp)
                                                 .fillMaxSize()
-                                        )
+                                        ) {
+                                            DetailsVideoPlayer(
+                                                videoUrl = item.url,
+                                                isVisible = pagerState.currentPage == page,
+                                                modifier = Modifier.fillMaxSize()
+                                            )
+
+                                            Box(
+                                                modifier = Modifier
+                                                    .matchParentSize()
+                                                    .clickable { dispatch(DetailsIntent.OpenMediaViewer(page % pagerItems.size)) }
+                                            )
+                                        }
                                     }
                                 }
                             }

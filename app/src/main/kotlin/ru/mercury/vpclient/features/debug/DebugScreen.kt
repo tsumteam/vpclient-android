@@ -1,12 +1,17 @@
 package ru.mercury.vpclient.features.debug
 
+import android.content.ClipData
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.foundation.layout.plus
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -21,9 +26,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.ClipEntry
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -37,14 +43,15 @@ import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
 import ru.mercury.vpclient.shared.ui.components.system.ClientSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.system.ClientTopAppBar
 import ru.mercury.vpclient.shared.ui.icons.Close24
+import ru.mercury.vpclient.shared.ui.icons.Copy24
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.ktx.rememberNavigateToAppSettings
 import ru.mercury.vpclient.shared.ui.ktx.rememberNavigateToDeveloperSettings
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.theme.medium16
+import ru.mercury.vpclient.shared.ui.theme.regular14
 import ru.mercury.vpclient.shared.ui.theme.regular18
-import ru.mercury.vpclient.shared.ui.theme.spanMedium14
-import ru.mercury.vpclient.shared.ui.theme.spanRegular14
 
 @Composable
 fun DebugScreen(
@@ -91,6 +98,8 @@ private fun DebugActivityContent(
 ) {
     val navigateToAppSettings = rememberNavigateToAppSettings()
     val navigateToDeveloperSettings = rememberNavigateToDeveloperSettings()
+    val clipboard = LocalClipboard.current
+    val scope = rememberCoroutineScope()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -108,6 +117,7 @@ private fun DebugActivityContent(
                         Icon(
                             imageVector = Close24,
                             contentDescription = null,
+                            modifier = Modifier.size(24.dp),
                             tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
@@ -123,178 +133,195 @@ private fun DebugActivityContent(
     ) { innerPadding ->
         ClientLazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = innerPadding
+            contentPadding = innerPadding + PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             item {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 20.dp),
-                ) {
-                    Text(
-                        text = buildAnnotatedString {
-                            withStyle(MaterialTheme.typography.spanMedium14.copy(color = MaterialTheme.colorScheme.onBackground)) { append("DeviceId: ") }
-                            withStyle(MaterialTheme.typography.spanRegular14.copy(color = MaterialTheme.colorScheme.onBackground)) { append(state.deviceId) }
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Text(
-                        text = buildAnnotatedString {
-                            withStyle(MaterialTheme.typography.spanMedium14.copy(color = MaterialTheme.colorScheme.onBackground)) { append("UserToken: ") }
-                            withStyle(MaterialTheme.typography.spanRegular14.copy(color = MaterialTheme.colorScheme.onBackground)) { append(state.userToken) }
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Text(
-                        text = buildAnnotatedString {
-                            withStyle(MaterialTheme.typography.spanMedium14.copy(color = MaterialTheme.colorScheme.onBackground)) { append("VersionName: ") }
-                            withStyle(MaterialTheme.typography.spanRegular14.copy(color = MaterialTheme.colorScheme.onBackground)) { append(BuildConfig.VERSION_NAME) }
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Text(
-                        text = buildAnnotatedString {
-                            withStyle(MaterialTheme.typography.spanMedium14.copy(color = MaterialTheme.colorScheme.onBackground)) { append("VersionCode: ") }
-                            withStyle(MaterialTheme.typography.spanRegular14.copy(color = MaterialTheme.colorScheme.onBackground)) { append(BuildConfig.VERSION_CODE.toString()) }
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            }
-            item {
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 4.dp),
-                    thickness = .5.dp,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                DebugInfoListItem(
+                    title = "UserToken",
+                    value = state.userToken.ifEmpty { "Отобразится после авторизации" },
+                    shape = RoundedCornerShape(
+                        topStart = 16.dp,
+                        topEnd = 16.dp,
+                        bottomStart = 4.dp,
+                        bottomEnd = 4.dp
+                    ),
+                    onCopy = {
+                        scope.launch {
+                            clipboard.setClipEntry(ClipEntry(ClipData.newPlainText(null, state.userToken)))
+                        }
+                    }
                 )
             }
             item {
-                ListItem(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { navigateToAppSettings() },
-                    headlineContent = {
-                        Text(
-                            text = "Настройки приложения",
-                            style = MaterialTheme.typography.regular18.copy(
-                                color = MaterialTheme.colorScheme.onBackground
-                            )
-                        )
-                    },
-                    colors = ListItemDefaults.colors().copy(containerColor = Color.Transparent),
+                DebugInfoListItem(
+                    title = "VersionName",
+                    value = BuildConfig.VERSION_NAME,
+                    shape = RoundedCornerShape(4.dp),
+                    onCopy = {
+                        scope.launch {
+                            clipboard.setClipEntry(ClipEntry(ClipData.newPlainText(null, BuildConfig.VERSION_NAME)))
+                        }
+                    }
                 )
             }
             item {
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                    thickness = .1.dp,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                DebugInfoListItem(
+                    title = "VersionCode",
+                    value = BuildConfig.VERSION_CODE.toString(),
+                    shape = RoundedCornerShape(
+                        topStart = 4.dp,
+                        topEnd = 4.dp,
+                        bottomStart = 16.dp,
+                        bottomEnd = 16.dp
+                    ),
+                    onCopy = {
+                        scope.launch {
+                            clipboard.setClipEntry(ClipEntry(ClipData.newPlainText(null, BuildConfig.VERSION_CODE.toString())))
+                        }
+                    }
+                )
+            }
+            item { Spacer(modifier = Modifier.height(12.dp)) }
+            item {
+                DebugActionListItem(
+                    title = "Настройки приложения",
+                    shape = RoundedCornerShape(
+                        topStart = 16.dp,
+                        topEnd = 16.dp,
+                        bottomStart = 4.dp,
+                        bottomEnd = 4.dp
+                    ),
+                    onClick = navigateToAppSettings
                 )
             }
             item {
-                ListItem(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { navigateToDeveloperSettings() },
-                    headlineContent = {
-                        Text(
-                            text = "Настройки разработчика",
-                            style = MaterialTheme.typography.regular18.copy(
-                                color = MaterialTheme.colorScheme.onBackground
-                            )
-                        )
-                    },
-                    colors = ListItemDefaults.colors().copy(containerColor = Color.Transparent),
+                DebugActionListItem(
+                    title = "Настройки разработчика",
+                    shape = RoundedCornerShape(4.dp),
+                    onClick = navigateToDeveloperSettings
                 )
             }
             item {
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                    thickness = .1.dp,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            }
-            item {
-                ListItem(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { dispatch(DebugIntent.ToggleRequestDelay(!state.requestDelayEnabled)) },
-                    headlineContent = {
-                        Text(
-                            text = "Задержка API-запросов",
-                            style = MaterialTheme.typography.regular18.copy(
-                                color = MaterialTheme.colorScheme.onBackground
-                            )
-                        )
-                    },
+                DebugActionListItem(
+                    title = "Задержка запросов",
+                    subtitle = "5 сек",
+                    shape = RoundedCornerShape(4.dp),
                     trailingContent = {
                         Switch(
                             checked = state.requestDelayEnabled,
                             onCheckedChange = null
                         )
                     },
-                    colors = ListItemDefaults.colors().copy(containerColor = Color.Transparent),
+                    onClick = { dispatch(DebugIntent.ToggleRequestDelay(!state.requestDelayEnabled)) }
                 )
             }
             item {
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                    thickness = .1.dp,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                DebugActionListItem(
+                    title = "Очистить локальную БД",
+                    shape = RoundedCornerShape(4.dp),
+                    onClick = { dispatch(DebugIntent.DropLocalDbClick) }
                 )
             }
             item {
-                ListItem(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { dispatch(DebugIntent.DropLocalDbClick) },
-                    headlineContent = {
-                        Text(
-                            text = "Очистить локальную базу данных",
-                            style = MaterialTheme.typography.regular18.copy(
-                                color = MaterialTheme.colorScheme.onBackground
-                            )
-                        )
-                    },
-                    colors = ListItemDefaults.colors().copy(containerColor = Color.Transparent),
-                )
-            }
-            item {
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                    thickness = .1.dp,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            }
-            item {
-                ListItem(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { dispatch(DebugIntent.EnvironmentClick) },
-                    headlineContent = {
-                        Text(
-                            text = "Окружение",
-                            style = MaterialTheme.typography.regular18.copy(
-                                color = MaterialTheme.colorScheme.onBackground
-                            )
-                        )
-                    },
+                DebugActionListItem(
+                    title = "Окружение",
+                    subtitle = "test/uat/prod",
+                    shape = RoundedCornerShape(
+                        topStart = 4.dp,
+                        topEnd = 4.dp,
+                        bottomStart = 16.dp,
+                        bottomEnd = 16.dp
+                    ),
                     trailingContent = {
                         Text(
                             text = state.environment.name,
-                            style = MaterialTheme.typography.regular18.copy(
+                            style = MaterialTheme.typography.medium16.copy(
                                 color = MaterialTheme.colorScheme.onBackground
                             )
                         )
                     },
-                    colors = ListItemDefaults.colors().copy(containerColor = Color.Transparent),
+                    onClick = { dispatch(DebugIntent.EnvironmentClick) }
                 )
             }
         }
     }
+}
+
+@Composable
+private fun DebugInfoListItem(
+    title: String,
+    value: String,
+    shape: Shape,
+    onCopy: () -> Unit
+) {
+    ListItem(
+        headlineContent = {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.regular18
+            )
+        },
+        supportingContent = {
+            Text(
+                text = value,
+                style = MaterialTheme.typography.regular14
+            )
+        },
+        modifier = Modifier.clip(shape),
+        trailingContent = {
+            IconButton(onClick = onCopy) {
+                Icon(
+                    imageVector = Copy24,
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp),
+                    tint = MaterialTheme.colorScheme.onBackground
+                )
+            }
+        },
+        colors = ListItemDefaults.colors().copy(
+            containerColor = MaterialTheme.colorScheme.surface,
+            headlineColor = MaterialTheme.colorScheme.onBackground,
+            supportingTextColor = MaterialTheme.colorScheme.secondary,
+            trailingIconColor = MaterialTheme.colorScheme.onBackground
+        )
+    )
+}
+
+@Composable
+private fun DebugActionListItem(
+    title: String,
+    shape: Shape,
+    onClick: () -> Unit,
+    subtitle: String? = null,
+    trailingContent: @Composable (() -> Unit)? = null
+) {
+    ListItem(
+        headlineContent = {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.regular18
+            )
+        },
+        supportingContent = subtitle?.let { text ->
+            {
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.regular14
+                )
+            }
+        },
+        trailingContent = trailingContent,
+        modifier = Modifier
+            .clip(shape)
+            .clickable(onClick = onClick),
+        colors = ListItemDefaults.colors().copy(
+            containerColor = MaterialTheme.colorScheme.surface,
+            headlineColor = MaterialTheme.colorScheme.onBackground,
+            supportingTextColor = MaterialTheme.colorScheme.secondary,
+            trailingIconColor = MaterialTheme.colorScheme.onBackground
+        )
+    )
 }
 
 @FontScalePreviews
@@ -304,7 +331,6 @@ private fun DebugActivityContentPreview() {
         DebugActivityContent(
             snackbarHostState = remember { SnackbarHostState() },
             state = DebugModel(
-                deviceId = "e97c1f74-5c30-4e0e-8411-4e82b5fcb0c2",
                 userToken = "XX-123456"
             ),
             dispatch = {}

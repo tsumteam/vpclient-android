@@ -71,10 +71,11 @@ features/{feature}/
 ## Code Conventions
 
 - **Functions:** Always use `{}` and `return`; never use `=` for function body
-- **`when` over `if/else if`:** Prefer `when` for branching; single-statement branches without braces
+- **`when` over `if/else if`:** Prefer `when` for branching; use single-statement branches without braces only when the whole branch fits on one line, and use braces for multiline branch bodies
 - **Sealed interfaces/classes:** All `data object` entries before any `data class` entries
 - **`data class` in sealed interfaces:** Keep parameters on a single line: `data class Foo(val x: Int) : Bar`
 - **DAO methods:** Regular `fun` methods before `suspend fun` methods
+- **Composable arguments:** Order arguments the same way as they are declared in the SDK/component signature
 - **Compose `padding(...)`:** Named parameters in signature order: `start`, `top`, `end`, `bottom`
 - **Colors:** Add through `MaterialTheme.colorScheme`, not hardcoded
 - **Preview providers:** Place all `PreviewParameterProvider` classes in `...ui/preview/`

@@ -83,7 +83,7 @@ private fun formatPrice(price: Double): String {
 
 private val decimalPriceFormatter = DecimalFormat(
     "#,###",
-    DecimalFormatSymbols(Locale("ru", "RU")).apply {
+    DecimalFormatSymbols(Locale.Builder().setLanguage("ru").setRegion("RU").build()).apply {
         groupingSeparator = ' '
     }
 )

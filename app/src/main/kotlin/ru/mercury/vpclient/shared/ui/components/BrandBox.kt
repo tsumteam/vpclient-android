@@ -8,8 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
@@ -50,23 +50,12 @@ fun BrandBox(
 
 @FontScalePreviews
 @Composable
-private fun BrandBoxTextPreview() {
-    ClientTheme {
-        BrandBox(
-            entity = BrandEntity(
-                brand = "SAINT LAURENT",
-                urlBrandLogo = null
-            )
-        )
-    }
-}
-
-@FontScalePreviews
-@Composable
 private fun BrandBoxPreview(
     @PreviewParameter(BrandEntityProvider::class) entity: BrandEntity
 ) {
     ClientTheme {
-        BrandBox(entity = entity)
+        BrandBox(
+            entity = entity
+        )
     }
 }

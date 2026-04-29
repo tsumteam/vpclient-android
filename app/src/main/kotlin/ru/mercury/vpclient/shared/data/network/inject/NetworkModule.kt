@@ -39,6 +39,7 @@ import ru.mercury.vpclient.shared.domain.mapper.versionCode
 import ru.mercury.vpclient.shared.network.provideLoggingInterceptor
 import javax.inject.Provider
 import javax.inject.Singleton
+import kotlin.time.Duration.Companion.milliseconds
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -80,11 +81,6 @@ object NetworkModule {
                     header("Authorization", "Bearer $userToken")
                 }
 
-                val deviceId = settingsDataStore.get().getValueBlocking(PreferenceKey.DeviceId).orEmpty().ifEmpty { DEFAULT_DEVICE_ID }
-                if (deviceId.isNotEmpty()) {
-                    header("X-DeviceId", deviceId)
-                }
-
                 contentType(ContentType.Application.Json)
             }
             install(ContentNegotiation) {
@@ -104,7 +100,7 @@ object NetworkModule {
                 plugin(HttpSend).intercept { request ->
                     val requestDelayMillis = settingsDataStore.get().getValueBlocking(PreferenceKey.RequestDelay).orEmpty
                     if (requestDelayMillis > 0L) {
-                        delay(requestDelayMillis)
+                        delay(requestDelayMillis.milliseconds)
                     }
                     execute(request)
                 }
@@ -151,8 +147,6 @@ object NetworkModule {
     private const val HTTP_CACHE_SIZE_BYTES = 52_428_800 // 1024 * 1024 * 50
 
     private const val DEFAULT_APPLICATION_TYPE = "api"
-    private const val DEFAULT_DEVICE_ID = "swagger"
-
     private fun environmentPreferenceKey(): PreferenceKey<String> {
         return when (BuildConfig.FLAVOR) {
             "prod" -> PreferenceKey.EnvironmentProd
