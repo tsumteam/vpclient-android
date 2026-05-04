@@ -174,7 +174,6 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
     implementation(libs.androidx.compose.runtime)
-    implementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.constraintlayout.compose)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.datastore.preferences)
@@ -194,6 +193,7 @@ dependencies {
     implementation(libs.androidx.work.runtime.ktx)
     ksp(libs.androidx.hilt.compiler)
     ksp(libs.androidx.room.compiler)
+    debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     testImplementation(libs.kotlin.test)
@@ -231,6 +231,7 @@ dependencies {
 }
 
 tasks.register("printVersion") {
+    description = "Prints the current versionName and versionCode to stdout."
     doLast {
         println("VERSION_NAME=${android.defaultConfig.versionName}")
         println("VERSION_CODE=${android.defaultConfig.versionCode}")
