@@ -2,9 +2,6 @@
 <resources>
 
     <style name="Theme.Base.Starting.V26" parent="Theme.SplashScreen">
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:navigationBarColor">@android:color/transparent</item>
-        <item name="android:windowLightStatusBar">true</item>
         <item name="windowSplashScreenBackground">@android:color/white</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_screen_animated_icon</item>
         <item name="postSplashScreenTheme">@style/Theme.VPClient</item>
@@ -14,9 +11,6 @@
 
     <style name="Theme.Base.V26" parent="Theme.Material3.Light.NoActionBar">
         <item name="android:windowBackground">@android:color/white</item>
-        <item name="android:windowLightStatusBar">true</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
 
     <style name="Theme.VPClient" parent="Theme.Base.V26" />
