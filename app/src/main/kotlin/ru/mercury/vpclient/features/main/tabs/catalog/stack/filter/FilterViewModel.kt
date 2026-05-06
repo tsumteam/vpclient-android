@@ -69,6 +69,8 @@ class FilterViewModel @AssistedInject constructor(
     init {
         dispatch(FilterIntent.InitializeState)
         dispatch(FilterIntent.CollectFilterData)
+        dispatch(FilterIntent.CollectCartData)
+        dispatch(FilterIntent.LoadCartData)
         dispatch(FilterIntent.LoadCatalogFilters)
         dispatch(FilterIntent.LoadProductsQuantity)
         dispatch(FilterIntent.InitializeBrandFavoriteStatus)
@@ -96,6 +98,27 @@ class FilterViewModel @AssistedInject constructor(
                         val refreshedSelectedFilterValueChips = stateFlow.value.selectedFilterValueChips.map { chip -> topFilterValueChipsById[chip.id] ?: chip }
                         reduce { it.copy(filterData = data, selectedFilterValueChips = refreshedSelectedFilterValueChips) }
                     }
+                }
+            }
+            is FilterIntent.CollectCartData -> {
+                launch {
+                    interactor.employeeEntitiesFlow
+                        .map { employees -> employees.firstOrNull { it.isActive }?.employeeId.orEmpty() }
+                        .distinctUntilChanged()
+                        .collectLatest { employeeId ->
+                            when {
+                                employeeId.isNotEmpty() -> dispatch(FilterIntent.LoadCartData)
+                            }
+                        }
+                }
+            }
+            is FilterIntent.LoadCartData -> {
+                launch {
+                    val count = runCatching { interactor.cartItemsCount() }.getOrDefault(0)
+                    reduce { it.copy(cartItemsCount = count) }
+
+                    val badge = runCatching { interactor.cartBadge() }.getOrDefault(0)
+                    reduce { it.copy(cartBadge = badge) }
                 }
             }
             is FilterIntent.LoadCatalogFilters -> {

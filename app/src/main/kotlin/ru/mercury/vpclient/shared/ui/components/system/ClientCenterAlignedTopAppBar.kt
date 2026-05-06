@@ -79,7 +79,12 @@ fun ClientCenterAlignedTopAppBar(
                     FilterScreenTitle(
                         entity = state.entity,
                         onClick = state.onClick,
-                        modifier = Modifier.padding(end = 80.dp)
+                        modifier = Modifier.padding(
+                            end = when {
+                                state.showCartButton -> 40.dp
+                                else -> 80.dp
+                            }
+                        )
                     )
                 }
                 is TopBarState.FilterBrand -> {
@@ -217,6 +222,30 @@ fun ClientCenterAlignedTopAppBar(
                     )
                 }
                 is TopBarState.Category -> {
+                    when {
+                        state.showCartButton -> {
+                            CartIconButton(
+                                text = state.cartText,
+                                showBadge = state.showCartBadge,
+                                onClick = state.cartClick,
+                                modifier = Modifier.padding(end = 8.dp)
+                            )
+                        }
+                    }
+                }
+                is TopBarState.Filter -> {
+                    when {
+                        state.showCartButton -> {
+                            CartIconButton(
+                                text = state.cartText,
+                                showBadge = state.showCartBadge,
+                                onClick = state.cartClick,
+                                modifier = Modifier.padding(end = 8.dp)
+                            )
+                        }
+                    }
+                }
+                is TopBarState.FilterBrand -> {
                     when {
                         state.showCartButton -> {
                             CartIconButton(

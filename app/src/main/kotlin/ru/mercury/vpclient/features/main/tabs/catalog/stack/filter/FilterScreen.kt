@@ -249,14 +249,22 @@ private fun FilterScreenContent(
                         TopBarState.FilterBrand(
                             entity = state.brandEntity,
                             navigationClick = { dispatch(FilterIntent.BackClick) },
-                            searchClick = {}
+                            searchClick = {},
+                            showCartButton = true,
+                            cartText = state.cartText,
+                            showCartBadge = state.showCartBadge,
+                            cartClick = {}
                         )
                     }
                     state.isSingleLineTitle -> {
                         TopBarState.Category(
                             title = state.filterData.filterTitleEntity.titleCatalogCategoryEntity.name,
                             navigationClick = { dispatch(FilterIntent.BackClick) },
-                            searchClick = {}
+                            searchClick = {},
+                            showCartButton = true,
+                            cartText = state.cartText,
+                            showCartBadge = state.showCartBadge,
+                            cartClick = {}
                         )
                     }
                     else -> {
@@ -269,7 +277,11 @@ private fun FilterScreenContent(
                                 }
                             },
                             navigationClick = { dispatch(FilterIntent.BackClick) },
-                            searchClick = {}
+                            searchClick = {},
+                            showCartButton = true,
+                            cartText = state.cartText,
+                            showCartBadge = state.showCartBadge,
+                            cartClick = {}
                         )
                     }
                 }

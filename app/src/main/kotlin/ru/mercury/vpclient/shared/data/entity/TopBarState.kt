@@ -30,11 +30,19 @@ sealed interface TopBarState {
         val entity: FilterTitleEntity,
         val onClick: () -> Unit,
         val navigationClick: () -> Unit,
-        val searchClick: () -> Unit
+        val searchClick: () -> Unit,
+        val showCartButton: Boolean = false,
+        val cartText: String = "",
+        val showCartBadge: Boolean = false,
+        val cartClick: () -> Unit = {}
     ): TopBarState
     data class FilterBrand(
         val entity: BrandEntity,
         val navigationClick: () -> Unit,
-        val searchClick: () -> Unit
+        val searchClick: () -> Unit,
+        val showCartButton: Boolean = false,
+        val cartText: String = "",
+        val showCartBadge: Boolean = false,
+        val cartClick: () -> Unit = {}
     ): TopBarState
 }

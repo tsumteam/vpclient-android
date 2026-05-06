@@ -44,10 +44,25 @@ data class FilterModel(
     val filterValuesDialogProductsQuantityJob: Job? = null,
     val filterValuesDialogPickerCollectionJob: Job? = null,
     val filterValuesDialogQuantityCollectionJob: Job? = null,
-    val loadProductsQuantityJob: Job? = null
+    val loadProductsQuantityJob: Job? = null,
+    val cartItemsCount: Int = 0,
+    val cartBadge: Int = 0
 ): Model {
 
     // fixme
+
+    val cartText: String
+        get() {
+            return when {
+                cartItemsCount > 0 -> cartItemsCount.toString()
+                else -> ""
+            }
+        }
+
+    val showCartBadge: Boolean
+        get() {
+            return cartBadge > 0
+        }
 
     val selectedFilterValueChipIds: Set<String>
         get() = selectedFilterValueChips.map(FilterChip::id).toSet()
