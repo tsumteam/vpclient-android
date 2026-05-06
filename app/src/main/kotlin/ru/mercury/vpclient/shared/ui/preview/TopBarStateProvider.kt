@@ -27,7 +27,15 @@ class TopBarStateProvider: PreviewParameterProvider<TopBarState> {
             entity = BrandEntity(brand = "SAINT LAURENT", urlBrandLogo = null),
             showBrandBox = true
         ),
-        TopBarState.Category(title = "Пуховики", navigationClick = {}, searchClick = {}),
+        TopBarState.Category(
+            title = "Пуховики",
+            navigationClick = {},
+            searchClick = {},
+            showCartButton = true,
+            cartText = "1",
+            showCartBadge = true,
+            cartClick = {}
+        ),
         TopBarState.Filter(entity = FilterTitleEntity.Empty, onClick = {}, navigationClick = {}, searchClick = {}),
         TopBarState.FilterBrand(
             entity = BrandEntity(brand = "SAINT LAURENT", urlBrandLogo = null),

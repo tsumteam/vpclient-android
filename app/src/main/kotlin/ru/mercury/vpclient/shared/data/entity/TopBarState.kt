@@ -20,7 +20,11 @@ sealed interface TopBarState {
     data class Category(
         val title: String,
         val navigationClick: () -> Unit,
-        val searchClick: () -> Unit
+        val searchClick: () -> Unit,
+        val showCartButton: Boolean = false,
+        val cartText: String = "",
+        val showCartBadge: Boolean = false,
+        val cartClick: () -> Unit = {}
     ): TopBarState
     data class Filter(
         val entity: FilterTitleEntity,

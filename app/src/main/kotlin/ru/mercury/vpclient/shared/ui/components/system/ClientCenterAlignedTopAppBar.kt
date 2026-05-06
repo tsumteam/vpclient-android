@@ -216,6 +216,18 @@ fun ClientCenterAlignedTopAppBar(
                         modifier = Modifier.padding(end = 8.dp)
                     )
                 }
+                is TopBarState.Category -> {
+                    when {
+                        state.showCartButton -> {
+                            CartIconButton(
+                                text = state.cartText,
+                                showBadge = state.showCartBadge,
+                                onClick = state.cartClick,
+                                modifier = Modifier.padding(end = 8.dp)
+                            )
+                        }
+                    }
+                }
                 else -> {}
             }
         },

@@ -55,7 +55,11 @@ private fun CategoryScreenContent(
                 state = TopBarState.Category(
                     title = state.entity.name,
                     navigationClick = { dispatch(CategoryIntent.BackClick) },
-                    searchClick = {}
+                    searchClick = {},
+                    showCartButton = true,
+                    cartText = state.cartText,
+                    showCartBadge = state.showCartBadge,
+                    cartClick = {}
                 )
             )
         }

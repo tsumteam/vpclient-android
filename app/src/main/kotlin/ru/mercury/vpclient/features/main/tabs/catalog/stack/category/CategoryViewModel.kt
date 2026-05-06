@@ -5,6 +5,8 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.main.tabs.catalog.event.CatalogStackEventManager
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.category.intent.CategoryIntent
@@ -25,6 +27,8 @@ class CategoryViewModel @AssistedInject constructor(
     init {
         dispatch(CategoryIntent.CollectCategoryEntity)
         dispatch(CategoryIntent.CollectCategoryPojos)
+        dispatch(CategoryIntent.CollectCartData)
+        dispatch(CategoryIntent.LoadCartData)
         dispatch(CategoryIntent.LoadCatalogCategoriesBottom)
     }
 
@@ -42,6 +46,27 @@ class CategoryViewModel @AssistedInject constructor(
                     interactor.subcategoryPojosFlow(route.categoryId).collectLatest { pojos ->
                         reduce { it.copy(pojos = pojos.sortedBy { pojo -> pojo.entity.position }) }
                     }
+                }
+            }
+            is CategoryIntent.CollectCartData -> {
+                launch {
+                    interactor.employeeEntitiesFlow
+                        .map { employees -> employees.firstOrNull { it.isActive }?.employeeId.orEmpty() }
+                        .distinctUntilChanged()
+                        .collectLatest { employeeId ->
+                            if (employeeId.isNotEmpty()) {
+                                dispatch(CategoryIntent.LoadCartData)
+                            }
+                        }
+                }
+            }
+            is CategoryIntent.LoadCartData -> {
+                launch {
+                    val count = runCatching { interactor.cartItemsCount() }.getOrDefault(0)
+                    reduce { it.copy(cartItemsCount = count) }
+
+                    val badge = runCatching { interactor.cartBadge() }.getOrDefault(0)
+                    reduce { it.copy(cartBadge = badge) }
                 }
             }
             is CategoryIntent.LoadCatalogCategoriesBottom -> launch { interactor.loadCatalogCategoriesBottom(route.categoryId) }
