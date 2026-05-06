@@ -21,6 +21,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.data.entity.TopBarState
 import ru.mercury.vpclient.shared.ui.components.BrandBox
+import ru.mercury.vpclient.shared.ui.components.BasketIconButton
 import ru.mercury.vpclient.shared.ui.components.filters.FilterScreenTitle
 import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
 import ru.mercury.vpclient.shared.ui.icons.Logo82
@@ -206,24 +207,17 @@ fun ClientCenterAlignedTopAppBar(
             }
         },
         actions = {
-            /*IndicatorIconButton(
-                icon = FittingShirt24,
-                showIndicator = true,
-                onClick = {}
-            )
-
-            IndicatorIconButton(
-                icon = Basket24,
-                showIndicator = true,
-                onClick = {}
-            )
-
-            IndicatorIconButton(
-                icon = Chat24,
-                showIndicator = true,
-                onClick = {},
-                modifier = Modifier.padding(end = 8.dp)
-            )*/ // fixme
+            when (state) {
+                is TopBarState.Catalog -> {
+                    BasketIconButton(
+                        text = state.basketText,
+                        showIndicator = state.showBasketIndicator,
+                        onClick = state.basketClick,
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                }
+                else -> {}
+            }
         },
         colors = TopAppBarDefaults.topAppBarColors().copy(
             containerColor = when (state) {

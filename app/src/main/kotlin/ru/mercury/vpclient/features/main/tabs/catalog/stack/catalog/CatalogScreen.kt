@@ -109,6 +109,11 @@ private fun CatalogScreenContent(
                     state = TopBarState.Catalog(
                         navigationClick = {
                             // fixme
+                        },
+                        basketText = "",
+                        showBasketIndicator = false,
+                        basketClick = {
+                            // fixme
                         }
                     )
                 )

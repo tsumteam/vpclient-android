@@ -9,7 +9,12 @@ class TopBarStateProvider: PreviewParameterProvider<TopBarState> {
     override val values: Sequence<TopBarState> = sequenceOf(
         TopBarState.Logo,
         TopBarState.Title(title = "Бренды"),
-        TopBarState.Catalog(navigationClick = {}),
+        TopBarState.Catalog(
+            navigationClick = {},
+            basketText = "1",
+            showBasketIndicator = true,
+            basketClick = {}
+        ),
         TopBarState.Details(
             navigationClick = {},
             onClick = {},

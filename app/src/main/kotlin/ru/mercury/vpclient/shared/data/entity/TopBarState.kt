@@ -6,7 +6,10 @@ sealed interface TopBarState {
         val title: String
     ): TopBarState
     data class Catalog(
-        val navigationClick: () -> Unit
+        val navigationClick: () -> Unit,
+        val basketText: String,
+        val showBasketIndicator: Boolean,
+        val basketClick: () -> Unit
     ): TopBarState
     data class Details(
         val navigationClick: () -> Unit,
