@@ -9,9 +9,9 @@ import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.theme.ClientTheme
 
 @Composable
-fun BasketIconButton(
+fun CartIconButton(
     text: String,
-    showIndicator: Boolean,
+    showBadge: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -19,22 +19,22 @@ fun BasketIconButton(
         onClick = onClick,
         modifier = modifier
     ) {
-        BasketIcon(
+        CartIcon(
             text = text,
-            showIndicator = showIndicator
+            showBadge = showBadge
         )
     }
 }
 
 @FontScalePreviews
 @Composable
-private fun BasketIconButtonPreview(
-    @PreviewParameter(BooleanParameterProvider::class) showIndicator: Boolean
+private fun CartIconButtonPreview(
+    @PreviewParameter(BooleanParameterProvider::class) showBadge: Boolean
 ) {
     ClientTheme {
-        BasketIconButton(
+        CartIconButton(
             text = "1",
-            showIndicator = showIndicator,
+            showBadge = showBadge,
             onClick = {}
         )
     }

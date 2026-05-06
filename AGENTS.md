@@ -15,4 +15,6 @@
 - For composable function calls, order arguments the same way as they are declared in the SDK/component signature
 - For Compose `padding(...)`, order named parameters the same way as in the method signature: `start`, `top`, `end`, `bottom`
 - Do not place classes or constants inside MVI classes; declare them at file level or in dedicated files/packages
+- Do not write mappers in repositories; place mapping logic in mapper KTX files
+- For each model, create a separate file; do not declare multiple model classes in one file
 - Place experimental opt-in annotations only at file level, for example `@file:OptIn(ExperimentalMaterial3Api::class)`, not on individual declarations

@@ -5,11 +5,13 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import ru.mercury.vpclient.shared.domain.interactor.AuthenticationInteractor
+import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
 import ru.mercury.vpclient.shared.domain.interactor.CatalogInteractor
 import ru.mercury.vpclient.shared.domain.interactor.EmployeeInteractor
 import ru.mercury.vpclient.shared.domain.interactor.FilterInteractor
 import ru.mercury.vpclient.shared.domain.interactor.ProductInteractor
 import ru.mercury.vpclient.shared.domain.interactor.impl.AuthenticationInteractorImpl
+import ru.mercury.vpclient.shared.domain.interactor.impl.CartInteractorImpl
 import ru.mercury.vpclient.shared.domain.interactor.impl.CatalogInteractorImpl
 import ru.mercury.vpclient.shared.domain.interactor.impl.EmployeeInteractorImpl
 import ru.mercury.vpclient.shared.domain.interactor.impl.FilterInteractorImpl
@@ -23,6 +25,10 @@ interface InteractorModule {
     @Binds
     @Singleton
     fun authenticationInteractor(impl: AuthenticationInteractorImpl): AuthenticationInteractor
+
+    @Binds
+    @Singleton
+    fun cartInteractor(impl: CartInteractorImpl): CartInteractor
 
     @Binds
     @Singleton

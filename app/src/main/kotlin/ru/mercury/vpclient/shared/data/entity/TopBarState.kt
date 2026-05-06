@@ -7,9 +7,9 @@ sealed interface TopBarState {
     ): TopBarState
     data class Catalog(
         val navigationClick: () -> Unit,
-        val basketText: String,
-        val showBasketIndicator: Boolean,
-        val basketClick: () -> Unit
+        val cartText: String,
+        val showCartBadge: Boolean,
+        val cartClick: () -> Unit
     ): TopBarState
     data class Details(
         val navigationClick: () -> Unit,

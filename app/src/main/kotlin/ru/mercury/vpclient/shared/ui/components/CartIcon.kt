@@ -25,11 +25,13 @@ import ru.mercury.vpclient.shared.ui.theme.ClientTheme
 import ru.mercury.vpclient.shared.ui.theme.regular10
 
 @Composable
-fun BasketIcon(
+fun CartIcon(
     text: String,
-    showIndicator: Boolean
+    showBadge: Boolean
 ) {
-    Box {
+    Box(
+        modifier = Modifier.size(24.dp)
+    ) {
         Icon(
             imageVector = Basket24,
             contentDescription = null,
@@ -52,9 +54,9 @@ fun BasketIcon(
         )
 
         AnimatedContent(
-            targetState = showIndicator,
+            targetState = showBadge,
             transitionSpec = { fadeIn() togetherWith fadeOut() },
-            label = "indicator_animation",
+            label = "cart_badge_animation",
             modifier = Modifier.align(Alignment.TopEnd)
         ) { visible ->
             if (visible) {
@@ -74,13 +76,13 @@ fun BasketIcon(
 
 @FontScalePreviews
 @Composable
-private fun BasketIconPreview(
-    @PreviewParameter(BooleanParameterProvider::class) showIndicator: Boolean
+private fun CartIconPreview(
+    @PreviewParameter(BooleanParameterProvider::class) showBadge: Boolean
 ) {
     ClientTheme {
-        BasketIcon(
+        CartIcon(
             text = "1",
-            showIndicator = showIndicator
+            showBadge = showBadge
         )
     }
 }

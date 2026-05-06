@@ -2,6 +2,8 @@ package ru.mercury.vpclient.features.main.tabs.catalog.stack.catalog
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.main.tabs.catalog.event.CatalogStackEventManager
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.catalog.event.CatalogEvent
@@ -22,6 +24,8 @@ class CatalogViewModel @Inject constructor(
 
     init {
         dispatch(CatalogIntent.CollectCatalogScreenData)
+        dispatch(CatalogIntent.CollectCartData)
+        dispatch(CatalogIntent.LoadCartData)
         dispatch(CatalogIntent.LoadCatalogCategoriesTop)
     }
 
@@ -32,6 +36,27 @@ class CatalogViewModel @Inject constructor(
                     interactor.catalogDataFlow.collectLatest { data ->
                         reduce { it.copy(catalogData = data) }
                     }
+                }
+            }
+            is CatalogIntent.CollectCartData -> {
+                launch {
+                    interactor.employeeEntitiesFlow
+                        .map { employees -> employees.firstOrNull { it.isActive }?.employeeId.orEmpty() }
+                        .distinctUntilChanged()
+                        .collectLatest { employeeId ->
+                            if (employeeId.isNotEmpty()) {
+                                dispatch(CatalogIntent.LoadCartData)
+                            }
+                        }
+                }
+            }
+            is CatalogIntent.LoadCartData -> {
+                launch {
+                    val count = runCatching { interactor.cartItemsCount() }.getOrDefault(0)
+                    reduce { it.copy(cartItemsCount = count) }
+
+                    val badge = runCatching { interactor.cartBadge() }.getOrDefault(0)
+                    reduce { it.copy(cartBadge = badge) }
                 }
             }
             is CatalogIntent.LoadCatalogCategoriesTop -> launch { interactor.loadCatalogCategoriesTop() }

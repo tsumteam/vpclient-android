@@ -21,7 +21,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.data.entity.TopBarState
 import ru.mercury.vpclient.shared.ui.components.BrandBox
-import ru.mercury.vpclient.shared.ui.components.BasketIconButton
+import ru.mercury.vpclient.shared.ui.components.CartIconButton
 import ru.mercury.vpclient.shared.ui.components.filters.FilterScreenTitle
 import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
 import ru.mercury.vpclient.shared.ui.icons.Logo82
@@ -209,10 +209,10 @@ fun ClientCenterAlignedTopAppBar(
         actions = {
             when (state) {
                 is TopBarState.Catalog -> {
-                    BasketIconButton(
-                        text = state.basketText,
-                        showIndicator = state.showBasketIndicator,
-                        onClick = state.basketClick,
+                    CartIconButton(
+                        text = state.cartText,
+                        showBadge = state.showCartBadge,
+                        onClick = state.cartClick,
                         modifier = Modifier.padding(end = 8.dp)
                     )
                 }

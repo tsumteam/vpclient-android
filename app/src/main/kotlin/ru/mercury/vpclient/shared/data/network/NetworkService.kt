@@ -23,7 +23,6 @@ import ru.mercury.vpclient.shared.data.network.entity.AddProductToActionRequestD
 import ru.mercury.vpclient.shared.data.network.entity.AddProductToFashionImageRequestDto
 import ru.mercury.vpclient.shared.data.network.entity.AddProductsInFoldersRequestDto
 import ru.mercury.vpclient.shared.data.network.entity.AddressSuggestionDtoItemsDto
-import ru.mercury.vpclient.shared.data.network.entity.AggregatedActivityCounterResponseDto
 import ru.mercury.vpclient.shared.data.network.entity.ApproveFittingDeliveryManualPickupRequestDto
 import ru.mercury.vpclient.shared.data.network.entity.ApproveFittingDeliveryManualPickupResponse
 import ru.mercury.vpclient.shared.data.network.entity.ApproveFittingDeliveryRequestDto
@@ -234,16 +233,18 @@ import ru.mercury.vpclient.shared.data.network.entity.UserProfileUploadPhotoPost
 import ru.mercury.vpclient.shared.data.network.entity.VerifyLinkCardRequestDto
 import ru.mercury.vpclient.shared.data.network.entity.ViewHistoryDto
 import ru.mercury.vpclient.shared.data.network.request.AuthenticationContinueLoginRequest
-import ru.mercury.vpclient.shared.data.network.request.CatalogBrandFavoriteRequest
 import ru.mercury.vpclient.shared.data.network.request.AuthenticationLoginRequest
 import ru.mercury.vpclient.shared.data.network.request.AuthenticationRegisterRequest
 import ru.mercury.vpclient.shared.data.network.request.BottomCategoriesRequest
+import ru.mercury.vpclient.shared.data.network.request.CatalogBrandFavoriteRequest
 import ru.mercury.vpclient.shared.data.network.request.DetailCardRequest
 import ru.mercury.vpclient.shared.data.network.request.FilterValuesRequest
 import ru.mercury.vpclient.shared.data.network.request.FilteredProductsQuantityRequest
 import ru.mercury.vpclient.shared.data.network.request.FilteredProductsRequest
 import ru.mercury.vpclient.shared.data.network.request.FiltersRequest
+import ru.mercury.vpclient.shared.data.network.response.AggregatedActivityCounterResponse
 import ru.mercury.vpclient.shared.data.network.response.BaseResponse
+import ru.mercury.vpclient.shared.data.network.response.CartCountResponse
 import ru.mercury.vpclient.shared.data.network.response.CatalogCategoriesBasicResponse
 import ru.mercury.vpclient.shared.data.network.response.CatalogProductDetailCardV2Response
 import ru.mercury.vpclient.shared.data.network.response.CurrentUserResponse
@@ -373,6 +374,18 @@ class NetworkService @Inject constructor(
         return ktorHttpClient.get("user/current-user").body()
     }
 
+    suspend fun basketCountByPairedUserId(
+        pairedUserId: String
+    ): BaseResponse<CartCountResponse> {
+        return ktorHttpClient.get("basket/$pairedUserId").body()
+    }
+
+    suspend fun activityCountersByPairedUserId(
+        pairedUserId: String
+    ): BaseResponse<AggregatedActivityCounterResponse> {
+        return ktorHttpClient.get("activity/counters/$pairedUserId").body()
+    }
+
 
     // fixme
 
@@ -465,12 +478,6 @@ class NetworkService @Inject constructor(
             appendQueryParameter("limit", limit)
             appendQueryParameter("offset", offset)
         }.body()
-    }
-
-    suspend fun activityCountersByPairedUserId(
-        pairedUserId: String
-    ): BaseResponse<AggregatedActivityCounterResponseDto> {
-        return ktorHttpClient.get("activity/counters/$pairedUserId").body()
     }
 
     suspend fun activityByClientIdViewHistory(

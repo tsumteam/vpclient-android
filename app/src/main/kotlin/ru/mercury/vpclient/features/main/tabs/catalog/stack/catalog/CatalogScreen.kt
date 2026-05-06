@@ -110,9 +110,9 @@ private fun CatalogScreenContent(
                         navigationClick = {
                             // fixme
                         },
-                        basketText = "",
-                        showBasketIndicator = false,
-                        basketClick = {
+                        cartText = state.cartText,
+                        showCartBadge = state.showCartBadge,
+                        cartClick = {
                             // fixme
                         }
                     )

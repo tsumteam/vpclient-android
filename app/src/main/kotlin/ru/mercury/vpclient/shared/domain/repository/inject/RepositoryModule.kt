@@ -6,11 +6,13 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import ru.mercury.vpclient.shared.domain.repository.AuthenticationRepository
 import ru.mercury.vpclient.shared.domain.repository.CatalogRepository
+import ru.mercury.vpclient.shared.domain.repository.CartRepository
 import ru.mercury.vpclient.shared.domain.repository.EmployeeRepository
 import ru.mercury.vpclient.shared.domain.repository.FilterRepository
 import ru.mercury.vpclient.shared.domain.repository.ProductRepository
 import ru.mercury.vpclient.shared.domain.repository.impl.AuthenticationRepositoryImpl
 import ru.mercury.vpclient.shared.domain.repository.impl.CatalogRepositoryImpl
+import ru.mercury.vpclient.shared.domain.repository.impl.CartRepositoryImpl
 import ru.mercury.vpclient.shared.domain.repository.impl.EmployeeRepositoryImpl
 import ru.mercury.vpclient.shared.domain.repository.impl.FilterRepositoryImpl
 import ru.mercury.vpclient.shared.domain.repository.impl.ProductRepositoryImpl
@@ -24,6 +26,9 @@ interface RepositoryModule {
 
     @Binds
     fun catalogRepository(impl: CatalogRepositoryImpl): CatalogRepository
+
+    @Binds
+    fun cartRepository(impl: CartRepositoryImpl): CartRepository
 
     @Binds
     fun filterRepository(impl: FilterRepositoryImpl): FilterRepository

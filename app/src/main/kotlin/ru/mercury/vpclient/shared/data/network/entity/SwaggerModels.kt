@@ -10,6 +10,7 @@ import ru.mercury.vpclient.shared.data.network.request.FilterValuesRequest
 import ru.mercury.vpclient.shared.data.network.request.FilteredProductsQuantityRequest
 import ru.mercury.vpclient.shared.data.network.request.FilteredProductsRequest
 import ru.mercury.vpclient.shared.data.network.request.FiltersRequest
+import ru.mercury.vpclient.shared.data.network.response.AggregatedActivityCounterResponse
 import ru.mercury.vpclient.shared.data.network.response.CatalogCategoriesBasicResponse
 import ru.mercury.vpclient.shared.data.network.response.CatalogProductDetailCardV2Response
 import ru.mercury.vpclient.shared.data.network.response.CurrentUserResponse
@@ -118,22 +119,14 @@ data class ActiveEmployeeResponseDtoResponseDto(
 
 @Serializable
 enum class ActivityCounterTypeRequestEnum {
-    @SerialName("basket")
-    BASKET,
-    @SerialName("messenger")
-    MESSENGER,
-    @SerialName("order")
-    ORDER,
-    @SerialName("fitting")
-    FITTING,
-    @SerialName("compilation")
-    COMPILATION,
-    @SerialName("axaptaNotification")
-    AXAPTA_NOTIFICATION,
-    @SerialName("clientNotification")
-    CLIENT_NOTIFICATION,
-    @SerialName("messages")
-    MESSAGES
+    @SerialName("basket") BASKET,
+    @SerialName("messenger") MESSENGER,
+    @SerialName("order") ORDER,
+    @SerialName("fitting") FITTING,
+    @SerialName("compilation") COMPILATION,
+    @SerialName("axaptaNotification") AXAPTA_NOTIFICATION,
+    @SerialName("clientNotification") CLIENT_NOTIFICATION,
+    @SerialName("messages") MESSAGES
 }
 
 @Serializable
@@ -174,20 +167,9 @@ data class AddressSuggestionDtoItemsDtoResponseDto(
 )
 
 @Serializable
-data class AggregatedActivityCounterResponseDto(
-    val items: List<AggregatedActivityCounterResponseItemDto>? = null
-)
-
-@Serializable
 data class AggregatedActivityCounterResponseDtoResponseDto(
     val error: ErrorDto? = null,
-    val data: AggregatedActivityCounterResponseDto? = null
-)
-
-@Serializable
-data class AggregatedActivityCounterResponseItemDto(
-    val type: ActivityCounterTypeRequestEnum? = null,
-    val value: Int? = null
+    val data: AggregatedActivityCounterResponse? = null
 )
 
 @Serializable
@@ -726,6 +708,8 @@ enum class BasketOperationInitiatorDtoEnum {
     EMPLOYEE,
     @SerialName("system")
     SYSTEM,
+    @SerialName("order")
+    ORDER,
     @SerialName("axapta")
     AXAPTA
 }
@@ -827,7 +811,7 @@ data class BasketRemoveProductFromLineOperationRequestItemDto(
 
 @Serializable
 data class BasketResponseDto(
-    val editor: BasketOperationInitiatorDtoEnum? = null,
+    val editor: String? = null,
     val id: String? = null,
     val lines: List<BasketLineResponseDto>? = null,
     val looks: List<BasketLookResponseDto>? = null,

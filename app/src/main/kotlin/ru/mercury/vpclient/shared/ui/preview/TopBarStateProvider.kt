@@ -11,9 +11,9 @@ class TopBarStateProvider: PreviewParameterProvider<TopBarState> {
         TopBarState.Title(title = "Бренды"),
         TopBarState.Catalog(
             navigationClick = {},
-            basketText = "1",
-            showBasketIndicator = true,
-            basketClick = {}
+            cartText = "1",
+            showCartBadge = true,
+            cartClick = {}
         ),
         TopBarState.Details(
             navigationClick = {},
