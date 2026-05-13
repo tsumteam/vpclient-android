@@ -10,12 +10,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.preview.BrandEntityProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.livretMedium21
 
 @Composable
@@ -48,14 +49,13 @@ fun BrandBox(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun BrandBoxPreview(
     @PreviewParameter(BrandEntityProvider::class) entity: BrandEntity
 ) {
-    ClientTheme {
-        BrandBox(
-            entity = entity
-        )
-    }
+    BrandBox(
+        entity = entity
+    )
 }

@@ -13,8 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import ru.mercury.vpclient.shared.ui.ktx.disableSplitMotionEvents
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 
 @Composable
 fun ClientLazyColumn(
@@ -40,18 +41,17 @@ fun ClientLazyColumn(
     )
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Composable
 private fun ClientLazyColumnPreview() {
-    ClientTheme {
-        ClientLazyColumn(
-            modifier = Modifier.background(MaterialTheme.colorScheme.background)
-        ) {
-            item {
-                Text(
-                    text = "Item"
-                )
-            }
+    ClientLazyColumn(
+        modifier = Modifier.background(MaterialTheme.colorScheme.background)
+    ) {
+        item {
+            Text(
+                text = "Item"
+            )
         }
     }
 }

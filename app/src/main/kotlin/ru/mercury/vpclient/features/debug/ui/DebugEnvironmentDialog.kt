@@ -19,11 +19,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.data.network.env.ClientEnvironment
 import ru.mercury.vpclient.shared.ui.components.RadioRow
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.divider2
 import ru.mercury.vpclient.shared.ui.theme.regular22
 import ru.mercury.vpclient.shared.ui.theme.surface4
@@ -98,15 +99,14 @@ fun DebugEnvironmentDialog(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Preview(fontScale = 1.5F)
 @Composable
 private fun DebugEnvironmentDialogPreview() {
-    ClientTheme {
-        DebugEnvironmentDialog(
-            onDismissRequest = {},
-            selectedEnvironment = ClientEnvironment.TEST,
-            onSelectEnvironment = {}
-        )
-    }
+    DebugEnvironmentDialog(
+        onDismissRequest = {},
+        selectedEnvironment = ClientEnvironment.TEST,
+        onSelectEnvironment = {}
+    )
 }

@@ -16,11 +16,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.ui.icons.Chat24
 import ru.mercury.vpclient.shared.ui.preview.BooleanParameterProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 
 @Composable
 fun IndicatorIcon(
@@ -63,15 +64,14 @@ fun IndicatorIcon(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun IndicatorIconPreview(
     @PreviewParameter(BooleanParameterProvider::class) showIndicator: Boolean
 ) {
-    ClientTheme {
-        IndicatorIcon(
-            icon = Chat24,
-            showIndicator = showIndicator
-        )
-    }
+    IndicatorIcon(
+        icon = Chat24,
+        showIndicator = showIndicator
+    )
 }

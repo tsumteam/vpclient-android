@@ -13,10 +13,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.ui.components.system.ClientAnimatedVisibility
 import ru.mercury.vpclient.shared.ui.ktx.blockClickable
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.black50
 
 @Composable
@@ -51,12 +52,11 @@ fun LoadingBox(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Composable
 private fun LoadingBoxPreview() {
-    ClientTheme {
-        LoadingBox(
-            isVisible = true
-        )
-    }
+    LoadingBox(
+        isVisible = true
+    )
 }

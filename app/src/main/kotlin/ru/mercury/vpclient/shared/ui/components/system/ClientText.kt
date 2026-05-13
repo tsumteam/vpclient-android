@@ -22,9 +22,10 @@ import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
 
 @Composable
 fun ClientText(
@@ -83,24 +84,23 @@ fun ClientText(
     )
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Composable
 private fun ClientTextPreview() {
-    ClientTheme {
-        val text = stringResource(ClientStrings.LoginAgreementText)
+    val text = stringResource(ClientStrings.LoginAgreementText)
 
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(horizontal = 16.dp),
-        ) {
-            ClientText(
-                text = stringResource(ClientStrings.LoginAgreementText),
-                clickableRanges = listOf(65 until text.length),
-                onClick = {},
-                modifier = Modifier.padding(top = 24.dp),
-            )
-        }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(horizontal = 16.dp),
+    ) {
+        ClientText(
+            text = stringResource(ClientStrings.LoginAgreementText),
+            clickableRanges = listOf(65 until text.length),
+            onClick = {},
+            modifier = Modifier.padding(top = 24.dp),
+        )
     }
 }

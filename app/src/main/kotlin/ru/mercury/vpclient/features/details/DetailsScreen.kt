@@ -40,6 +40,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -73,9 +74,9 @@ import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.DetailsModelProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.annotation.HightPreview
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
 import ru.mercury.vpclient.shared.ui.theme.regular14
 import ru.mercury.vpclient.shared.ui.theme.surface4
 
@@ -491,16 +492,15 @@ private fun DetailsScreenContent(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @HightPreview
 @Composable
 private fun DetailsScreenContentPreview(
     @PreviewParameter(DetailsModelProvider::class) state: DetailsModel
 ) {
-    ClientTheme {
-        DetailsScreenContent(
-            state = state,
-            dispatch = {}
-        )
-    }
+    DetailsScreenContent(
+        state = state,
+        dispatch = {}
+    )
 }

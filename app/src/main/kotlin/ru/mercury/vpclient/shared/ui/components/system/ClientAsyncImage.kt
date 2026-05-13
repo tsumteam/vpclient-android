@@ -10,11 +10,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import ru.mercury.vpclient.R
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.surface4
 
 @Composable
@@ -48,17 +49,16 @@ fun ClientAsyncImage(
     )
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Composable
 private fun ClientAsyncImagePreview() {
-    ClientTheme {
-        ClientAsyncImage(
-            imageUrl = "https://example.com/image.png",
-            modifier = Modifier.size(
-                width = 121.dp,
-                height = 45.dp
-            ),
-            contentScale = ContentScale.Fit
-        )
-    }
+    ClientAsyncImage(
+        imageUrl = "https://example.com/image.png",
+        modifier = Modifier.size(
+            width = 121.dp,
+            height = 45.dp
+        ),
+        contentScale = ContentScale.Fit
+    )
 }

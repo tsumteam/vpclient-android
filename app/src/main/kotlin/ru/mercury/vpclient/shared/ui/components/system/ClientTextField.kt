@@ -41,12 +41,13 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.ktx.keyboardActionHandler
 import ru.mercury.vpclient.shared.ui.ktx.rememberSyncedTextFieldState
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.regular12
 import ru.mercury.vpclient.shared.ui.theme.regular15
 import ru.mercury.vpclient.shared.ui.theme.surface3
@@ -352,45 +353,43 @@ fun ClientTextField(
 
 
 
+@PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Composable
 private fun ClientTextFieldPreview() {
-    ClientTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(color = MaterialTheme.colorScheme.background),
-            contentAlignment = Alignment.Center
-        ) {
-            ClientTextField(
-                value = "",
-                onValueChange = {},
-                label = "Логин",
-                isErrorVisible = true,
-                error = "Введите логин",
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
-        }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.background),
+        contentAlignment = Alignment.Center
+    ) {
+        ClientTextField(
+            value = "",
+            onValueChange = {},
+            label = "Логин",
+            isErrorVisible = true,
+            error = "Введите логин",
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Composable
 private fun ClientTextField2Preview() {
-    ClientTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(color = MaterialTheme.colorScheme.surface),
-            contentAlignment = Alignment.Center
-        ) {
-            ClientTextField(
-                value = "",
-                accepted = true,
-                onValueChange = {},
-                placeholder = "Введите сумму",
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
-        }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.surface),
+        contentAlignment = Alignment.Center
+    ) {
+        ClientTextField(
+            value = "",
+            accepted = true,
+            onValueChange = {},
+            placeholder = "Введите сумму",
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
     }
 }

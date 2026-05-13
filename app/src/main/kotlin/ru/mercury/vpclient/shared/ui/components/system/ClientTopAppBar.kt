@@ -11,7 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import androidx.compose.ui.tooling.preview.PreviewWrapper
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 
 @Composable
 fun ClientTopAppBar(
@@ -47,13 +48,12 @@ fun ClientTopAppBar(
     )
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Composable
 private fun ClientTopAppBarPreview() {
-    ClientTheme {
-        ClientTopAppBar(
-            text = "Товары",
-            onNavigationIconClick = {}
-        )
-    }
+    ClientTopAppBar(
+        text = "Товары",
+        onNavigationIconClick = {}
+    )
 }

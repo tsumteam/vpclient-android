@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -17,8 +18,8 @@ import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopApp
 import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
 import ru.mercury.vpclient.shared.ui.components.system.ClientOutlinedButton
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
 
 @Composable
 fun ProfileScreen(
@@ -62,14 +63,13 @@ private fun ProfileScreenContent(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun ProfileScreenContentPreview(
 ) {
-    ClientTheme {
-        ProfileScreenContent(
-            state = ProfileModel(),
-            dispatch = {}
-        )
-    }
+    ProfileScreenContent(
+        state = ProfileModel(),
+        dispatch = {}
+    )
 }

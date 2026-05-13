@@ -8,9 +8,10 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 
 @Composable
 fun PagingLoadingBox(
@@ -27,14 +28,13 @@ fun PagingLoadingBox(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun PagingLoadingBoxPreview() {
-    ClientTheme {
-        PagingLoadingBox(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(64.dp)
-        )
-    }
+    PagingLoadingBox(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(64.dp)
+    )
 }

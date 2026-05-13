@@ -10,16 +10,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.sp
+import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
 import ru.mercury.vpclient.shared.domain.mapper.cardDiscountedPrice
 import ru.mercury.vpclient.shared.domain.mapper.cardOldPrice
 import ru.mercury.vpclient.shared.domain.mapper.cardPrice
 import ru.mercury.vpclient.shared.domain.mapper.isDiscountPriceVisible
-import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
-import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
 import ru.mercury.vpclient.shared.ui.preview.CatalogFilterProductsEntityProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.regular14
 
 // fixme
@@ -104,14 +105,13 @@ private fun PriceText(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun PriceTextPreview(
     @PreviewParameter(CatalogFilterProductsEntityProvider::class) entity: CatalogFilterProductsEntity
 ) {
-    ClientTheme {
-        PriceText(
-            entity = entity
-        )
-    }
+    PriceText(
+        entity = entity
+    )
 }

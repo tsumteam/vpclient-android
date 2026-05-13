@@ -31,8 +31,11 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_values.intent.FilterValuesIntent
+import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_values.model.FilterValuesSheetState
 import ru.mercury.vpclient.shared.domain.mapper.quantityWithThousandsSeparator
 import ru.mercury.vpclient.shared.domain.mapper.requireQuantity
 import ru.mercury.vpclient.shared.domain.mapper.values
@@ -46,15 +49,13 @@ import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.FilterValuesSheetStateProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
 import ru.mercury.vpclient.shared.ui.theme.livretMedium19
 import ru.mercury.vpclient.shared.ui.theme.medium16
 import ru.mercury.vpclient.shared.ui.theme.secondary5
 import ru.mercury.vpclient.shared.ui.theme.surface4
-import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_values.intent.FilterValuesIntent
-import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_values.model.FilterValuesSheetState
 
 @Composable
 fun FilterValuesSheet(
@@ -224,21 +225,20 @@ private fun FilterValuesSheetContent(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun FilterValuesSheetPreview(
     @PreviewParameter(FilterValuesSheetStateProvider::class) state: FilterValuesSheetState
 ) {
-    ClientTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Gray)
-        ) {
-            FilterValuesSheet(
-                state = state,
-                dispatch = {}
-            )
-        }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Gray)
+    ) {
+        FilterValuesSheet(
+            state = state,
+            dispatch = {}
+        )
     }
 }

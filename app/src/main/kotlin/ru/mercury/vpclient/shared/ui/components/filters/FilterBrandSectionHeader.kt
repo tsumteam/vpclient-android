@@ -13,13 +13,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.ui.components.system.ClientAnimatedVisibility
 import ru.mercury.vpclient.shared.ui.preview.BooleanParameterProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
 import ru.mercury.vpclient.shared.ui.theme.livretMedium18
 import ru.mercury.vpclient.shared.ui.theme.medium15
 
@@ -65,16 +66,15 @@ fun FilterBrandSectionHeader(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun FilterBrandSectionHeaderWithSelectAllPreview(
     @PreviewParameter(BooleanParameterProvider::class) showSelectAll: Boolean
 ) {
-    ClientTheme {
-        FilterBrandSectionHeader(
-            title = "ТОП-БРЕНДЫ",
-            showSelectAll = showSelectAll,
-            onSelectAll = {}
-        )
-    }
+    FilterBrandSectionHeader(
+        title = "ТОП-БРЕНДЫ",
+        showSelectAll = showSelectAll,
+        onSelectAll = {}
+    )
 }

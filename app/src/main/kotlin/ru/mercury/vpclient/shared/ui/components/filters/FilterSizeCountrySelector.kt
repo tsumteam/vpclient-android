@@ -12,12 +12,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.data.entity.SizeCountry
 import ru.mercury.vpclient.shared.ui.preview.SizeCountryProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.regular15
 import ru.mercury.vpclient.shared.ui.theme.secondary6
 
@@ -73,15 +74,14 @@ fun FilterSizeCountrySelector(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun FilterSizeCountrySelectorPreview(
     @PreviewParameter(SizeCountryProvider::class) selectedCountry: SizeCountry
 ) {
-    ClientTheme {
-        FilterSizeCountrySelector(
-            selectedCountry = selectedCountry,
-            onCountryClick = {}
-        )
-    }
+    FilterSizeCountrySelector(
+        selectedCountry = selectedCountry,
+        onCountryClick = {}
+    )
 }

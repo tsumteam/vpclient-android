@@ -14,8 +14,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.regular14
 
 @Composable
@@ -52,15 +53,14 @@ fun RadioRow(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Composable
 fun RadioRowPreview() {
-    ClientTheme {
-        RadioRow(
-            text = "Банковская карта",
-            selected = false,
-            onSelect = {},
-            modifier = Modifier.background(MaterialTheme.colorScheme.background)
-        )
-    }
+    RadioRow(
+        text = "Банковская карта",
+        selected = false,
+        onSelect = {},
+        modifier = Modifier.background(MaterialTheme.colorScheme.background)
+    )
 }

@@ -18,12 +18,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.data.entity.SizeState
 import ru.mercury.vpclient.shared.ui.preview.SizeStateProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.regular14
 import ru.mercury.vpclient.shared.ui.theme.secondary4
 import ru.mercury.vpclient.shared.ui.theme.secondary6
@@ -74,16 +75,15 @@ fun DetailsSizeButton(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun DetailsSizeButtonPreview(
     @PreviewParameter(SizeStateProvider::class) state: SizeState
 ) {
-    ClientTheme {
-        DetailsSizeButton(
-            state = state,
-            onClick = {},
-            modifier = Modifier.padding(8.dp)
-        )
-    }
+    DetailsSizeButton(
+        state = state,
+        onClick = {},
+        modifier = Modifier.padding(8.dp)
+    )
 }

@@ -13,6 +13,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -29,8 +30,8 @@ import ru.mercury.vpclient.shared.ui.components.system.ClientSnackbarHost
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.preview.ConsultantsModelProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
 
 @Composable
 fun ConsultantsScreen(
@@ -112,16 +113,15 @@ private fun ConsultantsScreenContent(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun ConsultantsScreenContentPreview(
     @PreviewParameter(ConsultantsModelProvider::class) state: ConsultantsModel
 ) {
-    ClientTheme {
-        ConsultantsScreenContent(
-            state = state,
-            dispatch = {},
-            snackbarHostStateError = remember { SnackbarHostState() }
-        )
-    }
+    ConsultantsScreenContent(
+        state = state,
+        dispatch = {},
+        snackbarHostStateError = remember { SnackbarHostState() }
+    )
 }

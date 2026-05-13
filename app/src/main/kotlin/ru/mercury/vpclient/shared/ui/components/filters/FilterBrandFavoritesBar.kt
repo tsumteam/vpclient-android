@@ -10,13 +10,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.ui.icons.Favorited40
 import ru.mercury.vpclient.shared.ui.icons.Unfavorited40
 import ru.mercury.vpclient.shared.ui.ktx.clickableWithoutRipple
 import ru.mercury.vpclient.shared.ui.preview.BooleanParameterProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 
 @Composable
 fun FilterBrandFavoritesBar(
@@ -41,15 +42,14 @@ fun FilterBrandFavoritesBar(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun FilterBrandFavoritesBarPreview(
     @PreviewParameter(BooleanParameterProvider::class) isFavorited: Boolean
 ) {
-    ClientTheme {
-        FilterBrandFavoritesBar(
-            isFavorited = isFavorited,
-            onClick = {}
-        )
-    }
+    FilterBrandFavoritesBar(
+        isFavorited = isFavorited,
+        onClick = {}
+    )
 }

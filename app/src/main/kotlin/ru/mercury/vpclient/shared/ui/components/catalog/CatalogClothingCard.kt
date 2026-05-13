@@ -14,16 +14,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
-import ru.mercury.vpclient.shared.domain.mapper.isEmpty
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogCategoryEntity
+import ru.mercury.vpclient.shared.domain.mapper.isEmpty
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.CatalogCategoryEntityProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
 import ru.mercury.vpclient.shared.ui.theme.black1
 import ru.mercury.vpclient.shared.ui.theme.livretMedium19
 import ru.mercury.vpclient.shared.ui.theme.surface4
@@ -65,14 +66,13 @@ fun CatalogClothingCard(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun CatalogClothingCardPreview(
     @PreviewParameter(CatalogCategoryEntityProvider::class) entity: CatalogCategoryEntity
 ) {
-    ClientTheme {
-        CatalogClothingCard(
-            entity = entity
-        )
-    }
+    CatalogClothingCard(
+        entity = entity
+    )
 }

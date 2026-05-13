@@ -26,15 +26,16 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.domain.mapper.cardDiscountLabel
 import ru.mercury.vpclient.shared.domain.mapper.imagePages
 import ru.mercury.vpclient.shared.domain.mapper.isDiscountLabelVisible
-import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.ui.components.BrandBox
 import ru.mercury.vpclient.shared.ui.components.DiscountBadge
 import ru.mercury.vpclient.shared.ui.components.HorizontalPagerIndicator
@@ -44,7 +45,7 @@ import ru.mercury.vpclient.shared.ui.icons.Basket24
 import ru.mercury.vpclient.shared.ui.icons.Message24
 import ru.mercury.vpclient.shared.ui.preview.CatalogFilterProductsEntityProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.regular14
 
 @Composable
@@ -66,7 +67,16 @@ fun CatalogProductCard(
             .clip(RoundedCornerShape(4.dp))
             .clickable(onClick = onClick)
     ) {
-        val (messageButton, basketButton, pager, pagerIndicator, brand, title, price, discountBadge) = createRefs()
+        val (
+            messageButton,
+            basketButton,
+            pager,
+            pagerIndicator,
+            brand,
+            title,
+            price,
+            discountBadge
+        ) = createRefs()
 
         IconButton(
             onClick = onMessageClick,
@@ -189,15 +199,14 @@ fun CatalogProductCard(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun CatalogProductCardPreview(
     @PreviewParameter(CatalogFilterProductsEntityProvider::class) product: CatalogFilterProductsEntity
 ) {
-    ClientTheme {
-        CatalogProductCard(
-            entity = product,
-            modifier = Modifier.width(200.dp)
-        )
-    }
+    CatalogProductCard(
+        entity = product,
+        modifier = Modifier.width(200.dp)
+    )
 }

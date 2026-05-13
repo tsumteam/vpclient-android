@@ -30,6 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter.intent.FilterIntent
@@ -43,8 +44,8 @@ import ru.mercury.vpclient.shared.ui.components.system.ClientDragHandle
 import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
 import ru.mercury.vpclient.shared.ui.components.system.ClientTextField
 import ru.mercury.vpclient.shared.ui.icons.Close24
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
 import ru.mercury.vpclient.shared.ui.theme.livretMedium19
 import ru.mercury.vpclient.shared.ui.theme.medium16
 
@@ -202,27 +203,26 @@ private fun FilterPriceSheetContent(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Composable
 private fun FilterPriceSheetPreview() {
-    ClientTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Gray)
-        ) {
-            FilterPriceSheet(
-                state = FilterPriceSheetState(
-                    title = "Price",
-                    presets = emptyList(),
-                    selectedPresetId = null,
-                    priceFrom = "10000",
-                    priceTo = "50000",
-                    quantityEntity = ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesQuantityEntity("price", 12),
-                    isProductsQuantityLoading = false
-                ),
-                dispatch = {}
-            )
-        }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Gray)
+    ) {
+        FilterPriceSheet(
+            state = FilterPriceSheetState(
+                title = "Price",
+                presets = emptyList(),
+                selectedPresetId = null,
+                priceFrom = "10000",
+                priceTo = "50000",
+                quantityEntity = ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesQuantityEntity("price", 12),
+                isProductsQuantityLoading = false
+            ),
+            dispatch = {}
+        )
     }
 }

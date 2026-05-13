@@ -8,9 +8,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 
 @Composable
 fun ClientDragHandle(
@@ -27,12 +28,11 @@ fun ClientDragHandle(
     )
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun ClientDragHandlePreview() {
-    ClientTheme {
-        ClientDragHandle(
-            modifier = Modifier.padding(16.dp)
-        )
-    }
+    ClientDragHandle(
+        modifier = Modifier.padding(16.dp)
+    )
 }

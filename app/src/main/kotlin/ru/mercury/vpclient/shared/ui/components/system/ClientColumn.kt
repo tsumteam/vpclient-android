@@ -14,7 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import androidx.compose.ui.tooling.preview.PreviewWrapper
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 
 @Composable
 fun ClientColumn(
@@ -35,17 +36,16 @@ fun ClientColumn(
     )
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Composable
 private fun ClientColumnPreview() {
-    ClientTheme {
-        ClientColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-        ) {
-            Text(text = "Элемент 1")
-            Text(text = "Элемент 2")
-        }
+    ClientColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        Text(text = "Элемент 1")
+        Text(text = "Элемент 2")
     }
 }

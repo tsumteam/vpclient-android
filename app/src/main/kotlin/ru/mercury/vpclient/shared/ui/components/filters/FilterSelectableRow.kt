@@ -15,11 +15,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.ui.components.system.ClientAnimatedVisibility
 import ru.mercury.vpclient.shared.ui.icons.Check24
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.regular15
 
 @Composable
@@ -62,34 +63,33 @@ fun FilterSelectableRow(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun FilterSelectableRowPreview() {
-    ClientTheme {
-        Column {
-            FilterSelectableRow(
-                text = "Длинные",
-                selected = true,
-                onClick = {}
-            )
+    Column {
+        FilterSelectableRow(
+            text = "Длинные",
+            selected = true,
+            onClick = {}
+        )
 
-            FilterSelectableRow(
-                text = "До колена",
-                selected = true,
-                onClick = {}
-            )
+        FilterSelectableRow(
+            text = "До колена",
+            selected = true,
+            onClick = {}
+        )
 
-            FilterSelectableRow(
-                text = "До середины бедра",
-                selected = false,
-                onClick = {}
-            )
+        FilterSelectableRow(
+            text = "До середины бедра",
+            selected = false,
+            onClick = {}
+        )
 
-            FilterSelectableRow(
-                text = "Короткие",
-                selected = false,
-                onClick = {}
-            )
-        }
+        FilterSelectableRow(
+            text = "Короткие",
+            selected = false,
+            onClick = {}
+        )
     }
 }

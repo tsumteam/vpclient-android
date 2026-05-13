@@ -11,10 +11,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.data.entity.ConsultantAvatarPlaceholderStyle
 import ru.mercury.vpclient.shared.ui.preview.ConsultantAvatarPlaceholderStyleProvider
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.regular21
 import ru.mercury.vpclient.shared.ui.theme.regular32
 import ru.mercury.vpclient.shared.ui.theme.secondary4
@@ -52,15 +53,14 @@ fun ConsultantAvatarPlaceholder(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Composable
 private fun ConsultantAvatarPlaceholderPreview(
     @PreviewParameter(ConsultantAvatarPlaceholderStyleProvider::class) style: ConsultantAvatarPlaceholderStyle
 ) {
-    ClientTheme {
-        ConsultantAvatarPlaceholder(
-            name = "Анастасия",
-            style = style
-        )
-    }
+    ConsultantAvatarPlaceholder(
+        name = "Анастасия",
+        style = style
+    )
 }

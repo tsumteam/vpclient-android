@@ -13,11 +13,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.placeholder
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
 import ru.mercury.vpclient.shared.ui.theme.surface4
 
 @Composable
@@ -86,10 +87,9 @@ fun FilterProductCardPlaceholder(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @Preview(showBackground = true, widthDp = 220)
 @Composable
 private fun FilterProductCardPlaceholderPreview() {
-    ClientTheme {
-        FilterProductCardPlaceholder()
-    }
+    FilterProductCardPlaceholder()
 }

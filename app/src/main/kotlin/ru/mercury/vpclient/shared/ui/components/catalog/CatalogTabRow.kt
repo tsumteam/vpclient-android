@@ -17,14 +17,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.data.entity.CatalogTabData
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.CatalogTabsProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
 import ru.mercury.vpclient.shared.ui.theme.livretRegular14
 import ru.mercury.vpclient.shared.ui.theme.surface4
 
@@ -101,16 +102,15 @@ fun CatalogTabRow(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun CatalogTabRowPreview(
     @PreviewParameter(CatalogTabsProvider::class) tabs: List<CatalogTabData>
 ) {
-    ClientTheme {
-        CatalogTabRow(
-            tabs = tabs,
-            selectedTabIndex = 0,
-            onTabClick = {}
-        )
-    }
+    CatalogTabRow(
+        tabs = tabs,
+        selectedTabIndex = 0,
+        onTabClick = {}
+    )
 }

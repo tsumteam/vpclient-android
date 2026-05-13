@@ -17,13 +17,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.data.entity.BrandFilterValue
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.preview.BrandFilterValueProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.regular15
 
 @Composable
@@ -67,15 +68,14 @@ fun BrandChip(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun BrandChipPreview(
     @PreviewParameter(BrandFilterValueProvider::class) brand: BrandFilterValue
 ) {
-    ClientTheme {
-        BrandChip(
-            brand = brand,
-            onClick = {}
-        )
-    }
+    BrandChip(
+        brand = brand,
+        onClick = {}
+    )
 }

@@ -16,18 +16,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
-import ru.mercury.vpclient.shared.domain.mapper.cardDiscountLabel
-import ru.mercury.vpclient.shared.domain.mapper.isDiscountLabelVisible
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
+import ru.mercury.vpclient.shared.domain.mapper.cardDiscountLabel
+import ru.mercury.vpclient.shared.domain.mapper.isDiscountLabelVisible
 import ru.mercury.vpclient.shared.ui.components.BrandBox
 import ru.mercury.vpclient.shared.ui.components.DiscountBadge
 import ru.mercury.vpclient.shared.ui.components.PriceText
 import ru.mercury.vpclient.shared.ui.icons.Message24
 import ru.mercury.vpclient.shared.ui.preview.ProductInfoBoxProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.regular14
 
 @Composable
@@ -104,16 +105,15 @@ fun DetailsProductInfoBox(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun DetailsProductInfoBoxPreview(
     @PreviewParameter(ProductInfoBoxProvider::class) productEntity: ProductEntity
 ) {
-    ClientTheme {
-        DetailsProductInfoBox(
-            productEntity = productEntity,
-            onMessageClick = {},
-            modifier = Modifier.fillMaxWidth()
-        )
-    }
+    DetailsProductInfoBox(
+        productEntity = productEntity,
+        onMessageClick = {},
+        modifier = Modifier.fillMaxWidth()
+    )
 }

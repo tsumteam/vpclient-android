@@ -7,9 +7,10 @@ import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
-import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 
 val Logo117: ImageVector
     get() {
@@ -230,14 +231,13 @@ val Logo117: ImageVector
 
 private var _logo117: ImageVector? = null
 
-@FontScalePreviews
+@PreviewWrapper(ThemeWrapper::class)
+@Preview(showBackground = true)
 @Composable
 private fun Logo117Preview() {
-    ClientTheme {
-        Icon(
-            imageVector = Logo117,
-            contentDescription = null,
-            tint = Color.Black
-        )
-    }
+    Icon(
+        imageVector = Logo117,
+        contentDescription = null,
+        tint = Color.Black
+    )
 }

@@ -9,7 +9,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -17,9 +19,8 @@ import ru.mercury.vpclient.shared.data.FORMAT_PLUS
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.preview.CatalogProductColorsRowProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.regular12
-import java.util.Locale
 
 @Composable
 fun CatalogProductColorsRow(
@@ -28,6 +29,7 @@ fun CatalogProductColorsRow(
 ) {
     val visibleUrls = colorPhotoUrls.take(3)
     val extraCount = colorPhotoUrls.size - visibleUrls.size
+    val locale = LocalConfiguration.current.locales[0]
 
     Layout(
         modifier = modifier.height(16.dp),
@@ -41,7 +43,7 @@ fun CatalogProductColorsRow(
             }
             if (extraCount > 0) {
                 Text(
-                    text = String.format(Locale.getDefault(), FORMAT_PLUS, extraCount),
+                    text = String.format(locale, FORMAT_PLUS, extraCount), // fixme
                     style = MaterialTheme.typography.regular12.copy(
                         color = MaterialTheme.colorScheme.onBackground,
                         letterSpacing = .2.sp
@@ -76,14 +78,13 @@ fun CatalogProductColorsRow(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun CatalogProductColorsRowPreview(
     @PreviewParameter(CatalogProductColorsRowProvider::class) colorPhotoUrls: List<String>
 ) {
-    ClientTheme {
-        CatalogProductColorsRow(
-            colorPhotoUrls = colorPhotoUrls
-        )
-    }
+    CatalogProductColorsRow(
+        colorPhotoUrls = colorPhotoUrls
+    )
 }

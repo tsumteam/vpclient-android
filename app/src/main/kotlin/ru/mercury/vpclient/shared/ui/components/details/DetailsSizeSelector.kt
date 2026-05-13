@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -21,8 +22,8 @@ import androidx.constraintlayout.compose.Dimension
 import ru.mercury.vpclient.shared.data.entity.SizeSelectorState
 import ru.mercury.vpclient.shared.ui.preview.SizeSelectorStateProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
 import ru.mercury.vpclient.shared.ui.theme.medium14
 import ru.mercury.vpclient.shared.ui.theme.regular12
 import ru.mercury.vpclient.shared.ui.theme.regular14
@@ -142,16 +143,15 @@ fun DetailsSizeSelector(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun DetailsSizeSelectorPreview(
     @PreviewParameter(SizeSelectorStateProvider::class) state: SizeSelectorState
 ) {
-    ClientTheme {
-        DetailsSizeSelector(
-            state = state,
-            onSizeClick = {},
-            onSizeTableClick = {}
-        )
-    }
+    DetailsSizeSelector(
+        state = state,
+        onSizeClick = {},
+        onSizeTableClick = {}
+    )
 }

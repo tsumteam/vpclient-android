@@ -30,6 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -48,7 +49,7 @@ import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.ktx.rememberNavigateToAppSettings
 import ru.mercury.vpclient.shared.ui.ktx.rememberNavigateToDeveloperSettings
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.medium16
 import ru.mercury.vpclient.shared.ui.theme.regular14
 import ru.mercury.vpclient.shared.ui.theme.regular18
@@ -324,16 +325,15 @@ private fun DebugActionListItem(
     )
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun DebugActivityContentPreview() {
-    ClientTheme {
-        DebugActivityContent(
-            snackbarHostState = remember { SnackbarHostState() },
-            state = DebugModel(
-                userToken = "XX-123456"
-            ),
-            dispatch = {}
-        )
-    }
+    DebugActivityContent(
+        snackbarHostState = remember { SnackbarHostState() },
+        state = DebugModel(
+            userToken = "XX-123456"
+        ),
+        dispatch = {}
+    )
 }

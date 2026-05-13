@@ -16,12 +16,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.ui.components.HorizontalPagerIndicator
 import ru.mercury.vpclient.shared.ui.icons.Video24
 import ru.mercury.vpclient.shared.ui.preview.BooleanParameterProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.secondary4
 import ru.mercury.vpclient.shared.ui.theme.secondary5
 
@@ -67,6 +68,7 @@ fun DetailsPagerIndicator(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun DetailsPagerIndicatorPreview(
@@ -77,14 +79,12 @@ private fun DetailsPagerIndicatorPreview(
         pageCount = { 5 }
     )
 
-    ClientTheme {
-        DetailsPagerIndicator(
-            pagerState = pagerState,
-            pageCount = 5,
-            showVideoIcon = showVideoIcon,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(44.dp)
-        )
-    }
+    DetailsPagerIndicator(
+        pagerState = pagerState,
+        pageCount = 5,
+        showVideoIcon = showVideoIcon,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(44.dp)
+    )
 }

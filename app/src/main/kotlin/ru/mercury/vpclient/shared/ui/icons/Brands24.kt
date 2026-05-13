@@ -7,9 +7,10 @@ import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
-import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 
 val Brands24: ImageVector
     get() {
@@ -41,33 +42,93 @@ val Brands24: ImageVector
                 close()
                 moveTo(11.134F, 4.847F)
                 lineTo(17.215F, 10.928F)
-                arcTo(0.482F, 0.482F, 0F, false, true, 17.215F, 11.609F)
+                arcTo(0.482F, 0.482F, 0F,
+                    isMoreThanHalf = false,
+                    isPositiveArc = true,
+                    x1 = 17.215F,
+                    y1 = 11.609F
+                )
                 lineTo(17.215F, 11.609F)
-                arcTo(0.482F, 0.482F, 90F, false, true, 16.533F, 11.609F)
+                arcTo(0.482F, 0.482F, 90F,
+                    isMoreThanHalf = false,
+                    isPositiveArc = true,
+                    x1 = 16.533F,
+                    y1 = 11.609F
+                )
                 lineTo(10.452F, 5.529F)
-                arcTo(0.482F, 0.482F, 0F, false, true, 10.452F, 4.847F)
+                arcTo(0.482F, 0.482F, 0F,
+                    isMoreThanHalf = false,
+                    isPositiveArc = true,
+                    x1 = 10.452F,
+                    y1 = 4.847F
+                )
                 lineTo(10.452F, 4.847F)
-                arcTo(0.482F, 0.482F, 90F, false, true, 11.134F, 4.847F)
+                arcTo(0.482F, 0.482F, 90F,
+                    isMoreThanHalf = false,
+                    isPositiveArc = true,
+                    x1 = 11.134F,
+                    y1 = 4.847F
+                )
                 close()
                 moveTo(8.404F, 7.633F)
                 lineTo(15.848F, 15.076F)
-                arcTo(0.482F, 0.482F, 90F, false, true, 15.848F, 15.758F)
+                arcTo(0.482F, 0.482F, 90F,
+                    isMoreThanHalf = false,
+                    isPositiveArc = true,
+                    x1 = 15.848F,
+                    y1 = 15.758F
+                )
                 lineTo(15.848F, 15.758F)
-                arcTo(0.482F, 0.482F, 90F, false, true, 15.166F, 15.758F)
+                arcTo(0.482F, 0.482F, 90F,
+                    isMoreThanHalf = false,
+                    isPositiveArc = true,
+                    x1 = 15.166F,
+                    y1 = 15.758F
+                )
                 lineTo(7.722F, 8.314F)
-                arcTo(0.482F, 0.482F, 90F, false, true, 7.722F, 7.633F)
+                arcTo(0.482F, 0.482F, 90F,
+                    isMoreThanHalf = false,
+                    isPositiveArc = true,
+                    x1 = 7.722F,
+                    y1 = 7.633F
+                )
                 lineTo(7.722F, 7.633F)
-                arcTo(0.482F, 0.482F, 90F, false, true, 8.404F, 7.633F)
+                arcTo(0.482F, 0.482F, 90F,
+                    isMoreThanHalf = false,
+                    isPositiveArc = true,
+                    x1 = 8.404F,
+                    y1 = 7.633F
+                )
                 close()
                 moveTo(5.692F, 10.347F)
                 lineTo(10.41F, 15.065F)
-                arcTo(0.482F, 0.482F, 90F, false, true, 10.41F, 15.746F)
+                arcTo(0.482F, 0.482F, 90F,
+                    isMoreThanHalf = false,
+                    isPositiveArc = true,
+                    x1 = 10.41F,
+                    y1 = 15.746F
+                )
                 lineTo(10.41F, 15.746F)
-                arcTo(0.482F, 0.482F, 0F, false, true, 9.728F, 15.746F)
+                arcTo(0.482F, 0.482F, 0F,
+                    isMoreThanHalf = false,
+                    isPositiveArc = true,
+                    x1 = 9.728F,
+                    y1 = 15.746F
+                )
                 lineTo(5.011F, 11.029F)
-                arcTo(0.482F, 0.482F, 0F, false, true, 5.011F, 10.347F)
+                arcTo(0.482F, 0.482F, 0F,
+                    isMoreThanHalf = false,
+                    isPositiveArc = true,
+                    x1 = 5.011F,
+                    y1 = 10.347F
+                )
                 lineTo(5.011F, 10.347F)
-                arcTo(0.482F, 0.482F, 90F, false, true, 5.692F, 10.347F)
+                arcTo(0.482F, 0.482F, 90F,
+                    isMoreThanHalf = false,
+                    isPositiveArc = true,
+                    x1 = 5.692F,
+                    y1 = 10.347F
+                )
                 close()
             }
         }.build()
@@ -76,13 +137,12 @@ val Brands24: ImageVector
 
 private var _brands24: ImageVector? = null
 
-@FontScalePreviews
+@PreviewWrapper(ThemeWrapper::class)
+@Preview(showBackground = true)
 @Composable
 private fun Brands24Preview() {
-    ClientTheme {
-        Icon(
-            imageVector = Brands24,
-            contentDescription = null
-        )
-    }
+    Icon(
+        imageVector = Brands24,
+        contentDescription = null
+    )
 }

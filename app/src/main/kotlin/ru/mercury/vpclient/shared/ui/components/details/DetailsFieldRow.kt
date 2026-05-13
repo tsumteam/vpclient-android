@@ -21,19 +21,20 @@ import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
+import ru.mercury.vpclient.features.details.model.DetailsModel
 import ru.mercury.vpclient.shared.data.entity.DetailsField
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
 import ru.mercury.vpclient.shared.ui.icons.Copy24
 import ru.mercury.vpclient.shared.ui.preview.InfoRowProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.medium14
 import ru.mercury.vpclient.shared.ui.theme.regular14
 import ru.mercury.vpclient.shared.ui.theme.surface4
-import ru.mercury.vpclient.features.details.model.DetailsModel
 
 @Composable
 fun DetailsFieldRow(
@@ -97,6 +98,7 @@ fun DetailsFieldRow(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun DetailsFieldRowPreview(
@@ -106,22 +108,20 @@ private fun DetailsFieldRowPreview(
         productEntity = productEntity
     )
 
-    ClientTheme {
-        LazyColumn {
-            state.detailFields.forEachIndexed { index, field ->
+    LazyColumn {
+        state.detailFields.forEachIndexed { index, field ->
+            item {
+                DetailsFieldRow(
+                    field = field,
+                    modifier = Modifier.padding(start = 16.dp, top = 24.dp)
+                )
+            }
+            if (index != state.detailFields.lastIndex) {
                 item {
-                    DetailsFieldRow(
-                        field = field,
-                        modifier = Modifier.padding(start = 16.dp, top = 24.dp)
+                    HorizontalDivider(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        color = MaterialTheme.colorScheme.surface4
                     )
-                }
-                if (index != state.detailFields.lastIndex) {
-                    item {
-                        HorizontalDivider(
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            color = MaterialTheme.colorScheme.surface4
-                        )
-                    }
                 }
             }
         }

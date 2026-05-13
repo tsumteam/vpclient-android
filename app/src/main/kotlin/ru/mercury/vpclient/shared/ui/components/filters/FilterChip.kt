@@ -25,11 +25,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.ui.icons.Cancel14
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.regular14
 
 @Composable
@@ -91,27 +92,26 @@ fun FilterChip(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun FilterChipPreview() {
-    ClientTheme {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            FilterChip(
-                text = "Парки",
-                selected = true,
-                enabled = true,
-                onClick = {}
-            )
+    Row(
+        modifier = Modifier.padding(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        FilterChip(
+            text = "Парки",
+            selected = true,
+            enabled = true,
+            onClick = {}
+        )
 
-            FilterChip(
-                text = "Парки",
-                selected = false,
-                enabled = true,
-                onClick = {}
-            )
-        }
+        FilterChip(
+            text = "Парки",
+            selected = false,
+            enabled = true,
+            onClick = {}
+        )
     }
 }

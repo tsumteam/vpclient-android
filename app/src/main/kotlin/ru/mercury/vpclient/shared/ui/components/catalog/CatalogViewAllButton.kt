@@ -15,10 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
 import ru.mercury.vpclient.shared.ui.theme.livretRegular15
 
 @Composable
@@ -46,13 +47,12 @@ fun CatalogViewAllButton(
     )
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun CatalogViewAllButtonPreview() {
-    ClientTheme {
-        CatalogViewAllButton(
-            onClick = {},
-            modifier = Modifier.padding(16.dp)
-        )
-    }
+    CatalogViewAllButton(
+        onClick = {},
+        modifier = Modifier.padding(16.dp)
+    )
 }

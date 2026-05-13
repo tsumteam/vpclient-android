@@ -9,11 +9,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.data.entity.BrandFilterValue
 import ru.mercury.vpclient.shared.ui.preview.BrandFilterValuesProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 
 @Composable
 fun BrandChipsGrid(
@@ -49,16 +50,15 @@ fun BrandChipsGrid(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun BrandChipsGridPreview(
     @PreviewParameter(BrandFilterValuesProvider::class) brands: List<BrandFilterValue>
 ) {
-    ClientTheme {
-        BrandChipsGrid(
-            brands = brands,
-            onToggle = {},
-            modifier = Modifier.padding(vertical = 16.dp)
-        )
-    }
+    BrandChipsGrid(
+        brands = brands,
+        onToggle = {},
+        modifier = Modifier.padding(vertical = 16.dp)
+    )
 }

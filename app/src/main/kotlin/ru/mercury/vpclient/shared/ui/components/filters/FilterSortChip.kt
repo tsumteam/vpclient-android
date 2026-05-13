@@ -16,11 +16,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.ui.icons.Sort24
 import ru.mercury.vpclient.shared.ui.preview.BooleanParameterProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 
 @Composable
 fun FilterSortChip(
@@ -58,17 +59,16 @@ fun FilterSortChip(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun FilterSortChipPreview(
     @PreviewParameter(BooleanParameterProvider::class) selected: Boolean
 ) {
-    ClientTheme {
-        FilterSortChip(
-            selected = selected,
-            enabled = true,
-            onClick = {},
-            modifier = Modifier.padding(16.dp)
-        )
-    }
+    FilterSortChip(
+        selected = selected,
+        enabled = true,
+        onClick = {},
+        modifier = Modifier.padding(16.dp)
+    )
 }

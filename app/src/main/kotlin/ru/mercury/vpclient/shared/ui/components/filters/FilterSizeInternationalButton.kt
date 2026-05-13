@@ -18,11 +18,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.R
 import ru.mercury.vpclient.shared.ui.preview.BooleanParameterProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.secondary5
 
 @Composable
@@ -74,16 +75,15 @@ fun FilterSizeInternationalButton(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun FilterSizeInternationalButtonPreview(
     @PreviewParameter(BooleanParameterProvider::class) selected: Boolean
 ) {
-    ClientTheme {
-        FilterSizeInternationalButton(
-            selected = selected,
-            onClick = {},
-            modifier = Modifier.padding(16.dp)
-        )
-    }
+    FilterSizeInternationalButton(
+        selected = selected,
+        onClick = {},
+        modifier = Modifier.padding(16.dp)
+    )
 }

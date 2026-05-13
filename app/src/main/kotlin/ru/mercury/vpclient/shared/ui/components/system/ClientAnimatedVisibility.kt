@@ -12,7 +12,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import androidx.compose.ui.tooling.preview.PreviewWrapper
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 
 @Composable
 fun ClientAnimatedVisibility(
@@ -31,16 +32,15 @@ fun ClientAnimatedVisibility(
     )
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Composable
 private fun ClientAnimatedVisibilityPreview() {
-    ClientTheme {
-        Box(
-            modifier = Modifier.background(MaterialTheme.colorScheme.background)
-        ) {
-            ClientAnimatedVisibility(
-                visible = true
-            ) {}
-        }
+    Box(
+        modifier = Modifier.background(MaterialTheme.colorScheme.background)
+    ) {
+        ClientAnimatedVisibility(
+            visible = true
+        ) {}
     }
 }

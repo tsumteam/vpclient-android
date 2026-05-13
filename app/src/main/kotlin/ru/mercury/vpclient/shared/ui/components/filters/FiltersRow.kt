@@ -23,6 +23,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.shared.data.entity.FilterChip
@@ -33,8 +34,8 @@ import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.FiltersRowStateProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
 import ru.mercury.vpclient.shared.ui.theme.surface4
 
 // fixme
@@ -316,19 +317,18 @@ private fun FilterChip.parentFilterChipId(filterChipIds: List<String>): String? 
     return filterChipIds.firstOrNull { chipId -> id.startsWith("${chipId}_") }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun FiltersRowPreview(
     @PreviewParameter(FiltersRowStateProvider::class) state: FiltersRowState
 ) {
-    ClientTheme {
-        FiltersRow(
-            state = state,
-            enabled = false,
-            onSortClick = {},
-            onFilterChipClick = {},
-            onFilterValueChipClick = {},
-            onReset = {}
-        )
-    }
+    FiltersRow(
+        state = state,
+        enabled = false,
+        onSortClick = {},
+        onFilterChipClick = {},
+        onFilterValueChipClick = {},
+        onReset = {}
+    )
 }

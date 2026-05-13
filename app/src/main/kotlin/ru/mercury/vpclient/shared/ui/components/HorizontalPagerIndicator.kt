@@ -20,14 +20,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
-import ru.mercury.vpclient.shared.ui.theme.surface4
 import kotlin.math.absoluteValue
 import kotlin.math.sign
+import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
+import ru.mercury.vpclient.shared.ui.theme.surface4
 
 @Composable
 fun HorizontalPagerIndicator(
@@ -83,6 +84,7 @@ fun HorizontalPagerIndicator(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun HorizontalPagerIndicatorPreview() {
@@ -91,18 +93,16 @@ private fun HorizontalPagerIndicatorPreview() {
         pageCount = { 4 }
     )
 
-    ClientTheme {
-        Box(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.background)
-                .padding(16.dp)
-        ) {
-            HorizontalPagerIndicator(
-                pagerState = pagerState,
-                indicatorWidth = 5.dp,
-                indicatorHeight = 5.dp,
-                spacing = 4.dp
-            )
-        }
+    Box(
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.background)
+            .padding(16.dp)
+    ) {
+        HorizontalPagerIndicator(
+            pagerState = pagerState,
+            indicatorWidth = 5.dp,
+            indicatorHeight = 5.dp,
+            spacing = 4.dp
+        )
     }
 }

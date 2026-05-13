@@ -34,6 +34,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -51,8 +52,8 @@ import ru.mercury.vpclient.shared.ui.components.system.ClientSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.system.ClientTextField
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.preview.LoginModelProvider
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
 import ru.mercury.vpclient.shared.ui.theme.livretMedium21
 import ru.mercury.vpclient.shared.ui.transformation.PhoneInputTransformation
 import ru.mercury.vpclient.shared.ui.transformation.PhoneOutputTransformation
@@ -187,17 +188,16 @@ private fun LoginScreenContent(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Composable
 private fun LoginScreenContentPreview(
     @PreviewParameter(LoginModelProvider::class) state: LoginModel
 ) {
-    ClientTheme {
-        LoginScreenContent(
-            state = state,
-            dispatch = {},
-            focusRequester = remember { FocusRequester() },
-            snackbarHostStateError = remember { SnackbarHostState() }
-        )
-    }
+    LoginScreenContent(
+        state = state,
+        dispatch = {},
+        focusRequester = remember { FocusRequester() },
+        snackbarHostStateError = remember { SnackbarHostState() }
+    )
 }

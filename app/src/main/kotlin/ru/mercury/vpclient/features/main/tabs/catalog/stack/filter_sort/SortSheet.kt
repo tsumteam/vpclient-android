@@ -30,8 +30,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_sort.intent.SortIntent
 import ru.mercury.vpclient.shared.data.entity.SortType
 import ru.mercury.vpclient.shared.domain.mapper.isResetButtonVisible
 import ru.mercury.vpclient.shared.ui.components.filters.FilterListRow
@@ -40,12 +42,11 @@ import ru.mercury.vpclient.shared.ui.components.system.ClientButton
 import ru.mercury.vpclient.shared.ui.components.system.ClientDragHandle
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.preview.SortTypeProvider
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
 import ru.mercury.vpclient.shared.ui.theme.livretMedium19
 import ru.mercury.vpclient.shared.ui.theme.medium16
 import ru.mercury.vpclient.shared.ui.theme.secondary5
-import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_sort.intent.SortIntent
 
 @Composable
 fun SortSheet(
@@ -180,22 +181,21 @@ private fun SortSheetContent(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Composable
 private fun SortSheetPreview(
     @PreviewParameter(SortTypeProvider::class) selectedSortType: SortType
 ) {
-    ClientTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Gray)
-        ) {
-            SortSheetContent(
-                selectedSortType = selectedSortType,
-                onSelectSortType = {},
-                dispatch = {}
-            )
-        }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Gray)
+    ) {
+        SortSheetContent(
+            selectedSortType = selectedSortType,
+            onSelectSortType = {},
+            dispatch = {}
+        )
     }
 }

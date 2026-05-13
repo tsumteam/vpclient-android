@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.data.entity.FilterTitleEntity
@@ -23,8 +24,8 @@ import ru.mercury.vpclient.shared.ui.ktx.clickableWithoutRipple
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.FilterTitleEntityProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
 import ru.mercury.vpclient.shared.ui.theme.medium15
 import ru.mercury.vpclient.shared.ui.theme.regular14
 import ru.mercury.vpclient.shared.ui.theme.secondary6
@@ -98,15 +99,14 @@ fun FilterScreenTitle(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun FilterScreenTitlePreview(
     @PreviewParameter(FilterTitleEntityProvider::class) entity: FilterTitleEntity
 ) {
-    ClientTheme {
-        FilterScreenTitle(
-            entity = entity,
-            onClick = {}
-        )
-    }
+    FilterScreenTitle(
+        entity = entity,
+        onClick = {}
+    )
 }

@@ -33,6 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter.intent.FilterIntent
@@ -48,8 +49,8 @@ import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
 import ru.mercury.vpclient.shared.ui.icons.Check24
 import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
 import ru.mercury.vpclient.shared.ui.icons.Close24
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
 import ru.mercury.vpclient.shared.ui.theme.livretMedium19
 import ru.mercury.vpclient.shared.ui.theme.medium16
 import ru.mercury.vpclient.shared.ui.theme.regular15
@@ -272,28 +273,27 @@ private fun FilterTreeParentRow(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Composable
 private fun FilterTreeSheetPreview() {
-    ClientTheme {
-        Box(
-            modifier = Modifier.background(Color.Gray)
-        ) {
-            FilterTreeSheet(
-                state = FilterTreeSheetState(
-                    title = "Category",
-                    currentParentId = null,
-                    currentParentLabel = null,
-                    values = listOf(
-                        FilterTreeValue(id = "1", label = "Outerwear", hasChildren = true),
-                        FilterTreeValue(id = "2", label = "Dresses", hasChildren = false)
-                    ),
-                    selectedIds = setOf("2"),
-                    quantityEntity = ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesQuantityEntity("category", 42),
-                    isProductsQuantityLoading = false
+    Box(
+        modifier = Modifier.background(Color.Gray)
+    ) {
+        FilterTreeSheet(
+            state = FilterTreeSheetState(
+                title = "Category",
+                currentParentId = null,
+                currentParentLabel = null,
+                values = listOf(
+                    FilterTreeValue(id = "1", label = "Outerwear", hasChildren = true),
+                    FilterTreeValue(id = "2", label = "Dresses", hasChildren = false)
                 ),
-                dispatch = {}
-            )
-        }
+                selectedIds = setOf("2"),
+                quantityEntity = ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesQuantityEntity("category", 42),
+                isProductsQuantityLoading = false
+            ),
+            dispatch = {}
+        )
     }
 }

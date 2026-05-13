@@ -33,8 +33,11 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_color.intent.FilterColorIntent
+import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_color.model.FilterColorSheetState
 import ru.mercury.vpclient.shared.domain.mapper.colorValues
 import ru.mercury.vpclient.shared.domain.mapper.quantityWithThousandsSeparator
 import ru.mercury.vpclient.shared.domain.mapper.requireQuantity
@@ -47,14 +50,12 @@ import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.FilterColorSheetStateProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
 import ru.mercury.vpclient.shared.ui.theme.livretMedium19
 import ru.mercury.vpclient.shared.ui.theme.medium16
 import ru.mercury.vpclient.shared.ui.theme.surface4
-import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_color.intent.FilterColorIntent
-import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_color.model.FilterColorSheetState
 
 @Composable
 fun FilterColorSheet(
@@ -248,21 +249,20 @@ private fun FilterColorSheetContent(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun FilterColorSheetPreview(
     @PreviewParameter(FilterColorSheetStateProvider::class) state: FilterColorSheetState
 ) {
-    ClientTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Gray)
-        ) {
-            FilterColorSheet(
-                state = state,
-                dispatch = {}
-            )
-        }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Gray)
+    ) {
+        FilterColorSheet(
+            state = state,
+            dispatch = {}
+        )
     }
 }

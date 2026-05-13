@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -45,7 +46,7 @@ import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.preview.EmployeeEntityProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.medium19
 import ru.mercury.vpclient.shared.ui.theme.regular16
 
@@ -183,18 +184,17 @@ private fun ConsultantScreenContent(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun ConsultantScreenPreview(
     @PreviewParameter(EmployeeEntityProvider::class) state: EmployeeEntity
 ) {
-    ClientTheme {
-        ConsultantScreenContent(
-            state = ConsultantModel(
-                employeeEntity = state
-            ),
-            dispatch = {},
-            snackbarHostStateError = remember { SnackbarHostState() }
-        )
-    }
+    ConsultantScreenContent(
+        state = ConsultantModel(
+            employeeEntity = state
+        ),
+        dispatch = {},
+        snackbarHostStateError = remember { SnackbarHostState() }
+    )
 }

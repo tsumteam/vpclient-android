@@ -10,10 +10,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
 import ru.mercury.vpclient.shared.ui.theme.regular15
 
 @Composable
@@ -32,15 +33,14 @@ fun PagingFailureBox(
     )
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun PagingFailureBoxPreview() {
-    ClientTheme {
-        PagingFailureBox(
-            onClick = {},
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(64.dp)
-        )
-    }
+    PagingFailureBox(
+        onClick = {},
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(64.dp)
+    )
 }

@@ -16,11 +16,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.ui.icons.Selected24
 import ru.mercury.vpclient.shared.ui.icons.Unselected24
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.regular15
 
 @Composable
@@ -57,34 +58,33 @@ fun FilterListRow(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun FilterListRowPreview() {
-    ClientTheme {
-        Column {
-            FilterListRow(
-                text = "Наш выбор",
-                selected = true,
-                onClick = {}
-            )
+    Column {
+        FilterListRow(
+            text = "Наш выбор",
+            selected = true,
+            onClick = {}
+        )
 
-            FilterListRow(
-                text = "По возрастанию цены",
-                selected = false,
-                onClick = {}
-            )
+        FilterListRow(
+            text = "По возрастанию цены",
+            selected = false,
+            onClick = {}
+        )
 
-            FilterListRow(
-                text = "По убыванию цены",
-                selected = false,
-                onClick = {}
-            )
+        FilterListRow(
+            text = "По убыванию цены",
+            selected = false,
+            onClick = {}
+        )
 
-            FilterListRow(
-                text = "По новизне",
-                selected = false,
-                onClick = {}
-            )
-        }
+        FilterListRow(
+            text = "По новизне",
+            selected = false,
+            onClick = {}
+        )
     }
 }

@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
@@ -19,9 +20,9 @@ import ru.mercury.vpclient.shared.ui.icons.Selection24
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.EmployeeEntityProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
 
 @Composable
 fun ConsultantActionsRow(
@@ -105,15 +106,14 @@ fun ConsultantActionsRow(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun ConsultantActionsRowPreview(
     @PreviewParameter(EmployeeEntityProvider::class) entity: EmployeeEntity
 ) {
-    ClientTheme {
-        ConsultantActionsRow(
-            entity = entity,
-            onClick = {}
-        )
-    }
+    ConsultantActionsRow(
+        entity = entity,
+        onClick = {}
+    )
 }

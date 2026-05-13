@@ -18,11 +18,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.ui.components.IndicatorIcon
 import ru.mercury.vpclient.shared.ui.icons.Phone24
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.regular11
 import ru.mercury.vpclient.shared.ui.theme.surface3
 
@@ -63,18 +64,17 @@ fun ConsultantActionButton(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun ConsultantActionButtonPreview() {
-    ClientTheme {
-        ConsultantActionButton(
-            icon = Phone24,
-            label = "Позвонить",
-            badge = true,
-            onClick = {},
-            modifier = Modifier
-                .padding(16.dp)
-                .width(69.dp)
-        )
-    }
+    ConsultantActionButton(
+        icon = Phone24,
+        label = "Позвонить",
+        badge = true,
+        onClick = {},
+        modifier = Modifier
+            .padding(16.dp)
+            .width(69.dp)
+    )
 }

@@ -16,10 +16,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.ui.preview.BooleanParameterProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.livretRegular15
 
 @Composable
@@ -68,17 +69,16 @@ fun ClientOutlinedButton(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun ClientOutlinedButtonPreview(
     @PreviewParameter(BooleanParameterProvider::class) loading: Boolean
 ) {
-    ClientTheme {
-        ClientOutlinedButton(
-            onClick = {},
-            text = "Outlined Button",
-            loading = loading,
-            modifier = Modifier.padding(16.dp)
-        )
-    }
+    ClientOutlinedButton(
+        onClick = {},
+        text = "Outlined Button",
+        loading = loading,
+        modifier = Modifier.padding(16.dp)
+    )
 }

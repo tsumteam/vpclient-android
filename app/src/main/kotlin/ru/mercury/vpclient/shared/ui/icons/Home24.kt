@@ -7,9 +7,10 @@ import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
-import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 
 val Home24: ImageVector
     get() {
@@ -56,14 +57,13 @@ val Home24: ImageVector
 
 private var _home24: ImageVector? = null
 
-@FontScalePreviews
+@PreviewWrapper(ThemeWrapper::class)
+@Preview(showBackground = true)
 @Composable
 private fun Home24Preview() {
-    ClientTheme {
-        Icon(
-            imageVector = Home24,
-            contentDescription = null,
-            tint = Color.Unspecified
-        )
-    }
+    Icon(
+        imageVector = Home24,
+        contentDescription = null,
+        tint = Color.Unspecified
+    )
 }

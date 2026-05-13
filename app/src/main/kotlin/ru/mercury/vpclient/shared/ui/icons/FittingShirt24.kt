@@ -7,9 +7,10 @@ import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.addPathNodes
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
-import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 
 val FittingShirt24: ImageVector
     get() {
@@ -63,14 +64,13 @@ val FittingShirt24: ImageVector
 
 private var _fittingShirt24: ImageVector? = null
 
-@FontScalePreviews
+@PreviewWrapper(ThemeWrapper::class)
+@Preview(showBackground = true)
 @Composable
 private fun FittingShirt24Preview() {
-    ClientTheme {
-        Icon(
-            imageVector = FittingShirt24,
-            contentDescription = null,
-            tint = Color.Unspecified
-        )
-    }
+    Icon(
+        imageVector = FittingShirt24,
+        contentDescription = null,
+        tint = Color.Unspecified
+    )
 }

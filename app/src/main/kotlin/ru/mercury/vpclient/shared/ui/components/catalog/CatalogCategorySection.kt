@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogCategoryEntity
@@ -28,8 +29,8 @@ import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.SubcategoryPojoProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
 import ru.mercury.vpclient.shared.ui.theme.livretMedium18
 
 @Composable
@@ -120,16 +121,15 @@ fun CatalogCategorySection(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun CatalogCategorySectionPreview(
     @PreviewParameter(SubcategoryPojoProvider::class) pojo: SubcategoryPojo
 ) {
-    ClientTheme {
-        CatalogCategorySection(
-            pojo = pojo,
-            onClick = {},
-            onItemClick = {}
-        )
-    }
+    CatalogCategorySection(
+        pojo = pojo,
+        onClick = {},
+        onItemClick = {}
+    )
 }

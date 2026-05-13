@@ -26,14 +26,15 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.ui.components.system.ClientAnimatedVisibility
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.icons.Search24
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
 import ru.mercury.vpclient.shared.ui.theme.regular16
 import ru.mercury.vpclient.shared.ui.theme.secondary6
 import ru.mercury.vpclient.shared.ui.theme.surface3
@@ -84,13 +85,19 @@ fun BrandSearchField(
                 letterSpacing = .2.sp
             ),
             cursorBrush = SolidColor(MaterialTheme.colorScheme.onBackground),
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-            keyboardActions = KeyboardActions(onSearch = {
-                keyboardController?.hide()
-                onSearch()
-            }),
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Search
+            ),
+            keyboardActions = KeyboardActions(
+                onSearch = {
+                    keyboardController?.hide()
+                    onSearch()
+                }
+            ),
             decorationBox = { innerTextField ->
-                Box(contentAlignment = Alignment.CenterStart) {
+                Box(
+                    contentAlignment = Alignment.CenterStart
+                ) {
                     if (value.isEmpty()) {
                         Text(
                             text = stringResource(ClientStrings.FilterBrandSearchPlaceholder),
@@ -110,7 +117,9 @@ fun BrandSearchField(
             visible = value.isNotEmpty(),
             modifier = Modifier.align(Alignment.CenterEnd)
         ) {
-            IconButton(onClick = onClear) {
+            IconButton(
+                onClick = onClear
+            ) {
                 Icon(
                     imageVector = Close24,
                     contentDescription = null,
@@ -121,20 +130,19 @@ fun BrandSearchField(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun BrandSearchFieldPreview() {
     var value by remember { mutableStateOf("") }
 
-    ClientTheme {
-        BrandSearchField(
-            value = value,
-            onValueChange = { value = it },
-            onClear = { value = "" },
-            onSearch = {},
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        )
-    }
+    BrandSearchField(
+        value = value,
+        onValueChange = { value = it },
+        onClear = { value = "" },
+        onSearch = {},
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    )
 }

@@ -13,10 +13,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
 import ru.mercury.vpclient.shared.ui.theme.medium14
 
 @Composable
@@ -47,13 +48,12 @@ fun ConsultantInactiveButton(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun ConsultantInactiveButtonPreview() {
-    ClientTheme {
-        ConsultantInactiveButton(
-            onClick = {},
-            modifier = Modifier.padding(16.dp)
-        )
-    }
+    ConsultantInactiveButton(
+        onClick = {},
+        modifier = Modifier.padding(16.dp)
+    )
 }

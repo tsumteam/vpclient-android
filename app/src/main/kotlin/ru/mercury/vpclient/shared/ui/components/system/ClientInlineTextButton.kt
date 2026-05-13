@@ -18,10 +18,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.ui.preview.BooleanParameterProvider
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.medium15
 
 @Composable
@@ -60,24 +61,23 @@ fun ClientInlineTextButton(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Composable
 private fun ClientInlineTextButtonPreview(
     @PreviewParameter(BooleanParameterProvider::class) isLoading: Boolean
 ) {
-    ClientTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background),
-            contentAlignment = Alignment.Center
-        ) {
-            ClientInlineTextButton(
-                onClick = {},
-                text = "Войти",
-                isLoading = isLoading,
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
-        }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
+        contentAlignment = Alignment.Center
+    ) {
+        ClientInlineTextButton(
+            onClick = {},
+            text = "Войти",
+            isLoading = isLoading,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
     }
 }

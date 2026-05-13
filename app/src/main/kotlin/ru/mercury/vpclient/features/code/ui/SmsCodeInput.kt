@@ -38,12 +38,13 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.data.CODE_LENGTH
 import ru.mercury.vpclient.shared.data.entity.SmsCodeInputState
 import ru.mercury.vpclient.shared.ui.preview.SmsCodeInputStateProvider
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.black1
 import ru.mercury.vpclient.shared.ui.theme.medium17
 import ru.mercury.vpclient.shared.ui.theme.surface3
@@ -151,16 +152,15 @@ fun SmsCodeInput(
     )
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Composable
 private fun SmsCodeInputPreview(
     @PreviewParameter(SmsCodeInputStateProvider::class) state: SmsCodeInputState
 ) {
-    ClientTheme {
-        SmsCodeInput(
-            state = state,
-            onValueChange = {},
-            focusRequester = remember { FocusRequester() }
-        )
-    }
+    SmsCodeInput(
+        state = state,
+        onValueChange = {},
+        focusRequester = remember { FocusRequester() }
+    )
 }

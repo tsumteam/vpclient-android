@@ -38,6 +38,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -59,8 +60,8 @@ import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
 import ru.mercury.vpclient.shared.ui.components.system.ClientSnackbarHost
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.preview.CodeModelProvider
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
 import ru.mercury.vpclient.shared.ui.theme.livretMedium21
 import ru.mercury.vpclient.shared.ui.theme.regular12
 import ru.mercury.vpclient.shared.ui.theme.regular15
@@ -269,17 +270,16 @@ private fun CodeScreenContent(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Composable
 private fun CodeScreenContentPreview(
     @PreviewParameter(CodeModelProvider::class) state: CodeModel
 ) {
-    ClientTheme {
-        CodeScreenContent(
-            state = state,
-            dispatch = {},
-            focusRequester = remember { FocusRequester() },
-            snackbarHostStateError = remember { SnackbarHostState() }
-        )
-    }
+    CodeScreenContent(
+        state = state,
+        dispatch = {},
+        focusRequester = remember { FocusRequester() },
+        snackbarHostStateError = remember { SnackbarHostState() }
+    )
 }
