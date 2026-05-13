@@ -4,6 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import ru.mercury.vpclient.shared.data.persistence.database.converter.Converter
+import ru.mercury.vpclient.shared.data.persistence.database.dao.CartProductDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogCategoryDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogFilterDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogFilterProductsDao
@@ -14,6 +15,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.dao.FilterValuesDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.FilterValuesQuantityDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.PagingKeyDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.ProductDao
+import ru.mercury.vpclient.shared.data.persistence.database.entity.CartProductEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogCategoryEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
@@ -27,6 +29,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
 
 @Database(
     entities = [
+        CartProductEntity::class,
         CatalogFilterEntity::class,
         CatalogFilterProductsEntity::class,
         CatalogFilterProductsQuantityEntity::class,
@@ -54,9 +57,10 @@ abstract class AppDatabase: RoomDatabase() {
     abstract fun employeeDao(): EmployeeDao
     abstract fun pagingKeyDao(): PagingKeyDao
     abstract fun productDao(): ProductDao
+    abstract fun cartProductDao(): CartProductDao
 
     companion object {
         const val DATABASE_NAME = "vpclient.db"
-        const val DATABASE_VERSION = 47
+        const val DATABASE_VERSION = 53
     }
 }

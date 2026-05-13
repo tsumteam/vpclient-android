@@ -1335,7 +1335,8 @@ data class CatalogProductSearchCardDto(
     val onlyInVipSite: Boolean? = null,
     val breadcrumbs: List<String>? = null,
     val compilationLookProductId: Int? = null,
-    val isGiftCard: Boolean? = null
+    val isGiftCard: Boolean? = null,
+    val discountPercentage: Int? = null
 )
 
 @Serializable
@@ -4552,7 +4553,7 @@ data class SaveProductMessageRequestDto(
 
 @Serializable
 data class SizeInProductSearchDto(
-    val availableStockQuantity: Int? = null,
+    val availableStockQuantity: Double? = null,
     val id: String? = null,
     val inOrder: Boolean? = null,
     val inStock: Boolean? = null,
@@ -4567,7 +4568,7 @@ data class SizeInProductSearchDto(
 
 @Serializable
 data class SizeInProductSearchVNDto(
-    val availableStockQuantity: Int? = null,
+    val availableStockQuantity: Double? = null,
     val id: String? = null,
     val inOrder: Boolean? = null,
     val inStock: Boolean? = null,

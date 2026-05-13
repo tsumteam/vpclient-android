@@ -1,6 +1,8 @@
 package ru.mercury.vpclient.shared.domain.interactor.impl
 
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.coroutines.ClientDispatchers
 import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
 import ru.mercury.vpclient.shared.domain.repository.CartRepository
@@ -10,6 +12,20 @@ class CartInteractorImpl @Inject constructor(
     private val dispatchers: ClientDispatchers,
     private val cartRepository: CartRepository
 ): CartInteractor {
+
+    override val cartProductsFlow: Flow<List<CartProduct>> = cartRepository.cartProductsFlow
+
+    override suspend fun loadCartProducts() {
+        withContext(dispatchers.io) { cartRepository.loadCartProducts() }
+    }
+
+    override suspend fun changePaySwitch(product: CartProduct, paySwitch: Boolean) {
+        withContext(dispatchers.io) { cartRepository.changePaySwitch(product, paySwitch) }
+    }
+
+    override suspend fun setProductSize(product: CartProduct, sizeId: String) {
+        withContext(dispatchers.io) { cartRepository.setProductSize(product, sizeId) }
+    }
 
     override suspend fun cartItemsCount(): Int {
         return withContext(dispatchers.io) { cartRepository.cartItemsCount() }
