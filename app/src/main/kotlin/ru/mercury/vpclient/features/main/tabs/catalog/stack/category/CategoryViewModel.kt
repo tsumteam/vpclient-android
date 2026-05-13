@@ -8,6 +8,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import ru.mercury.vpclient.activity.event.MainEventManager
+import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.features.main.tabs.catalog.event.CatalogStackEventManager
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.category.intent.CategoryIntent
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.category.model.CategoryModel
@@ -71,6 +73,7 @@ class CategoryViewModel @AssistedInject constructor(
             }
             is CategoryIntent.LoadCatalogCategoriesBottom -> launch { interactor.loadCatalogCategoriesBottom(route.categoryId) }
             is CategoryIntent.BackClick -> launch { CatalogStackEventManager.send(BackRoute) }
+            is CategoryIntent.CartClick -> launch { MainEventManager.send(CartRoute) }
             is CategoryIntent.FilterClick -> {
                 launch {
                     CatalogStackEventManager.send(

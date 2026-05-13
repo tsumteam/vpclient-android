@@ -5,6 +5,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import ru.mercury.vpclient.activity.event.MainEventManager
+import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.features.main.tabs.catalog.event.CatalogStackEventManager
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.catalog.event.CatalogEvent
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.catalog.intent.CatalogIntent
@@ -67,6 +69,7 @@ class CatalogViewModel @Inject constructor(
                 }
             }
             is CatalogIntent.CategoryClick -> launch { CatalogStackEventManager.send(CategoryRoute(categoryId = intent.categoryId)) }
+            is CatalogIntent.CartClick -> launch { MainEventManager.send(CartRoute) }
         }
     }
 

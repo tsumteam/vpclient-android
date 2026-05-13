@@ -42,6 +42,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -51,6 +52,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
+import kotlin.math.max
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.dropWhile
@@ -94,11 +96,10 @@ import ru.mercury.vpclient.shared.ui.ktx.isRefreshFailure
 import ru.mercury.vpclient.shared.ui.ktx.isRefreshLoading
 import ru.mercury.vpclient.shared.ui.preview.FilterModelProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
 import ru.mercury.vpclient.shared.ui.theme.regular15
 import ru.mercury.vpclient.shared.ui.theme.secondary6
-import kotlin.math.max
 
 @Composable
 fun FilterScreen(
@@ -253,7 +254,7 @@ private fun FilterScreenContent(
                             showCartButton = true,
                             cartText = state.cartText,
                             showCartBadge = state.showCartBadge,
-                            cartClick = {}
+                            cartClick = { dispatch(FilterIntent.CartClick) }
                         )
                     }
                     state.isSingleLineTitle -> {
@@ -264,7 +265,7 @@ private fun FilterScreenContent(
                             showCartButton = true,
                             cartText = state.cartText,
                             showCartBadge = state.showCartBadge,
-                            cartClick = {}
+                            cartClick = { dispatch(FilterIntent.CartClick) }
                         )
                     }
                     else -> {
@@ -281,7 +282,7 @@ private fun FilterScreenContent(
                             showCartButton = true,
                             cartText = state.cartText,
                             showCartBadge = state.showCartBadge,
-                            cartClick = {}
+                            cartClick = { dispatch(FilterIntent.CartClick) }
                         )
                     }
                 }
@@ -454,6 +455,7 @@ private fun FilterScreenContent(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun FilterScreenPreview(
@@ -463,12 +465,10 @@ private fun FilterScreenPreview(
         MutableStateFlow(PagingData.from(state.second))
     }.collectAsLazyPagingItems()
 
-    ClientTheme {
-        FilterScreenContent(
-            state = state.first,
-            pagingItems = pagingItems,
-            dispatch = {},
-            snackbarHostStateError = remember { SnackbarHostState() }
-        )
-    }
+    FilterScreenContent(
+        state = state.first,
+        pagingItems = pagingItems,
+        dispatch = {},
+        snackbarHostStateError = remember { SnackbarHostState() }
+    )
 }

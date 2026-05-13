@@ -1,4 +1,4 @@
-package ru.mercury.vpclient.shared.ui.components
+package ru.mercury.vpclient.shared.ui.components.cart
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
@@ -17,11 +17,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.ui.icons.Basket24
 import ru.mercury.vpclient.shared.ui.preview.BooleanParameterProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.regular10
 
 @Composable
@@ -74,15 +75,14 @@ fun CartIcon(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun CartIconPreview(
     @PreviewParameter(BooleanParameterProvider::class) showBadge: Boolean
 ) {
-    ClientTheme {
-        CartIcon(
-            text = "1",
-            showBadge = showBadge
-        )
-    }
+    CartIcon(
+        text = "1",
+        showBadge = showBadge
+    )
 }

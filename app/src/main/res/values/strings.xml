@@ -48,6 +48,36 @@
     <string name="catalog_watch_all">Смотреть\nвсё</string>
     <string name="catalog_view_all_clothing">Смотреть всю одежду</string>
 
+    <string name="cart_title">Корзина</string>
+    <string name="cart_chat">Перейти в диалог с консультантом</string>
+    <string name="cart_fitting">Оформить примерку</string>
+    <string name="cart_buy">Купить</string>
+    <string name="cart_article">Артикул: %1$s</string>
+    <string name="cart_color">Цвет: %1$s</string>
+    <string name="cart_size">Размер: %1$s</string>
+    <string name="cart_select_size">Выберите размер</string>
+    <string name="cart_select_size_for_payment_title">Для оплаты товара\nвыберите размер</string>
+    <string name="cart_select_size_for_payment_button">Выбрать размер</string>
+    <string name="cart_buy_item">Купить</string>
+    <string name="cart_sold">Продан</string>
+    <string name="cart_in_stock">1 товар в наличии!</string>
+    <string name="cart_in_basket">В корзине: </string>
+    <string name="cart_to_payment">К оплате: </string>
+    <string name="cart_consultant_name">Екатерина</string>
+    <string name="cart_consultant_brand">Brioni</string>
+
+    <plurals name="cart_all_items">
+        <item quantity="one">ВСЕ ТОВАРЫ (%1$d)</item>
+        <item quantity="few">ВСЕ ТОВАРЫ (%1$d)</item>
+        <item quantity="many">ВСЕ ТОВАРЫ (%1$d)</item>
+        <item quantity="other">ВСЕ ТОВАРЫ (%1$d)</item>
+    </plurals>
+    <plurals name="cart_payment_items">
+        <item quantity="one">К ОПЛАТЕ (%1$d)</item>
+        <item quantity="few">К ОПЛАТЕ (%1$d)</item>
+        <item quantity="many">К ОПЛАТЕ (%1$d)</item>
+        <item quantity="other">К ОПЛАТЕ (%1$d)</item>
+    </plurals>
     <plurals name="filter_products_quantity">
         <item quantity="one">%1$s товар</item>
         <item quantity="few">%1$s товара</item>

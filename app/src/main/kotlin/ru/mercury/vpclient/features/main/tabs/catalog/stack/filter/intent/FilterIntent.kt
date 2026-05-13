@@ -13,6 +13,7 @@ sealed interface FilterIntent: Intent {
     data object PullToRefresh: FilterIntent
     data object RefreshCompleted: FilterIntent
     data object BackClick: FilterIntent
+    data object CartClick: FilterIntent
     data object ShowSortDialog: FilterIntent
     data object HideSortDialog: FilterIntent
     data object HideFilterValuesDialog: FilterIntent

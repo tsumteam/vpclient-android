@@ -23,6 +23,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -41,7 +42,7 @@ import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
 import ru.mercury.vpclient.shared.ui.components.system.ClientSnackbarHost
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.preview.CatalogModelProvider
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 
 @Composable
 fun CatalogScreen(
@@ -112,9 +113,7 @@ private fun CatalogScreenContent(
                         },
                         cartText = state.cartText,
                         showCartBadge = state.showCartBadge,
-                        cartClick = {
-                            // fixme
-                        }
+                        cartClick = { dispatch(CatalogIntent.CartClick) }
                     )
                 )
 
@@ -170,16 +169,15 @@ private fun CatalogScreenContent(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Composable
 private fun CatalogScreenContentPreview(
     @PreviewParameter(CatalogModelProvider::class) state: CatalogModel
 ) {
-    ClientTheme {
-        CatalogScreenContent(
-            state = state,
-            dispatch = {},
-            snackbarHostStateError = remember { SnackbarHostState() }
-        )
-    }
+    CatalogScreenContent(
+        state = state,
+        dispatch = {},
+        snackbarHostStateError = remember { SnackbarHostState() }
+    )
 }

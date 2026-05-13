@@ -1,12 +1,13 @@
-package ru.mercury.vpclient.shared.ui.components
+package ru.mercury.vpclient.shared.ui.components.cart
 
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import ru.mercury.vpclient.shared.ui.preview.BooleanParameterProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.shared.ui.theme.ClientTheme
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 
 @Composable
 fun CartIconButton(
@@ -26,16 +27,15 @@ fun CartIconButton(
     }
 }
 
+@PreviewWrapper(ThemeWrapper::class)
 @FontScalePreviews
 @Composable
 private fun CartIconButtonPreview(
     @PreviewParameter(BooleanParameterProvider::class) showBadge: Boolean
 ) {
-    ClientTheme {
-        CartIconButton(
-            text = "1",
-            showBadge = showBadge,
-            onClick = {}
-        )
-    }
+    CartIconButton(
+        text = "1",
+        showBadge = showBadge,
+        onClick = {}
+    )
 }

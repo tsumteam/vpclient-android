@@ -52,6 +52,26 @@ object ClientStrings {
     val CatalogWatchAll = R.string.catalog_watch_all
     val CatalogViewAllClothing = R.string.catalog_view_all_clothing
 
+    val CartTitle = R.string.cart_title
+    val CartAllItems = R.plurals.cart_all_items
+    val CartPaymentItems = R.plurals.cart_payment_items
+    val CartChat = R.string.cart_chat
+    val CartFitting = R.string.cart_fitting
+    val CartBuy = R.string.cart_buy
+    val CartArticle = R.string.cart_article
+    val CartColor = R.string.cart_color
+    val CartSize = R.string.cart_size
+    val CartSelectSize = R.string.cart_select_size
+    val CartSelectSizeForPaymentTitle = R.string.cart_select_size_for_payment_title
+    val CartSelectSizeForPaymentButton = R.string.cart_select_size_for_payment_button
+    val CartBuyItem = R.string.cart_buy_item
+    val CartSold = R.string.cart_sold
+    val CartInStock = R.string.cart_in_stock
+    val CartInBasket = R.string.cart_in_basket
+    val CartToPayment = R.string.cart_to_payment
+    val CartConsultantName = R.string.cart_consultant_name
+    val CartConsultantBrand = R.string.cart_consultant_brand
+
     val FilterProductsQuantity = R.plurals.filter_products_quantity
     val FilterShowProductsQuantity = R.plurals.filter_show_products_quantity
     val FilterSizeTitle = R.string.filter_size_title

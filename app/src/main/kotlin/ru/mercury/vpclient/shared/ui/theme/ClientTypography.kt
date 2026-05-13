@@ -70,6 +70,12 @@ val Typography.medium12: TextStyle
         fontSize = 12.sp
     )
 
+val Typography.medium13: TextStyle
+    get() = TextStyle(
+        fontWeight = FontWeight.Medium,
+        fontSize = 13.sp
+    )
+
 val Typography.medium14: TextStyle
     get() = TextStyle(
         fontWeight = FontWeight.Medium,

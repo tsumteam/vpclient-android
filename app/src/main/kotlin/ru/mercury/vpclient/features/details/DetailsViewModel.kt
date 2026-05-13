@@ -42,7 +42,12 @@ class DetailsViewModel @AssistedInject constructor(
                 }
             }
             is DetailsIntent.LoadProduct -> launch { interactor.loadProduct(route.id) }
-            is DetailsIntent.BackClick -> launch { CatalogStackEventManager.send(BackRoute) }
+            is DetailsIntent.BackClick -> launch {
+                when {
+                    route.openedFromCart -> MainEventManager.send(BackRoute)
+                    else -> CatalogStackEventManager.send(BackRoute)
+                }
+            }
             is DetailsIntent.MessageClick -> reduce { it.copy(isMessageSheetVisible = true) }
             is DetailsIntent.SizeTableClick -> Unit
             is DetailsIntent.AddToBasketClick -> {
@@ -114,7 +119,12 @@ class DetailsViewModel @AssistedInject constructor(
                     CatalogStackEventManager.send(resolvedRoute)
                 }
             }
-            is DetailsIntent.ProductClick -> launch { CatalogStackEventManager.send(DetailsRoute(intent.id)) }
+            is DetailsIntent.ProductClick -> launch {
+                when {
+                    route.openedFromCart -> MainEventManager.send(DetailsRoute(intent.id, openedFromCart = true))
+                    else -> CatalogStackEventManager.send(DetailsRoute(intent.id))
+                }
+            }
             is DetailsIntent.OpenMediaViewer -> launch {
                 val state = stateFlow.value
                 val totalCount = state.pagerImageUrls.size + if (state.selectedColorVideoUrl != null) 1 else 0

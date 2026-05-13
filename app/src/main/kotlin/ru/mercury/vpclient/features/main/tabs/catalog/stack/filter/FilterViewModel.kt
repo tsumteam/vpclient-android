@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import ru.mercury.vpclient.activity.event.MainEventManager
+import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.features.main.tabs.catalog.event.CatalogStackEventManager
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter.event.FilterEvent
@@ -158,6 +160,7 @@ class FilterViewModel @AssistedInject constructor(
             }
             is FilterIntent.RefreshCompleted -> reduce { it.copy(isRefreshing = false) }
             is FilterIntent.BackClick -> launch { CatalogStackEventManager.send(BackRoute) }
+            is FilterIntent.CartClick -> launch { MainEventManager.send(CartRoute) }
             is FilterIntent.ProductClick -> launch { CatalogStackEventManager.send(DetailsRoute(intent.id)) }
             is FilterIntent.ShowSortDialog -> reduce { it.copy(isSortDialogVisible = true) }
             is FilterIntent.HideSortDialog -> reduce { it.copy(isSortDialogVisible = false) }

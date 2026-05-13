@@ -9,5 +9,6 @@ sealed interface CategoryIntent: Intent {
     data object LoadCartData: CategoryIntent
     data object LoadCatalogCategoriesBottom: CategoryIntent
     data object BackClick: CategoryIntent
+    data object CartClick: CategoryIntent
     data class FilterClick(val categoryId: Int, val titleCategoryId: Int, val subtitleCategoryId: Int): CategoryIntent
 }

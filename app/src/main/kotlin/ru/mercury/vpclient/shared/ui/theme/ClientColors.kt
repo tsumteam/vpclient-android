@@ -17,6 +17,7 @@ val Surface = Color(0xFFF6F3F3)
 val Surface3 = Color(0xFFF5F4F9)
 val Surface2 = Color(0xFFDCD2D2)
 val Surface4 = Color(0xFFEDE7E7)
+val Surface5 = Color(0xFFF7F7F7)
 val OnSurfaceVariant = Color(0xFF666161)
 val Error = Color(0xFFD76B6B)
 val Divider = Color(0xFFD0C4C4)
@@ -58,6 +59,9 @@ val ColorScheme.surface3: Color
 
 val ColorScheme.surface4: Color
     get() = Surface4
+
+val ColorScheme.surface5: Color
+    get() = Surface5
 
 val ColorScheme.divider: Color
     get() = Divider

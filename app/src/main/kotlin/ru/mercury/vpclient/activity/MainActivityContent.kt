@@ -22,10 +22,14 @@ import ru.mercury.vpclient.shared.ui.components.system.ClientNavDisplay
 import ru.mercury.vpclient.shared.ui.components.LoadingBox
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.ktx.rememberRequestMultiplePermissions
+import ru.mercury.vpclient.features.cart.CartScreen
+import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.features.code.CodeScreen
 import ru.mercury.vpclient.features.code.navigation.CodeRoute
 import ru.mercury.vpclient.features.consultant.ConsultantScreen
 import ru.mercury.vpclient.features.consultant.navigation.ConsultantRoute
+import ru.mercury.vpclient.features.details.DetailsScreen
+import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.features.login.LoginScreen
 import ru.mercury.vpclient.features.login.navigation.LoginRoute
 import ru.mercury.vpclient.features.main.MainScreen
@@ -59,6 +63,8 @@ fun MainActivityContent(
                 entry<LoginRoute> { LoginScreen() }
                 entry<CodeRoute> { CodeScreen() }
                 entry<MainRoute> { MainScreen() }
+                entry<CartRoute> { CartScreen() }
+                entry<DetailsRoute> { DetailsScreen(it) }
                 entry<ConsultantRoute> { ConsultantScreen(it) }
                 entry<MediaViewerRoute> { MediaViewerScreen(it) }
             }
