@@ -26,9 +26,9 @@ class CatalogViewModel @Inject constructor(
 
     init {
         dispatch(CatalogIntent.CollectCatalogScreenData)
+        dispatch(CatalogIntent.LoadCatalogCategoriesTop)
         dispatch(CatalogIntent.CollectCartData)
         dispatch(CatalogIntent.LoadCartData)
-        dispatch(CatalogIntent.LoadCatalogCategoriesTop)
     }
 
     override fun dispatch(intent: CatalogIntent) {
@@ -39,6 +39,9 @@ class CatalogViewModel @Inject constructor(
                         reduce { it.copy(catalogData = data) }
                     }
                 }
+            }
+            is CatalogIntent.LoadCatalogCategoriesTop -> {
+                launch { interactor.loadCatalogCategoriesTop() }
             }
             is CatalogIntent.CollectCartData -> {
                 launch {
@@ -61,14 +64,15 @@ class CatalogViewModel @Inject constructor(
                     reduce { it.copy(cartBadge = badge) }
                 }
             }
-            is CatalogIntent.LoadCatalogCategoriesTop -> launch { interactor.loadCatalogCategoriesTop() }
             is CatalogIntent.SelectTab -> {
                 val rootId = stateFlow.value.catalogData.tabs.getOrNull(intent.tabIndex)?.rootId
                 if (rootId != null) {
                     launch { interactor.setLastCatalogRootId(rootId) }
                 }
             }
-            is CatalogIntent.CategoryClick -> launch { CatalogStackEventManager.send(CategoryRoute(categoryId = intent.categoryId)) }
+            is CatalogIntent.CategoryClick -> {
+                launch { CatalogStackEventManager.send(CategoryRoute(categoryId = intent.categoryId)) }
+            }
             is CatalogIntent.CartClick -> launch { MainEventManager.send(CartRoute) }
         }
     }
