@@ -1,9 +1,12 @@
-# Agent Instructions
+# Repository Guidelines
 
+- Never commit unrelated files together – stage files selectively and make one focused commit per logical change with a clear, specific message
+- For dependency updates, commit each dependency separately with message format: `Bump <dependency> from <old version> to <new version>`
+- When the user writes "синхронизируй инструкции", update AGENTS.md in both vpdelivery-android and vpclient-android
 - Use standard project conventions and follow existing documentation when making changes;
 - Do not run tests
 - Do not compile the project
-- Place all PreviewParameterProvider classes in ..ui/preview
+- Place all PreviewParameterProvider classes in ui/preview
 - Add new colors through MaterialTheme.colorScheme
 - Use MaterialTheme.colorScheme for component colors; do not use raw Color constants for theme colors inside components
 - Use MaterialTheme.typography for component text styles; do not instantiate TextStyle directly inside components
