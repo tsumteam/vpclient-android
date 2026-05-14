@@ -9,7 +9,7 @@ kotlin = "2.3.21"
 kotlinx-coroutines = "1.11.0"
 
 google-hilt = "2.59.2"
-google-ksp = "2.3.7"
+google-ksp = "2.3.8"
 google-material = "1.13.0"
 google-zxing = "3.5.4"
 google-mlkit = "17.3.0"
