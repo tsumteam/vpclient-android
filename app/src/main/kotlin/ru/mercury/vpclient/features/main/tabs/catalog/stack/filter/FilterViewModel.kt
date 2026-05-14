@@ -72,6 +72,7 @@ class FilterViewModel @AssistedInject constructor(
         dispatch(FilterIntent.InitializeState)
         dispatch(FilterIntent.CollectFilterData)
         dispatch(FilterIntent.CollectCartSize)
+        dispatch(FilterIntent.CollectActiveEmployee)
         dispatch(FilterIntent.LoadCartData)
         dispatch(FilterIntent.LoadCatalogFilters)
         dispatch(FilterIntent.LoadProductsQuantity)
@@ -110,7 +111,8 @@ class FilterViewModel @AssistedInject constructor(
                             reduce { it.copy(cartSize = size) }
                         }
                 }
-
+            }
+            is FilterIntent.CollectActiveEmployee -> {
                 launch {
                     interactor.employeeEntitiesFlow
                         .map { employees -> employees.firstOrNull { it.isActive }?.employeeId.orEmpty() }

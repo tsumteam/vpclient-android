@@ -28,6 +28,7 @@ class CatalogViewModel @Inject constructor(
         dispatch(CatalogIntent.CollectCatalogScreenData)
         dispatch(CatalogIntent.LoadCatalogCategoriesTop)
         dispatch(CatalogIntent.CollectCartSize)
+        dispatch(CatalogIntent.CollectActiveEmployee)
         dispatch(CatalogIntent.LoadCartData)
     }
 
@@ -51,7 +52,8 @@ class CatalogViewModel @Inject constructor(
                             reduce { it.copy(cartSize = size) }
                         }
                 }
-
+            }
+            is CatalogIntent.CollectActiveEmployee -> {
                 launch {
                     interactor.employeeEntitiesFlow
                         .map { employees -> employees.firstOrNull { it.isActive }?.employeeId.orEmpty() }

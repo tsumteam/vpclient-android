@@ -30,6 +30,7 @@ class CategoryViewModel @AssistedInject constructor(
         dispatch(CategoryIntent.CollectCategoryEntity)
         dispatch(CategoryIntent.CollectCategoryPojos)
         dispatch(CategoryIntent.CollectCartSize)
+        dispatch(CategoryIntent.CollectActiveEmployee)
         dispatch(CategoryIntent.LoadCartData)
         dispatch(CategoryIntent.LoadCatalogCategoriesBottom)
     }
@@ -58,7 +59,8 @@ class CategoryViewModel @AssistedInject constructor(
                             reduce { it.copy(cartSize = size) }
                         }
                 }
-
+            }
+            is CategoryIntent.CollectActiveEmployee -> {
                 launch {
                     interactor.employeeEntitiesFlow
                         .map { employees -> employees.firstOrNull { it.isActive }?.employeeId.orEmpty() }

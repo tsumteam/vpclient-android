@@ -1,18 +1,21 @@
 package ru.mercury.vpclient.shared.domain.repository.impl
 
+import androidx.room.withTransaction
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.network.NetworkService
 import ru.mercury.vpclient.shared.data.network.entity.ActivityCounterTypeRequestEnum
+import ru.mercury.vpclient.shared.data.persistence.database.AppDatabase
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CartProductDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogFilterProductsDao
 import ru.mercury.vpclient.shared.data.persistence.datastore.PreferenceKey
 import ru.mercury.vpclient.shared.data.persistence.datastore.SettingsDataStore
-import ru.mercury.vpclient.shared.domain.mapper.catalogFilterProductsEntity
 import ru.mercury.vpclient.shared.domain.mapper.cartProduct
+import ru.mercury.vpclient.shared.domain.mapper.catalogFilterProductsEntity
 import ru.mercury.vpclient.shared.domain.mapper.changeSizeRequest
 import ru.mercury.vpclient.shared.domain.mapper.entity
+import ru.mercury.vpclient.shared.domain.mapper.handleResponse
 import ru.mercury.vpclient.shared.domain.mapper.handleResponseResult
 import ru.mercury.vpclient.shared.domain.mapper.paySwitchRequest
 import ru.mercury.vpclient.shared.domain.repository.CartRepository
@@ -20,6 +23,7 @@ import javax.inject.Inject
 
 class CartRepositoryImpl @Inject constructor(
     private val networkService: NetworkService,
+    private val appDatabase: AppDatabase,
     private val cartProductDao: CartProductDao,
     private val catalogFilterProductsDao: CatalogFilterProductsDao,
     private val settingsDataStore: SettingsDataStore
@@ -37,20 +41,26 @@ class CartRepositoryImpl @Inject constructor(
     override suspend fun loadBasket() {
         val pairedUserId = settingsDataStore.getValue(PreferenceKey.PairedUser).orEmpty()
         if (pairedUserId.isEmpty()) {
-            cartProductDao.clear()
+            cartProductDao.delete()
             return
         }
 
-        val cart = handleResponseResult {
-            networkService.basketByPairedUserId(pairedUserId)
-        }.getOrThrow()
-
-        val lines = cart.lines.orEmpty()
-        val products = lines.mapNotNull { it.cartProduct }
-        catalogFilterProductsDao.upsert(
-            products.mapIndexedNotNull { index, product -> product.catalogFilterProductsEntity(index) }
+        handleResponse(
+            request = { networkService.basketByPairedUserId(pairedUserId) },
+            onSuccess = { cart ->
+                val lines = cart.lines.orEmpty()
+                val products = lines.mapNotNull { it.cartProduct }
+                val catalogFilterProductsEntities = products.mapIndexedNotNull { index, product -> product.catalogFilterProductsEntity(index) }
+                val cartProductEntities = products.mapIndexed { index, product -> product.entity(index) }
+                catalogFilterProductsDao.upsert(catalogFilterProductsEntities)
+                appDatabase.withTransaction {
+                    cartProductDao.run {
+                        delete()
+                        upsert(cartProductEntities)
+                    }
+                }
+            }
         )
-        cartProductDao.replace(products.mapIndexed { index, product -> product.entity(index) })
     }
 
     override suspend fun changePaySwitch(product: CartProduct, paySwitch: Boolean) {

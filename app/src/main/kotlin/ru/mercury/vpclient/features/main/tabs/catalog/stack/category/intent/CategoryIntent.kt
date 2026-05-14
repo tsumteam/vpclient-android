@@ -6,6 +6,7 @@ sealed interface CategoryIntent: Intent {
     data object CollectCategoryEntity: CategoryIntent
     data object CollectCategoryPojos: CategoryIntent
     data object CollectCartSize: CategoryIntent
+    data object CollectActiveEmployee: CategoryIntent
     data object LoadCartData: CategoryIntent
     data object LoadCatalogCategoriesBottom: CategoryIntent
     data object BackClick: CategoryIntent
