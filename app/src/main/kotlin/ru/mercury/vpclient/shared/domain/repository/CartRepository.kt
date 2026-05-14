@@ -9,8 +9,6 @@ interface CartRepository {
 
     val cartSize: Flow<Int>
 
-    suspend fun loadCartProducts()
-
     suspend fun changePaySwitch(product: CartProduct, paySwitch: Boolean)
 
     suspend fun setProductSize(product: CartProduct, sizeId: String)

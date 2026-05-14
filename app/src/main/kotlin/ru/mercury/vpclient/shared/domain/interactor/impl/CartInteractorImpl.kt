@@ -17,10 +17,6 @@ class CartInteractorImpl @Inject constructor(
 
     override val cartSize: Flow<Int> = cartRepository.cartSize
 
-    override suspend fun loadCartProducts() {
-        withContext(dispatchers.io) { cartRepository.loadCartProducts() }
-    }
-
     override suspend fun changePaySwitch(product: CartProduct, paySwitch: Boolean) {
         withContext(dispatchers.io) { cartRepository.changePaySwitch(product, paySwitch) }
     }

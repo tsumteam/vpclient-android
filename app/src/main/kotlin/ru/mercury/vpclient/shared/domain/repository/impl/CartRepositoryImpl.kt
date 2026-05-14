@@ -34,10 +34,6 @@ class CartRepositoryImpl @Inject constructor(
 
     override val cartSize: Flow<Int> = cartProductDao.cartSizeFlow()
 
-    override suspend fun loadCartProducts() {
-        loadBasket()
-    }
-
     override suspend fun loadBasket() {
         val pairedUserId = settingsDataStore.getValue(PreferenceKey.PairedUser).orEmpty()
         if (pairedUserId.isEmpty()) {
@@ -75,7 +71,7 @@ class CartRepositoryImpl @Inject constructor(
                 networkService.basket(product.paySwitchRequest(pairedUserId, paySwitch))
             }.getOrThrow()
         } finally {
-            loadCartProducts()
+            loadBasket()
         }
     }
 
@@ -89,7 +85,7 @@ class CartRepositoryImpl @Inject constructor(
                 networkService.basket(product.changeSizeRequest(pairedUserId, sizeId))
             }.getOrThrow()
         } finally {
-            loadCartProducts()
+            loadBasket()
         }
     }
 

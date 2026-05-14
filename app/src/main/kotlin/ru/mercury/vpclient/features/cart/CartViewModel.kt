@@ -38,7 +38,7 @@ class CartViewModel @Inject constructor(
                     }
                 }
             }
-            is CartIntent.LoadCart -> launch { cartInteractor.loadCartProducts() }
+            is CartIntent.LoadCart -> launch { cartInteractor.loadBasket() }
             is CartIntent.CloseClick -> launch { MainEventManager.send(BackRoute) }
             is CartIntent.ProductClick -> {
                 if (intent.id.isEmpty()) return
