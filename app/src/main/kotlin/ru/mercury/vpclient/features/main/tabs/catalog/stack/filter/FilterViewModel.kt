@@ -71,7 +71,7 @@ class FilterViewModel @AssistedInject constructor(
     init {
         dispatch(FilterIntent.InitializeState)
         dispatch(FilterIntent.CollectFilterData)
-        dispatch(FilterIntent.CollectCartData)
+        dispatch(FilterIntent.CollectCartSize)
         dispatch(FilterIntent.LoadCartData)
         dispatch(FilterIntent.LoadCatalogFilters)
         dispatch(FilterIntent.LoadProductsQuantity)
@@ -102,7 +102,15 @@ class FilterViewModel @AssistedInject constructor(
                     }
                 }
             }
-            is FilterIntent.CollectCartData -> {
+            is FilterIntent.CollectCartSize -> {
+                launch {
+                    interactor.cartSize
+                        .distinctUntilChanged()
+                        .collectLatest { size ->
+                            reduce { it.copy(cartSize = size) }
+                        }
+                }
+
                 launch {
                     interactor.employeeEntitiesFlow
                         .map { employees -> employees.firstOrNull { it.isActive }?.employeeId.orEmpty() }
@@ -116,8 +124,7 @@ class FilterViewModel @AssistedInject constructor(
             }
             is FilterIntent.LoadCartData -> {
                 launch {
-                    val count = runCatching { interactor.cartItemsCount() }.getOrDefault(0)
-                    reduce { it.copy(cartItemsCount = count) }
+                    runCatching { interactor.loadBasket() }
 
                     val badge = runCatching { interactor.cartBadge() }.getOrDefault(0)
                     reduce { it.copy(cartBadge = badge) }

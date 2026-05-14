@@ -5,7 +5,7 @@ import ru.mercury.vpclient.shared.mvi.Model
 
 data class CatalogModel(
     val catalogData: CatalogData = CatalogData(),
-    val cartItemsCount: Int = 0,
+    val cartSize: Int = 0,
     val cartBadge: Int = 0
 ): Model {
 
@@ -14,7 +14,7 @@ data class CatalogModel(
 
     val cartText: String
         get() = when {
-            cartItemsCount > 0 -> cartItemsCount.toString()
+            cartSize > 0 -> cartSize.toString()
             else -> ""
         }
 

@@ -244,7 +244,6 @@ import ru.mercury.vpclient.shared.data.network.request.FilteredProductsRequest
 import ru.mercury.vpclient.shared.data.network.request.FiltersRequest
 import ru.mercury.vpclient.shared.data.network.response.AggregatedActivityCounterResponse
 import ru.mercury.vpclient.shared.data.network.response.BaseResponse
-import ru.mercury.vpclient.shared.data.network.response.CartCountResponse
 import ru.mercury.vpclient.shared.data.network.response.CatalogCategoriesBasicResponse
 import ru.mercury.vpclient.shared.data.network.response.CatalogProductDetailCardV2Response
 import ru.mercury.vpclient.shared.data.network.response.CurrentUserResponse
@@ -372,12 +371,6 @@ class NetworkService @Inject constructor(
 
     suspend fun userCurrentUser(): BaseResponse<CurrentUserResponse> {
         return ktorHttpClient.get("user/current-user").body()
-    }
-
-    suspend fun basketCountByPairedUserId(
-        pairedUserId: String
-    ): BaseResponse<CartCountResponse> {
-        return ktorHttpClient.get("basket/$pairedUserId").body()
     }
 
     suspend fun activityCountersByPairedUserId(

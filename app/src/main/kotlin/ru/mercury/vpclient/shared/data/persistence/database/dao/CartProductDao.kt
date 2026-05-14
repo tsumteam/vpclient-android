@@ -13,6 +13,9 @@ abstract class CartProductDao {
     @Query("SELECT * FROM CartProduct ORDER BY position ASC")
     abstract fun selectAllFlow(): Flow<List<CartProductEntity>>
 
+    @Query("SELECT COALESCE(SUM(quantity * sizeCount), 0) FROM CartProduct")
+    abstract fun cartSizeFlow(): Flow<Int>
+
     @Transaction
     open suspend fun replace(entities: List<CartProductEntity>) {
         clear()

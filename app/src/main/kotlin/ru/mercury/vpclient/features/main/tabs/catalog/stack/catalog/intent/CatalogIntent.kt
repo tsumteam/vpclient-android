@@ -4,7 +4,7 @@ import ru.mercury.vpclient.shared.mvi.Intent
 
 sealed interface CatalogIntent: Intent {
     data object CollectCatalogScreenData: CatalogIntent
-    data object CollectCartData: CatalogIntent
+    data object CollectCartSize: CatalogIntent
     data object LoadCartData: CatalogIntent
     data object LoadCatalogCategoriesTop: CatalogIntent
     data object CartClick: CatalogIntent

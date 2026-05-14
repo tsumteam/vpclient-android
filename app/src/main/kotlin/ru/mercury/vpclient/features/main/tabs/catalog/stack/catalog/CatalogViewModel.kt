@@ -27,7 +27,7 @@ class CatalogViewModel @Inject constructor(
     init {
         dispatch(CatalogIntent.CollectCatalogScreenData)
         dispatch(CatalogIntent.LoadCatalogCategoriesTop)
-        dispatch(CatalogIntent.CollectCartData)
+        dispatch(CatalogIntent.CollectCartSize)
         dispatch(CatalogIntent.LoadCartData)
     }
 
@@ -43,7 +43,15 @@ class CatalogViewModel @Inject constructor(
             is CatalogIntent.LoadCatalogCategoriesTop -> {
                 launch { interactor.loadCatalogCategoriesTop() }
             }
-            is CatalogIntent.CollectCartData -> {
+            is CatalogIntent.CollectCartSize -> {
+                launch {
+                    interactor.cartSize
+                        .distinctUntilChanged()
+                        .collectLatest { size ->
+                            reduce { it.copy(cartSize = size) }
+                        }
+                }
+
                 launch {
                     interactor.employeeEntitiesFlow
                         .map { employees -> employees.firstOrNull { it.isActive }?.employeeId.orEmpty() }
@@ -57,8 +65,7 @@ class CatalogViewModel @Inject constructor(
             }
             is CatalogIntent.LoadCartData -> {
                 launch {
-                    val count = runCatching { interactor.cartItemsCount() }.getOrDefault(0)
-                    reduce { it.copy(cartItemsCount = count) }
+                    runCatching { interactor.loadBasket() }
 
                     val badge = runCatching { interactor.cartBadge() }.getOrDefault(0)
                     reduce { it.copy(cartBadge = badge) }

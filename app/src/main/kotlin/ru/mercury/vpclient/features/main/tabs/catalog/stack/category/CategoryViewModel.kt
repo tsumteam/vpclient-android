@@ -29,7 +29,7 @@ class CategoryViewModel @AssistedInject constructor(
     init {
         dispatch(CategoryIntent.CollectCategoryEntity)
         dispatch(CategoryIntent.CollectCategoryPojos)
-        dispatch(CategoryIntent.CollectCartData)
+        dispatch(CategoryIntent.CollectCartSize)
         dispatch(CategoryIntent.LoadCartData)
         dispatch(CategoryIntent.LoadCatalogCategoriesBottom)
     }
@@ -50,7 +50,15 @@ class CategoryViewModel @AssistedInject constructor(
                     }
                 }
             }
-            is CategoryIntent.CollectCartData -> {
+            is CategoryIntent.CollectCartSize -> {
+                launch {
+                    interactor.cartSize
+                        .distinctUntilChanged()
+                        .collectLatest { size ->
+                            reduce { it.copy(cartSize = size) }
+                        }
+                }
+
                 launch {
                     interactor.employeeEntitiesFlow
                         .map { employees -> employees.firstOrNull { it.isActive }?.employeeId.orEmpty() }
@@ -64,8 +72,7 @@ class CategoryViewModel @AssistedInject constructor(
             }
             is CategoryIntent.LoadCartData -> {
                 launch {
-                    val count = runCatching { interactor.cartItemsCount() }.getOrDefault(0)
-                    reduce { it.copy(cartItemsCount = count) }
+                    runCatching { interactor.loadBasket() }
 
                     val badge = runCatching { interactor.cartBadge() }.getOrDefault(0)
                     reduce { it.copy(cartBadge = badge) }

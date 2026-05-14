@@ -15,6 +15,8 @@ class CartInteractorImpl @Inject constructor(
 
     override val cartProductsFlow: Flow<List<CartProduct>> = cartRepository.cartProductsFlow
 
+    override val cartSize: Flow<Int> = cartRepository.cartSize
+
     override suspend fun loadCartProducts() {
         withContext(dispatchers.io) { cartRepository.loadCartProducts() }
     }
@@ -27,8 +29,8 @@ class CartInteractorImpl @Inject constructor(
         withContext(dispatchers.io) { cartRepository.setProductSize(product, sizeId) }
     }
 
-    override suspend fun cartItemsCount(): Int {
-        return withContext(dispatchers.io) { cartRepository.cartItemsCount() }
+    override suspend fun loadBasket() {
+        withContext(dispatchers.io) { cartRepository.loadBasket() }
     }
 
     override suspend fun cartBadge(): Int {

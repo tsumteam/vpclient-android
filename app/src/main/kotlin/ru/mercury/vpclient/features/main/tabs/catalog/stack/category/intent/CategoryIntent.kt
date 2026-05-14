@@ -5,7 +5,7 @@ import ru.mercury.vpclient.shared.mvi.Intent
 sealed interface CategoryIntent: Intent {
     data object CollectCategoryEntity: CategoryIntent
     data object CollectCategoryPojos: CategoryIntent
-    data object CollectCartData: CategoryIntent
+    data object CollectCartSize: CategoryIntent
     data object LoadCartData: CategoryIntent
     data object LoadCatalogCategoriesBottom: CategoryIntent
     data object BackClick: CategoryIntent

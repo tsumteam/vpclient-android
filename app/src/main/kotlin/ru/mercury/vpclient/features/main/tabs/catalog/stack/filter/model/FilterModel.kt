@@ -45,7 +45,7 @@ data class FilterModel(
     val filterValuesDialogPickerCollectionJob: Job? = null,
     val filterValuesDialogQuantityCollectionJob: Job? = null,
     val loadProductsQuantityJob: Job? = null,
-    val cartItemsCount: Int = 0,
+    val cartSize: Int = 0,
     val cartBadge: Int = 0
 ): Model {
 
@@ -54,7 +54,7 @@ data class FilterModel(
     val cartText: String
         get() {
             return when {
-                cartItemsCount > 0 -> cartItemsCount.toString()
+                cartSize > 0 -> cartSize.toString()
                 else -> ""
             }
         }

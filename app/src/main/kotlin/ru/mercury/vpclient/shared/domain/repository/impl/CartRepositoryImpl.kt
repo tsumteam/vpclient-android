@@ -14,7 +14,6 @@ import ru.mercury.vpclient.shared.domain.mapper.cartProduct
 import ru.mercury.vpclient.shared.domain.mapper.changeSizeRequest
 import ru.mercury.vpclient.shared.domain.mapper.entity
 import ru.mercury.vpclient.shared.domain.mapper.handleResponseResult
-import ru.mercury.vpclient.shared.domain.mapper.itemsCount
 import ru.mercury.vpclient.shared.domain.mapper.paySwitchRequest
 import ru.mercury.vpclient.shared.domain.repository.CartRepository
 import javax.inject.Inject
@@ -29,7 +28,13 @@ class CartRepositoryImpl @Inject constructor(
     override val cartProductsFlow: Flow<List<CartProduct>> = cartProductDao.selectAllFlow()
         .map { entities -> entities.map { it.cartProduct } }
 
+    override val cartSize: Flow<Int> = cartProductDao.cartSizeFlow()
+
     override suspend fun loadCartProducts() {
+        loadBasket()
+    }
+
+    override suspend fun loadBasket() {
         val pairedUserId = settingsDataStore.getValue(PreferenceKey.PairedUser).orEmpty()
         if (pairedUserId.isEmpty()) {
             cartProductDao.clear()
@@ -76,19 +81,6 @@ class CartRepositoryImpl @Inject constructor(
         } finally {
             loadCartProducts()
         }
-    }
-
-    override suspend fun cartItemsCount(): Int {
-        val pairedUserId = settingsDataStore.getValue(PreferenceKey.PairedUser).orEmpty()
-        if (pairedUserId.isEmpty()) {
-            return 0
-        }
-
-        val cart = handleResponseResult {
-            networkService.basketCountByPairedUserId(pairedUserId)
-        }.getOrThrow()
-
-        return cart.lines.sumOf { it.itemsCount }
     }
 
     override suspend fun cartBadge(): Int {

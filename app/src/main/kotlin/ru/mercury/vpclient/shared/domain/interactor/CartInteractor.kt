@@ -7,13 +7,15 @@ interface CartInteractor {
 
     val cartProductsFlow: Flow<List<CartProduct>>
 
+    val cartSize: Flow<Int>
+
     suspend fun loadCartProducts()
 
     suspend fun changePaySwitch(product: CartProduct, paySwitch: Boolean)
 
     suspend fun setProductSize(product: CartProduct, sizeId: String)
 
-    suspend fun cartItemsCount(): Int
+    suspend fun loadBasket()
 
     suspend fun cartBadge(): Int
 }
