@@ -94,6 +94,9 @@ class CartViewModel @Inject constructor(
             is CartIntent.RemoveAlternativeClick -> {
                 launch { cartInteractor.removeAlternative(intent.alternative) }
             }
+            is CartIntent.HideAlternativesClick -> {
+                launch { cartInteractor.hideAlternatives(intent.product) }
+            }
             is CartIntent.SelectPayMode -> reduce { it.copy(payMode = intent.mode) }
             is CartIntent.SelectViewMode -> reduce { it.copy(viewMode = intent.mode) }
             is CartIntent.ChatClick,

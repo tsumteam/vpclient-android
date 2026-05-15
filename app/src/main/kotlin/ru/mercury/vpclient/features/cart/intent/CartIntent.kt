@@ -22,6 +22,7 @@ sealed interface CartIntent: Intent {
     data class SelectSizeClick(val product: CartProduct): CartIntent
     data class AlternativeClick(val alternative: CartProductAlternative): CartIntent
     data class RemoveAlternativeClick(val alternative: CartProductAlternative): CartIntent
+    data class HideAlternativesClick(val product: CartProduct): CartIntent
     data class ToggleSizePickerItem(val index: Int): CartIntent
     data class SelectPayMode(val mode: CartPayMode): CartIntent
     data class SelectViewMode(val mode: CartViewMode): CartIntent

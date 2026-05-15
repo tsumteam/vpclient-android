@@ -3,6 +3,8 @@ package ru.mercury.vpclient.shared.domain.mapper
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.encodeToJsonElement
 import ru.mercury.vpclient.shared.data.entity.CartProduct
+import ru.mercury.vpclient.shared.data.network.entity.BasketAlternativesPaletteState
+import ru.mercury.vpclient.shared.data.network.entity.BasketChangeAlternativePaletteStateOperationRequestItemDto
 import ru.mercury.vpclient.shared.data.network.entity.BasketChangeLinePaySwitchOperationRequestItemDto
 import ru.mercury.vpclient.shared.data.network.entity.BasketChangeLineSizeOperationRequestItemDto
 import ru.mercury.vpclient.shared.data.network.entity.BasketOperationRequestDto
@@ -78,6 +80,24 @@ fun CartProduct.changeSizeRequest(
                     operationOrder = 0,
                     lineId = id,
                     sizeId = sizeId
+                )
+            )
+        )
+    )
+}
+
+fun CartProduct.hideAlternativesRequest(
+    pairedUserId: String
+): BasketOperationRequestDto {
+    return BasketOperationRequestDto(
+        pairedUserId = pairedUserId,
+        items = listOf(
+            cartProductJson.encodeToJsonElement(
+                BasketChangeAlternativePaletteStateOperationRequestItemDto(
+                    operationType = BasketOperationRequestTypeEnum.CHANGE_ALTERNATIVE_PALETTE_STATE,
+                    operationOrder = 0,
+                    lineId = id,
+                    paletteState = BasketAlternativesPaletteState.HIDDEN
                 )
             )
         )

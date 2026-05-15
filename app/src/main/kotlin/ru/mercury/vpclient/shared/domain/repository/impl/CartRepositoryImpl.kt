@@ -18,6 +18,7 @@ import ru.mercury.vpclient.shared.domain.mapper.changeSizeRequest
 import ru.mercury.vpclient.shared.domain.mapper.entity
 import ru.mercury.vpclient.shared.domain.mapper.handleResponse
 import ru.mercury.vpclient.shared.domain.mapper.handleResponseResult
+import ru.mercury.vpclient.shared.domain.mapper.hideAlternativesRequest
 import ru.mercury.vpclient.shared.domain.mapper.paySwitchRequest
 import ru.mercury.vpclient.shared.domain.mapper.removeAlternativeRequest
 import ru.mercury.vpclient.shared.domain.mapper.switchProductWithAlternativeRequest
@@ -112,6 +113,19 @@ class CartRepositoryImpl @Inject constructor(
         try {
             handleResponseResult {
                 networkService.basket(alternative.switchProductWithAlternativeRequest(pairedUserId))
+            }.getOrThrow()
+        } finally {
+            loadBasket()
+        }
+    }
+
+    override suspend fun hideAlternatives(product: CartProduct) {
+        val pairedUserId = settingsDataStore.getValue(PreferenceKey.PairedUser).orEmpty()
+        if (pairedUserId.isEmpty()) return
+
+        try {
+            handleResponseResult {
+                networkService.basket(product.hideAlternativesRequest(pairedUserId))
             }.getOrThrow()
         } finally {
             loadBasket()

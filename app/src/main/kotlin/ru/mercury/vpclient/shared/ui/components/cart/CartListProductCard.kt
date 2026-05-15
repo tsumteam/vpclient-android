@@ -42,11 +42,13 @@ fun CartListProductCard(
     onSelectSizeClick: () -> Unit = {},
     onBuySwitchChange: (Boolean) -> Unit = {},
     onAlternativeClick: (CartProductAlternative) -> Unit = {},
-    onRemoveAlternativeClick: (CartProductAlternative) -> Unit = {}
+    onRemoveAlternativeClick: (CartProductAlternative) -> Unit = {},
+    onHideAlternativesClick: () -> Unit = {}
 ) {
     val articleText = product.article.takeIf { it.isNotEmpty() } ?: product.itemId
     val isAvailabilityVisible = !product.isSold && product.size.isNotBlank() && product.isLastInStock
     val isAlternativesVisible = product.isAlternativesPaletteOpen && product.alternatives.isNotEmpty()
+    val isAlternativesEmptyVisible = product.isAlternativesPaletteOpen && product.alternatives.isEmpty()
 
     Column(
         modifier = Modifier
@@ -260,7 +262,13 @@ fun CartListProductCard(
             )
         }
 
-        if (!isAlternativesVisible) {
+        if (isAlternativesEmptyVisible) {
+            CartAlternativesEmpty(
+                onHideClick = onHideAlternativesClick
+            )
+        }
+
+        if (!isAlternativesVisible && !isAlternativesEmptyVisible) {
             HorizontalDivider(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 color = MaterialTheme.colorScheme.divider,

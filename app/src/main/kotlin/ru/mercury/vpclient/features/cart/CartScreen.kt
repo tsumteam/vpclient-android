@@ -182,6 +182,9 @@ private fun CartScreenContent(
                                     },
                                     onRemoveAlternativeClick = { alternative ->
                                         dispatch(CartIntent.RemoveAlternativeClick(alternative))
+                                    },
+                                    onHideAlternativesClick = {
+                                        dispatch(CartIntent.HideAlternativesClick(product))
                                     }
                                 )
                             }
@@ -198,6 +201,9 @@ private fun CartScreenContent(
                                     },
                                     onRemoveAlternativeClick = { alternative ->
                                         dispatch(CartIntent.RemoveAlternativeClick(alternative))
+                                    },
+                                    onHideAlternativesClick = {
+                                        dispatch(CartIntent.HideAlternativesClick(product))
                                     }
                                 )
                             }
