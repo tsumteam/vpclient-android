@@ -41,5 +41,5 @@ style:
     active: false
   ThrowsCount:
     active: false
-  UnusedPrivateMember:
+  UnusedPrivateFunction:
     allowedNames: '.*Preview'

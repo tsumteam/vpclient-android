@@ -209,8 +209,6 @@ dependencies {
     androidTestImplementation(libs.androidx.core.testing)
     androidTestImplementation(libs.androidx.room.testing)
     androidTestImplementation(libs.androidx.test.ext.junit.ktx)
-
-    detektPlugins(libs.detekt.rules)
 }
 
 tasks.register("printVersion") {
