@@ -50,6 +50,7 @@ import ru.mercury.vpclient.shared.ui.theme.regular11
 import ru.mercury.vpclient.shared.ui.theme.regular14
 import ru.mercury.vpclient.shared.ui.theme.secondary4
 import ru.mercury.vpclient.shared.ui.theme.secondary5
+import ru.mercury.vpclient.shared.ui.theme.secondary6
 
 @Composable
 fun CartLargeProductCard(
@@ -59,7 +60,7 @@ fun CartLargeProductCard(
     onBuySwitchChange: (Boolean) -> Unit = {}
 ) {
     val articleText = product.article.takeIf { it.isNotEmpty() } ?: product.itemId
-    val isAvailabilityVisible = product.size.isNotBlank() && product.isLastInStock
+    val isAvailabilityVisible = !product.isSold && product.size.isNotBlank() && product.isLastInStock
 
     Column(
         modifier = Modifier
@@ -80,6 +81,7 @@ fun CartLargeProductCard(
                 price,
                 article,
                 quantity,
+                sold,
                 size,
                 availability,
                 buyRow
@@ -241,7 +243,48 @@ fun CartLargeProductCard(
                 )
             )
 
+            if (product.isSold) {
+                Text(
+                    text = stringResource(ClientStrings.CartSold),
+                    modifier = Modifier.constrainAs(sold) {
+                        width = Dimension.wrapContent
+                        height = Dimension.wrapContent
+                        top.linkTo(price.bottom, 5.dp)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    },
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.regular14.copy(
+                        color = MaterialTheme.colorScheme.error,
+                        letterSpacing = .2.sp,
+                        lineHeight = 18.sp
+                    )
+                )
+            }
+
             when {
+                product.isSold -> {
+                    if (product.size.isNotBlank()) {
+                        Text(
+                            text = product.size,
+                            modifier = Modifier.constrainAs(size) {
+                                width = Dimension.wrapContent
+                                height = Dimension.wrapContent
+                                top.linkTo(sold.bottom, 2.dp)
+                                start.linkTo(parent.start)
+                                end.linkTo(parent.end)
+                            },
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            style = MaterialTheme.typography.regular14.copy(
+                                color = MaterialTheme.colorScheme.secondary6,
+                                letterSpacing = .2.sp,
+                                lineHeight = 18.sp
+                            )
+                        )
+                    }
+                }
                 product.size.isBlank() -> {
                     CartSelectSizeButton(
                         onClick = onSelectSizeClick,
@@ -292,28 +335,29 @@ fun CartLargeProductCard(
                 )
             }
 
-            CartBuySwitch(
-                checked = product.isForPayment && !product.isSold,
-                modifier = Modifier.constrainAs(buyRow) {
-                    width = Dimension.wrapContent
-                    height = Dimension.wrapContent
-                    top.linkTo(
-                        anchor = when {
-                            isAvailabilityVisible -> availability.bottom
-                            else -> size.bottom
-                        },
-                        margin = when {
-                            isAvailabilityVisible -> 8.dp
-                            else -> 10.dp
-                        }
-                    )
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    bottom.linkTo(parent.bottom, 14.dp)
-                },
-                isVisible = !product.isSold,
-                onCheckedChange = onBuySwitchChange
-            )
+            if (!product.isSold) {
+                CartBuySwitch(
+                    checked = product.isForPayment,
+                    modifier = Modifier.constrainAs(buyRow) {
+                        width = Dimension.wrapContent
+                        height = Dimension.wrapContent
+                        top.linkTo(
+                            anchor = when {
+                                isAvailabilityVisible -> availability.bottom
+                                else -> size.bottom
+                            },
+                            margin = when {
+                                isAvailabilityVisible -> 8.dp
+                                else -> 10.dp
+                            }
+                        )
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        bottom.linkTo(parent.bottom, 14.dp)
+                    },
+                    onCheckedChange = onBuySwitchChange
+                )
+            }
         }
 
         HorizontalDivider(

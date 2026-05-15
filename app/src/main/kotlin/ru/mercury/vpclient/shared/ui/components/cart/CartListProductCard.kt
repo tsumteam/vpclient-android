@@ -32,6 +32,7 @@ import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.divider
 import ru.mercury.vpclient.shared.ui.theme.regular11
 import ru.mercury.vpclient.shared.ui.theme.regular14
+import ru.mercury.vpclient.shared.ui.theme.secondary6
 
 @Composable
 fun CartListProductCard(
@@ -41,7 +42,7 @@ fun CartListProductCard(
     onBuySwitchChange: (Boolean) -> Unit = {}
 ) {
     val articleText = product.article.takeIf { it.isNotEmpty() } ?: product.itemId
-    val isAvailabilityVisible = product.size.isNotBlank() && product.isLastInStock
+    val isAvailabilityVisible = !product.isSold && product.size.isNotBlank() && product.isLastInStock
 
     Column(
         modifier = Modifier
@@ -60,6 +61,7 @@ fun CartListProductCard(
                 color,
                 article,
                 price,
+                sold,
                 buySwitch,
                 size,
                 availability,
@@ -162,7 +164,38 @@ fun CartListProductCard(
                 onCheckedChange = onBuySwitchChange
             )
 
+            if (product.isSold) {
+                Text(
+                    text = stringResource(ClientStrings.CartSold),
+                    style = MaterialTheme.typography.regular14.copy(
+                        color = MaterialTheme.colorScheme.error,
+                        lineHeight = 18.sp,
+                        letterSpacing = .2.sp
+                    ),
+                    modifier = Modifier.constrainAs(sold) {
+                        top.linkTo(image.top, 4.dp)
+                        end.linkTo(parent.end, 16.dp)
+                    }
+                )
+            }
+
             when {
+                product.isSold -> {
+                    if (product.size.isNotBlank()) {
+                        Text(
+                            text = product.size,
+                            style = MaterialTheme.typography.regular14.copy(
+                                color = MaterialTheme.colorScheme.secondary6,
+                                lineHeight = 18.sp,
+                                letterSpacing = .2.sp
+                            ),
+                            modifier = Modifier.constrainAs(size) {
+                                top.linkTo(sold.bottom, 4.dp)
+                                end.linkTo(sold.end)
+                            }
+                        )
+                    }
+                }
                 product.size.isBlank() -> {
                     CartSelectSizeButton(
                         onClick = onSelectSizeClick,
