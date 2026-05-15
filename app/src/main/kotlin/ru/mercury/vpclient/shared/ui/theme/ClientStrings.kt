@@ -62,6 +62,7 @@ object ClientStrings {
     val CartColor = R.string.cart_color
     val CartSize = R.string.cart_size
     val CartSelectSize = R.string.cart_select_size
+    val CartSelectAlternative = R.string.cart_select_alternative
     val CartSelectSizeForPaymentTitle = R.string.cart_select_size_for_payment_title
     val CartSelectSizeForPaymentButton = R.string.cart_select_size_for_payment_button
     val CartBuyItem = R.string.cart_buy_item
