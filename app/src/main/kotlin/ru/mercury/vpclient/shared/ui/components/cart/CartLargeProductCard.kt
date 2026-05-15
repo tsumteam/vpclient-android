@@ -277,7 +277,7 @@ fun CartLargeProductCard(
                             modifier = Modifier.constrainAs(size) {
                                 width = Dimension.wrapContent
                                 height = Dimension.wrapContent
-                                top.linkTo(sold.bottom, 2.dp)
+                                top.linkTo(sold.bottom, 8.dp)
                                 start.linkTo(parent.start)
                                 end.linkTo(parent.end)
                             },
@@ -369,6 +369,7 @@ fun CartLargeProductCard(
         if (isAlternativesVisible) {
             CartAlternativesSection(
                 alternatives = product.alternatives,
+                modifier = Modifier.padding(top = 25.dp),
                 onAlternativeClick = onAlternativeClick,
                 onRemoveClick = onRemoveAlternativeClick
             )
