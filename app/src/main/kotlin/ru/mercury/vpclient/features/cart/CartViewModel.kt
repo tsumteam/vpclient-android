@@ -88,6 +88,12 @@ class CartViewModel @Inject constructor(
                 reduce { it.copy(sizePickerProduct = null, sizePickerSizes = null, sizePickerSelectedId = null) }
                 launch { cartInteractor.setProductSize(product, sizeId) }
             }
+            is CartIntent.AlternativeClick -> {
+                launch { cartInteractor.switchProductWithAlternative(intent.alternative) }
+            }
+            is CartIntent.RemoveAlternativeClick -> {
+                launch { cartInteractor.removeAlternative(intent.alternative) }
+            }
             is CartIntent.SelectPayMode -> reduce { it.copy(payMode = intent.mode) }
             is CartIntent.SelectViewMode -> reduce { it.copy(viewMode = intent.mode) }
             is CartIntent.ChatClick,

@@ -4,6 +4,7 @@ import androidx.room.withTransaction
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import ru.mercury.vpclient.shared.data.entity.CartProduct
+import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
 import ru.mercury.vpclient.shared.data.network.NetworkService
 import ru.mercury.vpclient.shared.data.network.entity.ActivityCounterTypeRequestEnum
 import ru.mercury.vpclient.shared.data.persistence.database.AppDatabase
@@ -18,6 +19,8 @@ import ru.mercury.vpclient.shared.domain.mapper.entity
 import ru.mercury.vpclient.shared.domain.mapper.handleResponse
 import ru.mercury.vpclient.shared.domain.mapper.handleResponseResult
 import ru.mercury.vpclient.shared.domain.mapper.paySwitchRequest
+import ru.mercury.vpclient.shared.domain.mapper.removeAlternativeRequest
+import ru.mercury.vpclient.shared.domain.mapper.switchProductWithAlternativeRequest
 import ru.mercury.vpclient.shared.domain.repository.CartRepository
 import javax.inject.Inject
 
@@ -83,6 +86,32 @@ class CartRepositoryImpl @Inject constructor(
         try {
             handleResponseResult {
                 networkService.basket(product.changeSizeRequest(pairedUserId, sizeId))
+            }.getOrThrow()
+        } finally {
+            loadBasket()
+        }
+    }
+
+    override suspend fun removeAlternative(alternative: CartProductAlternative) {
+        val pairedUserId = settingsDataStore.getValue(PreferenceKey.PairedUser).orEmpty()
+        if (pairedUserId.isEmpty()) return
+
+        try {
+            handleResponseResult {
+                networkService.basket(alternative.removeAlternativeRequest(pairedUserId))
+            }.getOrThrow()
+        } finally {
+            loadBasket()
+        }
+    }
+
+    override suspend fun switchProductWithAlternative(alternative: CartProductAlternative) {
+        val pairedUserId = settingsDataStore.getValue(PreferenceKey.PairedUser).orEmpty()
+        if (pairedUserId.isEmpty()) return
+
+        try {
+            handleResponseResult {
+                networkService.basket(alternative.switchProductWithAlternativeRequest(pairedUserId))
             }.getOrThrow()
         } finally {
             loadBasket()

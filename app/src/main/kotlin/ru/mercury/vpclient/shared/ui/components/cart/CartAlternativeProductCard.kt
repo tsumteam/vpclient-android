@@ -25,11 +25,11 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
-import ru.mercury.vpclient.shared.data.entity.CartProduct
+import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
 import ru.mercury.vpclient.shared.ui.components.BrandBox
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.icons.Cancel14
-import ru.mercury.vpclient.shared.ui.preview.CartProductProvider
+import ru.mercury.vpclient.shared.ui.preview.CartProductAlternativeProvider
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.livretMedium18
 import ru.mercury.vpclient.shared.ui.theme.regular11
@@ -37,7 +37,7 @@ import ru.mercury.vpclient.shared.ui.theme.secondary5
 
 @Composable
 fun CartAlternativeProductCard(
-    product: CartProduct,
+    alternative: CartProductAlternative,
     modifier: Modifier = Modifier,
     isStartBorderVisible: Boolean = true,
     onClick: () -> Unit = {},
@@ -83,18 +83,20 @@ fun CartAlternativeProductCard(
             }
             .clickable(onClick = onClick)
     ) {
-        IconButton(
-            onClick = onRemoveClick,
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .size(24.dp)
-        ) {
-            Icon(
-                imageVector = Cancel14,
-                contentDescription = null,
-                modifier = Modifier.size(14.dp),
-                tint = MaterialTheme.colorScheme.onBackground
-            )
+        if (!alternative.isOriginal) {
+            IconButton(
+                onClick = onRemoveClick,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .size(24.dp)
+            ) {
+                Icon(
+                    imageVector = Cancel14,
+                    contentDescription = null,
+                    modifier = Modifier.size(14.dp),
+                    tint = MaterialTheme.colorScheme.onBackground
+                )
+            }
         }
 
         Column(
@@ -105,15 +107,15 @@ fun CartAlternativeProductCard(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             ClientAsyncImage(
-                imageUrl = product.imageUrl,
+                imageUrl = alternative.imageUrl,
                 modifier = Modifier.size(width = 62.dp, height = 96.dp),
                 contentScale = ContentScale.Fit
             )
 
             BrandBox(
                 entity = BrandEntity(
-                    brand = product.brand,
-                    urlBrandLogo = product.urlBrandLogo
+                    brand = alternative.brand,
+                    urlBrandLogo = alternative.urlBrandLogo
                 ),
                 modifier = Modifier
                     .padding(top = 4.dp)
@@ -122,7 +124,7 @@ fun CartAlternativeProductCard(
             )
 
             Text(
-                text = product.price,
+                text = alternative.price,
                 modifier = Modifier
                     .padding(top = 2.dp)
                     .width(96.dp),
@@ -142,9 +144,9 @@ fun CartAlternativeProductCard(
 @Preview(showBackground = true)
 @Composable
 private fun CartAlternativeProductCardPreview(
-    @PreviewParameter(CartProductProvider::class) product: CartProduct
+    @PreviewParameter(CartProductAlternativeProvider::class) alternative: CartProductAlternative
 ) {
     CartAlternativeProductCard(
-        product = product
+        alternative = alternative
     )
 }

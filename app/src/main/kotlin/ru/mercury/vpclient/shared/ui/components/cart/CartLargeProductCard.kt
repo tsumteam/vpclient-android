@@ -38,6 +38,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.entity.CartProduct
+import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
 import ru.mercury.vpclient.shared.domain.mapper.imagePages
 import ru.mercury.vpclient.shared.ui.components.BrandBox
 import ru.mercury.vpclient.shared.ui.components.HorizontalPagerIndicator
@@ -57,10 +58,13 @@ fun CartLargeProductCard(
     product: CartProduct,
     onClick: () -> Unit = {},
     onSelectSizeClick: () -> Unit = {},
-    onBuySwitchChange: (Boolean) -> Unit = {}
+    onBuySwitchChange: (Boolean) -> Unit = {},
+    onAlternativeClick: (CartProductAlternative) -> Unit = {},
+    onRemoveAlternativeClick: (CartProductAlternative) -> Unit = {}
 ) {
     val articleText = product.article.takeIf { it.isNotEmpty() } ?: product.itemId
     val isAvailabilityVisible = !product.isSold && product.size.isNotBlank() && product.isLastInStock
+    val isAlternativesVisible = product.isAlternativesPaletteOpen && product.alternatives.isNotEmpty()
 
     Column(
         modifier = Modifier
@@ -360,11 +364,21 @@ fun CartLargeProductCard(
             }
         }
 
-        HorizontalDivider(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            color = MaterialTheme.colorScheme.divider,
-            thickness = 1.dp
-        )
+        if (isAlternativesVisible) {
+            CartAlternativesSection(
+                alternatives = product.alternatives,
+                onAlternativeClick = onAlternativeClick,
+                onRemoveClick = onRemoveAlternativeClick
+            )
+        }
+
+        if (!isAlternativesVisible) {
+            HorizontalDivider(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                color = MaterialTheme.colorScheme.divider,
+                thickness = 1.dp
+            )
+        }
     }
 }
 

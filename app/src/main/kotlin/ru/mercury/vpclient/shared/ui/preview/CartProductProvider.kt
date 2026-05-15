@@ -2,6 +2,7 @@ package ru.mercury.vpclient.shared.ui.preview
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import ru.mercury.vpclient.shared.data.entity.CartProduct
+import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
 
 class CartProductProvider: PreviewParameterProvider<CartProduct> {
     override val values: Sequence<CartProduct> = sequenceOf(
@@ -54,6 +55,27 @@ class CartProductProvider: PreviewParameterProvider<CartProduct> {
             imageUrl = "",
             isForPayment = false,
             isSold = true,
+            isAlternativesPaletteOpen = true,
+            alternatives = listOf(
+                CartProductAlternative(
+                    id = "1",
+                    detailId = "1",
+                    brand = "LORO PIANA",
+                    urlBrandLogo = null,
+                    price = "580 000 ₽",
+                    imageUrl = "",
+                    isOriginal = true
+                ),
+                CartProductAlternative(
+                    id = "2",
+                    detailId = "2",
+                    brand = "DOLCE&GABBANA",
+                    urlBrandLogo = null,
+                    price = "1 900 000 ₽",
+                    imageUrl = "",
+                    isOriginal = false
+                )
+            ),
             priceValue = 580_000.0
         )
     )

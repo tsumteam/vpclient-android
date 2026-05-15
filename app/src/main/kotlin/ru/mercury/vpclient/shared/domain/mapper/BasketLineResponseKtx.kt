@@ -1,7 +1,11 @@
 package ru.mercury.vpclient.shared.domain.mapper
 
-import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.FORMAT_RUB
+import ru.mercury.vpclient.shared.data.entity.CartProduct
+import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
+import ru.mercury.vpclient.shared.data.network.entity.AlternativesPaletteStatusEnum
+import ru.mercury.vpclient.shared.data.network.entity.BasketAlternativeResponseDto
+import ru.mercury.vpclient.shared.data.network.entity.BasketAlternativeType
 import ru.mercury.vpclient.shared.data.network.entity.BasketLineResponseDto
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
@@ -23,6 +27,9 @@ val BasketLineResponseDto.cartProduct: CartProduct?
             rawImageUrl.isNotEmpty() -> rawImageUrl
             else -> imageUrls.firstOrNull().orEmpty()
         }
+        val alternatives = this.alternatives.orEmpty()
+            .mapNotNull { it.cartProductAlternative }
+            .sortedBy { !it.isOriginal }
 
         return CartProduct(
             id = id,
@@ -43,10 +50,36 @@ val BasketLineResponseDto.cartProduct: CartProduct?
             isSold = sizes.any { it.inStock == false },
             isLastInStock = sizes.any { it.isLastInStock == true || it.availableStockQuantity == 1.0 },
             hasActions = product?.actions.orEmpty().isNotEmpty(),
+            isAlternativesPaletteOpen = controls?.alternativesPalette == AlternativesPaletteStatusEnum.OPEN,
+            alternatives = alternatives,
             discountPercentage = product?.discountPercentage ?: 0,
             quantity = quantity ?: product?.quantity ?: 1,
             sizeCount = sizes.size.coerceAtLeast(1),
             priceValue = price
+        )
+    }
+
+private val BasketAlternativeResponseDto.cartProductAlternative: CartProductAlternative?
+    get() {
+        val product = product ?: return null
+        val id = alternativeId ?: product.id ?: product.itemId ?: product.article ?: return null
+        val detailId = product.id ?: product.itemId ?: id
+        val price = product.price ?: product.currentRetailPrice ?: .0
+        val imageUrls = product.imageUrls.orEmpty().filter { it.isNotEmpty() }
+        val rawImageUrl = product.imageUrl.orEmpty()
+        val imageUrl = when {
+            rawImageUrl.isNotEmpty() -> rawImageUrl
+            else -> imageUrls.firstOrNull().orEmpty()
+        }
+
+        return CartProductAlternative(
+            id = id,
+            detailId = detailId,
+            brand = product.brand.orEmpty(),
+            urlBrandLogo = product.urlBrandLogo,
+            price = price.formattedCartPrice,
+            imageUrl = imageUrl,
+            isOriginal = alternativeType == BasketAlternativeType.ORIGINAL
         )
     }
 

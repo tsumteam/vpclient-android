@@ -12,16 +12,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
-import ru.mercury.vpclient.shared.data.entity.CartProduct
-import ru.mercury.vpclient.shared.ui.preview.CartProductProvider
+import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
+import ru.mercury.vpclient.shared.ui.preview.CartProductAlternativeProvider
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 
 @Composable
 fun CartAlternativesSection(
-    products: List<CartProduct>,
+    alternatives: List<CartProductAlternative>,
     modifier: Modifier = Modifier,
-    onProductClick: (CartProduct) -> Unit = {},
-    onRemoveClick: (CartProduct) -> Unit = {}
+    onAlternativeClick: (CartProductAlternative) -> Unit = {},
+    onRemoveClick: (CartProductAlternative) -> Unit = {}
 ) {
     Column(
         modifier = modifier.fillMaxWidth()
@@ -34,13 +34,13 @@ fun CartAlternativesSection(
 
         LazyRow {
             itemsIndexed(
-                items = products
-            ) { index, product ->
+                items = alternatives
+            ) { index, alternative ->
                 CartAlternativeProductCard(
-                    product = product,
+                    alternative = alternative,
                     isStartBorderVisible = index == 0,
-                    onClick = { onProductClick(product) },
-                    onRemoveClick = { onRemoveClick(product) }
+                    onClick = { onAlternativeClick(alternative) },
+                    onRemoveClick = { onRemoveClick(alternative) }
                 )
             }
         }
@@ -51,13 +51,13 @@ fun CartAlternativesSection(
 @Preview(showBackground = true)
 @Composable
 private fun CartAlternativesSectionPreview(
-    @PreviewParameter(CartProductProvider::class) product: CartProduct
+    @PreviewParameter(CartProductAlternativeProvider::class) alternative: CartProductAlternative
 ) {
     CartAlternativesSection(
-        products = listOf(
-            product,
-            product.copy(id = "2", brand = "DOLCE&GABBANA", price = "1 900 000 ₽"),
-            product.copy(id = "3", brand = "MVST", price = "800 000 ₽")
+        alternatives = listOf(
+            alternative,
+            alternative.copy(id = "2", brand = "DOLCE&GABBANA", price = "1 900 000 ₽", isOriginal = false),
+            alternative.copy(id = "3", brand = "MVST", price = "800 000 ₽", isOriginal = false)
         )
     )
 }

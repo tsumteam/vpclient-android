@@ -176,6 +176,12 @@ private fun CartScreenContent(
                                     onSelectSizeClick = { dispatch(CartIntent.ShowSizePicker(product)) },
                                     onBuySwitchChange = { paySwitch ->
                                         dispatch(CartIntent.ChangePaySwitch(product, paySwitch))
+                                    },
+                                    onAlternativeClick = { alternative ->
+                                        dispatch(CartIntent.AlternativeClick(alternative))
+                                    },
+                                    onRemoveAlternativeClick = { alternative ->
+                                        dispatch(CartIntent.RemoveAlternativeClick(alternative))
                                     }
                                 )
                             }
@@ -186,6 +192,12 @@ private fun CartScreenContent(
                                     onSelectSizeClick = { dispatch(CartIntent.ShowSizePicker(product)) },
                                     onBuySwitchChange = { paySwitch ->
                                         dispatch(CartIntent.ChangePaySwitch(product, paySwitch))
+                                    },
+                                    onAlternativeClick = { alternative ->
+                                        dispatch(CartIntent.AlternativeClick(alternative))
+                                    },
+                                    onRemoveAlternativeClick = { alternative ->
+                                        dispatch(CartIntent.RemoveAlternativeClick(alternative))
                                     }
                                 )
                             }

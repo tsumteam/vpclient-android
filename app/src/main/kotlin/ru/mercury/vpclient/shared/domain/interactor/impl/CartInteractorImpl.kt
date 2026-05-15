@@ -3,6 +3,7 @@ package ru.mercury.vpclient.shared.domain.interactor.impl
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import ru.mercury.vpclient.shared.data.entity.CartProduct
+import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
 import ru.mercury.vpclient.shared.coroutines.ClientDispatchers
 import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
 import ru.mercury.vpclient.shared.domain.repository.CartRepository
@@ -23,6 +24,14 @@ class CartInteractorImpl @Inject constructor(
 
     override suspend fun setProductSize(product: CartProduct, sizeId: String) {
         withContext(dispatchers.io) { cartRepository.setProductSize(product, sizeId) }
+    }
+
+    override suspend fun removeAlternative(alternative: CartProductAlternative) {
+        withContext(dispatchers.io) { cartRepository.removeAlternative(alternative) }
+    }
+
+    override suspend fun switchProductWithAlternative(alternative: CartProductAlternative) {
+        withContext(dispatchers.io) { cartRepository.switchProductWithAlternative(alternative) }
     }
 
     override suspend fun loadBasket() {

@@ -2,6 +2,7 @@ package ru.mercury.vpclient.shared.data.persistence.database.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
 
 @Entity(tableName = "CartProduct")
 data class CartProductEntity(
@@ -24,6 +25,8 @@ data class CartProductEntity(
     val isSold: Boolean,
     val isLastInStock: Boolean,
     val hasActions: Boolean,
+    val isAlternativesPaletteOpen: Boolean,
+    val alternatives: List<CartProductAlternative>,
     val discountPercentage: Int,
     val quantity: Int,
     val sizeCount: Int,
