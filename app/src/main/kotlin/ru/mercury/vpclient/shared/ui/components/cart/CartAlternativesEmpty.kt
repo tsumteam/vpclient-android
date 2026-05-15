@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -60,9 +60,7 @@ fun CartAlternativesEmpty(
 
         OutlinedButton(
             onClick = onHideClick,
-            modifier = Modifier
-                .width(100.dp)
-                .height(32.dp),
+            modifier = Modifier.size(width = 100.dp, height = 32.dp),
             shape = RoundedCornerShape(4.dp),
             border = BorderStroke(
                 width = 1.dp,
