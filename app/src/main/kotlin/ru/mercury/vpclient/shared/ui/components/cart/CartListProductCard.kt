@@ -46,6 +46,7 @@ fun CartListProductCard(
     onHideAlternativesClick: () -> Unit = {}
 ) {
     val articleText = product.article.takeIf { it.isNotEmpty() } ?: product.itemId
+    val isPriceVisible = product.priceValue > .0 && product.price.isNotBlank()
     val isAvailabilityVisible = !product.isSold && product.size.isNotBlank() && product.isLastInStock
     val isAlternativesVisible = product.isAlternativesPaletteOpen && product.alternatives.isNotEmpty()
     val isAlternativesEmptyVisible = product.isAlternativesPaletteOpen && product.alternatives.isEmpty()
@@ -249,7 +250,16 @@ fun CartListProductCard(
                 ),
                 modifier = Modifier.constrainAs(quantity) {
                     end.linkTo(parent.end, 16.dp)
-                    bottom.linkTo(price.bottom)
+                    bottom.linkTo(
+                        anchor = when {
+                            isPriceVisible -> price.bottom
+                            else -> image.bottom
+                        },
+                        margin = when {
+                            isPriceVisible -> 0.dp
+                            else -> 3.dp
+                        }
+                    )
                 }
             )
         }
