@@ -380,7 +380,7 @@ fun CartLargeProductCard(
             )
         }
 
-        if (!isAlternativesVisible && !isAlternativesEmptyVisible) {
+        if (!isAlternativesVisible) {
             HorizontalDivider(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 color = MaterialTheme.colorScheme.divider,

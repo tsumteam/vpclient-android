@@ -154,7 +154,7 @@ fun CartListProductCard(
                 product = product,
                 modifier = Modifier.constrainAs(price) {
                     start.linkTo(brand.start)
-                    bottom.linkTo(image.bottom, 4.dp)
+                    top.linkTo(article.bottom, 23.dp)
                     end.linkTo(quantity.start, 8.dp)
                     width = Dimension.fillToConstraints
                 }
@@ -268,7 +268,7 @@ fun CartListProductCard(
             )
         }
 
-        if (!isAlternativesVisible && !isAlternativesEmptyVisible) {
+        if (!isAlternativesVisible) {
             HorizontalDivider(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 color = MaterialTheme.colorScheme.divider,
