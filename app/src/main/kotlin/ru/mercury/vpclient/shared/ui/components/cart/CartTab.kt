@@ -1,8 +1,8 @@
 package ru.mercury.vpclient.shared.ui.components.cart
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -32,7 +32,7 @@ fun CartTab(
 ) {
     Box(
         modifier = modifier
-            .width(128.dp)
+            .fillMaxWidth()
             .height(36.dp)
             .clip(RoundedCornerShape(10.dp))
             .clickableWithoutRipple(onClick = onClick),

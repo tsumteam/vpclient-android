@@ -1,5 +1,6 @@
-package ru.mercury.vpclient.shared.ui.components.system
+package ru.mercury.vpclient.shared.ui.components.cart
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -9,6 +10,7 @@ import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
@@ -19,46 +21,42 @@ import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.surface4
 
 @Composable
-fun ClientAsyncImage(
+fun CartAsyncImage(
     imageUrl: String,
-    contentScale: ContentScale,
-    modifier: Modifier = Modifier,
-    alignment: Alignment = Alignment.Center
+    modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     val isInspectionMode = LocalInspectionMode.current
     val painter = ColorPainter(MaterialTheme.colorScheme.surface4)
 
-    AsyncImage(
-        model = ImageRequest.Builder(context)
-            .data(imageUrl)
-            .crossfade(true)
-            .apply {
-                if (isInspectionMode) {
-                    placeholder(R.drawable.ic_placeholder)
-                }
-            }
-            .build(),
-        contentDescription = null,
+    Box(
         modifier = modifier,
-        contentScale = contentScale,
-        alignment = alignment,
-        placeholder = if (isInspectionMode) null else painter,
-        error = if (isInspectionMode) null else painter,
-        fallback = if (isInspectionMode) null else painter
-    )
+        contentAlignment = Alignment.CenterStart
+    ) {
+        AsyncImage(
+            model = ImageRequest.Builder(context)
+                .data(imageUrl)
+                .build(),
+            contentDescription = null,
+            modifier = Modifier.matchParentSize(),
+            placeholder = if (isInspectionMode) painterResource(R.drawable.ic_placeholder) else painter,
+            error = if (isInspectionMode) null else painter,
+            fallback = if (isInspectionMode) null else painter,
+            alignment = Alignment.CenterStart,
+            contentScale = ContentScale.Fit
+        )
+    }
 }
 
 @PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Composable
-private fun ClientAsyncImagePreview() {
-    ClientAsyncImage(
+private fun CartAsyncImagePreview() {
+    CartAsyncImage(
         imageUrl = "https://example.com/image.png",
         modifier = Modifier.size(
             width = 121.dp,
             height = 45.dp
-        ),
-        contentScale = ContentScale.Fit
+        )
     )
 }

@@ -2,7 +2,6 @@ package ru.mercury.vpclient.shared.ui.components.cart
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -32,7 +31,7 @@ fun CartToolbar(
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp)
-            .padding(start = 16.dp),
+            .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         val cardIconTint = animateColorAsState(
@@ -55,10 +54,7 @@ fun CartToolbar(
             allItemsCount = state.allItemsCount,
             paymentItemsCount = state.paymentItemsCount,
             onAllClick = state.onAllClick,
-            onPaymentClick = state.onPaymentClick
-        )
-
-        Spacer(
+            onPaymentClick = state.onPaymentClick,
             modifier = Modifier.weight(1F)
         )
 

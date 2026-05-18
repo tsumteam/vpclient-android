@@ -3,7 +3,9 @@ package ru.mercury.vpclient.shared.ui.components.cart
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -33,16 +35,9 @@ fun CartTabs(
     onPaymentClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val indicatorOffset = animateDpAsState(
-        targetValue = when (state) {
-            CartTabsState.All -> 0.dp
-            CartTabsState.Payment -> 128.dp
-        },
-        label = "CartTabsIndicatorOffset"
-    )
-
-    Box(
+    BoxWithConstraints(
         modifier = modifier
+            .fillMaxWidth()
             .height(40.dp)
             .background(
                 color = MaterialTheme.colorScheme.surface5,
@@ -50,10 +45,19 @@ fun CartTabs(
             )
             .padding(2.dp)
     ) {
+        val tabWidth = maxWidth / 2
+        val indicatorOffset = animateDpAsState(
+            targetValue = when (state) {
+                CartTabsState.All -> 0.dp
+                CartTabsState.Payment -> tabWidth
+            },
+            label = "CartTabsIndicatorOffset"
+        )
+
         Box(
             modifier = Modifier
                 .offset { IntOffset(x = indicatorOffset.value.roundToPx(), y = 0) }
-                .width(128.dp) // fixme
+                .width(tabWidth)
                 .height(36.dp)
                 .shadow(
                     elevation = 8.dp,
@@ -65,6 +69,7 @@ fun CartTabs(
         )
 
         Row(
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             CartTab(
@@ -74,7 +79,8 @@ fun CartTabs(
                     allItemsCount
                 ),
                 selected = state is CartTabsState.All,
-                onClick = onAllClick
+                onClick = onAllClick,
+                modifier = Modifier.weight(1F)
             )
 
             CartTab(
@@ -84,7 +90,8 @@ fun CartTabs(
                     paymentItemsCount
                 ),
                 selected = state is CartTabsState.Payment,
-                onClick = onPaymentClick
+                onClick = onPaymentClick,
+                modifier = Modifier.weight(1F)
             )
         }
     }

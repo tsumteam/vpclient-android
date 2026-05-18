@@ -158,6 +158,10 @@ fun CartProductCard(
                     start.linkTo(brand.start)
                     top.linkTo(article.bottom, 23.dp)
                     end.linkTo(quantity.start, 8.dp)
+                    if (isPriceVisible) {
+                        bottom.linkTo(parent.bottom, 27.dp)
+                        verticalBias = 0F
+                    }
                     width = Dimension.fillToConstraints
                 }
             )

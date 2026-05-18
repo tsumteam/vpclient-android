@@ -29,7 +29,7 @@ class CartProductProvider: PreviewParameterProvider<CartProduct> {
             colorId = "2",
             brand = "SAINT LAURENT",
             urlBrandLogo = null,
-            name = "Кожаная куртка oversize",
+            name = "Кожаная куртка",
             article = "SL908221",
             color = "Черный",
             size = "FR 38",
