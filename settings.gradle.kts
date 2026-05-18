@@ -28,3 +28,4 @@ rootProject.name = "vpclient"
 include(":app")
 include(":shared:coroutines")
 include(":shared:mvi")
+include(":shared:ui")

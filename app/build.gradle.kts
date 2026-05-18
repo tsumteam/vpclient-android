@@ -149,6 +149,7 @@ androidComponents {
 dependencies {
     implementation(projects.shared.coroutines)
     implementation(projects.shared.mvi)
+    implementation(projects.shared.ui)
 
     implementation(libs.google.hilt.android)
     ksp(libs.google.hilt.compiler)
