@@ -34,9 +34,9 @@ import ru.mercury.vpclient.features.cart.model.CartPayMode
 import ru.mercury.vpclient.features.cart.model.CartViewMode
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.ui.components.cart.CartBottomBar
-import ru.mercury.vpclient.shared.ui.components.cart.CartLargeProductCard
+import ru.mercury.vpclient.shared.ui.components.cart.CartProductLargeCard
 import ru.mercury.vpclient.shared.ui.components.cart.CartListLoading
-import ru.mercury.vpclient.shared.ui.components.cart.CartListProductCard
+import ru.mercury.vpclient.shared.ui.components.cart.CartProductCard
 import ru.mercury.vpclient.shared.ui.components.cart.CartSelectSizeDialog
 import ru.mercury.vpclient.shared.ui.components.cart.CartSizePickerSheet
 import ru.mercury.vpclient.shared.ui.components.cart.CartSummary
@@ -174,7 +174,7 @@ private fun CartScreenContent(
                     ) { product ->
                         when (state.viewMode) {
                             CartViewMode.List -> {
-                                CartListProductCard(
+                                CartProductCard(
                                     product = product,
                                     onClick = { dispatch(CartIntent.ProductClick(product.detailId)) },
                                     onSelectSizeClick = { dispatch(CartIntent.ShowSizePicker(product)) },
@@ -193,7 +193,7 @@ private fun CartScreenContent(
                                 )
                             }
                             CartViewMode.Cards -> {
-                                CartLargeProductCard(
+                                CartProductLargeCard(
                                     product = product,
                                     onClick = { dispatch(CartIntent.ProductClick(product.detailId)) },
                                     onSelectSizeClick = { dispatch(CartIntent.ShowSizePicker(product)) },

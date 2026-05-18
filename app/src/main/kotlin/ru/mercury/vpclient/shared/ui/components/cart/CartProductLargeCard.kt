@@ -54,7 +54,7 @@ import ru.mercury.vpclient.shared.ui.theme.secondary5
 import ru.mercury.vpclient.shared.ui.theme.secondary6
 
 @Composable
-fun CartLargeProductCard(
+fun CartProductLargeCard(
     product: CartProduct,
     onClick: () -> Unit = {},
     onSelectSizeClick: () -> Unit = {},
@@ -394,10 +394,10 @@ fun CartLargeProductCard(
 @PreviewWrapper(ThemeWrapper::class)
 @Preview(showBackground = true)
 @Composable
-private fun CartLargeProductCardPreview(
+private fun CartProductLargeCardPreview(
     @PreviewParameter(CartProductProvider::class) product: CartProduct
 ) {
-    CartLargeProductCard(
+    CartProductLargeCard(
         product = product
     )
 }
