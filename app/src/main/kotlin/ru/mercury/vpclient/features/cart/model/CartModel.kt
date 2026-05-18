@@ -12,6 +12,7 @@ import kotlin.math.roundToInt
 data class CartModel(
     val payMode: CartPayMode = CartPayMode.All,
     val viewMode: CartViewMode = CartViewMode.List,
+    val isViewModeSwitcherVisible: Boolean = false,
     val products: List<CartProduct> = emptyList(),
     val selectSizeProduct: CartProduct? = null,
     val sizePickerProduct: CartProduct? = null,

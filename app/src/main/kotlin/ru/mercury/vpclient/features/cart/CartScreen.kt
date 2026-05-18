@@ -126,6 +126,7 @@ private fun CartScreenContent(
                                 CartPayMode.Payment -> CartTabsState.Payment
                             },
                             viewMode = state.viewMode,
+                            isViewModeSwitcherVisible = state.isViewModeSwitcherVisible,
                             allItemsCount = state.allItemsCount,
                             paymentItemsCount = state.paymentItemsCount,
                             onAllClick = { dispatch(CartIntent.SelectPayMode(CartPayMode.All)) },

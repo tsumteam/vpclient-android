@@ -26,6 +26,7 @@ import ru.mercury.vpclient.shared.ui.theme.secondary4
 fun CartToolbar(
     tabsState: CartTabsState,
     viewMode: CartViewMode,
+    isViewModeSwitcherVisible: Boolean,
     allItemsCount: Int,
     paymentItemsCount: Int,
     onAllClick: () -> Unit,
@@ -67,27 +68,29 @@ fun CartToolbar(
             modifier = Modifier.weight(1F)
         )
 
-        Row {
-            IconButton(
-                onClick = onCardsClick
-            ) {
-                Icon(
-                    imageVector = Card24,
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp),
-                    tint = cardIconTint.value
-                )
-            }
+        if (isViewModeSwitcherVisible) {
+            Row {
+                IconButton(
+                    onClick = onCardsClick
+                ) {
+                    Icon(
+                        imageVector = Card24,
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp),
+                        tint = cardIconTint.value
+                    )
+                }
 
-            IconButton(
-                onClick = onListClick
-            ) {
-                Icon(
-                    imageVector = List24,
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp),
-                    tint = listIconTint.value
-                )
+                IconButton(
+                    onClick = onListClick
+                ) {
+                    Icon(
+                        imageVector = List24,
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp),
+                        tint = listIconTint.value
+                    )
+                }
             }
         }
     }
@@ -100,6 +103,7 @@ private fun CartToolbarPreview() {
     CartToolbar(
         tabsState = CartTabsState.All,
         viewMode = CartViewMode.List,
+        isViewModeSwitcherVisible = true,
         allItemsCount = 100,
         paymentItemsCount = 2,
         onAllClick = {},
