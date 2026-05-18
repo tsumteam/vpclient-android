@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -19,8 +20,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -151,6 +156,8 @@ private fun CartScreenContent(
         containerColor = MaterialTheme.colorScheme.background,
         contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal)
     ) { innerPadding ->
+        val pullToRefreshState = rememberPullToRefreshState()
+
         when {
             state.products.isEmpty() -> {
                 CartListLoading(
@@ -158,65 +165,81 @@ private fun CartScreenContent(
                 )
             }
             else -> {
-                ClientLazyColumn(
+                PullToRefreshBox(
+                    isRefreshing = state.isRefreshing,
+                    onRefresh = { dispatch(CartIntent.PullToRefresh) },
+                    state = pullToRefreshState,
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = innerPadding,
-                    verticalArrangement = Arrangement.spacedBy(
-                        when (state.viewMode) {
-                            CartViewMode.List -> 0.dp
-                            CartViewMode.Cards -> 24.dp
-                        }
-                    )
-                ) {
-                    items(
-                        items = state.visibleProducts,
-                        key = CartProduct::id
-                    ) { product ->
-                        when (state.viewMode) {
-                            CartViewMode.List -> {
-                                CartProductCard(
-                                    product = product,
-                                    onClick = { dispatch(CartIntent.ProductClick(product.detailId)) },
-                                    onSelectSizeClick = { dispatch(CartIntent.ShowSizePicker(product)) },
-                                    onBuySwitchChange = { paySwitch ->
-                                        dispatch(CartIntent.ChangePaySwitch(product, paySwitch))
-                                    },
-                                    onAlternativeClick = { alternative ->
-                                        dispatch(CartIntent.AlternativeClick(alternative))
-                                    },
-                                    onRemoveAlternativeClick = { alternative ->
-                                        dispatch(CartIntent.RemoveAlternativeClick(alternative))
-                                    },
-                                    onHideAlternativesClick = {
-                                        dispatch(CartIntent.HideAlternativesClick(product))
-                                    }
-                                )
-                            }
-                            CartViewMode.Cards -> {
-                                CartProductLargeCard(
-                                    product = product,
-                                    onClick = { dispatch(CartIntent.ProductClick(product.detailId)) },
-                                    onSelectSizeClick = { dispatch(CartIntent.ShowSizePicker(product)) },
-                                    onBuySwitchChange = { paySwitch ->
-                                        dispatch(CartIntent.ChangePaySwitch(product, paySwitch))
-                                    },
-                                    onAlternativeClick = { alternative ->
-                                        dispatch(CartIntent.AlternativeClick(alternative))
-                                    },
-                                    onRemoveAlternativeClick = { alternative ->
-                                        dispatch(CartIntent.RemoveAlternativeClick(alternative))
-                                    },
-                                    onHideAlternativesClick = {
-                                        dispatch(CartIntent.HideAlternativesClick(product))
-                                    }
-                                )
-                            }
-                        }
-                    }
-                    item {
-                        CartSummary(
-                            state = state
+                    indicator = {
+                        PullToRefreshDefaults.Indicator(
+                            state = pullToRefreshState,
+                            isRefreshing = state.isRefreshing,
+                            modifier = Modifier
+                                .align(Alignment.TopCenter)
+                                .padding(top = innerPadding.calculateTopPadding())
                         )
+                    }
+                ) {
+                    ClientLazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = innerPadding,
+                        verticalArrangement = Arrangement.spacedBy(
+                            when (state.viewMode) {
+                                CartViewMode.List -> 0.dp
+                                CartViewMode.Cards -> 24.dp
+                            }
+                        )
+                    ) {
+                        items(
+                            items = state.visibleProducts,
+                            key = CartProduct::id
+                        ) { product ->
+                            when (state.viewMode) {
+                                CartViewMode.List -> {
+                                    CartProductCard(
+                                        product = product,
+                                        onClick = { dispatch(CartIntent.ProductClick(product.detailId)) },
+                                        onSelectSizeClick = { dispatch(CartIntent.ShowSizePicker(product)) },
+                                        onBuySwitchChange = { paySwitch ->
+                                            dispatch(CartIntent.ChangePaySwitch(product, paySwitch))
+                                        },
+                                        onAlternativeClick = { alternative ->
+                                            dispatch(CartIntent.AlternativeClick(alternative))
+                                        },
+                                        onRemoveAlternativeClick = { alternative ->
+                                            dispatch(CartIntent.RemoveAlternativeClick(alternative))
+                                        },
+                                        onHideAlternativesClick = {
+                                            dispatch(CartIntent.HideAlternativesClick(product))
+                                        }
+                                    )
+                                }
+                                CartViewMode.Cards -> {
+                                    CartProductLargeCard(
+                                        product = product,
+                                        onClick = { dispatch(CartIntent.ProductClick(product.detailId)) },
+                                        onSelectSizeClick = { dispatch(CartIntent.ShowSizePicker(product)) },
+                                        onBuySwitchChange = { paySwitch ->
+                                            dispatch(CartIntent.ChangePaySwitch(product, paySwitch))
+                                        },
+                                        onAlternativeClick = { alternative ->
+                                            dispatch(CartIntent.AlternativeClick(alternative))
+                                        },
+                                        onRemoveAlternativeClick = { alternative ->
+                                            dispatch(CartIntent.RemoveAlternativeClick(alternative))
+                                        },
+                                        onHideAlternativesClick = {
+                                            dispatch(CartIntent.HideAlternativesClick(product))
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                        item {
+                            CartSummary(
+                                state = state
+                            )
+                        }
                     }
                 }
             }

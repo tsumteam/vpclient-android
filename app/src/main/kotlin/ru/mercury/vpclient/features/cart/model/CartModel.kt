@@ -1,5 +1,6 @@
 package ru.mercury.vpclient.features.cart.model
 
+import kotlinx.coroutines.Job
 import ru.mercury.vpclient.shared.data.FORMAT_RUB
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.SizeSelectorState
@@ -13,11 +14,14 @@ data class CartModel(
     val payMode: CartPayMode = CartPayMode.All,
     val viewMode: CartViewMode = CartViewMode.List,
     val isViewModeSwitcherVisible: Boolean = false,
+    val isRefreshing: Boolean = false,
     val products: List<CartProduct> = emptyList(),
     val selectSizeProduct: CartProduct? = null,
     val sizePickerProduct: CartProduct? = null,
     val sizePickerSizes: ProductAvailableSizesEntity? = null,
-    val sizePickerSelectedId: String? = null
+    val sizePickerSelectedId: String? = null,
+    val paySwitchJob: Job? = null,
+    val sizePickerJob: Job? = null
 ): Model {
     val sizePickerState: SizeSelectorState
         get() {

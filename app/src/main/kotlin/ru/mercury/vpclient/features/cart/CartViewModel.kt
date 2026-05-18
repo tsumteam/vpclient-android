@@ -1,7 +1,6 @@
 package ru.mercury.vpclient.features.cart
 
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.activity.event.MainEventManager
@@ -21,9 +20,6 @@ class CartViewModel @Inject constructor(
     private val productInteractor: ProductInteractor
 ): ClientViewModel<CartIntent, CartModel, Event>(CartModel()) {
 
-    private var paySwitchJob: Job? = null
-    private var sizePickerJob: Job? = null
-
     init {
         dispatch(CartIntent.CollectCart)
         dispatch(CartIntent.LoadCart)
@@ -39,9 +35,17 @@ class CartViewModel @Inject constructor(
                 }
             }
             is CartIntent.LoadCart -> launch { cartInteractor.loadBasket() }
+            is CartIntent.PullToRefresh -> {
+                if (stateFlow.value.isRefreshing) return
+                reduce { it.copy(isRefreshing = true) }
+                launch {
+                    cartInteractor.loadBasket()
+                    dispatch(CartIntent.RefreshCompleted)
+                }
+            }
+            is CartIntent.RefreshCompleted -> reduce { it.copy(isRefreshing = false) }
             is CartIntent.CloseClick -> launch { MainEventManager.send(BackRoute) }
             is CartIntent.ProductClick -> {
-                if (intent.id.isEmpty()) return
                 launch { MainEventManager.send(DetailsRoute(intent.id, openedFromCart = true)) }
             }
             is CartIntent.ChangePaySwitch -> {
@@ -50,8 +54,15 @@ class CartViewModel @Inject constructor(
                         reduce { it.copy(selectSizeProduct = intent.product) }
                     }
                     else -> {
-                        paySwitchJob?.cancel()
-                        paySwitchJob = launch { cartInteractor.changePaySwitch(intent.product, intent.paySwitch) }
+                        stateFlow.value.paySwitchJob?.cancel()
+                        val paySwitchJob = launch {
+                            try {
+                                cartInteractor.changePaySwitch(intent.product, intent.paySwitch)
+                            } finally {
+                                reduce { it.copy(paySwitchJob = null) }
+                            }
+                        }
+                        reduce { it.copy(paySwitchJob = paySwitchJob) }
                     }
                 }
             }
@@ -62,9 +73,16 @@ class CartViewModel @Inject constructor(
             is CartIntent.HideSelectSizeDialog -> reduce { it.copy(selectSizeProduct = null) }
             is CartIntent.ShowSizePicker -> {
                 if (intent.product.detailId.isEmpty()) return
-                sizePickerJob?.cancel()
-                reduce { it.copy(sizePickerProduct = intent.product, sizePickerSizes = null, sizePickerSelectedId = null) }
-                sizePickerJob = launch {
+                stateFlow.value.sizePickerJob?.cancel()
+                reduce {
+                    it.copy(
+                        sizePickerProduct = intent.product,
+                        sizePickerSizes = null,
+                        sizePickerSelectedId = null,
+                        sizePickerJob = null
+                    )
+                }
+                val sizePickerJob = launch {
                     launch { productInteractor.loadProduct(intent.product.detailId) }
                     productInteractor.productFlow(intent.product.detailId).collectLatest { entity ->
                         entity.availableSizes?.let { sizes ->
@@ -72,10 +90,18 @@ class CartViewModel @Inject constructor(
                         }
                     }
                 }
+                reduce { it.copy(sizePickerJob = sizePickerJob) }
             }
             is CartIntent.HideSizePicker -> {
-                sizePickerJob?.cancel()
-                reduce { it.copy(sizePickerProduct = null, sizePickerSizes = null, sizePickerSelectedId = null) }
+                stateFlow.value.sizePickerJob?.cancel()
+                reduce {
+                    it.copy(
+                        sizePickerProduct = null,
+                        sizePickerSizes = null,
+                        sizePickerSelectedId = null,
+                        sizePickerJob = null
+                    )
+                }
             }
             is CartIntent.ToggleSizePickerItem -> {
                 val sizeId = stateFlow.value.sizePickerSizes?.items?.getOrNull(intent.index)?.sizeId
@@ -84,8 +110,15 @@ class CartViewModel @Inject constructor(
             is CartIntent.ConfirmSizePicker -> {
                 val product = stateFlow.value.sizePickerProduct ?: return
                 val sizeId = stateFlow.value.sizePickerSelectedId ?: return
-                sizePickerJob?.cancel()
-                reduce { it.copy(sizePickerProduct = null, sizePickerSizes = null, sizePickerSelectedId = null) }
+                stateFlow.value.sizePickerJob?.cancel()
+                reduce {
+                    it.copy(
+                        sizePickerProduct = null,
+                        sizePickerSizes = null,
+                        sizePickerSelectedId = null,
+                        sizePickerJob = null
+                    )
+                }
                 launch { cartInteractor.setProductSize(product, sizeId) }
             }
             is CartIntent.AlternativeClick -> {
