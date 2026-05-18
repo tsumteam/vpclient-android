@@ -126,7 +126,7 @@ fun CartProductCard(
                     end.linkTo(buySwitch.start, 8.dp)
                     width = Dimension.fillToConstraints
                 },
-                maxLines = 1,
+                maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.regular14.copy(
                     color = MaterialTheme.colorScheme.onBackground,
@@ -143,7 +143,7 @@ fun CartProductCard(
                     end.linkTo(buySwitch.start, 8.dp)
                     width = Dimension.fillToConstraints
                 },
-                maxLines = 1,
+                maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.regular14.copy(
                     color = MaterialTheme.colorScheme.onBackground,
