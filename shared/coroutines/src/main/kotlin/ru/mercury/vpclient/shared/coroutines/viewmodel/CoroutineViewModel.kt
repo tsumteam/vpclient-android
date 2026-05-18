@@ -8,7 +8,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
-import ru.mercury.vpclient.shared.domain.mapper.log
 import timber.log.Timber
 import kotlin.coroutines.CoroutineContext
 
@@ -26,7 +25,6 @@ abstract class CoroutineViewModel: ViewModel(), CoroutineScope {
 
     @CallSuper
     protected open fun catch(throwable: Throwable) {
-        log("catch $throwable")
         Timber.d(throwable)
     }
 }

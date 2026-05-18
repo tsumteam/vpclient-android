@@ -1,9 +1,9 @@
 package ru.mercury.vpclient.shared.coroutines.impl
 
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import ru.mercury.vpclient.shared.coroutines.ClientDispatchers
-import javax.inject.Inject
 
 class ClientDispatchersImpl @Inject constructor(): ClientDispatchers {
 

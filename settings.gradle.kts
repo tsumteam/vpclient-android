@@ -1,4 +1,6 @@
 @file:Suppress("UnstableApiUsage")
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 pluginManagement {
     repositories {
         google {
@@ -24,3 +26,5 @@ dependencyResolutionManagement {
 }
 rootProject.name = "vpclient"
 include(":app")
+include(":shared:coroutines")
+include(":shared:mvi")

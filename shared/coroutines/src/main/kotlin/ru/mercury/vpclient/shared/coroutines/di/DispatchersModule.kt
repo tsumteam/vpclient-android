@@ -1,6 +1,6 @@
 @file:Suppress("unused")
 
-package ru.mercury.vpclient.shared.coroutines.inject
+package ru.mercury.vpclient.shared.coroutines.di
 
 import dagger.Binds
 import dagger.Module

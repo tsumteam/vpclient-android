@@ -147,7 +147,8 @@ androidComponents {
 }
 
 dependencies {
-    implementation(libs.kotlinx.coroutines.android)
+    implementation(projects.shared.coroutines)
+    implementation(projects.shared.mvi)
 
     implementation(libs.google.hilt.android)
     ksp(libs.google.hilt.compiler)
@@ -191,8 +192,6 @@ dependencies {
     implementation(libs.ktor.client.logging)
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.serialization.kotlinx.json)
-    implementation(libs.timber)
-
     debugImplementation(libs.okhttp.logging.interceptor)
     debugImplementation(libs.chucker.library)
     releaseImplementation(libs.chucker.library.no.op)
