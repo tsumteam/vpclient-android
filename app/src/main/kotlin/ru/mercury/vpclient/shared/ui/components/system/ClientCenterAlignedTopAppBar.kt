@@ -51,7 +51,7 @@ fun ClientCenterAlignedTopAppBar(
                 }
                 is TopBarState.Title -> {
                     Text(
-                        text = stringResource(ClientStrings.MainTabBrands),
+                        text = state.title,
                         style = MaterialTheme.typography.medium18.copy(
                             color = MaterialTheme.colorScheme.onBackground,
                             textAlign = TextAlign.Center
