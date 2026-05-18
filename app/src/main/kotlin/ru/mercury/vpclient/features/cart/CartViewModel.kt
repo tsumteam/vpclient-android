@@ -57,11 +57,11 @@ class CartViewModel @Inject constructor(
             }
             is CartIntent.SelectSizeClick -> {
                 reduce { it.copy(selectSizeProduct = null) }
-                if (intent.product.detailId.isEmpty()) return
-                launch { MainEventManager.send(DetailsRoute(intent.product.detailId, openedFromCart = true)) }
+                dispatch(CartIntent.ShowSizePicker(intent.product))
             }
             is CartIntent.HideSelectSizeDialog -> reduce { it.copy(selectSizeProduct = null) }
             is CartIntent.ShowSizePicker -> {
+                if (intent.product.detailId.isEmpty()) return
                 sizePickerJob?.cancel()
                 reduce { it.copy(sizePickerProduct = intent.product, sizePickerSizes = null, sizePickerSelectedId = null) }
                 sizePickerJob = launch {
