@@ -43,6 +43,7 @@ import ru.mercury.vpclient.shared.ui.components.cart.CartSummary
 import ru.mercury.vpclient.shared.ui.components.cart.CartTabsState
 import ru.mercury.vpclient.shared.ui.components.cart.CartToolbar
 import ru.mercury.vpclient.shared.ui.components.cart.CartToolbarLoading
+import ru.mercury.vpclient.shared.ui.components.cart.CartToolbarState
 import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.preview.CartProductProvider
@@ -121,18 +122,20 @@ private fun CartScreenContent(
                     state.products.isEmpty() -> CartToolbarLoading()
                     else -> {
                         CartToolbar(
-                            tabsState = when (state.payMode) {
-                                CartPayMode.All -> CartTabsState.All
-                                CartPayMode.Payment -> CartTabsState.Payment
-                            },
-                            viewMode = state.viewMode,
-                            isViewModeSwitcherVisible = state.isViewModeSwitcherVisible,
-                            allItemsCount = state.allItemsCount,
-                            paymentItemsCount = state.paymentItemsCount,
-                            onAllClick = { dispatch(CartIntent.SelectPayMode(CartPayMode.All)) },
-                            onPaymentClick = { dispatch(CartIntent.SelectPayMode(CartPayMode.Payment)) },
-                            onCardsClick = { dispatch(CartIntent.SelectViewMode(CartViewMode.Cards)) },
-                            onListClick = { dispatch(CartIntent.SelectViewMode(CartViewMode.List)) }
+                            state = CartToolbarState(
+                                tabsState = when (state.payMode) {
+                                    CartPayMode.All -> CartTabsState.All
+                                    CartPayMode.Payment -> CartTabsState.Payment
+                                },
+                                viewMode = state.viewMode,
+                                isViewModeSwitcherVisible = state.isViewModeSwitcherVisible,
+                                allItemsCount = state.allItemsCount,
+                                paymentItemsCount = state.paymentItemsCount,
+                                onAllClick = { dispatch(CartIntent.SelectPayMode(CartPayMode.All)) },
+                                onPaymentClick = { dispatch(CartIntent.SelectPayMode(CartPayMode.Payment)) },
+                                onCardsClick = { dispatch(CartIntent.SelectViewMode(CartViewMode.Cards)) },
+                                onListClick = { dispatch(CartIntent.SelectViewMode(CartViewMode.List)) }
+                            )
                         )
                     }
                 }
