@@ -64,7 +64,8 @@ fun CartProductLargeCard(
     onHideAlternativesClick: () -> Unit = {}
 ) {
     val articleText = product.article.takeIf { it.isNotEmpty() } ?: product.itemId
-    val isAvailabilityVisible = !product.isSold && product.size.isNotBlank() && product.isLastInStock
+    val hasSize = product.size.isNotBlank()
+    val isAvailabilityVisible = !product.isSold && hasSize && product.isLastInStock
     val isAlternativesVisible = product.isAlternativesPaletteOpen && product.alternatives.isNotEmpty()
     val isAlternativesEmptyVisible = product.isAlternativesPaletteOpen && product.alternatives.isEmpty()
 
@@ -270,28 +271,26 @@ fun CartProductLargeCard(
             }
 
             when {
-                product.isSold -> {
-                    if (product.size.isNotBlank()) {
-                        Text(
-                            text = product.size,
-                            modifier = Modifier.constrainAs(size) {
-                                width = Dimension.wrapContent
-                                height = Dimension.wrapContent
-                                top.linkTo(sold.bottom, 8.dp)
-                                start.linkTo(parent.start)
-                                end.linkTo(parent.end)
-                            },
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            style = MaterialTheme.typography.regular14.copy(
-                                color = MaterialTheme.colorScheme.secondary6,
-                                letterSpacing = .2.sp,
-                                lineHeight = 18.sp
-                            )
+                product.isSold && hasSize -> {
+                    Text(
+                        text = product.size,
+                        modifier = Modifier.constrainAs(size) {
+                            width = Dimension.wrapContent
+                            height = Dimension.wrapContent
+                            top.linkTo(sold.bottom, 8.dp)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                        },
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = MaterialTheme.typography.regular14.copy(
+                            color = MaterialTheme.colorScheme.secondary6,
+                            letterSpacing = .2.sp,
+                            lineHeight = 18.sp
                         )
-                    }
+                    )
                 }
-                product.size.isBlank() -> {
+                !product.isSold && !hasSize -> {
                     CartSelectSizeButton(
                         onClick = onSelectSizeClick,
                         modifier = Modifier.constrainAs(size) {

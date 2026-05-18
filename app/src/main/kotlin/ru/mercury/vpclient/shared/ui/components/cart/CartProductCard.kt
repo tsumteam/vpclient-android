@@ -47,7 +47,8 @@ fun CartProductCard(
 ) {
     val articleText = product.article.takeIf { it.isNotEmpty() } ?: product.itemId
     val isPriceVisible = product.priceValue > .0 && product.price.isNotBlank()
-    val isAvailabilityVisible = !product.isSold && product.size.isNotBlank() && product.isLastInStock
+    val hasSize = product.size.isNotBlank()
+    val isAvailabilityVisible = !product.isSold && hasSize && product.isLastInStock
     val isAlternativesVisible = product.isAlternativesPaletteOpen && product.alternatives.isNotEmpty()
     val isAlternativesEmptyVisible = product.isAlternativesPaletteOpen && product.alternatives.isEmpty()
 
@@ -174,36 +175,34 @@ fun CartProductCard(
             if (product.isSold) {
                 Text(
                     text = stringResource(ClientStrings.CartSold),
+                    modifier = Modifier.constrainAs(sold) {
+                        top.linkTo(image.top, 4.dp)
+                        end.linkTo(parent.end, 16.dp)
+                    },
                     style = MaterialTheme.typography.regular14.copy(
                         color = MaterialTheme.colorScheme.error,
                         lineHeight = 18.sp,
                         letterSpacing = .2.sp
-                    ),
-                    modifier = Modifier.constrainAs(sold) {
-                        top.linkTo(image.top, 4.dp)
-                        end.linkTo(parent.end, 16.dp)
-                    }
+                    )
                 )
             }
 
             when {
-                product.isSold -> {
-                    if (product.size.isNotBlank()) {
-                        Text(
-                            text = product.size,
-                            style = MaterialTheme.typography.regular14.copy(
-                                color = MaterialTheme.colorScheme.secondary6,
-                                lineHeight = 18.sp,
-                                letterSpacing = .2.sp
-                            ),
-                            modifier = Modifier.constrainAs(size) {
-                                top.linkTo(sold.bottom, 4.dp)
-                                end.linkTo(sold.end)
-                            }
+                product.isSold && hasSize -> {
+                    Text(
+                        text = product.size,
+                        modifier = Modifier.constrainAs(size) {
+                            top.linkTo(sold.bottom, 4.dp)
+                            end.linkTo(sold.end)
+                        },
+                        style = MaterialTheme.typography.regular14.copy(
+                            color = MaterialTheme.colorScheme.secondary6,
+                            lineHeight = 18.sp,
+                            letterSpacing = .2.sp
                         )
-                    }
+                    )
                 }
-                product.size.isBlank() -> {
+                !product.isSold && !hasSize -> {
                     CartSelectSizeButton(
                         onClick = onSelectSizeClick,
                         modifier = Modifier.constrainAs(size) {
@@ -215,15 +214,15 @@ fun CartProductCard(
                 else -> {
                     Text(
                         text = product.size,
+                        modifier = Modifier.constrainAs(size) {
+                            top.linkTo(buySwitch.bottom, 21.dp)
+                            end.linkTo(buySwitch.end)
+                        },
                         style = MaterialTheme.typography.regular14.copy(
                             color = MaterialTheme.colorScheme.onBackground,
                             lineHeight = 18.sp,
                             letterSpacing = .2.sp
-                        ),
-                        modifier = Modifier.constrainAs(size) {
-                            top.linkTo(buySwitch.bottom, 21.dp)
-                            end.linkTo(buySwitch.end)
-                        }
+                        )
                     )
                 }
             }
@@ -231,23 +230,18 @@ fun CartProductCard(
             if (isAvailabilityVisible) {
                 Text(
                     text = stringResource(ClientStrings.CartInStock),
-                    style = MaterialTheme.typography.regular11.copy(
-                        color = MaterialTheme.colorScheme.error
-                    ),
                     modifier = Modifier.constrainAs(availability) {
                         top.linkTo(size.bottom, 1.dp)
                         end.linkTo(size.end)
-                    }
+                    },
+                    style = MaterialTheme.typography.regular11.copy(
+                        color = MaterialTheme.colorScheme.error
+                    )
                 )
             }
 
             Text(
                 text = "х ${product.quantity}",
-                style = MaterialTheme.typography.regular14.copy(
-                    color = MaterialTheme.colorScheme.onBackground,
-                    lineHeight = 18.sp,
-                    letterSpacing = .2.sp
-                ),
                 modifier = Modifier.constrainAs(quantity) {
                     end.linkTo(parent.end, 16.dp)
                     bottom.linkTo(
@@ -260,7 +254,12 @@ fun CartProductCard(
                             else -> 3.dp
                         }
                     )
-                }
+                },
+                style = MaterialTheme.typography.regular14.copy(
+                    color = MaterialTheme.colorScheme.onBackground,
+                    lineHeight = 18.sp,
+                    letterSpacing = .2.sp
+                )
             )
         }
 

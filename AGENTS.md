@@ -20,7 +20,7 @@
 - In DAO interfaces, place all regular `fun` methods before any `suspend fun` methods
 - When changing Room database tables/entities, always increment `AppDatabase.DATABASE_VERSION`
 - We do not avoid small duplication by default; do not extract local helper functions just to remove a few repeated lines
-- For composable function calls, order arguments the same way as they are declared in the SDK/component signature
+- For composable function calls, order arguments exactly the same way as they are declared in the SDK/component signature
 - For Compose `padding(...)`, order named parameters the same way as in the method signature: `start`, `top`, `end`, `bottom`
 - For Compose `Modifier.offset(...)` backed by state, use the lambda overload, for example `Modifier.offset { ... }`
 - In Compose containers, separate sibling composable calls with a blank line
