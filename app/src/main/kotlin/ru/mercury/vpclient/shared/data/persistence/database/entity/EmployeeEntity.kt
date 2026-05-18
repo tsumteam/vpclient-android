@@ -29,10 +29,10 @@ data class EmployeeEntity(
 ) {
     companion object {
         const val ID_CALL = 0
-        const val ID_FITTING = 0
-        const val ID_CART = 0
-        const val ID_CHAT = 0
-        const val ID_SELECTION = 0
+        const val ID_FITTING = 1
+        const val ID_CART = 2
+        const val ID_CHAT = 3
+        const val ID_SELECTION = 4
 
         val Empty = EmployeeEntity(
             employeeId = "",

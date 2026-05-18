@@ -11,8 +11,9 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
+import ru.mercury.vpclient.shared.domain.mapper.basketText
+import ru.mercury.vpclient.shared.domain.mapper.hasBasketBadge
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
-import ru.mercury.vpclient.shared.ui.icons.Basket24
 import ru.mercury.vpclient.shared.ui.icons.Chat24
 import ru.mercury.vpclient.shared.ui.icons.FittingShirt24
 import ru.mercury.vpclient.shared.ui.icons.Phone24
@@ -62,11 +63,13 @@ fun ConsultantActionsRow(
                 )
         )
 
-        ConsultantActionButton(
-            icon = Basket24,
-            label = stringResource(ClientStrings.ConsultantActionCart),
-            badge = entity.basketBadge > 0,
-            onClick = { onClick(EmployeeEntity.ID_CART) },
+        ConsultantCartActionButton(
+            state = ConsultantCartActionButtonState(
+                label = stringResource(ClientStrings.ConsultantActionCart),
+                cartText = entity.basketText,
+                showBadge = entity.hasBasketBadge,
+                onClick = { onClick(EmployeeEntity.ID_CART) }
+            ),
             modifier = Modifier
                 .weight(1F)
                 .placeholder(

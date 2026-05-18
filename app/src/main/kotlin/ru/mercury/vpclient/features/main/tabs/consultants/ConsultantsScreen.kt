@@ -23,6 +23,7 @@ import ru.mercury.vpclient.features.main.tabs.consultants.intent.ConsultantsInte
 import ru.mercury.vpclient.features.main.tabs.consultants.model.ConsultantsModel
 import ru.mercury.vpclient.shared.data.entity.TopBarState
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity.Companion.ID_CART
 import ru.mercury.vpclient.shared.ui.components.consultants.ConsultantCard
 import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
 import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
@@ -103,7 +104,11 @@ private fun ConsultantsScreenContent(
                 ) { employee ->
                     ConsultantCard(
                         employee = employee,
-                        onActionClick = {},
+                        onActionClick = { actionId ->
+                            when (actionId) {
+                                ID_CART -> dispatch(ConsultantsIntent.CartClick(employee.employeeId))
+                            }
+                        },
                         onActiveClick = { dispatch(ConsultantsIntent.SetActiveConsultant(employee.employeeId)) },
                         onClick = { dispatch(ConsultantsIntent.ConsultantClick(employee.employeeId)) }
                     )

@@ -3,16 +3,17 @@ package ru.mercury.vpclient.features.main.tabs.consultants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.shared.data.persistence.database.RoomException
-import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
-import ru.mercury.vpclient.shared.data.error.ClientException
-import ru.mercury.vpclient.shared.domain.interactor.Interactor
-import ru.mercury.vpclient.shared.mvi.ClientViewModel
+import ru.mercury.vpclient.activity.event.MainEventManager
+import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.features.consultant.navigation.ConsultantRoute
 import ru.mercury.vpclient.features.main.tabs.consultants.event.ConsultantsEvents
 import ru.mercury.vpclient.features.main.tabs.consultants.intent.ConsultantsIntent
 import ru.mercury.vpclient.features.main.tabs.consultants.model.ConsultantsModel
-import ru.mercury.vpclient.activity.event.MainEventManager
+import ru.mercury.vpclient.shared.data.error.ClientException
+import ru.mercury.vpclient.shared.data.persistence.database.RoomException
+import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
+import ru.mercury.vpclient.shared.domain.interactor.Interactor
+import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import javax.inject.Inject
 
 @HiltViewModel
@@ -47,13 +48,18 @@ class ConsultantsViewModel @Inject constructor(
                     }
                 )
             }
-            is ConsultantsIntent.ConsultantClick -> launch { MainEventManager.send(ConsultantRoute(intent.consultantId)) }
+            is ConsultantsIntent.ConsultantClick -> {
+                launch { MainEventManager.send(ConsultantRoute(intent.consultantId)) }
+            }
+            is ConsultantsIntent.CartClick -> launch { MainEventManager.send(CartRoute) }
         }
     }
 
     override fun catch(throwable: Throwable) {
         when (throwable) {
-            is RoomException, is RoomSQLiteException -> launch { send(ConsultantsEvents.SnackbarMessage(throwable.message.orEmpty())) }
+            is RoomException, is RoomSQLiteException -> {
+                launch { send(ConsultantsEvents.SnackbarMessage(throwable.message.orEmpty())) }
+            }
             is ClientException -> {
                 reduce { it.copy(loadConsultantsJob = null) }
                 launch { send(ConsultantsEvents.SnackbarMessage(throwable.message)) }

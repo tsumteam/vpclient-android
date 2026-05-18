@@ -7,4 +7,5 @@ sealed interface ConsultantsIntent: Intent {
     data object LoadConsultants: ConsultantsIntent
     data class SetActiveConsultant(val consultantId: String): ConsultantsIntent
     data class ConsultantClick(val consultantId: String): ConsultantsIntent
+    data class CartClick(val consultantId: String): ConsultantsIntent
 }
