@@ -18,6 +18,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -25,6 +26,8 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -33,11 +36,14 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.launch
+import ru.mercury.vpclient.features.cart.event.CartEvent
 import ru.mercury.vpclient.features.cart.intent.CartIntent
 import ru.mercury.vpclient.features.cart.model.CartModel
 import ru.mercury.vpclient.features.cart.model.CartPayMode
 import ru.mercury.vpclient.features.cart.model.CartViewMode
 import ru.mercury.vpclient.shared.data.entity.CartProduct
+import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.cart.CartBottomBar
 import ru.mercury.vpclient.shared.ui.components.cart.CartProductLargeCard
 import ru.mercury.vpclient.shared.ui.components.cart.CartListLoading
@@ -51,6 +57,7 @@ import ru.mercury.vpclient.shared.ui.components.cart.CartToolbarLoading
 import ru.mercury.vpclient.shared.ui.components.cart.CartToolbarState
 import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
 import ru.mercury.vpclient.shared.ui.icons.Close24
+import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.preview.CartProductProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
@@ -62,17 +69,32 @@ fun CartScreen(
     viewModel: CartViewModel = hiltViewModel()
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
+    val snackbarHostStateError = remember { SnackbarHostState() }
 
     CartScreenContent(
         state = state,
-        dispatch = viewModel::dispatch
+        dispatch = viewModel::dispatch,
+        snackbarHostStateError = snackbarHostStateError
     )
+
+    ObserveAsEvents(
+        flow = viewModel.eventFlow
+    ) { event ->
+        when (event) {
+            is CartEvent.SnackbarErrorMessage -> {
+                snackbarHostStateError.currentSnackbarData?.dismiss()
+                scope.launch { snackbarHostStateError.showSnackbar(event.message) }
+            }
+        }
+    }
 }
 
 @Composable
 private fun CartScreenContent(
     state: CartModel,
-    dispatch: (CartIntent) -> Unit
+    dispatch: (CartIntent) -> Unit,
+    snackbarHostStateError: SnackbarHostState
 ) {
     state.selectSizeProduct?.let { product ->
         CartSelectSizeDialog(
@@ -151,6 +173,13 @@ private fun CartScreenContent(
                 onFittingClick = { dispatch(CartIntent.FittingClick) },
                 onBuyClick = { dispatch(CartIntent.BuyClick) },
                 onChatClick = { dispatch(CartIntent.ChatClick) }
+            )
+        },
+        snackbarHost = {
+            SharedSnackbarHost(
+                hostState = snackbarHostStateError,
+                modifier = Modifier.padding(horizontal = 16.dp),
+                containerColor = MaterialTheme.colorScheme.error
             )
         },
         containerColor = MaterialTheme.colorScheme.background,
@@ -255,6 +284,7 @@ private fun CartScreenPreview() {
         state = CartModel(
             products = CartProductProvider().values.toList()
         ),
-        dispatch = {}
+        dispatch = {},
+        snackbarHostStateError = remember { SnackbarHostState() }
     )
 }

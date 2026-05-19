@@ -4,13 +4,16 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.activity.event.MainEventManager
+import ru.mercury.vpclient.features.cart.event.CartEvent
 import ru.mercury.vpclient.features.cart.intent.CartIntent
 import ru.mercury.vpclient.features.cart.model.CartModel
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
+import ru.mercury.vpclient.shared.data.error.ClientException
+import ru.mercury.vpclient.shared.data.persistence.database.RoomException
+import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
 import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
 import ru.mercury.vpclient.shared.domain.interactor.ProductInteractor
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
-import ru.mercury.vpclient.shared.mvi.Event
 import ru.mercury.vpclient.shared.navigation.BackRoute
 import javax.inject.Inject
 
@@ -18,7 +21,7 @@ import javax.inject.Inject
 class CartViewModel @Inject constructor(
     private val cartInteractor: CartInteractor,
     private val productInteractor: ProductInteractor
-): ClientViewModel<CartIntent, CartModel, Event>(CartModel()) {
+): ClientViewModel<CartIntent, CartModel, CartEvent>(CartModel()) {
 
     init {
         dispatch(CartIntent.CollectCart)
@@ -135,6 +138,18 @@ class CartViewModel @Inject constructor(
             is CartIntent.ChatClick,
             is CartIntent.FittingClick,
             is CartIntent.BuyClick -> return
+        }
+    }
+
+    override fun catch(throwable: Throwable) {
+        when (throwable) {
+            is RoomException, is RoomSQLiteException -> {
+                launch { send(CartEvent.SnackbarErrorMessage(throwable.message.orEmpty())) }
+            }
+            is ClientException -> {
+                launch { send(CartEvent.SnackbarErrorMessage(throwable.message)) }
+            }
+            else -> super.catch(throwable)
         }
     }
 }
