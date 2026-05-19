@@ -18,7 +18,7 @@ interface CartInteractor {
 
     suspend fun switchProductWithAlternative(alternative: CartProductAlternative)
 
-    suspend fun hideAlternatives(product: CartProduct)
+    suspend fun basketHideAlternatives(product: CartProduct)
 
     suspend fun loadBasket()
 

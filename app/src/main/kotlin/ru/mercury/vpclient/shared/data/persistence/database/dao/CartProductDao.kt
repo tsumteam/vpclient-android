@@ -24,6 +24,9 @@ interface CartProductDao {
     @Query("UPDATE CartProduct SET size = :size WHERE id = :id")
     suspend fun updateSize(id: String, size: String)
 
+    @Query("UPDATE CartProduct SET isAlternativesPaletteOpen = :isOpen WHERE id = :id")
+    suspend fun updateIsAlternativesPaletteOpen(id: String, isOpen: Boolean)
+
     @Query("DELETE FROM CartProduct")
     suspend fun delete()
 }

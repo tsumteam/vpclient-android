@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
+import ru.mercury.vpclient.shared.data.error.BasketHideAlternativesException
 import ru.mercury.vpclient.shared.data.network.NetworkService
 import ru.mercury.vpclient.shared.data.network.entity.ActivityCounterTypeRequestEnum
 import ru.mercury.vpclient.shared.data.persistence.database.AppDatabase
@@ -12,13 +13,13 @@ import ru.mercury.vpclient.shared.data.persistence.database.dao.CartProductDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogFilterProductsDao
 import ru.mercury.vpclient.shared.data.persistence.datastore.PreferenceKey
 import ru.mercury.vpclient.shared.data.persistence.datastore.SettingsDataStore
+import ru.mercury.vpclient.shared.domain.mapper.basketHideAlternativesRequest
 import ru.mercury.vpclient.shared.domain.mapper.cartProduct
 import ru.mercury.vpclient.shared.domain.mapper.catalogFilterProductsEntity
 import ru.mercury.vpclient.shared.domain.mapper.changeSizeRequest
 import ru.mercury.vpclient.shared.domain.mapper.entity
 import ru.mercury.vpclient.shared.domain.mapper.handleResponse
 import ru.mercury.vpclient.shared.domain.mapper.handleResponseResult
-import ru.mercury.vpclient.shared.domain.mapper.hideAlternativesRequest
 import ru.mercury.vpclient.shared.domain.mapper.paySwitchRequest
 import ru.mercury.vpclient.shared.domain.mapper.removeAlternativeRequest
 import ru.mercury.vpclient.shared.domain.mapper.switchProductWithAlternativeRequest
@@ -119,17 +120,19 @@ class CartRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun hideAlternatives(product: CartProduct) {
+    override suspend fun basketHideAlternatives(product: CartProduct) {
         val pairedUserId = settingsDataStore.getValue(PreferenceKey.PairedUser).orEmpty()
         if (pairedUserId.isEmpty()) return
 
-        try {
-            handleResponseResult {
-                networkService.basket(product.hideAlternativesRequest(pairedUserId))
-            }.getOrThrow()
-        } finally {
-            loadBasket()
-        }
+        cartProductDao.updateIsAlternativesPaletteOpen(product.id, false)
+        handleResponse(
+            request = {
+                val request = product.basketHideAlternativesRequest(pairedUserId)
+                networkService.basket(request)
+            },
+            onSuccess = { loadBasket() },
+            onFailure = { error -> throw BasketHideAlternativesException(error.message) }
+        )
     }
 
     override suspend fun cartBadge(): Int {

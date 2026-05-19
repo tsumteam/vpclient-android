@@ -29,6 +29,7 @@
 - For screen models backed by local collections, avoid storing or updating `isLoading` when loading can be derived from the collection state; treat the screen as loading when the backing collection is empty
 - For screen data backed by Room and refreshed from network, use separate `Collect...` and `Load...` intents: `Collect...` reads Room data, `Load...` performs the network request and saves the result to Room
 - Do not write mappers in repositories; place mapping logic in mapper KTX files
+- In repository network calls, always create request objects in a separate local `val request` before calling `networkService`; do not inline request construction or mapped request calls inside `networkService` arguments
 - For each model, create a separate file; do not declare multiple model classes in one file
 - For each shared UI component, create a separate file; do not declare multiple component composables in one file
 - Create new shared UI components in shared/ui/components; when needed, group them into dedicated subfolders there

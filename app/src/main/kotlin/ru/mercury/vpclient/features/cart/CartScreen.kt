@@ -45,9 +45,9 @@ import ru.mercury.vpclient.features.cart.model.CartViewMode
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.cart.CartBottomBar
-import ru.mercury.vpclient.shared.ui.components.cart.CartProductLargeCard
 import ru.mercury.vpclient.shared.ui.components.cart.CartListLoading
 import ru.mercury.vpclient.shared.ui.components.cart.CartProductCard
+import ru.mercury.vpclient.shared.ui.components.cart.CartProductLargeCard
 import ru.mercury.vpclient.shared.ui.components.cart.CartSelectSizeDialog
 import ru.mercury.vpclient.shared.ui.components.cart.CartSizePickerSheet
 import ru.mercury.vpclient.shared.ui.components.cart.CartSummary
@@ -178,7 +178,7 @@ private fun CartScreenContent(
         snackbarHost = {
             SharedSnackbarHost(
                 hostState = snackbarHostStateError,
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
                 containerColor = MaterialTheme.colorScheme.error
             )
         },

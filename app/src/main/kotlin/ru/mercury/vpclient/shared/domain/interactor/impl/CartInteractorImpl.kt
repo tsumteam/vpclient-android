@@ -34,8 +34,8 @@ class CartInteractorImpl @Inject constructor(
         withContext(dispatchers.io) { cartRepository.switchProductWithAlternative(alternative) }
     }
 
-    override suspend fun hideAlternatives(product: CartProduct) {
-        withContext(dispatchers.io) { cartRepository.hideAlternatives(product) }
+    override suspend fun basketHideAlternatives(product: CartProduct) {
+        withContext(dispatchers.io) { cartRepository.basketHideAlternatives(product) }
     }
 
     override suspend fun loadBasket() {

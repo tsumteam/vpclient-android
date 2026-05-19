@@ -8,6 +8,7 @@ import ru.mercury.vpclient.features.cart.event.CartEvent
 import ru.mercury.vpclient.features.cart.intent.CartIntent
 import ru.mercury.vpclient.features.cart.model.CartModel
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
+import ru.mercury.vpclient.shared.data.error.BasketHideAlternativesException
 import ru.mercury.vpclient.shared.data.error.ClientException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
@@ -42,8 +43,11 @@ class CartViewModel @Inject constructor(
                 if (stateFlow.value.isRefreshing) return
                 reduce { it.copy(isRefreshing = true) }
                 launch {
-                    cartInteractor.loadBasket()
-                    dispatch(CartIntent.RefreshCompleted)
+                    try {
+                        cartInteractor.loadBasket()
+                    } finally {
+                        dispatch(CartIntent.RefreshCompleted)
+                    }
                 }
             }
             is CartIntent.RefreshCompleted -> reduce { it.copy(isRefreshing = false) }
@@ -131,7 +135,7 @@ class CartViewModel @Inject constructor(
                 launch { cartInteractor.removeAlternative(intent.alternative) }
             }
             is CartIntent.HideAlternativesClick -> {
-                launch { cartInteractor.hideAlternatives(intent.product) }
+                launch { cartInteractor.basketHideAlternatives(intent.product) }
             }
             is CartIntent.SelectPayMode -> reduce { it.copy(payMode = intent.mode) }
             is CartIntent.SelectViewMode -> reduce { it.copy(viewMode = intent.mode) }
@@ -145,6 +149,9 @@ class CartViewModel @Inject constructor(
         when (throwable) {
             is RoomException, is RoomSQLiteException -> {
                 launch { send(CartEvent.SnackbarErrorMessage(throwable.message.orEmpty())) }
+            }
+            is BasketHideAlternativesException -> {
+                launch { send(CartEvent.SnackbarErrorMessage(throwable.message)) }
             }
             is ClientException -> {
                 launch { send(CartEvent.SnackbarErrorMessage(throwable.message)) }

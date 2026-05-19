@@ -86,7 +86,7 @@ fun CartProduct.changeSizeRequest(
     )
 }
 
-fun CartProduct.hideAlternativesRequest(
+fun CartProduct.basketHideAlternativesRequest(
     pairedUserId: String
 ): BasketOperationRequestDto {
     return BasketOperationRequestDto(
