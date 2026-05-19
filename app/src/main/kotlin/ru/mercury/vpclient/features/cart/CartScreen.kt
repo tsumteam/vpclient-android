@@ -178,7 +178,7 @@ private fun CartScreenContent(
         snackbarHost = {
             SharedSnackbarHost(
                 hostState = snackbarHostStateError,
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                modifier = Modifier.padding(bottom = 16.dp),
                 containerColor = MaterialTheme.colorScheme.error
             )
         },

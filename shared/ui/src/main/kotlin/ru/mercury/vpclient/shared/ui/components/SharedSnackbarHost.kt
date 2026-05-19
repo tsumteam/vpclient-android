@@ -1,6 +1,7 @@
 package ru.mercury.vpclient.shared.ui.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDefaults
 import androidx.compose.material3.SnackbarHost
@@ -10,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun SharedSnackbarHost(
@@ -22,9 +24,9 @@ fun SharedSnackbarHost(
         modifier = modifier,
         snackbar = { snackbarData ->
             Snackbar(
-                modifier = Modifier.clickable(
-                    onClick = snackbarData::dismiss
-                ),
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .clickable(onClick = snackbarData::dismiss),
                 containerColor = containerColor
             ) {
                 Text(

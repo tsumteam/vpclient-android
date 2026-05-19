@@ -45,10 +45,10 @@ import ru.mercury.vpclient.features.login.model.LoginModel
 import ru.mercury.vpclient.shared.data.entity.PhoneValidationError
 import ru.mercury.vpclient.shared.data.entity.TopBarState
 import ru.mercury.vpclient.shared.ui.components.AgreementText
+import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.system.ClientButton
 import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
 import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
-import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.system.ClientTextField
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.preview.LoginModelProvider
@@ -131,7 +131,6 @@ private fun LoginScreenContent(
         snackbarHost = {
             SharedSnackbarHost(
                 hostState = snackbarHostStateError,
-                modifier = Modifier.padding(horizontal = 16.dp),
                 containerColor = MaterialTheme.colorScheme.error
             )
         }

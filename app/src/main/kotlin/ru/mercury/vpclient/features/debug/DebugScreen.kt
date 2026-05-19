@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,8 +39,8 @@ import ru.mercury.vpclient.features.debug.event.DebugEvent
 import ru.mercury.vpclient.features.debug.intent.DebugIntent
 import ru.mercury.vpclient.features.debug.model.DebugModel
 import ru.mercury.vpclient.features.debug.ui.DebugEnvironmentDialog
-import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
+import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
 import ru.mercury.vpclient.shared.ui.components.system.ClientTopAppBar
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.icons.Copy24
@@ -127,8 +126,7 @@ private fun DebugActivityContent(
         },
         snackbarHost = {
             SharedSnackbarHost(
-                hostState = snackbarHostState,
-                modifier = Modifier.padding(horizontal = 16.dp)
+                hostState = snackbarHostState
             )
         }
     ) { innerPadding ->

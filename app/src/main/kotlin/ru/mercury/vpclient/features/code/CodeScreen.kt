@@ -131,7 +131,6 @@ private fun CodeScreenContent(
         snackbarHost = {
             SharedSnackbarHost(
                 hostState = snackbarHostStateError,
-                modifier = Modifier.padding(horizontal = 16.dp),
                 containerColor = MaterialTheme.colorScheme.error
             )
         }
