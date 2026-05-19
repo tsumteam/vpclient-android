@@ -43,7 +43,7 @@ import ru.mercury.vpclient.shared.domain.mapper.quantityWithThousandsSeparator
 import ru.mercury.vpclient.shared.domain.mapper.requireQuantity
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.filters.FilterColorBox
-import ru.mercury.vpclient.shared.ui.components.system.ClientAnimatedVisibility
+import ru.mercury.vpclient.shared.ui.components.SharedAnimatedVisibility
 import ru.mercury.vpclient.shared.ui.components.system.ClientButton
 import ru.mercury.vpclient.shared.ui.components.system.ClientDragHandle
 import ru.mercury.vpclient.shared.ui.icons.Close24
@@ -116,7 +116,7 @@ private fun FilterColorSheetContent(
                     )
                 )
 
-                ClientAnimatedVisibility(
+                SharedAnimatedVisibility(
                     visible = state.selectedIds.isNotEmpty(),
                     modifier = Modifier.align(Alignment.CenterEnd)
                 ) {

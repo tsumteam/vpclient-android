@@ -42,7 +42,7 @@ import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_tree.model.Fi
 import ru.mercury.vpclient.shared.domain.mapper.quantityWithThousandsSeparator
 import ru.mercury.vpclient.shared.domain.mapper.requireQuantity
 import ru.mercury.vpclient.shared.ui.components.filters.FilterSelectableRow
-import ru.mercury.vpclient.shared.ui.components.system.ClientAnimatedVisibility
+import ru.mercury.vpclient.shared.ui.components.SharedAnimatedVisibility
 import ru.mercury.vpclient.shared.ui.components.system.ClientButton
 import ru.mercury.vpclient.shared.ui.components.system.ClientDragHandle
 import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
@@ -114,7 +114,7 @@ private fun FilterTreeSheetContent(
                     )
                 )
 
-                ClientAnimatedVisibility(
+                SharedAnimatedVisibility(
                     visible = state.selectedIds.isNotEmpty(),
                     modifier = Modifier.align(Alignment.CenterEnd)
                 ) {
@@ -132,7 +132,7 @@ private fun FilterTreeSheetContent(
                 }
             }
 
-            ClientAnimatedVisibility(
+            SharedAnimatedVisibility(
                 visible = state.currentParentId != null
             ) {
                 TreeBackRow(

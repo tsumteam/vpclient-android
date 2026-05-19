@@ -17,7 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
-import ru.mercury.vpclient.shared.ui.components.system.ClientAnimatedVisibility
+import ru.mercury.vpclient.shared.ui.components.SharedAnimatedVisibility
 import ru.mercury.vpclient.shared.ui.icons.Check24
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
@@ -37,7 +37,7 @@ fun FilterSelectableRow(
             .padding(horizontal = 16.dp),
         contentAlignment = Alignment.CenterStart
     ) {
-        ClientAnimatedVisibility(
+        SharedAnimatedVisibility(
             visible = selected
         ) {
             Icon(

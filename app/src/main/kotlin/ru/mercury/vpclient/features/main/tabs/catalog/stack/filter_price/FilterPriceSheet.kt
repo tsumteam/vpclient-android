@@ -38,7 +38,7 @@ import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_price.model.F
 import ru.mercury.vpclient.shared.domain.mapper.quantityWithThousandsSeparator
 import ru.mercury.vpclient.shared.domain.mapper.requireQuantity
 import ru.mercury.vpclient.shared.ui.components.filters.FilterSelectableRow
-import ru.mercury.vpclient.shared.ui.components.system.ClientAnimatedVisibility
+import ru.mercury.vpclient.shared.ui.components.SharedAnimatedVisibility
 import ru.mercury.vpclient.shared.ui.components.system.ClientButton
 import ru.mercury.vpclient.shared.ui.components.system.ClientDragHandle
 import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
@@ -109,7 +109,7 @@ private fun FilterPriceSheetContent(
                     )
                 )
 
-                ClientAnimatedVisibility(
+                SharedAnimatedVisibility(
                     visible = isResetVisible,
                     modifier = Modifier.align(Alignment.CenterEnd)
                 ) {

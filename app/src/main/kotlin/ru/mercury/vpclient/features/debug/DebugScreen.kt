@@ -41,7 +41,7 @@ import ru.mercury.vpclient.features.debug.intent.DebugIntent
 import ru.mercury.vpclient.features.debug.model.DebugModel
 import ru.mercury.vpclient.features.debug.ui.DebugEnvironmentDialog
 import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
-import ru.mercury.vpclient.shared.ui.components.system.ClientSnackbarHost
+import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.system.ClientTopAppBar
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.icons.Copy24
@@ -126,7 +126,7 @@ private fun DebugActivityContent(
             )
         },
         snackbarHost = {
-            ClientSnackbarHost(
+            SharedSnackbarHost(
                 hostState = snackbarHostState,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )

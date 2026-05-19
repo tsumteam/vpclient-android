@@ -16,7 +16,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.mercury.vpclient.shared.ui.components.system.ClientAnimatedVisibility
+import ru.mercury.vpclient.shared.ui.components.SharedAnimatedVisibility
 import ru.mercury.vpclient.shared.ui.preview.BooleanParameterProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
@@ -46,7 +46,7 @@ fun FilterBrandSectionHeader(
             )
         )
 
-        ClientAnimatedVisibility(
+        SharedAnimatedVisibility(
             visible = showSelectAll,
             modifier = Modifier.align(Alignment.CenterEnd)
         ) {

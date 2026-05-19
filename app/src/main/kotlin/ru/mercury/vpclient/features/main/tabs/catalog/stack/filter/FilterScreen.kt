@@ -87,7 +87,7 @@ import ru.mercury.vpclient.shared.ui.components.filters.FilterBrandFavoritesBar
 import ru.mercury.vpclient.shared.ui.components.filters.FilterProductsLoadingContent
 import ru.mercury.vpclient.shared.ui.components.filters.FiltersRow
 import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
-import ru.mercury.vpclient.shared.ui.components.system.ClientSnackbarHost
+import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.ktx.isContentVisible
 import ru.mercury.vpclient.shared.ui.ktx.isPagingFailure
@@ -289,7 +289,7 @@ private fun FilterScreenContent(
             )
         },
         snackbarHost = {
-            ClientSnackbarHost(
+            SharedSnackbarHost(
                 hostState = snackbarHostStateError,
                 modifier = Modifier.padding(horizontal = 16.dp),
                 containerColor = MaterialTheme.colorScheme.error

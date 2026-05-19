@@ -1,4 +1,4 @@
-package ru.mercury.vpclient.shared.ui.components.system
+package ru.mercury.vpclient.shared.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
@@ -6,17 +6,11 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewWrapper
-import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 
 @Composable
-fun ClientAnimatedVisibility(
+fun SharedAnimatedVisibility(
     visible: Boolean,
     modifier: Modifier = Modifier,
     enter: EnterTransition = fadeIn(),
@@ -30,17 +24,4 @@ fun ClientAnimatedVisibility(
         exit = exit,
         content = content
     )
-}
-
-@PreviewWrapper(ThemeWrapper::class)
-@Preview
-@Composable
-private fun ClientAnimatedVisibilityPreview() {
-    Box(
-        modifier = Modifier.background(MaterialTheme.colorScheme.background)
-    ) {
-        ClientAnimatedVisibility(
-            visible = true
-        ) {}
-    }
 }

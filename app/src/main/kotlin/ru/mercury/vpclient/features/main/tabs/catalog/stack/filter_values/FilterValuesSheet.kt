@@ -41,7 +41,7 @@ import ru.mercury.vpclient.shared.domain.mapper.requireQuantity
 import ru.mercury.vpclient.shared.domain.mapper.values
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.filters.FilterSelectableRow
-import ru.mercury.vpclient.shared.ui.components.system.ClientAnimatedVisibility
+import ru.mercury.vpclient.shared.ui.components.SharedAnimatedVisibility
 import ru.mercury.vpclient.shared.ui.components.system.ClientButton
 import ru.mercury.vpclient.shared.ui.components.system.ClientDragHandle
 import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
@@ -116,7 +116,7 @@ private fun FilterValuesSheetContent(
                     )
                 )
 
-                ClientAnimatedVisibility(
+                SharedAnimatedVisibility(
                     visible = state.selectedIds.isNotEmpty(),
                     modifier = Modifier.align(Alignment.CenterEnd)
                 ) {

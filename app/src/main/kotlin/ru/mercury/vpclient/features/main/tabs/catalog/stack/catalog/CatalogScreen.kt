@@ -39,7 +39,7 @@ import ru.mercury.vpclient.shared.ui.components.catalog.CatalogClothingCard
 import ru.mercury.vpclient.shared.ui.components.catalog.CatalogTabRow
 import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
 import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
-import ru.mercury.vpclient.shared.ui.components.system.ClientSnackbarHost
+import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.preview.CatalogModelProvider
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
@@ -125,7 +125,7 @@ private fun CatalogScreenContent(
             }
         },
         snackbarHost = {
-            ClientSnackbarHost(
+            SharedSnackbarHost(
                 hostState = snackbarHostStateError,
                 modifier = Modifier.padding(horizontal = 16.dp),
                 containerColor = MaterialTheme.colorScheme.error

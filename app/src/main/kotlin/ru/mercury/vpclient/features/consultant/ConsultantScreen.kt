@@ -40,7 +40,7 @@ import ru.mercury.vpclient.shared.ui.components.BrandBox
 import ru.mercury.vpclient.shared.ui.components.consultants.ConsultantActionsRow
 import ru.mercury.vpclient.shared.ui.components.consultants.ConsultantAvatarPlaceholder
 import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
-import ru.mercury.vpclient.shared.ui.components.system.ClientSnackbarHost
+import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.system.ClientTopAppBar
 import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
@@ -102,7 +102,7 @@ private fun ConsultantScreenContent(
             )
         },
         snackbarHost = {
-            ClientSnackbarHost(
+            SharedSnackbarHost(
                 hostState = snackbarHostStateError,
                 modifier = Modifier.padding(horizontal = 16.dp),
                 containerColor = MaterialTheme.colorScheme.error

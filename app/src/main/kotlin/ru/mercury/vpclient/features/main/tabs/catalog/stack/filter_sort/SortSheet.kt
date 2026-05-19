@@ -37,7 +37,7 @@ import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_sort.intent.S
 import ru.mercury.vpclient.shared.data.entity.SortType
 import ru.mercury.vpclient.shared.domain.mapper.isResetButtonVisible
 import ru.mercury.vpclient.shared.ui.components.filters.FilterListRow
-import ru.mercury.vpclient.shared.ui.components.system.ClientAnimatedVisibility
+import ru.mercury.vpclient.shared.ui.components.SharedAnimatedVisibility
 import ru.mercury.vpclient.shared.ui.components.system.ClientButton
 import ru.mercury.vpclient.shared.ui.components.system.ClientDragHandle
 import ru.mercury.vpclient.shared.ui.icons.Close24
@@ -110,7 +110,7 @@ private fun SortSheetContent(
                     )
                 )
 
-                ClientAnimatedVisibility(
+                SharedAnimatedVisibility(
                     visible = selectedSortType.isResetButtonVisible,
                     modifier = Modifier.align(Alignment.CenterEnd)
                 ) {

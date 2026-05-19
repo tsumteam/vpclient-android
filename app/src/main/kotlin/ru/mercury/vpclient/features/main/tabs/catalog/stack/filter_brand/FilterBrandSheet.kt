@@ -75,7 +75,7 @@ import ru.mercury.vpclient.shared.ui.components.filters.BrandSearchField
 import ru.mercury.vpclient.shared.ui.components.filters.FilterBrandSectionHeader
 import ru.mercury.vpclient.shared.ui.components.filters.FilterChip
 import ru.mercury.vpclient.shared.ui.components.filters.FilterSelectableRow
-import ru.mercury.vpclient.shared.ui.components.system.ClientAnimatedVisibility
+import ru.mercury.vpclient.shared.ui.components.SharedAnimatedVisibility
 import ru.mercury.vpclient.shared.ui.components.system.ClientButton
 import ru.mercury.vpclient.shared.ui.components.system.ClientDragHandle
 import ru.mercury.vpclient.shared.ui.icons.Close24
@@ -165,7 +165,7 @@ private fun FilterBrandSheetContent(
                     )
                 )
 
-                ClientAnimatedVisibility(
+                SharedAnimatedVisibility(
                     visible = state.selectedIds.isNotEmpty(),
                     modifier = Modifier.align(Alignment.CenterEnd)
                 ) {
@@ -412,7 +412,7 @@ private fun FilterBrandSheetContent(
                         var scrubberHeight by remember { mutableFloatStateOf(0f) }
 
                         Box(modifier = Modifier.align(Alignment.CenterEnd)) {
-                            ClientAnimatedVisibility(
+                            SharedAnimatedVisibility(
                                 visible = showScrubber,
                                 enter = fadeIn(tween(200)) + slideInHorizontally(tween(200)) { it },
                                 exit = fadeOut(tween(200)) + slideOutHorizontally(tween(200)) { it }

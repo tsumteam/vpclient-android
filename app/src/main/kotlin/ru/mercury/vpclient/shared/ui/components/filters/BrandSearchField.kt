@@ -29,7 +29,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.mercury.vpclient.shared.ui.components.system.ClientAnimatedVisibility
+import ru.mercury.vpclient.shared.ui.components.SharedAnimatedVisibility
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.icons.Search24
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
@@ -113,7 +113,7 @@ fun BrandSearchField(
             }
         )
 
-        ClientAnimatedVisibility(
+        SharedAnimatedVisibility(
             visible = value.isNotEmpty(),
             modifier = Modifier.align(Alignment.CenterEnd)
         ) {

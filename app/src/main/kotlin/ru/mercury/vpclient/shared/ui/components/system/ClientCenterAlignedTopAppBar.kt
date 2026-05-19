@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.data.entity.TopBarState
 import ru.mercury.vpclient.shared.ui.components.BrandBox
+import ru.mercury.vpclient.shared.ui.components.SharedAnimatedVisibility
 import ru.mercury.vpclient.shared.ui.components.cart.CartIconButton
 import ru.mercury.vpclient.shared.ui.components.filters.FilterScreenTitle
 import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
@@ -94,7 +95,7 @@ fun ClientCenterAlignedTopAppBar(
                     )
                 }
                 is TopBarState.Details -> {
-                    ClientAnimatedVisibility(
+                    SharedAnimatedVisibility(
                         visible = state.showBrandBox
                     ) {
                         BrandBox(
