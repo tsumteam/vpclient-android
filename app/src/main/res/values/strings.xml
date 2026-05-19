@@ -61,6 +61,8 @@
     <string name="cart_hide_alternatives">Скрыть</string>
     <string name="cart_select_size_for_payment_title">Для оплаты товара\nвыберите размер</string>
     <string name="cart_select_size_for_payment_button">Выбрать размер</string>
+    <string name="cart_look_default_title">Образ</string>
+    <string name="cart_look_add">Дополнить образ</string>
     <string name="cart_buy_item">Купить</string>
     <string name="cart_sold">Продан</string>
     <string name="cart_in_stock">1 товар в наличии!</string>

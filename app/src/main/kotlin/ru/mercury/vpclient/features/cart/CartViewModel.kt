@@ -14,9 +14,12 @@ import ru.mercury.vpclient.shared.data.persistence.database.RoomException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
 import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
 import ru.mercury.vpclient.shared.domain.interactor.ProductInteractor
+import ru.mercury.vpclient.shared.domain.mapper.withCenterLoading
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.navigation.BackRoute
 import javax.inject.Inject
+
+private const val SIZE_PICKER_LOAD_ERROR_MESSAGE = "Не удалось загрузить размеры"
 
 @HiltViewModel
 class CartViewModel @Inject constructor(
@@ -79,7 +82,11 @@ class CartViewModel @Inject constructor(
             }
             is CartIntent.HideSelectSizeDialog -> reduce { it.copy(selectSizeProduct = null) }
             is CartIntent.ShowSizePicker -> {
-                if (intent.product.detailId.isEmpty()) return
+                val detailId = intent.product.detailId
+                if (detailId.isEmpty()) {
+                    launch { send(CartEvent.SnackbarErrorMessage(SIZE_PICKER_LOAD_ERROR_MESSAGE)) }
+                    return
+                }
                 stateFlow.value.sizePickerJob?.cancel()
                 reduce {
                     it.copy(
@@ -90,10 +97,17 @@ class CartViewModel @Inject constructor(
                     )
                 }
                 val sizePickerJob = launch {
-                    launch { productInteractor.loadProduct(intent.product.detailId) }
-                    productInteractor.productFlow(intent.product.detailId).collectLatest { entity ->
+                    launch { productInteractor.loadProduct(detailId) }
+                    productInteractor.productFlow(detailId).collectLatest { entity ->
                         entity.availableSizes?.let { sizes ->
-                            reduce { it.copy(sizePickerSizes = sizes) }
+                            reduce {
+                                when (it.sizePickerProduct?.detailId) {
+                                    detailId -> {
+                                        it.copy(sizePickerSizes = sizes)
+                                    }
+                                    else -> it
+                                }
+                            }
                         }
                     }
                 }
@@ -126,7 +140,11 @@ class CartViewModel @Inject constructor(
                         sizePickerJob = null
                     )
                 }
-                launch { cartInteractor.setProductSize(product, sizeId) }
+                launch {
+                    withCenterLoading {
+                        cartInteractor.setProductSize(product, sizeId)
+                    }
+                }
             }
             is CartIntent.AlternativeClick -> {
                 launch { cartInteractor.switchProductWithAlternative(intent.alternative) }

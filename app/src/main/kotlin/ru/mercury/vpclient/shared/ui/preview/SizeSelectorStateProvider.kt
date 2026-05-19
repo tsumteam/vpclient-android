@@ -16,6 +16,7 @@ class SizeSelectorStateProvider: PreviewParameterProvider<SizeSelectorState> {
     )
 
     override val values: Sequence<SizeSelectorState> = sequenceOf(
+        SizeSelectorState.Empty,
         SizeSelectorState(
             sizes = sizes,
             topText = "IT",

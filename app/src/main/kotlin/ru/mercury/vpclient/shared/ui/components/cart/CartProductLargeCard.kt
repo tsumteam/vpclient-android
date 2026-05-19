@@ -42,6 +42,7 @@ import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
 import ru.mercury.vpclient.shared.domain.mapper.imagePages
 import ru.mercury.vpclient.shared.ui.components.BrandBox
 import ru.mercury.vpclient.shared.ui.components.HorizontalPagerIndicator
+import ru.mercury.vpclient.shared.ui.components.SharedOutlinedButton2
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.preview.CartProductProvider
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
@@ -49,6 +50,7 @@ import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.divider
 import ru.mercury.vpclient.shared.ui.theme.regular11
 import ru.mercury.vpclient.shared.ui.theme.regular14
+import ru.mercury.vpclient.shared.ui.theme.regular15
 import ru.mercury.vpclient.shared.ui.theme.secondary4
 import ru.mercury.vpclient.shared.ui.theme.secondary5
 import ru.mercury.vpclient.shared.ui.theme.secondary6
@@ -61,7 +63,8 @@ fun CartProductLargeCard(
     onBuySwitchChange: (Boolean) -> Unit = {},
     onAlternativeClick: (CartProductAlternative) -> Unit = {},
     onRemoveAlternativeClick: (CartProductAlternative) -> Unit = {},
-    onHideAlternativesClick: () -> Unit = {}
+    onHideAlternativesClick: () -> Unit = {},
+    isDividerVisible: Boolean = true
 ) {
     val articleText = product.article.takeIf { it.isNotEmpty() } ?: product.itemId
     val hasSize = product.size.isNotBlank()
@@ -291,8 +294,14 @@ fun CartProductLargeCard(
                     )
                 }
                 !product.isSold && !hasSize -> {
-                    CartSelectSizeButton(
+                    SharedOutlinedButton2(
                         onClick = onSelectSizeClick,
+                        text = stringResource(ClientStrings.CartSelectSize),
+                        textStyle = MaterialTheme.typography.regular15.copy(
+                            color = MaterialTheme.colorScheme.onBackground,
+                            lineHeight = 19.sp,
+                            letterSpacing = .2.sp
+                        ),
                         modifier = Modifier.constrainAs(size) {
                             width = Dimension.wrapContent
                             height = Dimension.wrapContent
@@ -380,11 +389,10 @@ fun CartProductLargeCard(
             )
         }
 
-        if (!isAlternativesVisible) {
+        if (isDividerVisible && !isAlternativesVisible) {
             HorizontalDivider(
                 modifier = Modifier.padding(horizontal = 16.dp),
-                color = MaterialTheme.colorScheme.divider,
-                thickness = 1.dp
+                color = MaterialTheme.colorScheme.divider
             )
         }
     }

@@ -67,6 +67,8 @@ object ClientStrings {
     val CartHideAlternatives = R.string.cart_hide_alternatives
     val CartSelectSizeForPaymentTitle = R.string.cart_select_size_for_payment_title
     val CartSelectSizeForPaymentButton = R.string.cart_select_size_for_payment_button
+    val CartLookDefaultTitle = R.string.cart_look_default_title
+    val CartLookAdd = R.string.cart_look_add
     val CartBuyItem = R.string.cart_buy_item
     val CartSold = R.string.cart_sold
     val CartInStock = R.string.cart_in_stock

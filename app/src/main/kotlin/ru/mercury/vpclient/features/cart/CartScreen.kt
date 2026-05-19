@@ -41,11 +41,12 @@ import ru.mercury.vpclient.features.cart.event.CartEvent
 import ru.mercury.vpclient.features.cart.intent.CartIntent
 import ru.mercury.vpclient.features.cart.model.CartModel
 import ru.mercury.vpclient.features.cart.model.CartPayMode
+import ru.mercury.vpclient.features.cart.model.CartProductGroup
 import ru.mercury.vpclient.features.cart.model.CartViewMode
-import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.cart.CartBottomBar
 import ru.mercury.vpclient.shared.ui.components.cart.CartListLoading
+import ru.mercury.vpclient.shared.ui.components.cart.CartLookCard
 import ru.mercury.vpclient.shared.ui.components.cart.CartProductCard
 import ru.mercury.vpclient.shared.ui.components.cart.CartProductLargeCard
 import ru.mercury.vpclient.shared.ui.components.cart.CartSelectSizeDialog
@@ -103,7 +104,7 @@ private fun CartScreenContent(
         )
     }
 
-    if (state.sizePickerSizes != null) {
+    if (state.sizePickerProduct != null) {
         CartSizePickerSheet(
             state = state.sizePickerState,
             onSizeClick = { index -> dispatch(CartIntent.ToggleSizePickerItem(index)) },
@@ -220,56 +221,92 @@ private fun CartScreenContent(
                         )
                     ) {
                         items(
-                            items = state.visibleProducts,
-                            key = CartProduct::id
-                        ) { product ->
-                            when (state.viewMode) {
-                                CartViewMode.List -> {
-                                    CartProductCard(
-                                        product = product,
-                                        onClick = { dispatch(CartIntent.ProductClick(product.detailId)) },
-                                        onSelectSizeClick = { dispatch(CartIntent.ShowSizePicker(product)) },
-                                        onBuySwitchChange = { paySwitch ->
-                                            dispatch(CartIntent.ChangePaySwitch(product, paySwitch))
-                                        },
-                                        onAlternativeClick = { alternative ->
-                                            dispatch(CartIntent.AlternativeClick(alternative))
-                                        },
-                                        onRemoveAlternativeClick = { alternative ->
-                                            dispatch(CartIntent.RemoveAlternativeClick(alternative))
-                                        },
-                                        onHideAlternativesClick = {
-                                            dispatch(CartIntent.HideAlternativesClick(product))
-                                        }
-                                    )
-                                }
-                                CartViewMode.Cards -> {
-                                    CartProductLargeCard(
-                                        product = product,
-                                        onClick = { dispatch(CartIntent.ProductClick(product.detailId)) },
-                                        onSelectSizeClick = { dispatch(CartIntent.ShowSizePicker(product)) },
-                                        onBuySwitchChange = { paySwitch ->
-                                            dispatch(CartIntent.ChangePaySwitch(product, paySwitch))
-                                        },
-                                        onAlternativeClick = { alternative ->
-                                            dispatch(CartIntent.AlternativeClick(alternative))
-                                        },
-                                        onRemoveAlternativeClick = { alternative ->
-                                            dispatch(CartIntent.RemoveAlternativeClick(alternative))
-                                        },
-                                        onHideAlternativesClick = {
-                                            dispatch(CartIntent.HideAlternativesClick(product))
-                                        }
-                                    )
-                                }
-                            }
+                            items = state.visibleProductGroups,
+                            key = CartProductGroup::key
+                        ) { group ->
+                            CartProductGroupItem(
+                                group = group,
+                                viewMode = state.viewMode,
+                                dispatch = dispatch
+                            )
                         }
+
                         item {
                             CartSummary(
                                 state = state
                             )
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CartProductGroupItem(
+    group: CartProductGroup,
+    viewMode: CartViewMode,
+    dispatch: (CartIntent) -> Unit
+) {
+    when {
+        group.isLook -> {
+            CartLookCard(
+                lookName = group.lookName,
+                lookImageUrl = group.lookImageUrl,
+                products = group.products,
+                isLargeCard = viewMode == CartViewMode.Cards,
+                onAddClick = {},
+                onProductClick = { product -> dispatch(CartIntent.ProductClick(product.detailId)) },
+                onSelectSizeClick = { product -> dispatch(CartIntent.ShowSizePicker(product)) },
+                onBuySwitchChange = { product, paySwitch ->
+                    dispatch(CartIntent.ChangePaySwitch(product, paySwitch))
+                },
+                onAlternativeClick = { alternative -> dispatch(CartIntent.AlternativeClick(alternative)) },
+                onRemoveAlternativeClick = { alternative -> dispatch(CartIntent.RemoveAlternativeClick(alternative)) },
+                onHideAlternativesClick = { product -> dispatch(CartIntent.HideAlternativesClick(product)) }
+            )
+        }
+        else -> {
+            val product = group.products.first()
+            when (viewMode) {
+                CartViewMode.List -> {
+                    CartProductCard(
+                        product = product,
+                        onClick = { dispatch(CartIntent.ProductClick(product.detailId)) },
+                        onSelectSizeClick = { dispatch(CartIntent.ShowSizePicker(product)) },
+                        onBuySwitchChange = { paySwitch ->
+                            dispatch(CartIntent.ChangePaySwitch(product, paySwitch))
+                        },
+                        onAlternativeClick = { alternative ->
+                            dispatch(CartIntent.AlternativeClick(alternative))
+                        },
+                        onRemoveAlternativeClick = { alternative ->
+                            dispatch(CartIntent.RemoveAlternativeClick(alternative))
+                        },
+                        onHideAlternativesClick = {
+                            dispatch(CartIntent.HideAlternativesClick(product))
+                        }
+                    )
+                }
+                CartViewMode.Cards -> {
+                    CartProductLargeCard(
+                        product = product,
+                        onClick = { dispatch(CartIntent.ProductClick(product.detailId)) },
+                        onSelectSizeClick = { dispatch(CartIntent.ShowSizePicker(product)) },
+                        onBuySwitchChange = { paySwitch ->
+                            dispatch(CartIntent.ChangePaySwitch(product, paySwitch))
+                        },
+                        onAlternativeClick = { alternative ->
+                            dispatch(CartIntent.AlternativeClick(alternative))
+                        },
+                        onRemoveAlternativeClick = { alternative ->
+                            dispatch(CartIntent.RemoveAlternativeClick(alternative))
+                        },
+                        onHideAlternativesClick = {
+                            dispatch(CartIntent.HideAlternativesClick(product))
+                        }
+                    )
                 }
             }
         }

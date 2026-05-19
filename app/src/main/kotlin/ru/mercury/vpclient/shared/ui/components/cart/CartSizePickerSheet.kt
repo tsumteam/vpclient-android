@@ -2,32 +2,38 @@
 
 package ru.mercury.vpclient.shared.ui.components.cart
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.shared.data.entity.SizeSelectorState
+import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
+import ru.mercury.vpclient.shared.ui.components.DialogToolbar
+import ru.mercury.vpclient.shared.ui.components.SharedButton
+import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.details.DetailsSizeSelector
-import ru.mercury.vpclient.shared.ui.components.system.ClientButton
-import ru.mercury.vpclient.shared.ui.components.system.ClientDragHandle
-import ru.mercury.vpclient.shared.ui.icons.Close24
+import ru.mercury.vpclient.shared.ui.placeholder
+import ru.mercury.vpclient.shared.ui.preview.SizeSelectorStateProvider
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
+import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.livretMedium19
+import ru.mercury.vpclient.shared.ui.theme.disabled
+import ru.mercury.vpclient.shared.ui.theme.medium15
+import ru.mercury.vpclient.shared.ui.theme.onDisabled
+import ru.mercury.vpclient.shared.ui.theme.surface4
 
 @Composable
 fun CartSizePickerSheet(
@@ -46,58 +52,83 @@ fun CartSizePickerSheet(
         }
     }
 
-    ModalBottomSheet(
+    SharedModalBottomSheet(
         onDismissRequest = onDismissRequest,
-        sheetState = sheetState,
-        sheetGesturesEnabled = false,
-        containerColor = Color.White,
-        dragHandle = { ClientDragHandle() }
+        sheetState = sheetState
     ) {
-        Column {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
-            ) {
-                IconButton(
-                    onClick = dismiss,
-                    modifier = Modifier.align(Alignment.CenterStart)
-                ) {
-                    Icon(
-                        imageVector = Close24,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onBackground
-                    )
+        CartSizePickerSheetContent(
+            state = state,
+            onSizeClick = onSizeClick,
+            onConfirmClick = {
+                scope.launch {
+                    sheetState.hide()
+                    onConfirmClick()
                 }
+            },
+            onCloseClick = dismiss
+        )
+    }
+}
 
-                Text(
-                    text = stringResource(ClientStrings.CartSelectSize).uppercase(),
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(horizontal = 56.dp),
-                    style = MaterialTheme.typography.livretMedium19.copy(
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
+@Composable
+fun CartSizePickerSheetContent(
+    state: SizeSelectorState,
+    onSizeClick: (Int) -> Unit,
+    onConfirmClick: () -> Unit,
+    onCloseClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+    ) {
+        DialogToolbar(
+            text = stringResource(ClientStrings.CartSelectSize).uppercase(),
+            onCloseClick = onCloseClick
+        )
+
+        when (state) {
+            SizeSelectorState.Empty -> CartSizePickerLoading()
+            else -> {
+                DetailsSizeSelector(
+                    state = state,
+                    onSizeClick = onSizeClick,
+                    onSizeTableClick = {}
                 )
             }
-
-            DetailsSizeSelector(
-                state = state,
-                onSizeClick = onSizeClick,
-                onSizeTableClick = {},
-                modifier = Modifier.padding(top = 8.dp)
-            )
-
-            ClientButton(
-                onClick = {
-                    scope.launch {
-                        sheetState.hide()
-                        onConfirmClick()
-                    }
-                },
-                text = stringResource(ClientStrings.CartSelectSizeForPaymentButton),
-                modifier = Modifier.padding(start = 16.dp, top = 28.dp, end = 16.dp, bottom = 8.dp)
-            )
         }
+
+        SharedButton(
+            onClick = onConfirmClick,
+            text = stringResource(ClientStrings.CartSelectSizeForPaymentButton),
+            textStyle = MaterialTheme.typography.medium15.copy(
+                textAlign = TextAlign.Center,
+                letterSpacing = .3.sp
+            ),
+            enabled = state.sizes.any { it.selected },
+            disabledContainerColor = MaterialTheme.colorScheme.disabled,
+            disabledContentColor = MaterialTheme.colorScheme.onDisabled,
+            modifier = Modifier
+                .padding(start = 16.dp, top = 28.dp, end = 16.dp, bottom = 8.dp)
+                .placeholder(
+                    visible = state == SizeSelectorState.Empty,
+                    highlight = PlaceholderHighlight.shimmer(),
+                    color = MaterialTheme.colorScheme.surface4,
+                    shape = RoundedCornerShape(8.dp)
+                )
+        )
     }
+}
+
+@PreviewWrapper(ThemeWrapper::class)
+@Preview(showBackground = true)
+@Composable
+private fun CartSizePickerSheetContentPreview(
+    @PreviewParameter(SizeSelectorStateProvider::class) state: SizeSelectorState
+) {
+    CartSizePickerSheetContent(
+        state = state,
+        onSizeClick = {},
+        onConfirmClick = {},
+        onCloseClick = {}
+    )
 }

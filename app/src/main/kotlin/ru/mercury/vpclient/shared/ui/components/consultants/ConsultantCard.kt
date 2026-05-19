@@ -139,7 +139,6 @@ fun ConsultantCard(
 
         HorizontalDivider(
             modifier = Modifier.padding(horizontal = 16.dp),
-            thickness = 1.dp,
             color = MaterialTheme.colorScheme.secondary5
         )
     }

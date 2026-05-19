@@ -49,6 +49,35 @@ data class CartModel(
             }
         }
 
+    val visibleProductGroups: List<CartProductGroup>
+        get() {
+            val products = visibleProducts
+            val lookProducts = products.filter { !it.lookId.isNullOrEmpty() }
+            val noLookProducts = products.filter { it.lookId.isNullOrEmpty() }
+            val lookGroups = lookProducts
+                .groupBy { it.lookId.orEmpty() }
+                .toSortedMap()
+                .map { (_, products) ->
+                    val firstProduct = products.first()
+                    CartProductGroup(
+                        lookId = firstProduct.lookId,
+                        lookName = firstProduct.lookName.orEmpty(),
+                        lookImageUrl = firstProduct.lookImageUrl,
+                        products = products
+                    )
+                }
+            val productGroups = noLookProducts.map { product ->
+                CartProductGroup(
+                    lookId = null,
+                    lookName = "",
+                    lookImageUrl = null,
+                    products = listOf(product)
+                )
+            }
+
+            return lookGroups + productGroups
+        }
+
     val allItemsCount: Int
         get() {
             return products.sumOf { it.itemsCount }

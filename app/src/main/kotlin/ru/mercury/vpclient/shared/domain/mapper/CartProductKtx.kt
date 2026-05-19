@@ -81,6 +81,14 @@ fun CartProduct.changeSizeRequest(
                     lineId = id,
                     sizeId = sizeId
                 )
+            ),
+            cartProductJson.encodeToJsonElement(
+                BasketChangeLinePaySwitchOperationRequestItemDto(
+                    operationType = BasketOperationRequestTypeEnum.CHANGE_LINE_PAY_SWITCH,
+                    operationOrder = 1,
+                    lineId = id,
+                    paySwitch = true
+                )
             )
         )
     )

@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.map
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
 import ru.mercury.vpclient.shared.data.error.BasketHideAlternativesException
+import ru.mercury.vpclient.shared.data.error.ClientException
 import ru.mercury.vpclient.shared.data.network.NetworkService
 import ru.mercury.vpclient.shared.data.network.entity.ActivityCounterTypeRequestEnum
 import ru.mercury.vpclient.shared.data.persistence.database.AppDatabase
@@ -15,6 +16,7 @@ import ru.mercury.vpclient.shared.data.persistence.datastore.PreferenceKey
 import ru.mercury.vpclient.shared.data.persistence.datastore.SettingsDataStore
 import ru.mercury.vpclient.shared.domain.mapper.basketHideAlternativesRequest
 import ru.mercury.vpclient.shared.domain.mapper.cartProduct
+import ru.mercury.vpclient.shared.domain.mapper.cartProductWithLook
 import ru.mercury.vpclient.shared.domain.mapper.catalogFilterProductsEntity
 import ru.mercury.vpclient.shared.domain.mapper.changeSizeRequest
 import ru.mercury.vpclient.shared.domain.mapper.entity
@@ -50,7 +52,8 @@ class CartRepositoryImpl @Inject constructor(
             request = { networkService.basketByPairedUserId(pairedUserId) },
             onSuccess = { cart ->
                 val lines = cart.lines.orEmpty()
-                val products = lines.mapNotNull { it.cartProduct }
+                val looks = cart.looks.orEmpty()
+                val products = lines.mapNotNull { it.cartProductWithLook(looks) }
                 val catalogFilterProductsEntities = products.mapIndexedNotNull { index, product -> product.catalogFilterProductsEntity(index) }
                 val cartProductEntities = products.mapIndexed { index, product -> product.entity(index) }
                 catalogFilterProductsDao.upsert(catalogFilterProductsEntities)
@@ -84,13 +87,13 @@ class CartRepositoryImpl @Inject constructor(
         val pairedUserId = settingsDataStore.getValue(PreferenceKey.PairedUser).orEmpty()
         if (pairedUserId.isEmpty()) return
 
-        cartProductDao.updateSize(product.id, sizeId)
-        try {
-            handleResponseResult {
-                networkService.basket(product.changeSizeRequest(pairedUserId, sizeId))
-            }.getOrThrow()
-        } finally {
-            loadBasket()
+        val request = product.changeSizeRequest(pairedUserId, sizeId)
+        val response = networkService.basketResponse(request)
+        when (response.status.value) {
+            in 200..299 -> {
+                loadBasket()
+            }
+            else -> throw ClientException(response.status.description)
         }
     }
 

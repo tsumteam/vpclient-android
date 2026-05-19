@@ -18,6 +18,9 @@ class CartProductProvider: PreviewParameterProvider<CartProduct> {
             color = "Белый",
             size = "IT 48",
             price = "1 600 000 ₽",
+            lookId = "look_1",
+            lookName = "Образ",
+            lookImageUrl = "",
             imageUrl = "",
             isForPayment = true,
             priceValue = 1_600_000.0
@@ -35,6 +38,9 @@ class CartProductProvider: PreviewParameterProvider<CartProduct> {
             size = "FR 38",
             price = "300 000 ₽",
             oldPrice = "400 000 ₽",
+            lookId = "look_1",
+            lookName = "Образ",
+            lookImageUrl = "",
             imageUrl = "",
             isForPayment = false,
             quantity = 2,
@@ -77,6 +83,22 @@ class CartProductProvider: PreviewParameterProvider<CartProduct> {
                 )
             ),
             priceValue = 580_000.0
+        ),
+        CartProduct(
+            id = "4",
+            detailId = "4",
+            itemId = "4",
+            colorId = "4",
+            brand = "KITON",
+            urlBrandLogo = null,
+            name = "Шерстяной жакет",
+            article = "KT554210",
+            color = "Темно-синий",
+            size = "",
+            price = "920 000 ₽",
+            imageUrl = "",
+            isForPayment = false,
+            priceValue = 920_000.0
         )
     )
 }

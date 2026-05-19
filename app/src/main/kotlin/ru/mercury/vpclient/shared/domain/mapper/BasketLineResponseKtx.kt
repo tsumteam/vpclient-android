@@ -7,6 +7,7 @@ import ru.mercury.vpclient.shared.data.network.entity.AlternativesPaletteStatusE
 import ru.mercury.vpclient.shared.data.network.entity.BasketAlternativeResponseDto
 import ru.mercury.vpclient.shared.data.network.entity.BasketAlternativeType
 import ru.mercury.vpclient.shared.data.network.entity.BasketLineResponseDto
+import ru.mercury.vpclient.shared.data.network.entity.BasketLookResponseDto
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
@@ -44,6 +45,7 @@ val BasketLineResponseDto.cartProduct: CartProduct?
             size = sizes.joinToString(", ") { it.name.orEmpty() },
             price = price.formattedCartPrice,
             oldPrice = oldPrice.formattedOldCartPrice(price),
+            lookId = lookId,
             imageUrl = imageUrl,
             imageUrls = imageUrls,
             isForPayment = paySwitch ?: product?.paySwitch ?: false,
@@ -58,6 +60,15 @@ val BasketLineResponseDto.cartProduct: CartProduct?
             priceValue = price
         )
     }
+
+fun BasketLineResponseDto.cartProductWithLook(looks: List<BasketLookResponseDto>): CartProduct? {
+    val product = cartProduct ?: return null
+    val look = looks.firstOrNull { it.lookId == product.lookId }
+    return product.copy(
+        lookName = look?.name,
+        lookImageUrl = look?.imageUrl
+    )
+}
 
 private val BasketAlternativeResponseDto.cartProductAlternative: CartProductAlternative?
     get() {

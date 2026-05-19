@@ -591,6 +591,14 @@ class NetworkService @Inject constructor(
         }.body()
     }
 
+    suspend fun basketResponse(
+        request: BasketOperationRequestDto
+    ): HttpResponse {
+        return ktorHttpClient.post("basket") {
+            setBody(request)
+        }
+    }
+
     suspend fun basketAddProductByBarcode(
         request: BasketAddProductByBarcodeRequestDto
     ): BaseResponse<JsonElement> {

@@ -26,6 +26,7 @@ import androidx.constraintlayout.compose.Dimension
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
+import ru.mercury.vpclient.shared.ui.components.SharedOutlinedButton2
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.preview.CartProductProvider
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
@@ -33,6 +34,7 @@ import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.divider
 import ru.mercury.vpclient.shared.ui.theme.regular11
 import ru.mercury.vpclient.shared.ui.theme.regular14
+import ru.mercury.vpclient.shared.ui.theme.regular15
 import ru.mercury.vpclient.shared.ui.theme.secondary6
 
 @Composable
@@ -43,7 +45,8 @@ fun CartProductCard(
     onBuySwitchChange: (Boolean) -> Unit = {},
     onAlternativeClick: (CartProductAlternative) -> Unit = {},
     onRemoveAlternativeClick: (CartProductAlternative) -> Unit = {},
-    onHideAlternativesClick: () -> Unit = {}
+    onHideAlternativesClick: () -> Unit = {},
+    isDividerVisible: Boolean = true
 ) {
     val articleText = product.article.takeIf { it.isNotEmpty() } ?: product.itemId
     val isPriceVisible = product.priceValue > .0 && product.price.isNotBlank()
@@ -207,8 +210,14 @@ fun CartProductCard(
                     )
                 }
                 !product.isSold && !hasSize -> {
-                    CartSelectSizeButton(
+                    SharedOutlinedButton2(
                         onClick = onSelectSizeClick,
+                        text = stringResource(ClientStrings.CartSelectSize),
+                        textStyle = MaterialTheme.typography.regular15.copy(
+                            color = MaterialTheme.colorScheme.onBackground,
+                            lineHeight = 19.sp,
+                            letterSpacing = .2.sp
+                        ),
                         modifier = Modifier.constrainAs(size) {
                             top.linkTo(buySwitch.bottom, 21.dp)
                             end.linkTo(buySwitch.end)
@@ -281,11 +290,10 @@ fun CartProductCard(
             )
         }
 
-        if (!isAlternativesVisible) {
+        if (isDividerVisible && !isAlternativesVisible) {
             HorizontalDivider(
                 modifier = Modifier.padding(horizontal = 16.dp),
-                color = MaterialTheme.colorScheme.divider,
-                thickness = 1.dp
+                color = MaterialTheme.colorScheme.divider
             )
         }
     }
