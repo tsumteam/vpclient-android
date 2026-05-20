@@ -29,9 +29,10 @@ import ru.mercury.vpclient.shared.ui.theme.regular12
 
 @Composable
 fun CartProductSwipeAction(
-    imageVector: ImageVector,
+    imageVector: ImageVector?,
     text: String,
     backgroundColor: Color,
+    contentColor: Color = MaterialTheme.colorScheme.onPrimary,
     modifier: Modifier = Modifier,
     width: Dp = 88.dp
 ) {
@@ -44,17 +45,19 @@ fun CartProductSwipeAction(
         verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Icon(
-            imageVector = imageVector,
-            contentDescription = null,
-            modifier = Modifier.size(24.dp),
-            tint = MaterialTheme.colorScheme.onPrimary
-        )
+        imageVector?.let { vector ->
+            Icon(
+                imageVector = vector,
+                contentDescription = null,
+                modifier = Modifier.size(24.dp),
+                tint = contentColor
+            )
+        }
 
         Text(
             text = text,
             style = MaterialTheme.typography.regular12.copy(
-                color = MaterialTheme.colorScheme.onPrimary,
+                color = contentColor,
                 lineHeight = 16.sp,
                 letterSpacing = .2.sp,
                 textAlign = TextAlign.Center

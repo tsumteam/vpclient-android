@@ -74,6 +74,11 @@ object ClientStrings {
     val CartInStock = R.string.cart_in_stock
     val CartEdit = R.string.cart_edit
     val CartDelete = R.string.cart_delete
+    val CartDisassembleLook = R.string.cart_disassemble_look
+    val CartDetachFromLook = R.string.cart_detach_from_look
+    val CartReturnOriginal = R.string.cart_return_original
+    val CartShowAlternatives = R.string.cart_show_alternatives
+    val CartHideAlternativesList = R.string.cart_hide_alternatives_list
     val CartInBasket = R.string.cart_in_basket
     val CartToPayment = R.string.cart_to_payment
     val CartConsultantName = R.string.cart_consultant_name

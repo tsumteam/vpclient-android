@@ -72,328 +72,343 @@ fun CartProductLargeCard(
     val isAlternativesVisible = product.isAlternativesPaletteOpen && product.alternatives.isNotEmpty()
     val isAlternativesEmptyVisible = product.isAlternativesPaletteOpen && product.alternatives.isEmpty()
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
+    CartProductSwipeableCard(
+        leadingActionsContent = { swipeProgress ->
+            CartProductLeadingSwipeActions(
+                swipeProgress = swipeProgress
+            )
+        },
+        trailingActionsContent = { swipeProgress ->
+            CartProductTrailingSwipeActions(
+                swipeProgress = swipeProgress
+            )
+        },
+        leadingSwipeSize = 264.dp,
+        trailingSwipeSize = 264.dp
     ) {
-        ConstraintLayout(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(min = 412.dp)
+                .clickable(onClick = onClick)
         ) {
-            val (
-                pager,
-                indicator,
-                brand,
-                title,
-                color,
-                price,
-                article,
-                quantity,
-                sold,
-                size,
-                availability,
-                buyRow
-            ) = createRefs()
-
-            val pagerImages = remember(product.imagePages) { product.imagePages }
-            val pagerState = rememberPagerState(
-                initialPage = 0,
-                pageCount = { Int.MAX_VALUE }
-            )
-            val configuration = LocalConfiguration.current
-            val titleMaxWidth = (configuration.screenWidthDp / 2).dp - 24.dp
-
-            LaunchedEffect(pagerImages.size) {
-                val mid = Int.MAX_VALUE / 2
-                pagerState.scrollToPage(mid - mid % pagerImages.size)
-            }
-
-            HorizontalPager(
-                state = pagerState,
+            ConstraintLayout(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(284.dp)
-                    .constrainAs(pager) {
+                    .heightIn(min = 412.dp)
+            ) {
+                val (
+                    pager,
+                    indicator,
+                    brand,
+                    title,
+                    color,
+                    price,
+                    article,
+                    quantity,
+                    sold,
+                    size,
+                    availability,
+                    buyRow
+                ) = createRefs()
+
+                val pagerImages = remember(product.imagePages) { product.imagePages }
+                val pagerState = rememberPagerState(
+                    initialPage = 0,
+                    pageCount = { Int.MAX_VALUE }
+                )
+                val configuration = LocalConfiguration.current
+                val titleMaxWidth = (configuration.screenWidthDp / 2).dp - 24.dp
+
+                LaunchedEffect(pagerImages.size) {
+                    val mid = Int.MAX_VALUE / 2
+                    pagerState.scrollToPage(mid - mid % pagerImages.size)
+                }
+
+                HorizontalPager(
+                    state = pagerState,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(284.dp)
+                        .constrainAs(pager) {
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                            top.linkTo(parent.top, 16.dp)
+                        },
+                    userScrollEnabled = pagerImages.size > 1
+                ) { page ->
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        ClientAsyncImage(
+                            imageUrl = pagerImages[page % pagerImages.size],
+                            modifier = Modifier.size(width = 184.dp, height = 284.dp),
+                            contentScale = ContentScale.Fit
+                        )
+                    }
+                }
+
+                Row(
+                    modifier = Modifier.constrainAs(indicator) {
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
-                        top.linkTo(parent.top, 16.dp)
+                        top.linkTo(pager.bottom)
+                        height = Dimension.value(44.dp)
+                        width = Dimension.value(184.dp)
                     },
-                userScrollEnabled = pagerImages.size > 1
-            ) { page ->
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    ClientAsyncImage(
-                        imageUrl = pagerImages[page % pagerImages.size],
-                        modifier = Modifier.size(width = 184.dp, height = 284.dp),
-                        contentScale = ContentScale.Fit
+                    HorizontalPagerIndicator(
+                        pagerState = pagerState,
+                        pageCount = pagerImages.size,
+                        pageIndexMapping = { it % pagerImages.size },
+                        activeColor = MaterialTheme.colorScheme.onBackground,
+                        inactiveColor = MaterialTheme.colorScheme.secondary5,
+                        indicatorWidth = 6.dp,
+                        indicatorHeight = 6.dp,
+                        spacing = 10.dp
                     )
                 }
-            }
 
-            Row(
-                modifier = Modifier.constrainAs(indicator) {
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    top.linkTo(pager.bottom)
-                    height = Dimension.value(44.dp)
-                    width = Dimension.value(184.dp)
-                },
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                HorizontalPagerIndicator(
-                    pagerState = pagerState,
-                    pageCount = pagerImages.size,
-                    pageIndexMapping = { it % pagerImages.size },
-                    activeColor = MaterialTheme.colorScheme.onBackground,
-                    inactiveColor = MaterialTheme.colorScheme.secondary5,
-                    indicatorWidth = 6.dp,
-                    indicatorHeight = 6.dp,
-                    spacing = 10.dp
+                BrandBox(
+                    entity = BrandEntity(
+                        brand = product.brand,
+                        urlBrandLogo = product.urlBrandLogo
+                    ),
+                    modifier = Modifier
+                        .size(width = 134.dp, height = 28.dp)
+                        .constrainAs(brand) {
+                            width = Dimension.wrapContent
+                            height = Dimension.wrapContent
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                            top.linkTo(indicator.bottom)
+                        }
                 )
-            }
 
-            BrandBox(
-                entity = BrandEntity(
-                    brand = product.brand,
-                    urlBrandLogo = product.urlBrandLogo
-                ),
-                modifier = Modifier
-                    .size(width = 134.dp, height = 28.dp)
-                    .constrainAs(brand) {
-                        width = Dimension.wrapContent
-                        height = Dimension.wrapContent
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                        top.linkTo(indicator.bottom)
-                    }
-            )
-
-            Text(
-                text = product.name,
-                modifier = Modifier
-                    .widthIn(max = titleMaxWidth)
-                    .constrainAs(title) {
-                        width = Dimension.wrapContent
-                        height = Dimension.wrapContent
-                        start.linkTo(parent.start, 24.dp)
-                        top.linkTo(brand.bottom, 14.dp)
-                    },
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.regular14.copy(
-                    color = MaterialTheme.colorScheme.onBackground,
-                    letterSpacing = .2.sp,
-                    lineHeight = 18.sp
-                )
-            )
-
-            Text(
-                text = product.color,
-                modifier = Modifier.constrainAs(color) {
-                    width = Dimension.wrapContent
-                    height = Dimension.wrapContent
-                    start.linkTo(title.start)
-                    top.linkTo(title.bottom, 4.dp)
-                },
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.regular14.copy(
-                    color = MaterialTheme.colorScheme.onBackground,
-                    letterSpacing = .2.sp,
-                    lineHeight = 18.sp
-                )
-            )
-
-            CartPriceRow(
-                product = product,
-                modifier = Modifier.constrainAs(price) {
-                    width = Dimension.wrapContent
-                    height = Dimension.wrapContent
-                    start.linkTo(title.start)
-                    top.linkTo(color.bottom, 8.dp)
-                }
-            )
-
-            Text(
-                text = stringResource(ClientStrings.CartArticle, articleText),
-                modifier = Modifier.constrainAs(article) {
-                    width = Dimension.wrapContent
-                    height = Dimension.wrapContent
-                    top.linkTo(title.top)
-                    end.linkTo(parent.end, 16.dp)
-                },
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.regular14.copy(
-                    color = MaterialTheme.colorScheme.onBackground,
-                    letterSpacing = .2.sp,
-                    lineHeight = 18.sp
-                )
-            )
-
-            Text(
-                text = "х ${product.quantity}",
-                modifier = Modifier.constrainAs(quantity) {
-                    width = Dimension.wrapContent
-                    height = Dimension.wrapContent
-                    top.linkTo(article.bottom, 4.dp)
-                    end.linkTo(parent.end, 16.dp)
-                },
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.regular14.copy(
-                    color = MaterialTheme.colorScheme.onBackground,
-                    letterSpacing = .2.sp,
-                    lineHeight = 18.sp
-                )
-            )
-
-            if (product.isSold) {
                 Text(
-                    text = stringResource(ClientStrings.CartSold),
-                    modifier = Modifier.constrainAs(sold) {
-                        width = Dimension.wrapContent
-                        height = Dimension.wrapContent
-                        top.linkTo(price.bottom, 5.dp)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    },
+                    text = product.name,
+                    modifier = Modifier
+                        .widthIn(max = titleMaxWidth)
+                        .constrainAs(title) {
+                            width = Dimension.wrapContent
+                            height = Dimension.wrapContent
+                            start.linkTo(parent.start, 24.dp)
+                            top.linkTo(brand.bottom, 14.dp)
+                        },
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.regular14.copy(
-                        color = MaterialTheme.colorScheme.error,
+                        color = MaterialTheme.colorScheme.onBackground,
                         letterSpacing = .2.sp,
                         lineHeight = 18.sp
                     )
                 )
-            }
 
-            when {
-                product.isSold && hasSize -> {
+                Text(
+                    text = product.color,
+                    modifier = Modifier.constrainAs(color) {
+                        width = Dimension.wrapContent
+                        height = Dimension.wrapContent
+                        start.linkTo(title.start)
+                        top.linkTo(title.bottom, 4.dp)
+                    },
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.regular14.copy(
+                        color = MaterialTheme.colorScheme.onBackground,
+                        letterSpacing = .2.sp,
+                        lineHeight = 18.sp
+                    )
+                )
+
+                CartPriceRow(
+                    product = product,
+                    modifier = Modifier.constrainAs(price) {
+                        width = Dimension.wrapContent
+                        height = Dimension.wrapContent
+                        start.linkTo(title.start)
+                        top.linkTo(color.bottom, 8.dp)
+                    }
+                )
+
+                Text(
+                    text = stringResource(ClientStrings.CartArticle, articleText),
+                    modifier = Modifier.constrainAs(article) {
+                        width = Dimension.wrapContent
+                        height = Dimension.wrapContent
+                        top.linkTo(title.top)
+                        end.linkTo(parent.end, 16.dp)
+                    },
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.regular14.copy(
+                        color = MaterialTheme.colorScheme.onBackground,
+                        letterSpacing = .2.sp,
+                        lineHeight = 18.sp
+                    )
+                )
+
+                Text(
+                    text = "х ${product.quantity}",
+                    modifier = Modifier.constrainAs(quantity) {
+                        width = Dimension.wrapContent
+                        height = Dimension.wrapContent
+                        top.linkTo(article.bottom, 4.dp)
+                        end.linkTo(parent.end, 16.dp)
+                    },
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.regular14.copy(
+                        color = MaterialTheme.colorScheme.onBackground,
+                        letterSpacing = .2.sp,
+                        lineHeight = 18.sp
+                    )
+                )
+
+                if (product.isSold) {
                     Text(
-                        text = product.size,
-                        modifier = Modifier.constrainAs(size) {
+                        text = stringResource(ClientStrings.CartSold),
+                        modifier = Modifier.constrainAs(sold) {
                             width = Dimension.wrapContent
                             height = Dimension.wrapContent
-                            top.linkTo(sold.bottom, 8.dp)
+                            top.linkTo(price.bottom, 5.dp)
                             start.linkTo(parent.start)
                             end.linkTo(parent.end)
                         },
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         style = MaterialTheme.typography.regular14.copy(
-                            color = MaterialTheme.colorScheme.secondary6,
+                            color = MaterialTheme.colorScheme.error,
                             letterSpacing = .2.sp,
                             lineHeight = 18.sp
                         )
                     )
                 }
-                !product.isSold && !hasSize -> {
-                    SharedOutlinedButton2(
-                        onClick = onSelectSizeClick,
-                        text = stringResource(ClientStrings.CartSelectSize),
-                        textStyle = MaterialTheme.typography.regular15.copy(
-                            color = MaterialTheme.colorScheme.onBackground,
-                            lineHeight = 19.sp,
-                            letterSpacing = .2.sp
+
+                when {
+                    product.isSold && hasSize -> {
+                        Text(
+                            text = product.size,
+                            modifier = Modifier.constrainAs(size) {
+                                width = Dimension.wrapContent
+                                height = Dimension.wrapContent
+                                top.linkTo(sold.bottom, 8.dp)
+                                start.linkTo(parent.start)
+                                end.linkTo(parent.end)
+                            },
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            style = MaterialTheme.typography.regular14.copy(
+                                color = MaterialTheme.colorScheme.secondary6,
+                                letterSpacing = .2.sp,
+                                lineHeight = 18.sp
+                            )
+                        )
+                    }
+                    !product.isSold && !hasSize -> {
+                        SharedOutlinedButton2(
+                            onClick = onSelectSizeClick,
+                            text = stringResource(ClientStrings.CartSelectSize),
+                            textStyle = MaterialTheme.typography.regular15.copy(
+                                color = MaterialTheme.colorScheme.onBackground,
+                                lineHeight = 19.sp,
+                                letterSpacing = .2.sp
+                            ),
+                            modifier = Modifier.constrainAs(size) {
+                                width = Dimension.wrapContent
+                                height = Dimension.wrapContent
+                                top.linkTo(price.bottom, 5.dp)
+                                start.linkTo(parent.start)
+                                end.linkTo(parent.end)
+                            }
+                        )
+                    }
+                    else -> {
+                        Text(
+                            text = product.size,
+                            modifier = Modifier.constrainAs(size) {
+                                width = Dimension.wrapContent
+                                height = Dimension.wrapContent
+                                top.linkTo(price.bottom, 5.dp)
+                                start.linkTo(parent.start)
+                                end.linkTo(parent.end)
+                            },
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            style = MaterialTheme.typography.regular14.copy(
+                                color = MaterialTheme.colorScheme.secondary4,
+                                letterSpacing = .2.sp,
+                                lineHeight = 18.sp
+                            )
+                        )
+                    }
+                }
+
+                if (isAvailabilityVisible) {
+                    Text(
+                        text = stringResource(ClientStrings.CartInStock),
+                        style = MaterialTheme.typography.regular11.copy(
+                            color = MaterialTheme.colorScheme.error,
+                            lineHeight = 16.sp
                         ),
-                        modifier = Modifier.constrainAs(size) {
+                        modifier = Modifier.constrainAs(availability) {
                             width = Dimension.wrapContent
                             height = Dimension.wrapContent
-                            top.linkTo(price.bottom, 5.dp)
+                            top.linkTo(size.bottom, 1.dp)
                             start.linkTo(parent.start)
                             end.linkTo(parent.end)
                         }
                     )
                 }
-                else -> {
-                    Text(
-                        text = product.size,
-                        modifier = Modifier.constrainAs(size) {
+
+                if (!product.isSold) {
+                    CartBuySwitch(
+                        checked = product.isForPayment,
+                        modifier = Modifier.constrainAs(buyRow) {
                             width = Dimension.wrapContent
                             height = Dimension.wrapContent
-                            top.linkTo(price.bottom, 5.dp)
+                            top.linkTo(
+                                anchor = when {
+                                    isAvailabilityVisible -> availability.bottom
+                                    else -> size.bottom
+                                },
+                                margin = when {
+                                    isAvailabilityVisible -> 8.dp
+                                    else -> 10.dp
+                                }
+                            )
                             start.linkTo(parent.start)
                             end.linkTo(parent.end)
+                            bottom.linkTo(parent.bottom, 14.dp)
                         },
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        style = MaterialTheme.typography.regular14.copy(
-                            color = MaterialTheme.colorScheme.secondary4,
-                            letterSpacing = .2.sp,
-                            lineHeight = 18.sp
-                        )
+                        onCheckedChange = onBuySwitchChange
                     )
                 }
             }
 
-            if (isAvailabilityVisible) {
-                Text(
-                    text = stringResource(ClientStrings.CartInStock),
-                    style = MaterialTheme.typography.regular11.copy(
-                        color = MaterialTheme.colorScheme.error,
-                        lineHeight = 16.sp
-                    ),
-                    modifier = Modifier.constrainAs(availability) {
-                        width = Dimension.wrapContent
-                        height = Dimension.wrapContent
-                        top.linkTo(size.bottom, 1.dp)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }
+            if (isAlternativesVisible) {
+                CartAlternativesSection(
+                    alternatives = product.alternatives,
+                    modifier = Modifier.padding(top = 25.dp),
+                    onAlternativeClick = onAlternativeClick,
+                    onRemoveClick = onRemoveAlternativeClick
                 )
             }
 
-            if (!product.isSold) {
-                CartBuySwitch(
-                    checked = product.isForPayment,
-                    modifier = Modifier.constrainAs(buyRow) {
-                        width = Dimension.wrapContent
-                        height = Dimension.wrapContent
-                        top.linkTo(
-                            anchor = when {
-                                isAvailabilityVisible -> availability.bottom
-                                else -> size.bottom
-                            },
-                            margin = when {
-                                isAvailabilityVisible -> 8.dp
-                                else -> 10.dp
-                            }
-                        )
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                        bottom.linkTo(parent.bottom, 14.dp)
-                    },
-                    onCheckedChange = onBuySwitchChange
+            if (isAlternativesEmptyVisible) {
+                CartAlternativesEmpty(
+                    onHideClick = onHideAlternativesClick
                 )
             }
-        }
 
-        if (isAlternativesVisible) {
-            CartAlternativesSection(
-                alternatives = product.alternatives,
-                modifier = Modifier.padding(top = 25.dp),
-                onAlternativeClick = onAlternativeClick,
-                onRemoveClick = onRemoveAlternativeClick
-            )
-        }
-
-        if (isAlternativesEmptyVisible) {
-            CartAlternativesEmpty(
-                onHideClick = onHideAlternativesClick
-            )
-        }
-
-        if (isDividerVisible && !isAlternativesVisible) {
-            HorizontalDivider(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                color = MaterialTheme.colorScheme.divider
-            )
+            if (isDividerVisible && !isAlternativesVisible) {
+                HorizontalDivider(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    color = MaterialTheme.colorScheme.divider
+                )
+            }
         }
     }
 }

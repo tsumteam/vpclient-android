@@ -1,9 +1,7 @@
 package ru.mercury.vpclient.shared.ui.components.cart
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -14,9 +12,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -32,13 +28,9 @@ import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
 import ru.mercury.vpclient.shared.ui.components.SharedOutlinedButton2
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
-import ru.mercury.vpclient.shared.ui.icons.Delete24
-import ru.mercury.vpclient.shared.ui.icons.Edit24
 import ru.mercury.vpclient.shared.ui.preview.CartProductProvider
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.cartSwipeDelete
-import ru.mercury.vpclient.shared.ui.theme.cartSwipeEdit
 import ru.mercury.vpclient.shared.ui.theme.divider
 import ru.mercury.vpclient.shared.ui.theme.regular11
 import ru.mercury.vpclient.shared.ui.theme.regular14
@@ -64,37 +56,18 @@ fun CartProductCard(
     val isAlternativesEmptyVisible = product.isAlternativesPaletteOpen && product.alternatives.isEmpty()
 
     CartProductSwipeableCard(
-        swipeActionsContent = { swipeProgress ->
-            val actionWidth = 88.dp * swipeProgress
-
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(actionWidth)
-                    .clipToBounds(),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                CartProductSwipeAction(
-                    imageVector = Edit24,
-                    text = stringResource(ClientStrings.CartEdit),
-                    backgroundColor = MaterialTheme.colorScheme.cartSwipeEdit
-                )
-            }
-
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(actionWidth)
-                    .clipToBounds(),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                CartProductSwipeAction(
-                    imageVector = Delete24,
-                    text = stringResource(ClientStrings.CartDelete),
-                    backgroundColor = MaterialTheme.colorScheme.cartSwipeDelete
-                )
-            }
-        }
+        leadingActionsContent = { swipeProgress ->
+            CartProductLeadingSwipeActions(
+                swipeProgress = swipeProgress
+            )
+        },
+        trailingActionsContent = { swipeProgress ->
+            CartProductTrailingSwipeActions(
+                swipeProgress = swipeProgress
+            )
+        },
+        leadingSwipeSize = 264.dp,
+        trailingSwipeSize = 264.dp
     ) {
         Column(
             modifier = Modifier

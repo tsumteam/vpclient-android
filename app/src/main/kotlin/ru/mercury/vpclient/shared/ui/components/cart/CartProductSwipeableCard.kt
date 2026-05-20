@@ -24,6 +24,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import kotlin.math.abs
@@ -33,24 +34,43 @@ import ru.mercury.vpclient.shared.ui.theme.cartSwipeEdit
 
 @Composable
 fun CartProductSwipeableCard(
-    swipeActionsContent: @Composable (Float) -> Unit,
+    leadingActionsContent: @Composable (Float) -> Unit = {},
+    trailingActionsContent: @Composable (Float) -> Unit = {},
     modifier: Modifier = Modifier,
+    leadingSwipeSize: Dp = 0.dp,
+    trailingSwipeSize: Dp = 0.dp,
     content: @Composable () -> Unit
 ) {
-    val swipeSize = 176.dp
-    val sizePx = with(LocalDensity.current) { swipeSize.toPx() }
+    val leadingSizePx = with(LocalDensity.current) { leadingSwipeSize.toPx() }
+    val trailingSizePx = with(LocalDensity.current) { trailingSwipeSize.toPx() }
     var offsetX by remember { mutableFloatStateOf(0F) }
     val animatedOffsetX by animateFloatAsState(targetValue = offsetX, label = "cartProductSwipeOffset")
-    val swipeProgress = (abs(animatedOffsetX) / sizePx).coerceIn(0F, 1F)
+    val leadingSwipeProgress = when {
+        leadingSizePx == 0F -> 0F
+        animatedOffsetX > 0F -> (animatedOffsetX / leadingSizePx).coerceIn(0F, 1F)
+        else -> 0F
+    }
+    val trailingSwipeProgress = when {
+        trailingSizePx == 0F -> 0F
+        animatedOffsetX < 0F -> (abs(animatedOffsetX) / trailingSizePx).coerceIn(0F, 1F)
+        else -> 0F
+    }
 
     Box(
         modifier = modifier.fillMaxWidth()
     ) {
         Row(
             modifier = Modifier.matchParentSize(),
+            horizontalArrangement = Arrangement.Start
+        ) {
+            leadingActionsContent(leadingSwipeProgress)
+        }
+
+        Row(
+            modifier = Modifier.matchParentSize(),
             horizontalArrangement = Arrangement.End
         ) {
-            swipeActionsContent(swipeProgress)
+            trailingActionsContent(trailingSwipeProgress)
         }
 
         Box(
@@ -58,15 +78,16 @@ fun CartProductSwipeableCard(
                 .offset { IntOffset(animatedOffsetX.toInt(), 0) }
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.background)
-                .pointerInput(sizePx) {
+                .pointerInput(leadingSizePx, trailingSizePx) {
                     detectHorizontalDragGestures(
                         onHorizontalDrag = { _, dragAmount ->
-                            val newOffsetX = (offsetX + dragAmount).coerceIn(-sizePx, 0F)
+                            val newOffsetX = (offsetX + dragAmount).coerceIn(-trailingSizePx, leadingSizePx)
                             offsetX = newOffsetX
                         },
                         onDragEnd = {
                             val endOffsetX = when {
-                                abs(offsetX) > sizePx * .3F -> -sizePx
+                                offsetX > leadingSizePx * .3F -> leadingSizePx
+                                offsetX < -trailingSizePx * .3F -> -trailingSizePx
                                 else -> 0F
                             }
                             offsetX = endOffsetX
@@ -84,7 +105,7 @@ fun CartProductSwipeableCard(
 @Composable
 private fun CartProductSwipeableCardPreview() {
     CartProductSwipeableCard(
-        swipeActionsContent = { swipeProgress ->
+        trailingActionsContent = { swipeProgress ->
             Box(
                 modifier = Modifier
                     .fillMaxHeight()
@@ -98,7 +119,8 @@ private fun CartProductSwipeableCardPreview() {
                     backgroundColor = MaterialTheme.colorScheme.cartSwipeEdit
                 )
             }
-        }
+        },
+        trailingSwipeSize = 88.dp
     ) {
         Box(
             modifier = Modifier

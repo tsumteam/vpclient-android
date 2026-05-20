@@ -29,6 +29,10 @@ val Disabled = Color(0xFFCBC9C9)
 val OnDisabled = Color(0xFFF8F5F5)
 val CartSwipeEdit = Color(0xFFC7C9CD)
 val CartSwipeDelete = Color(0xFFD76B6B)
+val CartSwipeDetach = Color(0xFF666061)
+val CartSwipeDisassemble = Color(0xFFC7C9CD)
+val CartSwipeReturnOriginal = Color(0xFF97A0AE)
+val CartSwipeAlternatives = Color(0xFFF5F4F9)
 
 val LightColorScheme = lightColorScheme(
     primary = Primary,
@@ -91,3 +95,15 @@ val ColorScheme.cartSwipeEdit: Color
 
 val ColorScheme.cartSwipeDelete: Color
     get() = CartSwipeDelete
+
+val ColorScheme.cartSwipeDetach: Color
+    get() = CartSwipeDetach
+
+val ColorScheme.cartSwipeDisassemble: Color
+    get() = CartSwipeDisassemble
+
+val ColorScheme.cartSwipeReturnOriginal: Color
+    get() = CartSwipeReturnOriginal
+
+val ColorScheme.cartSwipeAlternatives: Color
+    get() = CartSwipeAlternatives

@@ -1,21 +1,32 @@
 package ru.mercury.vpclient.shared.ui.components.cart
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
+import ru.mercury.vpclient.shared.ui.icons.Delete24
+import ru.mercury.vpclient.shared.ui.icons.Disassemble24
 import ru.mercury.vpclient.shared.ui.preview.CartProductProvider
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
+import ru.mercury.vpclient.shared.ui.theme.ClientStrings
+import ru.mercury.vpclient.shared.ui.theme.cartSwipeDelete
+import ru.mercury.vpclient.shared.ui.theme.cartSwipeDisassemble
 
 @Composable
 fun CartLookCard(
@@ -42,11 +53,46 @@ fun CartLookCard(
                 shape = RoundedCornerShape(8.dp)
             )
     ) {
-        CartLookHeader(
-            name = lookName,
-            imageUrl = lookImageUrl,
-            onAddClick = onAddClick
-        )
+        CartProductSwipeableCard(
+            trailingActionsContent = { swipeProgress ->
+                val actionWidth = 88.dp * swipeProgress
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(actionWidth)
+                        .clipToBounds(),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    CartProductSwipeAction(
+                        imageVector = Delete24,
+                        text = stringResource(ClientStrings.CartDelete),
+                        backgroundColor = MaterialTheme.colorScheme.cartSwipeDelete
+                    )
+                }
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(actionWidth)
+                        .clipToBounds(),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    CartProductSwipeAction(
+                        imageVector = Disassemble24,
+                        text = stringResource(ClientStrings.CartDisassembleLook),
+                        backgroundColor = MaterialTheme.colorScheme.cartSwipeDisassemble
+                    )
+                }
+            },
+            trailingSwipeSize = 176.dp
+        ) {
+            CartLookHeader(
+                name = lookName,
+                imageUrl = lookImageUrl,
+                onAddClick = onAddClick
+            )
+        }
 
         products.forEachIndexed { index, product ->
             when (isLargeCard) {
