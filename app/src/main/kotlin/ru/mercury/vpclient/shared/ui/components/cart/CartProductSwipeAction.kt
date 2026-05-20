@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -36,6 +37,7 @@ fun CartProductSwipeAction(
 ) {
     Column(
         modifier = modifier
+            .wrapContentWidth(align = Alignment.Start, unbounded = true)
             .requiredWidth(width)
             .fillMaxHeight()
             .background(backgroundColor),

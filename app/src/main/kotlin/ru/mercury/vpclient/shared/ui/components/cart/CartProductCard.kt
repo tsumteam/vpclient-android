@@ -3,6 +3,7 @@ package ru.mercury.vpclient.shared.ui.components.cart
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -13,6 +14,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.layout.ContentScale
@@ -67,8 +69,10 @@ fun CartProductCard(
 
             Box(
                 modifier = Modifier
+                    .fillMaxHeight()
                     .width(actionWidth)
-                    .clipToBounds()
+                    .clipToBounds(),
+                contentAlignment = Alignment.CenterStart
             ) {
                 CartProductSwipeAction(
                     imageVector = Edit24,
@@ -79,8 +83,10 @@ fun CartProductCard(
 
             Box(
                 modifier = Modifier
+                    .fillMaxHeight()
                     .width(actionWidth)
-                    .clipToBounds()
+                    .clipToBounds(),
+                contentAlignment = Alignment.CenterStart
             ) {
                 CartProductSwipeAction(
                     imageVector = Delete24,
