@@ -27,6 +27,8 @@ val Black1 = Color(0xFF1B1B1B)
 val Black50 = Color(0x80000000)
 val Disabled = Color(0xFFCBC9C9)
 val OnDisabled = Color(0xFFF8F5F5)
+val CartSwipeEdit = Color(0xFFC7C9CD)
+val CartSwipeDelete = Color(0xFFD76B6B)
 
 val LightColorScheme = lightColorScheme(
     primary = Primary,
@@ -83,3 +85,9 @@ val ColorScheme.disabled: Color
 
 val ColorScheme.onDisabled: Color
     get() = OnDisabled
+
+val ColorScheme.cartSwipeEdit: Color
+    get() = CartSwipeEdit
+
+val ColorScheme.cartSwipeDelete: Color
+    get() = CartSwipeDelete

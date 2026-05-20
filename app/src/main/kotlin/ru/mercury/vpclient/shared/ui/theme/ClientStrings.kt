@@ -72,6 +72,8 @@ object ClientStrings {
     val CartBuyItem = R.string.cart_buy_item
     val CartSold = R.string.cart_sold
     val CartInStock = R.string.cart_in_stock
+    val CartEdit = R.string.cart_edit
+    val CartDelete = R.string.cart_delete
     val CartInBasket = R.string.cart_in_basket
     val CartToPayment = R.string.cart_to_payment
     val CartConsultantName = R.string.cart_consultant_name

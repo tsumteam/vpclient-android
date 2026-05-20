@@ -66,6 +66,8 @@
     <string name="cart_buy_item">Купить</string>
     <string name="cart_sold">Продан</string>
     <string name="cart_in_stock">1 товар в наличии!</string>
+    <string name="cart_edit">Изменить</string>
+    <string name="cart_delete">Удалить</string>
     <string name="cart_in_basket">В корзине: </string>
     <string name="cart_to_payment">К оплате: </string>
     <string name="cart_consultant_name">Екатерина</string>
