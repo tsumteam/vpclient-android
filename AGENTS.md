@@ -8,6 +8,7 @@
 - Do not run tests
 - Do not compile the project
 - Place all PreviewParameterProvider classes in ui/preview
+- When creating a composable function, always create a preview for it
 - Add new colors through MaterialTheme.colorScheme
 - Use MaterialTheme.colorScheme for component colors; do not use raw Color constants for theme colors inside components
 - Use MaterialTheme.typography for component text styles; do not instantiate TextStyle directly inside components
