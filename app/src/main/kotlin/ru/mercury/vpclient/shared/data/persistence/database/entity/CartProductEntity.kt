@@ -29,6 +29,8 @@ data class CartProductEntity(
     val isLastInStock: Boolean,
     val hasActions: Boolean,
     val isAlternativesPaletteOpen: Boolean,
+    val isAlternativePaletteControlsAvailable: Boolean,
+    val isSwitchAlternativeBackToOriginalAvailable: Boolean,
     val alternatives: List<CartProductAlternative>,
     val discountPercentage: Int,
     val quantity: Int,

@@ -22,55 +22,64 @@ import ru.mercury.vpclient.shared.ui.theme.cartSwipeReturnOriginal
 @Composable
 fun CartProductLeadingSwipeActions(
     swipeProgress: Float,
+    isReturnOriginalVisible: Boolean,
+    isShowAlternativesVisible: Boolean,
+    isHideAlternativesVisible: Boolean,
     modifier: Modifier = Modifier
 ) {
     val actionWidth = 88.dp * swipeProgress
 
-    Box(
-        modifier = modifier
-            .fillMaxHeight()
-            .width(actionWidth)
-            .clipToBounds(),
-        contentAlignment = Alignment.CenterEnd
-    ) {
-        CartProductSwipeAction(
-            imageVector = null,
-            text = stringResource(ClientStrings.CartReturnOriginal),
-            backgroundColor = MaterialTheme.colorScheme.cartSwipeReturnOriginal,
-            contentHorizontalAlignment = Alignment.End
-        )
+    if (isReturnOriginalVisible) {
+        Box(
+            modifier = modifier
+                .fillMaxHeight()
+                .width(actionWidth)
+                .clipToBounds(),
+            contentAlignment = Alignment.CenterEnd
+        ) {
+            CartProductSwipeAction(
+                imageVector = null,
+                text = stringResource(ClientStrings.CartReturnOriginal),
+                backgroundColor = MaterialTheme.colorScheme.cartSwipeReturnOriginal,
+                contentHorizontalAlignment = Alignment.End
+            )
+        }
     }
 
-    Box(
-        modifier = modifier
-            .fillMaxHeight()
-            .width(actionWidth)
-            .clipToBounds(),
-        contentAlignment = Alignment.CenterEnd
-    ) {
-        CartProductSwipeAction(
-            imageVector = null,
-            text = stringResource(ClientStrings.CartShowAlternatives),
-            backgroundColor = MaterialTheme.colorScheme.cartSwipeAlternatives,
-            contentColor = MaterialTheme.colorScheme.onBackground,
-            contentHorizontalAlignment = Alignment.End
-        )
+    if (isShowAlternativesVisible) {
+        Box(
+            modifier = modifier
+                .fillMaxHeight()
+                .width(actionWidth)
+                .clipToBounds(),
+            contentAlignment = Alignment.CenterEnd
+        ) {
+            CartProductSwipeAction(
+                imageVector = null,
+                text = stringResource(ClientStrings.CartShowAlternatives),
+                backgroundColor = MaterialTheme.colorScheme.cartSwipeAlternatives,
+                contentColor = MaterialTheme.colorScheme.onBackground,
+                contentHorizontalAlignment = Alignment.End
+            )
+        }
     }
 
-    Box(
-        modifier = modifier
-            .fillMaxHeight()
-            .width(actionWidth)
-            .clipToBounds(),
-        contentAlignment = Alignment.CenterEnd
-    ) {
-        CartProductSwipeAction(
-            imageVector = null,
-            text = stringResource(ClientStrings.CartHideAlternativesList),
-            backgroundColor = MaterialTheme.colorScheme.cartSwipeAlternatives,
-            contentColor = MaterialTheme.colorScheme.onBackground,
-            contentHorizontalAlignment = Alignment.End
-        )
+    if (isHideAlternativesVisible) {
+        Box(
+            modifier = modifier
+                .fillMaxHeight()
+                .width(actionWidth)
+                .clipToBounds(),
+            contentAlignment = Alignment.CenterEnd
+        ) {
+            CartProductSwipeAction(
+                imageVector = null,
+                text = stringResource(ClientStrings.CartHideAlternativesList),
+                backgroundColor = MaterialTheme.colorScheme.cartSwipeAlternatives,
+                contentColor = MaterialTheme.colorScheme.onBackground,
+                contentHorizontalAlignment = Alignment.End
+            )
+        }
     }
 }
 
@@ -82,7 +91,10 @@ private fun CartProductLeadingSwipeActionsPreview() {
         modifier = Modifier.height(178.dp)
     ) {
         CartProductLeadingSwipeActions(
-            swipeProgress = 1F
+            swipeProgress = 1F,
+            isReturnOriginalVisible = true,
+            isShowAlternativesVisible = true,
+            isHideAlternativesVisible = true
         )
     }
 }

@@ -26,50 +26,59 @@ import ru.mercury.vpclient.shared.ui.theme.cartSwipeEdit
 @Composable
 fun CartProductTrailingSwipeActions(
     swipeProgress: Float,
+    isEditVisible: Boolean,
+    isDetachFromLookVisible: Boolean,
+    isDeleteVisible: Boolean,
     modifier: Modifier = Modifier
 ) {
     val actionWidth = 88.dp * swipeProgress
 
-    Box(
-        modifier = modifier
-            .fillMaxHeight()
-            .width(actionWidth)
-            .clipToBounds(),
-        contentAlignment = Alignment.CenterStart
-    ) {
-        CartProductSwipeAction(
-            imageVector = Edit24,
-            text = stringResource(ClientStrings.CartEdit),
-            backgroundColor = MaterialTheme.colorScheme.cartSwipeEdit
-        )
+    if (isEditVisible) {
+        Box(
+            modifier = modifier
+                .fillMaxHeight()
+                .width(actionWidth)
+                .clipToBounds(),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            CartProductSwipeAction(
+                imageVector = Edit24,
+                text = stringResource(ClientStrings.CartEdit),
+                backgroundColor = MaterialTheme.colorScheme.cartSwipeEdit
+            )
+        }
     }
 
-    Box(
-        modifier = modifier
-            .fillMaxHeight()
-            .width(actionWidth)
-            .clipToBounds(),
-        contentAlignment = Alignment.CenterStart
-    ) {
-        CartProductSwipeAction(
-            imageVector = DetachFromLook24,
-            text = stringResource(ClientStrings.CartDetachFromLook),
-            backgroundColor = MaterialTheme.colorScheme.cartSwipeDetach
-        )
+    if (isDetachFromLookVisible) {
+        Box(
+            modifier = modifier
+                .fillMaxHeight()
+                .width(actionWidth)
+                .clipToBounds(),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            CartProductSwipeAction(
+                imageVector = DetachFromLook24,
+                text = stringResource(ClientStrings.CartDetachFromLook),
+                backgroundColor = MaterialTheme.colorScheme.cartSwipeDetach
+            )
+        }
     }
 
-    Box(
-        modifier = modifier
-            .fillMaxHeight()
-            .width(actionWidth)
-            .clipToBounds(),
-        contentAlignment = Alignment.CenterStart
-    ) {
-        CartProductSwipeAction(
-            imageVector = Delete24,
-            text = stringResource(ClientStrings.CartDelete),
-            backgroundColor = MaterialTheme.colorScheme.cartSwipeDelete
-        )
+    if (isDeleteVisible) {
+        Box(
+            modifier = modifier
+                .fillMaxHeight()
+                .width(actionWidth)
+                .clipToBounds(),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            CartProductSwipeAction(
+                imageVector = Delete24,
+                text = stringResource(ClientStrings.CartDelete),
+                backgroundColor = MaterialTheme.colorScheme.cartSwipeDelete
+            )
+        }
     }
 }
 
@@ -81,7 +90,10 @@ private fun CartProductTrailingSwipeActionsPreview() {
         modifier = Modifier.height(178.dp)
     ) {
         CartProductTrailingSwipeActions(
-            swipeProgress = 1F
+            swipeProgress = 1F,
+            isEditVisible = true,
+            isDetachFromLookVisible = true,
+            isDeleteVisible = true
         )
     }
 }

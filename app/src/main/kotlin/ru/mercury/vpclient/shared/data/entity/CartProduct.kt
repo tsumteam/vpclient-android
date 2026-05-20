@@ -23,6 +23,8 @@ data class CartProduct(
     val isLastInStock: Boolean = false,
     val hasActions: Boolean = false,
     val isAlternativesPaletteOpen: Boolean = false,
+    val isAlternativePaletteControlsAvailable: Boolean = false,
+    val isSwitchAlternativeBackToOriginalAvailable: Boolean = false,
     val alternatives: List<CartProductAlternative> = emptyList(),
     val discountPercentage: Int = 0,
     val quantity: Int = 1,

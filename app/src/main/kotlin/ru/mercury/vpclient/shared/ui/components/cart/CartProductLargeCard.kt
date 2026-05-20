@@ -71,20 +71,43 @@ fun CartProductLargeCard(
     val isAvailabilityVisible = !product.isSold && hasSize && product.isLastInStock
     val isAlternativesVisible = product.isAlternativesPaletteOpen && product.alternatives.isNotEmpty()
     val isAlternativesEmptyVisible = product.isAlternativesPaletteOpen && product.alternatives.isEmpty()
+    val isReturnOriginalSwipeActionVisible = product.isSwitchAlternativeBackToOriginalAvailable
+    val isShowAlternativesSwipeActionVisible = product.isAlternativePaletteControlsAvailable &&
+        !product.isAlternativesPaletteOpen
+    val isHideAlternativesSwipeActionVisible = product.isAlternativePaletteControlsAvailable &&
+        product.isAlternativesPaletteOpen
+    val isEditSwipeActionVisible = hasSize && product.sizeCount in 1..2
+    val isDetachFromLookSwipeActionVisible = !product.lookId.isNullOrEmpty()
+    val leadingSwipeActionsCount = listOf(
+        isReturnOriginalSwipeActionVisible,
+        isShowAlternativesSwipeActionVisible,
+        isHideAlternativesSwipeActionVisible
+    ).count { it }
+    val trailingSwipeActionsCount = listOf(
+        isEditSwipeActionVisible,
+        isDetachFromLookSwipeActionVisible,
+        true
+    ).count { it }
 
     CartProductSwipeableCard(
         leadingActionsContent = { swipeProgress ->
             CartProductLeadingSwipeActions(
-                swipeProgress = swipeProgress
+                swipeProgress = swipeProgress,
+                isReturnOriginalVisible = isReturnOriginalSwipeActionVisible,
+                isShowAlternativesVisible = isShowAlternativesSwipeActionVisible,
+                isHideAlternativesVisible = isHideAlternativesSwipeActionVisible
             )
         },
         trailingActionsContent = { swipeProgress ->
             CartProductTrailingSwipeActions(
-                swipeProgress = swipeProgress
+                swipeProgress = swipeProgress,
+                isEditVisible = isEditSwipeActionVisible,
+                isDetachFromLookVisible = isDetachFromLookSwipeActionVisible,
+                isDeleteVisible = true
             )
         },
-        leadingSwipeSize = 264.dp,
-        trailingSwipeSize = 264.dp
+        leadingSwipeSize = (88 * leadingSwipeActionsCount).dp,
+        trailingSwipeSize = (88 * trailingSwipeActionsCount).dp
     ) {
         Column(
             modifier = Modifier

@@ -53,6 +53,8 @@ val BasketLineResponseDto.cartProduct: CartProduct?
             isLastInStock = sizes.any { it.isLastInStock == true || it.availableStockQuantity == 1.0 },
             hasActions = product?.actions.orEmpty().isNotEmpty(),
             isAlternativesPaletteOpen = controls?.alternativesPalette == AlternativesPaletteStatusEnum.OPEN,
+            isAlternativePaletteControlsAvailable = controls?.isAlternativePaletteControlsAvailable == true,
+            isSwitchAlternativeBackToOriginalAvailable = controls?.isSwitchAlternativeBackToOriginalAvailable == true,
             alternatives = alternatives,
             discountPercentage = product?.discountPercentage ?: 0,
             quantity = quantity ?: product?.quantity ?: 1,
