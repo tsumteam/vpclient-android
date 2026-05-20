@@ -25,6 +25,14 @@ sealed interface CartIntent: Intent {
     data class AlternativeClick(val alternative: CartProductAlternative): CartIntent
     data class RemoveAlternativeClick(val alternative: CartProductAlternative): CartIntent
     data class HideAlternativesClick(val product: CartProduct): CartIntent
+    data class EditProductSwipeClick(val product: CartProduct): CartIntent
+    data class DeleteProductSwipeClick(val product: CartProduct): CartIntent
+    data class DetachProductFromLookSwipeClick(val product: CartProduct): CartIntent
+    data class ReturnOriginalSwipeClick(val product: CartProduct): CartIntent
+    data class ShowAlternativesSwipeClick(val product: CartProduct): CartIntent
+    data class HideAlternativesSwipeClick(val product: CartProduct): CartIntent
+    data class DisassembleLookSwipeClick(val lookId: String): CartIntent
+    data class DeleteLookSwipeClick(val lookId: String): CartIntent
     data class ToggleSizePickerItem(val index: Int): CartIntent
     data class SelectPayMode(val mode: CartPayMode): CartIntent
     data class SelectViewMode(val mode: CartViewMode): CartIntent

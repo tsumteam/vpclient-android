@@ -46,6 +46,13 @@ fun CartProductCard(
     onAlternativeClick: (CartProductAlternative) -> Unit = {},
     onRemoveAlternativeClick: (CartProductAlternative) -> Unit = {},
     onHideAlternativesClick: () -> Unit = {},
+    onEditSwipeClick: () -> Unit = {},
+    onDeleteSwipeClick: () -> Unit = {},
+    onDetachFromLookSwipeClick: () -> Unit = {},
+    onReturnOriginalSwipeClick: () -> Unit = {},
+    onShowAlternativesSwipeClick: () -> Unit = {},
+    onHideAlternativesSwipeClick: () -> Unit = {},
+    selectedAlternativeId: String? = null,
     isDividerVisible: Boolean = true
 ) {
     val articleText = product.article.takeIf { it.isNotEmpty() } ?: product.itemId
@@ -78,7 +85,10 @@ fun CartProductCard(
                 swipeProgress = swipeProgress,
                 isReturnOriginalVisible = isReturnOriginalSwipeActionVisible,
                 isShowAlternativesVisible = isShowAlternativesSwipeActionVisible,
-                isHideAlternativesVisible = isHideAlternativesSwipeActionVisible
+                isHideAlternativesVisible = isHideAlternativesSwipeActionVisible,
+                onReturnOriginalClick = onReturnOriginalSwipeClick,
+                onShowAlternativesClick = onShowAlternativesSwipeClick,
+                onHideAlternativesClick = onHideAlternativesSwipeClick
             )
         },
         trailingActionsContent = { swipeProgress ->
@@ -86,7 +96,10 @@ fun CartProductCard(
                 swipeProgress = swipeProgress,
                 isEditVisible = isEditSwipeActionVisible,
                 isDetachFromLookVisible = isDetachFromLookSwipeActionVisible,
-                isDeleteVisible = true
+                isDeleteVisible = true,
+                onEditClick = onEditSwipeClick,
+                onDetachFromLookClick = onDetachFromLookSwipeClick,
+                onDeleteClick = onDeleteSwipeClick
             )
         },
         leadingSwipeSize = (88 * leadingSwipeActionsCount).dp,
@@ -316,6 +329,7 @@ fun CartProductCard(
             if (isAlternativesVisible) {
                 CartAlternativesSection(
                     alternatives = product.alternatives,
+                    selectedAlternativeId = selectedAlternativeId,
                     onAlternativeClick = onAlternativeClick,
                     onRemoveClick = onRemoveAlternativeClick
                 )

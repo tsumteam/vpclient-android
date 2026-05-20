@@ -532,7 +532,7 @@ class FilterViewModel @AssistedInject constructor(
                     val isFavorite = interactor.loadBrandFavoriteStatus(
                         brandId = intent.brandId,
                         categoryId = intent.categoryId
-                    ) ?: false
+                    )
                     reduce { it.copy(isBrandFavorited = isFavorite) }
                 }
             }

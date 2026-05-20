@@ -1,6 +1,7 @@
 package ru.mercury.vpclient.shared.ui.components.cart
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -35,14 +36,16 @@ fun CartProductSwipeAction(
     contentColor: Color = MaterialTheme.colorScheme.onPrimary,
     modifier: Modifier = Modifier,
     width: Dp = 88.dp,
-    contentHorizontalAlignment: Alignment.Horizontal = Alignment.Start
+    contentHorizontalAlignment: Alignment.Horizontal = Alignment.Start,
+    onClick: () -> Unit = {}
 ) {
     Column(
         modifier = modifier
             .wrapContentWidth(align = contentHorizontalAlignment, unbounded = true)
             .requiredWidth(width)
             .fillMaxHeight()
-            .background(backgroundColor),
+            .background(backgroundColor)
+            .clickable(onClick = onClick),
         verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

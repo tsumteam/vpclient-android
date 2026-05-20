@@ -54,13 +54,7 @@ suspend fun <T> handleResponse(
                         else -> throw ClientException(error.message)
                     }
                 }
-                else -> {
-                    val error = ClientError.Unknown("Неизвестная ошибка")
-                    when {
-                        onFailure != null -> onFailure(error)
-                        else -> throw ClientException(error.message)
-                    }
-                }
+                else -> onEmpty()
             }
         }
         .onFailure { exception ->

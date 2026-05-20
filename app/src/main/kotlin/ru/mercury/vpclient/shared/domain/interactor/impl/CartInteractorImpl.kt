@@ -26,6 +26,18 @@ class CartInteractorImpl @Inject constructor(
         withContext(dispatchers.io) { cartRepository.setProductSize(product, sizeId) }
     }
 
+    override suspend fun deleteProduct(product: CartProduct) {
+        withContext(dispatchers.io) { cartRepository.deleteProduct(product) }
+    }
+
+    override suspend fun deleteLook(lookId: String) {
+        withContext(dispatchers.io) { cartRepository.deleteLook(lookId) }
+    }
+
+    override suspend fun disassembleLook(products: List<CartProduct>) {
+        withContext(dispatchers.io) { cartRepository.disassembleLook(products) }
+    }
+
     override suspend fun removeAlternative(alternative: CartProductAlternative) {
         withContext(dispatchers.io) { cartRepository.removeAlternative(alternative) }
     }

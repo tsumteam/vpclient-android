@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalPagingApi::class)
 
-package ru.mercury.vpclient.shared.domain.repository.impl
+package ru.mercury.vpclient.shared.domain.remotemediator
 
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
@@ -8,10 +8,6 @@ import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import ru.mercury.vpclient.shared.data.entity.CatalogFilterProductsData
-import ru.mercury.vpclient.shared.domain.mapper.entity
-import ru.mercury.vpclient.shared.domain.mapper.handleResponseResult
-import ru.mercury.vpclient.shared.domain.mapper.requestValue
-import ru.mercury.vpclient.shared.domain.mapper.requests
 import ru.mercury.vpclient.shared.data.network.NetworkService
 import ru.mercury.vpclient.shared.data.network.request.FilteredProductsRequest
 import ru.mercury.vpclient.shared.data.network.response.FiltersResponse
@@ -21,6 +17,10 @@ import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogFilterPro
 import ru.mercury.vpclient.shared.data.persistence.database.dao.PagingKeyDao
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.PagingKeyEntity
+import ru.mercury.vpclient.shared.domain.mapper.entity
+import ru.mercury.vpclient.shared.domain.mapper.handleResponseResult
+import ru.mercury.vpclient.shared.domain.mapper.requestValue
+import ru.mercury.vpclient.shared.domain.mapper.requests
 
 class CatalogFilterProductsRemoteMediator(
     private val data: CatalogFilterProductsData,

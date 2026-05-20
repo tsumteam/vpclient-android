@@ -41,6 +41,15 @@ fun CartLookCard(
     onAlternativeClick: (CartProductAlternative) -> Unit,
     onRemoveAlternativeClick: (CartProductAlternative) -> Unit,
     onHideAlternativesClick: (CartProduct) -> Unit,
+    onEditProductSwipeClick: (CartProduct) -> Unit = {},
+    onDeleteProductSwipeClick: (CartProduct) -> Unit = {},
+    onDetachProductFromLookSwipeClick: (CartProduct) -> Unit = {},
+    onReturnOriginalSwipeClick: (CartProduct) -> Unit = {},
+    onShowAlternativesSwipeClick: (CartProduct) -> Unit = {},
+    onHideAlternativesSwipeClick: (CartProduct) -> Unit = {},
+    onDisassembleLookSwipeClick: () -> Unit = {},
+    onDeleteLookSwipeClick: () -> Unit = {},
+    selectedAlternativeId: String? = null,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -67,7 +76,8 @@ fun CartLookCard(
                     CartProductSwipeAction(
                         imageVector = Disassemble24,
                         text = stringResource(ClientStrings.CartDisassembleLook),
-                        backgroundColor = MaterialTheme.colorScheme.cartSwipeDisassemble
+                        backgroundColor = MaterialTheme.colorScheme.cartSwipeDisassemble,
+                        onClick = onDisassembleLookSwipeClick
                     )
                 }
 
@@ -81,7 +91,8 @@ fun CartLookCard(
                     CartProductSwipeAction(
                         imageVector = Delete24,
                         text = stringResource(ClientStrings.CartDelete),
-                        backgroundColor = MaterialTheme.colorScheme.cartSwipeDelete
+                        backgroundColor = MaterialTheme.colorScheme.cartSwipeDelete,
+                        onClick = onDeleteLookSwipeClick
                     )
                 }
             },
@@ -105,6 +116,13 @@ fun CartLookCard(
                         onAlternativeClick = onAlternativeClick,
                         onRemoveAlternativeClick = onRemoveAlternativeClick,
                         onHideAlternativesClick = { onHideAlternativesClick(product) },
+                        onEditSwipeClick = { onEditProductSwipeClick(product) },
+                        onDeleteSwipeClick = { onDeleteProductSwipeClick(product) },
+                        onDetachFromLookSwipeClick = { onDetachProductFromLookSwipeClick(product) },
+                        onReturnOriginalSwipeClick = { onReturnOriginalSwipeClick(product) },
+                        onShowAlternativesSwipeClick = { onShowAlternativesSwipeClick(product) },
+                        onHideAlternativesSwipeClick = { onHideAlternativesSwipeClick(product) },
+                        selectedAlternativeId = selectedAlternativeId,
                         isDividerVisible = index < products.lastIndex
                     )
                 }
@@ -117,6 +135,13 @@ fun CartLookCard(
                         onAlternativeClick = onAlternativeClick,
                         onRemoveAlternativeClick = onRemoveAlternativeClick,
                         onHideAlternativesClick = { onHideAlternativesClick(product) },
+                        onEditSwipeClick = { onEditProductSwipeClick(product) },
+                        onDeleteSwipeClick = { onDeleteProductSwipeClick(product) },
+                        onDetachFromLookSwipeClick = { onDetachProductFromLookSwipeClick(product) },
+                        onReturnOriginalSwipeClick = { onReturnOriginalSwipeClick(product) },
+                        onShowAlternativesSwipeClick = { onShowAlternativesSwipeClick(product) },
+                        onHideAlternativesSwipeClick = { onHideAlternativesSwipeClick(product) },
+                        selectedAlternativeId = selectedAlternativeId,
                         isDividerVisible = index < products.lastIndex
                     )
                 }

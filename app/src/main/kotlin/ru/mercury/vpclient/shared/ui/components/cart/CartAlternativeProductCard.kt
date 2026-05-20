@@ -40,11 +40,18 @@ fun CartAlternativeProductCard(
     alternative: CartProductAlternative,
     modifier: Modifier = Modifier,
     isStartBorderVisible: Boolean = true,
+    isSelected: Boolean = false,
     onClick: () -> Unit = {},
     onRemoveClick: () -> Unit = {}
 ) {
-    val borderColor = MaterialTheme.colorScheme.secondary5
-    val borderWidth = 1.dp
+    val borderColor = when {
+        isSelected -> MaterialTheme.colorScheme.error
+        else -> MaterialTheme.colorScheme.secondary5
+    }
+    val borderWidth = when {
+        isSelected -> 2.dp
+        else -> 1.dp
+    }
 
     Box(
         modifier = modifier

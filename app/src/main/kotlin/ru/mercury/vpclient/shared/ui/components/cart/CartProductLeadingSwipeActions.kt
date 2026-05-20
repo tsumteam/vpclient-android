@@ -25,7 +25,10 @@ fun CartProductLeadingSwipeActions(
     isReturnOriginalVisible: Boolean,
     isShowAlternativesVisible: Boolean,
     isHideAlternativesVisible: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onReturnOriginalClick: () -> Unit = {},
+    onShowAlternativesClick: () -> Unit = {},
+    onHideAlternativesClick: () -> Unit = {}
 ) {
     val actionWidth = 88.dp * swipeProgress
 
@@ -41,7 +44,8 @@ fun CartProductLeadingSwipeActions(
                 imageVector = null,
                 text = stringResource(ClientStrings.CartReturnOriginal),
                 backgroundColor = MaterialTheme.colorScheme.cartSwipeReturnOriginal,
-                contentHorizontalAlignment = Alignment.End
+                contentHorizontalAlignment = Alignment.End,
+                onClick = onReturnOriginalClick
             )
         }
     }
@@ -59,7 +63,8 @@ fun CartProductLeadingSwipeActions(
                 text = stringResource(ClientStrings.CartShowAlternatives),
                 backgroundColor = MaterialTheme.colorScheme.cartSwipeAlternatives,
                 contentColor = MaterialTheme.colorScheme.onBackground,
-                contentHorizontalAlignment = Alignment.End
+                contentHorizontalAlignment = Alignment.End,
+                onClick = onShowAlternativesClick
             )
         }
     }
@@ -77,7 +82,8 @@ fun CartProductLeadingSwipeActions(
                 text = stringResource(ClientStrings.CartHideAlternativesList),
                 backgroundColor = MaterialTheme.colorScheme.cartSwipeAlternatives,
                 contentColor = MaterialTheme.colorScheme.onBackground,
-                contentHorizontalAlignment = Alignment.End
+                contentHorizontalAlignment = Alignment.End,
+                onClick = onHideAlternativesClick
             )
         }
     }

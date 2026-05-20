@@ -35,5 +35,5 @@ interface FilterInteractor {
 
     suspend fun toggleBrandFavorite(chipId: String, brandId: Int, categoryId: Int, isFavorite: Boolean)
 
-    suspend fun loadBrandFavoriteStatus(brandId: Int, categoryId: Int): Boolean?
+    suspend fun loadBrandFavoriteStatus(brandId: Int, categoryId: Int): Boolean
 }

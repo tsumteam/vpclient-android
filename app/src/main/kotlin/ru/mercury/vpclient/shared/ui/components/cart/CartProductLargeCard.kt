@@ -64,6 +64,13 @@ fun CartProductLargeCard(
     onAlternativeClick: (CartProductAlternative) -> Unit = {},
     onRemoveAlternativeClick: (CartProductAlternative) -> Unit = {},
     onHideAlternativesClick: () -> Unit = {},
+    onEditSwipeClick: () -> Unit = {},
+    onDeleteSwipeClick: () -> Unit = {},
+    onDetachFromLookSwipeClick: () -> Unit = {},
+    onReturnOriginalSwipeClick: () -> Unit = {},
+    onShowAlternativesSwipeClick: () -> Unit = {},
+    onHideAlternativesSwipeClick: () -> Unit = {},
+    selectedAlternativeId: String? = null,
     isDividerVisible: Boolean = true
 ) {
     val articleText = product.article.takeIf { it.isNotEmpty() } ?: product.itemId
@@ -95,7 +102,10 @@ fun CartProductLargeCard(
                 swipeProgress = swipeProgress,
                 isReturnOriginalVisible = isReturnOriginalSwipeActionVisible,
                 isShowAlternativesVisible = isShowAlternativesSwipeActionVisible,
-                isHideAlternativesVisible = isHideAlternativesSwipeActionVisible
+                isHideAlternativesVisible = isHideAlternativesSwipeActionVisible,
+                onReturnOriginalClick = onReturnOriginalSwipeClick,
+                onShowAlternativesClick = onShowAlternativesSwipeClick,
+                onHideAlternativesClick = onHideAlternativesSwipeClick
             )
         },
         trailingActionsContent = { swipeProgress ->
@@ -103,7 +113,10 @@ fun CartProductLargeCard(
                 swipeProgress = swipeProgress,
                 isEditVisible = isEditSwipeActionVisible,
                 isDetachFromLookVisible = isDetachFromLookSwipeActionVisible,
-                isDeleteVisible = true
+                isDeleteVisible = true,
+                onEditClick = onEditSwipeClick,
+                onDetachFromLookClick = onDetachFromLookSwipeClick,
+                onDeleteClick = onDeleteSwipeClick
             )
         },
         leadingSwipeSize = (88 * leadingSwipeActionsCount).dp,
@@ -415,6 +428,7 @@ fun CartProductLargeCard(
                 CartAlternativesSection(
                     alternatives = product.alternatives,
                     modifier = Modifier.padding(top = 25.dp),
+                    selectedAlternativeId = selectedAlternativeId,
                     onAlternativeClick = onAlternativeClick,
                     onRemoveClick = onRemoveAlternativeClick
                 )

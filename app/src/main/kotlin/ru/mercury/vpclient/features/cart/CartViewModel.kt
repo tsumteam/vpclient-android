@@ -9,7 +9,14 @@ import ru.mercury.vpclient.features.cart.intent.CartIntent
 import ru.mercury.vpclient.features.cart.model.CartModel
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.shared.data.error.BasketHideAlternativesException
+import ru.mercury.vpclient.shared.data.error.ChangePaySwitchException
 import ru.mercury.vpclient.shared.data.error.ClientException
+import ru.mercury.vpclient.shared.data.error.DeleteLookException
+import ru.mercury.vpclient.shared.data.error.DeleteProductException
+import ru.mercury.vpclient.shared.data.error.DisassembleLookException
+import ru.mercury.vpclient.shared.data.error.RemoveAlternativeException
+import ru.mercury.vpclient.shared.data.error.SetProductSizeException
+import ru.mercury.vpclient.shared.data.error.SwitchProductWithAlternativeException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
 import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
@@ -147,7 +154,16 @@ class CartViewModel @Inject constructor(
                 }
             }
             is CartIntent.AlternativeClick -> {
-                launch { cartInteractor.switchProductWithAlternative(intent.alternative) }
+                reduce { it.copy(selectedAlternativeId = intent.alternative.id) }
+                launch {
+                    try {
+                        withCenterLoading {
+                            cartInteractor.switchProductWithAlternative(intent.alternative)
+                        }
+                    } finally {
+                        reduce { it.copy(selectedAlternativeId = null) }
+                    }
+                }
             }
             is CartIntent.RemoveAlternativeClick -> {
                 launch { cartInteractor.removeAlternative(intent.alternative) }
@@ -155,6 +171,33 @@ class CartViewModel @Inject constructor(
             is CartIntent.HideAlternativesClick -> {
                 launch { cartInteractor.basketHideAlternatives(intent.product) }
             }
+            is CartIntent.DeleteProductSwipeClick -> {
+                launch {
+                    withCenterLoading {
+                        cartInteractor.deleteProduct(intent.product)
+                    }
+                }
+            }
+            is CartIntent.DisassembleLookSwipeClick -> {
+                val products = stateFlow.value.products.filter { it.lookId == intent.lookId }
+                launch {
+                    withCenterLoading {
+                        cartInteractor.disassembleLook(products)
+                    }
+                }
+            }
+            is CartIntent.DeleteLookSwipeClick -> {
+                launch {
+                    withCenterLoading {
+                        cartInteractor.deleteLook(intent.lookId)
+                    }
+                }
+            }
+            is CartIntent.EditProductSwipeClick,
+            is CartIntent.DetachProductFromLookSwipeClick,
+            is CartIntent.ReturnOriginalSwipeClick,
+            is CartIntent.ShowAlternativesSwipeClick,
+            is CartIntent.HideAlternativesSwipeClick -> return
             is CartIntent.SelectPayMode -> reduce { it.copy(payMode = intent.mode) }
             is CartIntent.SelectViewMode -> reduce { it.copy(viewMode = intent.mode) }
             is CartIntent.ChatClick,
@@ -169,6 +212,27 @@ class CartViewModel @Inject constructor(
                 launch { send(CartEvent.SnackbarErrorMessage(throwable.message.orEmpty())) }
             }
             is BasketHideAlternativesException -> {
+                launch { send(CartEvent.SnackbarErrorMessage(throwable.message)) }
+            }
+            is DeleteProductException -> {
+                launch { send(CartEvent.SnackbarErrorMessage(throwable.message)) }
+            }
+            is DeleteLookException -> {
+                launch { send(CartEvent.SnackbarErrorMessage(throwable.message)) }
+            }
+            is DisassembleLookException -> {
+                launch { send(CartEvent.SnackbarErrorMessage(throwable.message)) }
+            }
+            is ChangePaySwitchException -> {
+                launch { send(CartEvent.SnackbarErrorMessage(throwable.message)) }
+            }
+            is RemoveAlternativeException -> {
+                launch { send(CartEvent.SnackbarErrorMessage(throwable.message)) }
+            }
+            is SwitchProductWithAlternativeException -> {
+                launch { send(CartEvent.SnackbarErrorMessage(throwable.message)) }
+            }
+            is SetProductSizeException -> {
                 launch { send(CartEvent.SnackbarErrorMessage(throwable.message)) }
             }
             is ClientException -> {

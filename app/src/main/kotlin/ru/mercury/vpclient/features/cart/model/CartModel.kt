@@ -20,6 +20,7 @@ data class CartModel(
     val sizePickerProduct: CartProduct? = null,
     val sizePickerSizes: ProductAvailableSizesEntity? = null,
     val sizePickerSelectedId: String? = null,
+    val selectedAlternativeId: String? = null,
     val paySwitchJob: Job? = null,
     val sizePickerJob: Job? = null
 ): Model {

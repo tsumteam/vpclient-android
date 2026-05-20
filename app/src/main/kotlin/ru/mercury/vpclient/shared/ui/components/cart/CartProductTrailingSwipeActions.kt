@@ -29,7 +29,10 @@ fun CartProductTrailingSwipeActions(
     isEditVisible: Boolean,
     isDetachFromLookVisible: Boolean,
     isDeleteVisible: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onEditClick: () -> Unit = {},
+    onDetachFromLookClick: () -> Unit = {},
+    onDeleteClick: () -> Unit = {}
 ) {
     val actionWidth = 88.dp * swipeProgress
 
@@ -44,7 +47,8 @@ fun CartProductTrailingSwipeActions(
             CartProductSwipeAction(
                 imageVector = Edit24,
                 text = stringResource(ClientStrings.CartEdit),
-                backgroundColor = MaterialTheme.colorScheme.cartSwipeEdit
+                backgroundColor = MaterialTheme.colorScheme.cartSwipeEdit,
+                onClick = onEditClick
             )
         }
     }
@@ -60,7 +64,8 @@ fun CartProductTrailingSwipeActions(
             CartProductSwipeAction(
                 imageVector = DetachFromLook24,
                 text = stringResource(ClientStrings.CartDetachFromLook),
-                backgroundColor = MaterialTheme.colorScheme.cartSwipeDetach
+                backgroundColor = MaterialTheme.colorScheme.cartSwipeDetach,
+                onClick = onDetachFromLookClick
             )
         }
     }
@@ -76,7 +81,8 @@ fun CartProductTrailingSwipeActions(
             CartProductSwipeAction(
                 imageVector = Delete24,
                 text = stringResource(ClientStrings.CartDelete),
-                backgroundColor = MaterialTheme.colorScheme.cartSwipeDelete
+                backgroundColor = MaterialTheme.colorScheme.cartSwipeDelete,
+                onClick = onDeleteClick
             )
         }
     }

@@ -14,6 +14,12 @@ interface CartInteractor {
 
     suspend fun setProductSize(product: CartProduct, sizeId: String)
 
+    suspend fun deleteProduct(product: CartProduct)
+
+    suspend fun deleteLook(lookId: String)
+
+    suspend fun disassembleLook(products: List<CartProduct>)
+
     suspend fun removeAlternative(alternative: CartProductAlternative)
 
     suspend fun switchProductWithAlternative(alternative: CartProductAlternative)

@@ -179,7 +179,7 @@ private fun CartScreenContent(
         snackbarHost = {
             SharedSnackbarHost(
                 hostState = snackbarHostStateError,
-                modifier = Modifier.padding(bottom = 16.dp),
+                modifier = Modifier.padding(bottom = 8.dp),
                 containerColor = MaterialTheme.colorScheme.error
             )
         },
@@ -227,6 +227,7 @@ private fun CartScreenContent(
                             CartProductGroupItem(
                                 group = group,
                                 viewMode = state.viewMode,
+                                selectedAlternativeId = state.selectedAlternativeId,
                                 dispatch = dispatch
                             )
                         }
@@ -247,6 +248,7 @@ private fun CartScreenContent(
 private fun CartProductGroupItem(
     group: CartProductGroup,
     viewMode: CartViewMode,
+    selectedAlternativeId: String?,
     dispatch: (CartIntent) -> Unit
 ) {
     when {
@@ -264,7 +266,22 @@ private fun CartProductGroupItem(
                 },
                 onAlternativeClick = { alternative -> dispatch(CartIntent.AlternativeClick(alternative)) },
                 onRemoveAlternativeClick = { alternative -> dispatch(CartIntent.RemoveAlternativeClick(alternative)) },
-                onHideAlternativesClick = { product -> dispatch(CartIntent.HideAlternativesClick(product)) }
+                onHideAlternativesClick = { product -> dispatch(CartIntent.HideAlternativesClick(product)) },
+                onEditProductSwipeClick = { product -> dispatch(CartIntent.EditProductSwipeClick(product)) },
+                onDeleteProductSwipeClick = { product -> dispatch(CartIntent.DeleteProductSwipeClick(product)) },
+                onDetachProductFromLookSwipeClick = { product ->
+                    dispatch(CartIntent.DetachProductFromLookSwipeClick(product))
+                },
+                onReturnOriginalSwipeClick = { product -> dispatch(CartIntent.ReturnOriginalSwipeClick(product)) },
+                onShowAlternativesSwipeClick = { product -> dispatch(CartIntent.ShowAlternativesSwipeClick(product)) },
+                onHideAlternativesSwipeClick = { product -> dispatch(CartIntent.HideAlternativesSwipeClick(product)) },
+                onDisassembleLookSwipeClick = {
+                    dispatch(CartIntent.DisassembleLookSwipeClick(group.lookId.orEmpty()))
+                },
+                onDeleteLookSwipeClick = {
+                    dispatch(CartIntent.DeleteLookSwipeClick(group.lookId.orEmpty()))
+                },
+                selectedAlternativeId = selectedAlternativeId
             )
         }
         else -> {
@@ -286,7 +303,26 @@ private fun CartProductGroupItem(
                         },
                         onHideAlternativesClick = {
                             dispatch(CartIntent.HideAlternativesClick(product))
-                        }
+                        },
+                        onEditSwipeClick = {
+                            dispatch(CartIntent.EditProductSwipeClick(product))
+                        },
+                        onDeleteSwipeClick = {
+                            dispatch(CartIntent.DeleteProductSwipeClick(product))
+                        },
+                        onDetachFromLookSwipeClick = {
+                            dispatch(CartIntent.DetachProductFromLookSwipeClick(product))
+                        },
+                        onReturnOriginalSwipeClick = {
+                            dispatch(CartIntent.ReturnOriginalSwipeClick(product))
+                        },
+                        onShowAlternativesSwipeClick = {
+                            dispatch(CartIntent.ShowAlternativesSwipeClick(product))
+                        },
+                        onHideAlternativesSwipeClick = {
+                            dispatch(CartIntent.HideAlternativesSwipeClick(product))
+                        },
+                        selectedAlternativeId = selectedAlternativeId
                     )
                 }
                 CartViewMode.Cards -> {
@@ -305,7 +341,26 @@ private fun CartProductGroupItem(
                         },
                         onHideAlternativesClick = {
                             dispatch(CartIntent.HideAlternativesClick(product))
-                        }
+                        },
+                        onEditSwipeClick = {
+                            dispatch(CartIntent.EditProductSwipeClick(product))
+                        },
+                        onDeleteSwipeClick = {
+                            dispatch(CartIntent.DeleteProductSwipeClick(product))
+                        },
+                        onDetachFromLookSwipeClick = {
+                            dispatch(CartIntent.DetachProductFromLookSwipeClick(product))
+                        },
+                        onReturnOriginalSwipeClick = {
+                            dispatch(CartIntent.ReturnOriginalSwipeClick(product))
+                        },
+                        onShowAlternativesSwipeClick = {
+                            dispatch(CartIntent.ShowAlternativesSwipeClick(product))
+                        },
+                        onHideAlternativesSwipeClick = {
+                            dispatch(CartIntent.HideAlternativesSwipeClick(product))
+                        },
+                        selectedAlternativeId = selectedAlternativeId
                     )
                 }
             }

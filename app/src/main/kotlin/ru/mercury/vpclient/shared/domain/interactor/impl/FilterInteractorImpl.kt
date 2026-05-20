@@ -65,7 +65,7 @@ class FilterInteractorImpl @Inject constructor(
         withContext(dispatchers.io) { filterRepository.toggleBrandFavorite(chipId, brandId, categoryId, isFavorite) }
     }
 
-    override suspend fun loadBrandFavoriteStatus(brandId: Int, categoryId: Int): Boolean? {
+    override suspend fun loadBrandFavoriteStatus(brandId: Int, categoryId: Int): Boolean {
         return withContext(dispatchers.io) { filterRepository.loadBrandFavoriteStatus(brandId, categoryId) }
     }
 }

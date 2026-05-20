@@ -9,6 +9,7 @@ import ru.mercury.vpclient.shared.data.network.entity.BasketChangeLinePaySwitchO
 import ru.mercury.vpclient.shared.data.network.entity.BasketChangeLineSizeOperationRequestItemDto
 import ru.mercury.vpclient.shared.data.network.entity.BasketOperationRequestDto
 import ru.mercury.vpclient.shared.data.network.entity.BasketOperationRequestTypeEnum
+import ru.mercury.vpclient.shared.data.network.entity.BasketRemoveLineOperationRequestItemDto
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 
 val CartProduct.imagePages: List<String>
@@ -88,6 +89,23 @@ fun CartProduct.changeSizeRequest(
                     operationOrder = 1,
                     lineId = id,
                     paySwitch = true
+                )
+            )
+        )
+    )
+}
+
+fun CartProduct.deleteProductRequest(
+    pairedUserId: String
+): BasketOperationRequestDto {
+    return BasketOperationRequestDto(
+        pairedUserId = pairedUserId,
+        items = listOf(
+            cartProductJson.encodeToJsonElement(
+                BasketRemoveLineOperationRequestItemDto(
+                    operationType = BasketOperationRequestTypeEnum.REMOVE_LINE,
+                    operationOrder = 0,
+                    lineId = id
                 )
             )
         )

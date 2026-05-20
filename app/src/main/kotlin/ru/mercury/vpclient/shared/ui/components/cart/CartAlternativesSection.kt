@@ -20,6 +20,7 @@ import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 fun CartAlternativesSection(
     alternatives: List<CartProductAlternative>,
     modifier: Modifier = Modifier,
+    selectedAlternativeId: String? = null,
     onAlternativeClick: (CartProductAlternative) -> Unit = {},
     onRemoveClick: (CartProductAlternative) -> Unit = {}
 ) {
@@ -39,6 +40,7 @@ fun CartAlternativesSection(
                 CartAlternativeProductCard(
                     alternative = alternative,
                     isStartBorderVisible = index == 0,
+                    isSelected = alternative.id == selectedAlternativeId,
                     onClick = { onAlternativeClick(alternative) },
                     onRemoveClick = { onRemoveClick(alternative) }
                 )

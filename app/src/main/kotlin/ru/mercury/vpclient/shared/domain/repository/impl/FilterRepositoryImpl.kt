@@ -40,16 +40,16 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilter
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesQuantityEntity
 import ru.mercury.vpclient.shared.domain.mapper.handleResponse
+import ru.mercury.vpclient.shared.domain.mapper.handleResponseResult
 import ru.mercury.vpclient.shared.domain.mapper.orEmpty
 import ru.mercury.vpclient.shared.domain.mapper.requests
 import ru.mercury.vpclient.shared.domain.mapper.toFilterRibbonData
 import ru.mercury.vpclient.shared.domain.mapper.toFilterValuesEntity
 import ru.mercury.vpclient.shared.domain.mapper.toFilterValuesPickers
 import ru.mercury.vpclient.shared.domain.mapper.viewType
+import ru.mercury.vpclient.shared.domain.remotemediator.CatalogFilterProductsRemoteMediator
 import ru.mercury.vpclient.shared.domain.repository.FilterRepository
 import javax.inject.Inject
-
-// fixme
 
 class FilterRepositoryImpl @Inject constructor(
     private val networkService: NetworkService,
@@ -166,7 +166,7 @@ class FilterRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun loadCatalogFilterValues(data: FilterValuesRequestData) { // fixme
+    override suspend fun loadCatalogFilterValues(data: FilterValuesRequestData) {
         val categoryId = data.categoryId
         val titleCategoryId = data.titleCategoryId
         val chipId = data.chipId
@@ -304,12 +304,9 @@ class FilterRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun loadBrandFavoriteStatus(brandId: Int, categoryId: Int): Boolean? {
-        var result: Boolean? = null
-        handleResponse(
-            request = { networkService.catalogBrandsIsFavorite(brandId, categoryId) },
-            onSuccess = { isFavorite -> result = isFavorite }
-        )
-        return result
+    override suspend fun loadBrandFavoriteStatus(brandId: Int, categoryId: Int): Boolean {
+        return handleResponseResult {
+            networkService.catalogBrandsIsFavorite(brandId, categoryId)
+        }.getOrDefault(false)
     }
 }
