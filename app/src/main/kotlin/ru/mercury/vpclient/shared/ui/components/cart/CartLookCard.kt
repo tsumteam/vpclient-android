@@ -65,9 +65,9 @@ fun CartLookCard(
                     contentAlignment = Alignment.CenterStart
                 ) {
                     CartProductSwipeAction(
-                        imageVector = Delete24,
-                        text = stringResource(ClientStrings.CartDelete),
-                        backgroundColor = MaterialTheme.colorScheme.cartSwipeDelete
+                        imageVector = Disassemble24,
+                        text = stringResource(ClientStrings.CartDisassembleLook),
+                        backgroundColor = MaterialTheme.colorScheme.cartSwipeDisassemble
                     )
                 }
 
@@ -79,9 +79,9 @@ fun CartLookCard(
                     contentAlignment = Alignment.CenterStart
                 ) {
                     CartProductSwipeAction(
-                        imageVector = Disassemble24,
-                        text = stringResource(ClientStrings.CartDisassembleLook),
-                        backgroundColor = MaterialTheme.colorScheme.cartSwipeDisassemble
+                        imageVector = Delete24,
+                        text = stringResource(ClientStrings.CartDelete),
+                        backgroundColor = MaterialTheme.colorScheme.cartSwipeDelete
                     )
                 }
             },
