@@ -31,12 +31,13 @@ fun CartProductLeadingSwipeActions(
             .fillMaxHeight()
             .width(actionWidth)
             .clipToBounds(),
-        contentAlignment = Alignment.CenterStart
+        contentAlignment = Alignment.CenterEnd
     ) {
         CartProductSwipeAction(
             imageVector = null,
             text = stringResource(ClientStrings.CartReturnOriginal),
-            backgroundColor = MaterialTheme.colorScheme.cartSwipeReturnOriginal
+            backgroundColor = MaterialTheme.colorScheme.cartSwipeReturnOriginal,
+            contentHorizontalAlignment = Alignment.End
         )
     }
 
@@ -45,13 +46,14 @@ fun CartProductLeadingSwipeActions(
             .fillMaxHeight()
             .width(actionWidth)
             .clipToBounds(),
-        contentAlignment = Alignment.CenterStart
+        contentAlignment = Alignment.CenterEnd
     ) {
         CartProductSwipeAction(
             imageVector = null,
             text = stringResource(ClientStrings.CartShowAlternatives),
             backgroundColor = MaterialTheme.colorScheme.cartSwipeAlternatives,
-            contentColor = MaterialTheme.colorScheme.onBackground
+            contentColor = MaterialTheme.colorScheme.onBackground,
+            contentHorizontalAlignment = Alignment.End
         )
     }
 
@@ -60,13 +62,14 @@ fun CartProductLeadingSwipeActions(
             .fillMaxHeight()
             .width(actionWidth)
             .clipToBounds(),
-        contentAlignment = Alignment.CenterStart
+        contentAlignment = Alignment.CenterEnd
     ) {
         CartProductSwipeAction(
             imageVector = null,
             text = stringResource(ClientStrings.CartHideAlternativesList),
             backgroundColor = MaterialTheme.colorScheme.cartSwipeAlternatives,
-            contentColor = MaterialTheme.colorScheme.onBackground
+            contentColor = MaterialTheme.colorScheme.onBackground,
+            contentHorizontalAlignment = Alignment.End
         )
     }
 }

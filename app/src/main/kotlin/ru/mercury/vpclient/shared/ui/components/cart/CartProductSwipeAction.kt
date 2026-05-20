@@ -34,11 +34,12 @@ fun CartProductSwipeAction(
     backgroundColor: Color,
     contentColor: Color = MaterialTheme.colorScheme.onPrimary,
     modifier: Modifier = Modifier,
-    width: Dp = 88.dp
+    width: Dp = 88.dp,
+    contentHorizontalAlignment: Alignment.Horizontal = Alignment.Start
 ) {
     Column(
         modifier = modifier
-            .wrapContentWidth(align = Alignment.Start, unbounded = true)
+            .wrapContentWidth(align = contentHorizontalAlignment, unbounded = true)
             .requiredWidth(width)
             .fillMaxHeight()
             .background(backgroundColor),
