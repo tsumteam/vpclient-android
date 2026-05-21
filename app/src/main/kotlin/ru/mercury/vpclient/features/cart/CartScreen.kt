@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -48,6 +48,7 @@ import ru.mercury.vpclient.shared.ui.components.cart.CartBottomBar
 import ru.mercury.vpclient.shared.ui.components.cart.CartListLoading
 import ru.mercury.vpclient.shared.ui.components.cart.CartLookCard
 import ru.mercury.vpclient.shared.ui.components.cart.CartProductCard
+import ru.mercury.vpclient.shared.ui.components.cart.CartProductDivider
 import ru.mercury.vpclient.shared.ui.components.cart.CartProductLargeCard
 import ru.mercury.vpclient.shared.ui.components.cart.CartSelectSizeDialog
 import ru.mercury.vpclient.shared.ui.components.cart.CartSizePickerSheet
@@ -220,16 +221,28 @@ private fun CartScreenContent(
                             }
                         )
                     ) {
-                        items(
+                        itemsIndexed(
                             items = state.visibleProductGroups,
-                            key = CartProductGroup::key
-                        ) { group ->
+                            key = { _, group -> group.key }
+                        ) { index, group ->
                             CartProductGroupItem(
                                 group = group,
                                 viewMode = state.viewMode,
                                 selectedAlternativeId = state.selectedAlternativeId,
                                 dispatch = dispatch
                             )
+
+                            val product = group.products.firstOrNull()
+                            val isAlternativesVisible = product?.isAlternativesPaletteOpen == true &&
+                                product.alternatives.isNotEmpty()
+                            val isDividerVisible = state.viewMode == CartViewMode.List &&
+                                !group.isLook &&
+                                index < state.visibleProductGroups.lastIndex &&
+                                !isAlternativesVisible
+
+                            if (isDividerVisible) {
+                                CartProductDivider()
+                            }
                         }
 
                         item {

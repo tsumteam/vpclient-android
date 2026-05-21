@@ -5,10 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,7 +29,6 @@ import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.preview.CartProductProvider
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.divider
 import ru.mercury.vpclient.shared.ui.theme.regular11
 import ru.mercury.vpclient.shared.ui.theme.regular14
 import ru.mercury.vpclient.shared.ui.theme.regular15
@@ -52,8 +49,7 @@ fun CartProductCard(
     onReturnOriginalSwipeClick: () -> Unit = {},
     onShowAlternativesSwipeClick: () -> Unit = {},
     onHideAlternativesSwipeClick: () -> Unit = {},
-    selectedAlternativeId: String? = null,
-    isDividerVisible: Boolean = true
+    selectedAlternativeId: String? = null
 ) {
     val articleText = product.article.takeIf { it.isNotEmpty() } ?: product.itemId
     val isPriceVisible = product.priceValue > .0 && product.price.isNotBlank()
@@ -338,13 +334,6 @@ fun CartProductCard(
             if (isAlternativesEmptyVisible) {
                 CartAlternativesEmpty(
                     onHideClick = onHideAlternativesClick
-                )
-            }
-
-            if (isDividerVisible && !isAlternativesVisible) {
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    color = MaterialTheme.colorScheme.divider
                 )
             }
         }

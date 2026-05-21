@@ -127,6 +127,8 @@ fun CartLookCard(
                     )
                 }
                 false -> {
+                    val isAlternativesVisible = product.isAlternativesPaletteOpen && product.alternatives.isNotEmpty()
+
                     CartProductCard(
                         product = product,
                         onClick = { onProductClick(product) },
@@ -141,9 +143,12 @@ fun CartLookCard(
                         onReturnOriginalSwipeClick = { onReturnOriginalSwipeClick(product) },
                         onShowAlternativesSwipeClick = { onShowAlternativesSwipeClick(product) },
                         onHideAlternativesSwipeClick = { onHideAlternativesSwipeClick(product) },
-                        selectedAlternativeId = selectedAlternativeId,
-                        isDividerVisible = index < products.lastIndex
+                        selectedAlternativeId = selectedAlternativeId
                     )
+
+                    if (index < products.lastIndex && !isAlternativesVisible) {
+                        CartProductDivider()
+                    }
                 }
             }
         }
