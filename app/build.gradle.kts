@@ -37,16 +37,19 @@ android {
     productFlavors {
         create("prod") {
             dimension = "env"
+            isDefault = false
             buildConfigField("String", "VPCLIENT_ENV", "\"prod\"")
         }
         create("uat") {
             dimension = "env"
             applicationIdSuffix = ".uat"
+            isDefault = true
             buildConfigField("String", "VPCLIENT_ENV", "\"uat\"")
         }
         create("dev") {
             dimension = "env"
             applicationIdSuffix = ".dev"
+            isDefault = false
             buildConfigField("String", "VPCLIENT_ENV", "\"dev\"")
         }
     }
