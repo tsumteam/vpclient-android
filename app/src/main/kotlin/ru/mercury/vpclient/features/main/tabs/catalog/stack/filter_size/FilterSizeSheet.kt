@@ -23,7 +23,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -43,6 +42,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_size.intent.FilterSizeIntent
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_size.model.FilterSizeSheetState
 import ru.mercury.vpclient.shared.data.entity.SizeCountry
@@ -54,7 +54,6 @@ import ru.mercury.vpclient.shared.ui.components.filters.FilterSelectableRow
 import ru.mercury.vpclient.shared.ui.components.filters.FilterSizeCountrySelector
 import ru.mercury.vpclient.shared.ui.components.SharedAnimatedVisibility
 import ru.mercury.vpclient.shared.ui.components.system.ClientButton
-import ru.mercury.vpclient.shared.ui.components.system.ClientDragHandle
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.placeholder
@@ -89,12 +88,9 @@ private fun FilterSizeSheetContent(
     val scope = rememberCoroutineScope()
     var selectedCountry by remember { mutableStateOf<SizeCountry>(SizeCountry.Russia) }
 
-    ModalBottomSheet(
+    SharedModalBottomSheet(
         onDismissRequest = { dispatch(FilterSizeIntent.HideFilterSizeDialog) },
-        sheetState = sheetState,
-        sheetGesturesEnabled = false,
-        containerColor = MaterialTheme.colorScheme.background,
-        dragHandle = { ClientDragHandle() }
+        sheetState = sheetState
     ) {
         Column {
             Box(

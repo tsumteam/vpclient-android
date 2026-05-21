@@ -36,7 +36,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -68,6 +67,8 @@ import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_brand.intent.
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_brand.model.FilterBrandSheetState
 import ru.mercury.vpclient.shared.domain.mapper.quantityWithThousandsSeparator
 import ru.mercury.vpclient.shared.domain.mapper.requireQuantity
+import ru.mercury.vpclient.shared.ui.components.SharedAnimatedVisibility
+import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.filters.BrandChipsGrid
 import ru.mercury.vpclient.shared.ui.components.filters.BrandLetterHeader
 import ru.mercury.vpclient.shared.ui.components.filters.BrandLoadingContent
@@ -75,9 +76,7 @@ import ru.mercury.vpclient.shared.ui.components.filters.BrandSearchField
 import ru.mercury.vpclient.shared.ui.components.filters.FilterBrandSectionHeader
 import ru.mercury.vpclient.shared.ui.components.filters.FilterChip
 import ru.mercury.vpclient.shared.ui.components.filters.FilterSelectableRow
-import ru.mercury.vpclient.shared.ui.components.SharedAnimatedVisibility
 import ru.mercury.vpclient.shared.ui.components.system.ClientButton
-import ru.mercury.vpclient.shared.ui.components.system.ClientDragHandle
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.livretMedium19
@@ -123,12 +122,9 @@ private fun FilterBrandSheetContent(
         }
     }
 
-    ModalBottomSheet(
+    SharedModalBottomSheet(
         onDismissRequest = { dispatch(FilterBrandIntent.HideFilterBrandDialog) },
-        sheetState = sheetState,
-        sheetGesturesEnabled = false,
-        containerColor = MaterialTheme.colorScheme.background,
-        dragHandle = { ClientDragHandle() }
+        sheetState = sheetState
     ) {
         Column(
             modifier = Modifier.fillMaxSize()

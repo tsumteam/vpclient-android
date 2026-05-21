@@ -16,7 +16,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -37,11 +36,11 @@ import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter.intent.Filter
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_price.model.FilterPriceSheetState
 import ru.mercury.vpclient.shared.domain.mapper.quantityWithThousandsSeparator
 import ru.mercury.vpclient.shared.domain.mapper.requireQuantity
-import ru.mercury.vpclient.shared.ui.components.filters.FilterSelectableRow
 import ru.mercury.vpclient.shared.ui.components.SharedAnimatedVisibility
-import ru.mercury.vpclient.shared.ui.components.system.ClientButton
-import ru.mercury.vpclient.shared.ui.components.system.ClientDragHandle
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
+import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
+import ru.mercury.vpclient.shared.ui.components.filters.FilterSelectableRow
+import ru.mercury.vpclient.shared.ui.components.system.ClientButton
 import ru.mercury.vpclient.shared.ui.components.system.ClientTextField
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
@@ -69,12 +68,9 @@ private fun FilterPriceSheetContent(
     val scope = rememberCoroutineScope()
     val isResetVisible = state.priceFrom.isNotEmpty() || state.priceTo.isNotEmpty() || state.selectedPresetId != null
 
-    ModalBottomSheet(
+    SharedModalBottomSheet(
         onDismissRequest = { dispatch(FilterIntent.HideFilterValuesDialog) },
-        sheetState = sheetState,
-        sheetGesturesEnabled = false,
-        containerColor = MaterialTheme.colorScheme.background,
-        dragHandle = { ClientDragHandle() }
+        sheetState = sheetState
     ) {
         Column {
             Box(

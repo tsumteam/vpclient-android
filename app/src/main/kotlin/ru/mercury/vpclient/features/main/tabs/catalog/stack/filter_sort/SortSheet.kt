@@ -14,7 +14,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -36,10 +35,10 @@ import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_sort.intent.SortIntent
 import ru.mercury.vpclient.shared.data.entity.SortType
 import ru.mercury.vpclient.shared.domain.mapper.isResetButtonVisible
-import ru.mercury.vpclient.shared.ui.components.filters.FilterListRow
 import ru.mercury.vpclient.shared.ui.components.SharedAnimatedVisibility
+import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
+import ru.mercury.vpclient.shared.ui.components.filters.FilterListRow
 import ru.mercury.vpclient.shared.ui.components.system.ClientButton
-import ru.mercury.vpclient.shared.ui.components.system.ClientDragHandle
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.preview.SortTypeProvider
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
@@ -71,12 +70,9 @@ private fun SortSheetContent(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
 
-    ModalBottomSheet(
+    SharedModalBottomSheet(
         onDismissRequest = { dispatch(SortIntent.HideSortDialog) },
-        sheetState = sheetState,
-        sheetGesturesEnabled = false,
-        containerColor = Color.White,
-        dragHandle = { ClientDragHandle() }
+        sheetState = sheetState
     ) {
         Column {
             Box(

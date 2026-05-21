@@ -22,7 +22,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -41,7 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
-import ru.mercury.vpclient.shared.ui.components.system.ClientDragHandle
+import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.icons.Message24
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
@@ -67,12 +66,9 @@ fun DetailsMessageSheet(
         }
     }
 
-    ModalBottomSheet(
+    SharedModalBottomSheet(
         onDismissRequest = onDismissRequest,
-        sheetState = sheetState,
-        sheetGesturesEnabled = false,
-        containerColor = Color.White,
-        dragHandle = { ClientDragHandle() }
+        sheetState = sheetState
     ) {
         Column(
             modifier = Modifier.imePadding()
