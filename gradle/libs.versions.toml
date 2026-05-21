@@ -16,7 +16,7 @@ google-mlkit = "17.3.0"
 
 androidx-activity = "1.13.0"
 androidx-compose-foundation = "1.11.2"
-androidx-compose-runtime = "1.11.1"
+androidx-compose-runtime = "1.11.2"
 androidx-compose-ui = "1.11.1"
 androidx-compose-material3 = "1.4.0"
 androidx-constraintlayout-compose = "1.1.1"
