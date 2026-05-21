@@ -29,4 +29,7 @@ interface EmployeeDao {
 
     @Query("DELETE FROM employee")
     suspend fun clear()
+
+    @Query("UPDATE employee SET isActive = CASE WHEN employeeId = :employeeId THEN 1 ELSE 0 END")
+    suspend fun updateActive(employeeId: String)
 }

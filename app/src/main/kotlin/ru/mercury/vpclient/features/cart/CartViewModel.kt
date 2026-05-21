@@ -2,6 +2,8 @@ package ru.mercury.vpclient.features.cart
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.features.cart.event.CartEvent
@@ -19,7 +21,9 @@ import ru.mercury.vpclient.shared.data.error.SetProductSizeException
 import ru.mercury.vpclient.shared.data.error.SwitchProductWithAlternativeException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
+import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
+import ru.mercury.vpclient.shared.domain.interactor.EmployeeInteractor
 import ru.mercury.vpclient.shared.domain.interactor.ProductInteractor
 import ru.mercury.vpclient.shared.domain.mapper.withCenterLoading
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
@@ -31,11 +35,14 @@ private const val SIZE_PICKER_LOAD_ERROR_MESSAGE = "Не удалось загр
 @HiltViewModel
 class CartViewModel @Inject constructor(
     private val cartInteractor: CartInteractor,
+    private val employeeInteractor: EmployeeInteractor,
     private val productInteractor: ProductInteractor
 ): ClientViewModel<CartIntent, CartModel, CartEvent>(CartModel()) {
 
     init {
         dispatch(CartIntent.CollectCart)
+        dispatch(CartIntent.CollectActiveEmployee)
+        dispatch(CartIntent.LoadActiveEmployee)
         dispatch(CartIntent.LoadCart)
     }
 
@@ -48,6 +55,17 @@ class CartViewModel @Inject constructor(
                     }
                 }
             }
+            is CartIntent.CollectActiveEmployee -> {
+                launch {
+                    employeeInteractor.employeeEntitiesFlow
+                        .map { employees -> employees.firstOrNull { it.isActive } ?: EmployeeEntity.Empty }
+                        .distinctUntilChanged()
+                        .collectLatest { employee ->
+                            reduce { it.copy(activeEmployee = employee) }
+                        }
+                }
+            }
+            is CartIntent.LoadActiveEmployee -> launch { runCatching { employeeInteractor.syncActiveEmployee() } }
             is CartIntent.LoadCart -> launch { cartInteractor.loadBasket() }
             is CartIntent.PullToRefresh -> {
                 if (stateFlow.value.isRefreshing) return

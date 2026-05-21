@@ -17,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
@@ -25,7 +24,6 @@ import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.ui.icons.Chat24
 import ru.mercury.vpclient.shared.ui.icons.ChevronUp24
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.medium14
 import ru.mercury.vpclient.shared.ui.theme.regular15
 import ru.mercury.vpclient.shared.ui.theme.secondary6
@@ -33,6 +31,8 @@ import kotlin.math.min
 
 @Composable
 fun CartChatDock(
+    name: String,
+    brand: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -70,7 +70,7 @@ fun CartChatDock(
             )
 
             Text(
-                text = stringResource(ClientStrings.CartConsultantName),
+                text = name,
                 maxLines = 1,
                 style = MaterialTheme.typography.medium14.copy(
                     color = MaterialTheme.colorScheme.onBackground,
@@ -80,7 +80,7 @@ fun CartChatDock(
         }
 
         Text(
-            text = stringResource(ClientStrings.CartConsultantBrand),
+            text = brand,
             maxLines = 1,
             style = MaterialTheme.typography.regular15.copy(
                 color = MaterialTheme.colorScheme.secondary6,
@@ -115,6 +115,8 @@ private val CartChatDockShape = GenericShape { size, _ ->
 @Composable
 private fun CartChatDockPreview() {
     CartChatDock(
+        name = "Екатерина",
+        brand = "Brioni",
         onClick = {}
     )
 }

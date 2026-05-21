@@ -8,6 +8,8 @@ import ru.mercury.vpclient.shared.mvi.Intent
 
 sealed interface CartIntent: Intent {
     data object CollectCart: CartIntent
+    data object CollectActiveEmployee: CartIntent
+    data object LoadActiveEmployee: CartIntent
     data object LoadCart: CartIntent
     data object PullToRefresh: CartIntent
     data object RefreshCompleted: CartIntent

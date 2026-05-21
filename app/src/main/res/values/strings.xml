@@ -73,10 +73,10 @@
     <string name="cart_return_original">Вернуть\nоригинал</string>
     <string name="cart_show_alternatives">Показать\nсписок\nальтернатив</string>
     <string name="cart_hide_alternatives_list">Скрыть\nсписок\nальтернатив</string>
-    <string name="cart_in_basket">В корзине: </string>
-    <string name="cart_to_payment">К оплате: </string>
-    <string name="cart_consultant_name">Екатерина</string>
-    <string name="cart_consultant_brand">Brioni</string>
+    <string name="cart_in_basket">В корзине:</string>
+    <string name="cart_to_payment">К оплате:</string>
+    <string name="cart_consultant_name">Екатерина</string><!--fixme-->
+    <string name="cart_consultant_brand">Brioni</string><!--fixme-->
 
     <plurals name="cart_all_items">
         <item quantity="one">ВСЕ ТОВАРЫ (%1$d)</item>

@@ -11,5 +11,7 @@ interface EmployeeRepository {
 
     suspend fun syncEmployees()
 
+    suspend fun syncActiveEmployee()
+
     suspend fun syncEmployee(employeeId: String)
 }

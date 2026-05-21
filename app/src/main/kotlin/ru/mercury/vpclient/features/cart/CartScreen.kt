@@ -172,6 +172,8 @@ private fun CartScreenContent(
         },
         bottomBar = {
             CartBottomBar(
+                chatName = state.cartChatName,
+                chatBrand = state.cartChatBrand,
                 onFittingClick = { dispatch(CartIntent.FittingClick) },
                 onBuyClick = { dispatch(CartIntent.BuyClick) },
                 onChatClick = { dispatch(CartIntent.ChatClick) }

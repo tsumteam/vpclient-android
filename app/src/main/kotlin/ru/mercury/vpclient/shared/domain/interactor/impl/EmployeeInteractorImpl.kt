@@ -23,6 +23,10 @@ class EmployeeInteractorImpl @Inject constructor(
         withContext(dispatchers.io) { employeeRepository.syncEmployees() }
     }
 
+    override suspend fun syncActiveEmployee() {
+        withContext(dispatchers.io) { employeeRepository.syncActiveEmployee() }
+    }
+
     override suspend fun syncEmployee(employeeId: String) {
         withContext(dispatchers.io) { employeeRepository.syncEmployee(employeeId) }
     }

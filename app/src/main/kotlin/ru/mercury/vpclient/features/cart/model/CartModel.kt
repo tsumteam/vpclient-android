@@ -5,16 +5,20 @@ import ru.mercury.vpclient.shared.data.FORMAT_RUB
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.SizeSelectorState
 import ru.mercury.vpclient.shared.data.entity.SizeState
+import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductAvailableSizesEntity
 import ru.mercury.vpclient.shared.domain.mapper.thousandsSeparator
 import ru.mercury.vpclient.shared.mvi.Model
 import kotlin.math.roundToInt
+
+private const val DEFAULT_CART_CONSULTANT_NAME = "Персональный менеджер"
 
 data class CartModel(
     val payMode: CartPayMode = CartPayMode.All,
     val viewMode: CartViewMode = CartViewMode.List,
     val isViewModeSwitcherVisible: Boolean = false,
     val isRefreshing: Boolean = false,
+    val activeEmployee: EmployeeEntity = EmployeeEntity.Empty,
     val products: List<CartProduct> = emptyList(),
     val selectSizeProduct: CartProduct? = null,
     val sizePickerProduct: CartProduct? = null,
@@ -102,6 +106,16 @@ data class CartModel(
     private val paymentProducts: List<CartProduct>
         get() {
             return products.filter { it.isForPayment && !it.isSold }
+        }
+
+    val cartChatName: String
+        get() {
+            return activeEmployee.employeeName.ifBlank { DEFAULT_CART_CONSULTANT_NAME }
+        }
+
+    val cartChatBrand: String
+        get() {
+            return activeEmployee.employeeBrand.trim()
         }
 
     private fun summary(products: List<CartProduct>): String {

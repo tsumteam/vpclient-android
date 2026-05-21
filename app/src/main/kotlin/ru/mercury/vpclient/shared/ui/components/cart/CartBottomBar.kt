@@ -16,6 +16,8 @@ import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 
 @Composable
 fun CartBottomBar(
+    chatName: String,
+    chatBrand: String,
     onFittingClick: () -> Unit,
     onBuyClick: () -> Unit,
     onChatClick: () -> Unit
@@ -46,6 +48,8 @@ fun CartBottomBar(
         }
 
         CartChatDock(
+            name = chatName,
+            brand = chatBrand,
             onClick = onChatClick
         )
     }
@@ -56,6 +60,8 @@ fun CartBottomBar(
 @Composable
 private fun CartBottomBarPreview() {
     CartBottomBar(
+        chatName = "Екатерина",
+        chatBrand = "Brioni",
         onFittingClick = {},
         onBuyClick = {},
         onChatClick = {}

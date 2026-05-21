@@ -55,6 +55,30 @@ class EmployeeRepositoryImpl @Inject constructor(
         employeeDao.upsert(entities)
     }
 
+    override suspend fun syncActiveEmployee() {
+        val employee = handleResponseResult {
+            networkService.clientActiveEmployee()
+        }.getOrThrow()
+        val employeeId = employee.employeeId.orEmpty()
+        if (employeeId.isEmpty()) return
+
+        settingsDataStore.setValue(PreferenceKey.PairedUser, employeeId)
+
+        val current = employeeDao.select(employeeId) ?: EmployeeEntity.Empty.copy(employeeId = employeeId)
+        val badges = handleResponseResult {
+            networkService.clientEmployeeBadges(employeeId)
+        }.getOrThrow()
+
+        employeeDao.upsert(
+            employee.entity(
+                current = current,
+                badges = badges,
+                isActive = true
+            )
+        )
+        employeeDao.updateActive(employeeId)
+    }
+
     override suspend fun syncEmployee(employeeId: String) {
         val current = employeeDao.select(employeeId) ?: EmployeeEntity.Empty.copy(employeeId = employeeId)
 
