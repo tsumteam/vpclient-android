@@ -8,6 +8,11 @@ import ru.mercury.vpclient.shared.data.entity.TopBarState
 class TopBarStateProvider: PreviewParameterProvider<TopBarState> {
     override val values: Sequence<TopBarState> = sequenceOf(
         TopBarState.Logo,
+        TopBarState.Home(
+            cartText = "1",
+            showCartBadge = true,
+            cartClick = {}
+        ),
         TopBarState.Title(title = "Бренды"),
         TopBarState.Catalog(
             navigationClick = {},

@@ -2,6 +2,11 @@ package ru.mercury.vpclient.shared.data.entity
 
 sealed interface TopBarState {
     data object Logo: TopBarState
+    data class Home(
+        val cartText: String,
+        val showCartBadge: Boolean,
+        val cartClick: () -> Unit
+    ): TopBarState
     data class Title(
         val title: String
     ): TopBarState

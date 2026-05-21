@@ -50,6 +50,14 @@ fun ClientCenterAlignedTopAppBar(
                         tint = Color.Black
                     )
                 }
+                is TopBarState.Home -> {
+                    Icon(
+                        imageVector = Logo82,
+                        contentDescription = null,
+                        modifier = Modifier.size(82.dp, 57.dp),
+                        tint = Color.Black
+                    )
+                }
                 is TopBarState.Title -> {
                     Text(
                         text = state.title,
@@ -215,6 +223,14 @@ fun ClientCenterAlignedTopAppBar(
         },
         actions = {
             when (state) {
+                is TopBarState.Home -> {
+                    CartIconButton(
+                        text = state.cartText,
+                        showBadge = state.showCartBadge,
+                        onClick = state.cartClick,
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                }
                 is TopBarState.Catalog -> {
                     CartIconButton(
                         text = state.cartText,
