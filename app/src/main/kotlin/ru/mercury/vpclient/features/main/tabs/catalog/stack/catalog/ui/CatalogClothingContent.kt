@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogCategoryEntity
 import ru.mercury.vpclient.shared.ui.components.catalog.CatalogClothingCard
-import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
+import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 
 @Composable
 fun CatalogClothingContent(
@@ -19,7 +19,7 @@ fun CatalogClothingContent(
     onItemClick: (CatalogCategoryEntity) -> Unit,
     contentPadding: PaddingValues = PaddingValues(top = 16.dp, bottom = 8.dp)
 ) {
-    ClientLazyColumn(
+    SharedLazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = contentPadding
     ) {

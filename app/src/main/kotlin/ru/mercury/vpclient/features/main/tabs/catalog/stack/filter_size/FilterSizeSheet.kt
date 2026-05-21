@@ -55,7 +55,7 @@ import ru.mercury.vpclient.shared.ui.components.filters.FilterSizeCountrySelecto
 import ru.mercury.vpclient.shared.ui.components.SharedAnimatedVisibility
 import ru.mercury.vpclient.shared.ui.components.system.ClientButton
 import ru.mercury.vpclient.shared.ui.components.system.ClientDragHandle
-import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
+import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.FilterSizeSheetStateProvider
@@ -238,7 +238,7 @@ private fun FilterSizeSheetContent(
                                 modifier = Modifier.padding(top = 4.dp)
                             )
 
-                            ClientLazyColumn(
+                            SharedLazyColumn(
                                 modifier = Modifier.fillMaxWidth(),
                                 contentPadding = PaddingValues(bottom = 72.dp)
                             ) {

@@ -13,7 +13,7 @@ import ru.mercury.vpclient.features.main.tabs.brands.intent.BrandsIntent
 import ru.mercury.vpclient.features.main.tabs.brands.model.BrandsModel
 import ru.mercury.vpclient.shared.data.entity.TopBarState
 import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
-import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
+import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
@@ -43,7 +43,7 @@ private fun BrandsScreenContent(
             )
         }
     ) { innerPadding ->
-        ClientLazyColumn(
+        SharedLazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = innerPadding
         ) {

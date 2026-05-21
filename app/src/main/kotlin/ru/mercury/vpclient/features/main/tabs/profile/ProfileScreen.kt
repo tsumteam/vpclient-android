@@ -15,7 +15,7 @@ import ru.mercury.vpclient.features.main.tabs.profile.intent.ProfileIntent
 import ru.mercury.vpclient.features.main.tabs.profile.model.ProfileModel
 import ru.mercury.vpclient.shared.data.entity.TopBarState
 import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
-import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
+import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.system.ClientOutlinedButton
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
@@ -54,7 +54,7 @@ private fun ProfileScreenContent(
             )
         }
     ) { innerPadding ->
-        ClientLazyColumn(
+        SharedLazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = innerPadding
         ) {

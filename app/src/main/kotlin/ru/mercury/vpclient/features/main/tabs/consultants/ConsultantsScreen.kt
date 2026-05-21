@@ -25,7 +25,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntit
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.consultants.ConsultantCard
 import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
-import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
+import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.preview.ConsultantsModelProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
@@ -78,7 +78,7 @@ private fun ConsultantsScreenContent(
             )
         }
     ) { innerPadding ->
-        ClientLazyColumn(
+        SharedLazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = innerPadding
         ) {

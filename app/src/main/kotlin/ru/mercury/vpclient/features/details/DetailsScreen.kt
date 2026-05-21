@@ -68,7 +68,7 @@ import ru.mercury.vpclient.shared.ui.components.details.DetailsWearWithSheet
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.components.system.ClientButton
 import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
-import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
+import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.system.ClientOutlinedButton
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.DetailsModelProvider
@@ -211,7 +211,7 @@ private fun DetailsScreenContent(
     ) { innerPadding ->
         when {
             state.isLoading -> {
-                ClientLazyColumn(
+                SharedLazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = innerPadding,
                     userScrollEnabled = false
@@ -318,7 +318,7 @@ private fun DetailsScreenContent(
                 }
             }
             else -> {
-                ClientLazyColumn(
+                SharedLazyColumn(
                     state = lazyListState,
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = innerPadding + PaddingValues(bottom = 120.dp)

@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import ru.mercury.vpclient.features.welcome.intent.WelcomeIntent
 import ru.mercury.vpclient.shared.ui.components.system.ClientButton
-import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
+import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.system.ClientTextButton
 import ru.mercury.vpclient.shared.ui.icons.Logo117
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
@@ -47,7 +47,7 @@ private fun WelcomeScreenContent(
         modifier = Modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
-        ClientLazyColumn(
+        SharedLazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = innerPadding + PaddingValues(horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally

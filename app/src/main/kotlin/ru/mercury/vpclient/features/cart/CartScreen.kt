@@ -56,7 +56,7 @@ import ru.mercury.vpclient.shared.ui.components.cart.CartTabsState
 import ru.mercury.vpclient.shared.ui.components.cart.CartToolbar
 import ru.mercury.vpclient.shared.ui.components.cart.CartToolbarLoading
 import ru.mercury.vpclient.shared.ui.components.cart.CartToolbarState
-import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
+import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.preview.CartProductProvider
@@ -210,7 +210,7 @@ private fun CartScreenContent(
                         )
                     }
                 ) {
-                    ClientLazyColumn(
+                    SharedLazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = innerPadding,
                         verticalArrangement = Arrangement.spacedBy(

@@ -24,7 +24,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogCatego
 import ru.mercury.vpclient.shared.data.persistence.database.pojo.SubcategoryPojo
 import ru.mercury.vpclient.shared.ui.components.catalog.CatalogCategorySection
 import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
-import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
+import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.system.ClientOutlinedButton
 import ru.mercury.vpclient.shared.ui.preview.CategoryModelProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
@@ -67,7 +67,7 @@ private fun CategoryScreenContent(
     ) { innerPadding ->
         when {
             state.pojos.isEmpty() -> {
-                ClientLazyColumn(
+                SharedLazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = innerPadding + PaddingValues(bottom = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(24.dp),
@@ -89,7 +89,7 @@ private fun CategoryScreenContent(
                 }
             }
             else -> {
-                ClientLazyColumn(
+                SharedLazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = innerPadding + PaddingValues(bottom = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(24.dp)

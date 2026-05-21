@@ -38,7 +38,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogCatego
 import ru.mercury.vpclient.shared.ui.components.catalog.CatalogClothingCard
 import ru.mercury.vpclient.shared.ui.components.catalog.CatalogTabRow
 import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
-import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
+import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.preview.CatalogModelProvider
@@ -133,7 +133,7 @@ private fun CatalogScreenContent(
     ) { innerPadding ->
         when {
             state.isLoading -> {
-                ClientLazyColumn(
+                SharedLazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = innerPadding + PaddingValues(top = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),

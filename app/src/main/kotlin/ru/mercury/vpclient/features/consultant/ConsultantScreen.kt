@@ -39,7 +39,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntit
 import ru.mercury.vpclient.shared.ui.components.BrandBox
 import ru.mercury.vpclient.shared.ui.components.consultants.ConsultantActionsRow
 import ru.mercury.vpclient.shared.ui.components.consultants.ConsultantAvatarPlaceholder
-import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
+import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.system.ClientTopAppBar
 import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
@@ -108,7 +108,7 @@ private fun ConsultantScreenContent(
             )
         }
     ) { innerPadding ->
-        ClientLazyColumn(
+        SharedLazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = innerPadding + PaddingValues(
                 top = if (state.photoUrl.isEmpty()) 8.dp else 0.dp,

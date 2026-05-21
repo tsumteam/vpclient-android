@@ -44,7 +44,7 @@ import ru.mercury.vpclient.shared.ui.components.filters.FilterSelectableRow
 import ru.mercury.vpclient.shared.ui.components.SharedAnimatedVisibility
 import ru.mercury.vpclient.shared.ui.components.system.ClientButton
 import ru.mercury.vpclient.shared.ui.components.system.ClientDragHandle
-import ru.mercury.vpclient.shared.ui.components.system.ClientLazyColumn
+import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.FilterValuesSheetStateProvider
@@ -176,7 +176,7 @@ private fun FilterValuesSheetContent(
                             .fillMaxWidth()
                             .weight(1F, fill = false)
                     ) {
-                        ClientLazyColumn(
+                        SharedLazyColumn(
                             modifier = Modifier.fillMaxWidth(),
                             contentPadding = PaddingValues(start = 0.dp, top = 0.dp, end = 0.dp, bottom = 72.dp)
                         ) {
