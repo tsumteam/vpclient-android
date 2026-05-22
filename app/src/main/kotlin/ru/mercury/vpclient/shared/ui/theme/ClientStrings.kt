@@ -73,6 +73,11 @@ object ClientStrings {
     val CartSold = R.string.cart_sold
     val CartInStock = R.string.cart_in_stock
     val CartEdit = R.string.cart_edit
+    val CartEditAddSize = R.string.cart_edit_add_size
+    val CartEditSelectSize = R.string.cart_edit_select_size
+    val CartEditChangeQuantity = R.string.cart_edit_change_quantity
+    val CartEditChangeColor = R.string.cart_edit_change_color
+    val CartEditCancel = R.string.cart_edit_cancel
     val CartDelete = R.string.cart_delete
     val CartDisassembleLook = R.string.cart_disassemble_look
     val CartDetachFromLook = R.string.cart_detach_from_look
@@ -83,6 +88,8 @@ object ClientStrings {
     val CartToPayment = R.string.cart_to_payment
     val CartConsultantName = R.string.cart_consultant_name
     val CartConsultantBrand = R.string.cart_consultant_brand
+    val CartEmptyMessage = R.string.cart_empty_message
+    val CartEmptyTabHint = R.string.cart_empty_tab_hint
 
     val FilterProductsQuantity = R.plurals.filter_products_quantity
     val FilterShowProductsQuantity = R.plurals.filter_show_products_quantity

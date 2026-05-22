@@ -60,8 +60,6 @@ import ru.mercury.vpclient.shared.ui.icons.Profile24
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.regular11
-import ru.mercury.vpclient.shared.ui.theme.secondary4
-import ru.mercury.vpclient.shared.ui.theme.secondary5
 
 @Composable
 fun MainScreen(
@@ -99,7 +97,7 @@ private fun MainScreenContent(
     navBackStack: NavBackStack<NavKey>,
     catalogNavBackStack: NavBackStack<NavKey>
 ) {
-    val dividerColor = MaterialTheme.colorScheme.secondary5
+    val dividerColor = MaterialTheme.colorScheme.outlineVariant
     val navigationSuiteScaffoldState = rememberNavigationSuiteScaffoldState()
     val isBottomBarVisible by remember(state.selectedRoute, catalogNavBackStack) {
         derivedStateOf {
@@ -165,8 +163,8 @@ private fun MainScreenContent(
                     colors = NavigationBarItemDefaults.colors().copy(
                         selectedIconColor = MaterialTheme.colorScheme.primary,
                         selectedTextColor = MaterialTheme.colorScheme.primary,
-                        unselectedIconColor = MaterialTheme.colorScheme.secondary4,
-                        unselectedTextColor = MaterialTheme.colorScheme.secondary4,
+                        unselectedIconColor = MaterialTheme.colorScheme.outline,
+                        unselectedTextColor = MaterialTheme.colorScheme.outline,
                         selectedIndicatorColor = Color.Transparent
                     )
                 )
@@ -203,8 +201,8 @@ private fun MainScreenContent(
                     colors = NavigationBarItemDefaults.colors().copy(
                         selectedIconColor = MaterialTheme.colorScheme.primary,
                         selectedTextColor = MaterialTheme.colorScheme.primary,
-                        unselectedIconColor = MaterialTheme.colorScheme.secondary4,
-                        unselectedTextColor = MaterialTheme.colorScheme.secondary4,
+                        unselectedIconColor = MaterialTheme.colorScheme.outline,
+                        unselectedTextColor = MaterialTheme.colorScheme.outline,
                         selectedIndicatorColor = Color.Transparent
                     )
                 )
@@ -243,8 +241,8 @@ private fun MainScreenContent(
                     colors = NavigationBarItemDefaults.colors().copy(
                         selectedIconColor = MaterialTheme.colorScheme.primary,
                         selectedTextColor = MaterialTheme.colorScheme.primary,
-                        unselectedIconColor = MaterialTheme.colorScheme.secondary4,
-                        unselectedTextColor = MaterialTheme.colorScheme.secondary4,
+                        unselectedIconColor = MaterialTheme.colorScheme.outline,
+                        unselectedTextColor = MaterialTheme.colorScheme.outline,
                         selectedIndicatorColor = Color.Transparent
                     )
                 )
@@ -281,8 +279,8 @@ private fun MainScreenContent(
                     colors = NavigationBarItemDefaults.colors().copy(
                         selectedIconColor = MaterialTheme.colorScheme.primary,
                         selectedTextColor = MaterialTheme.colorScheme.primary,
-                        unselectedIconColor = MaterialTheme.colorScheme.secondary4,
-                        unselectedTextColor = MaterialTheme.colorScheme.secondary4,
+                        unselectedIconColor = MaterialTheme.colorScheme.outline,
+                        unselectedTextColor = MaterialTheme.colorScheme.outline,
                         selectedIndicatorColor = Color.Transparent
                     )
                 )
@@ -321,7 +319,7 @@ private fun MainScreenContent(
                         selectedIconColor = Color.Unspecified,
                         selectedTextColor = MaterialTheme.colorScheme.primary,
                         unselectedIconColor = Color.Unspecified,
-                        unselectedTextColor = MaterialTheme.colorScheme.secondary4,
+                        unselectedTextColor = MaterialTheme.colorScheme.outline,
                         selectedIndicatorColor = Color.Transparent
                     )
                 )
@@ -358,8 +356,8 @@ private fun MainScreenContent(
                     colors = NavigationBarItemDefaults.colors().copy(
                         selectedIconColor = MaterialTheme.colorScheme.primary,
                         selectedTextColor = MaterialTheme.colorScheme.primary,
-                        unselectedIconColor = MaterialTheme.colorScheme.secondary4,
-                        unselectedTextColor = MaterialTheme.colorScheme.secondary4,
+                        unselectedIconColor = MaterialTheme.colorScheme.outline,
+                        unselectedTextColor = MaterialTheme.colorScheme.outline,
                         selectedIndicatorColor = Color.Transparent
                     )
                 )

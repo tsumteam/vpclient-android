@@ -4,6 +4,7 @@ import ru.mercury.vpclient.shared.mvi.Intent
 
 sealed interface DetailsIntent: Intent {
     data object CollectProduct: DetailsIntent
+    data object CollectCartProducts: DetailsIntent
     data object LoadProduct: DetailsIntent
     data object BackClick: DetailsIntent
     data object MessageClick: DetailsIntent
@@ -18,5 +19,6 @@ sealed interface DetailsIntent: Intent {
     data class ColorClick(val index: Int): DetailsIntent
     data class ButtonClick(val index: Int): DetailsIntent
     data class ProductClick(val id: String): DetailsIntent
+    data class ProductBasketClick(val id: String): DetailsIntent
     data class OpenMediaViewer(val initialPage: Int): DetailsIntent
 }

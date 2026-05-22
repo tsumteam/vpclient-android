@@ -26,8 +26,6 @@ import ru.mercury.vpclient.shared.ui.preview.SizeStateProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.regular14
-import ru.mercury.vpclient.shared.ui.theme.secondary4
-import ru.mercury.vpclient.shared.ui.theme.secondary6
 
 @Composable
 fun DetailsSizeButton(
@@ -47,7 +45,7 @@ fun DetailsSizeButton(
             .size(width = 50.dp, height = 58.dp)
             .border(
                 width = 1.dp,
-                color = if (state.enabled) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.secondary4,
+                color = if (state.enabled) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.outline,
                 shape = RoundedCornerShape(4.dp)
             )
             .clip(RoundedCornerShape(4.dp))
@@ -60,7 +58,7 @@ fun DetailsSizeButton(
         Text(
             text = state.topText,
             style = MaterialTheme.typography.regular14.copy(
-                color = if (state.enabled) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.secondary4,
+                color = if (state.enabled) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.outline,
                 letterSpacing = .2.sp
             )
         )
@@ -68,7 +66,7 @@ fun DetailsSizeButton(
         Text(
             text = state.bottomText,
             style = MaterialTheme.typography.regular14.copy(
-                color = if (state.enabled) MaterialTheme.colorScheme.secondary6 else MaterialTheme.colorScheme.secondary4,
+                color = if (state.enabled) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.outline,
                 letterSpacing = .2.sp
             )
         )

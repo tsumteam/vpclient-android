@@ -26,6 +26,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -46,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
+import ru.mercury.vpclient.features.details.event.DetailsEvent
 import ru.mercury.vpclient.features.details.intent.DetailsIntent
 import ru.mercury.vpclient.features.details.model.DetailsModel
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
@@ -53,6 +55,8 @@ import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.entity.DetailsMediaItem
 import ru.mercury.vpclient.shared.data.entity.TopBarState
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
+import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
+import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.details.DetailsColorImageSelector
 import ru.mercury.vpclient.shared.ui.components.details.DetailsCompleteSetSection
 import ru.mercury.vpclient.shared.ui.components.details.DetailsFieldRow
@@ -68,8 +72,8 @@ import ru.mercury.vpclient.shared.ui.components.details.DetailsWearWithSheet
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.components.system.ClientButton
 import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
-import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.system.ClientOutlinedButton
+import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.DetailsModelProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
@@ -78,7 +82,6 @@ import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.regular14
-import ru.mercury.vpclient.shared.ui.theme.surface4
 
 // fixme
 
@@ -88,17 +91,32 @@ fun DetailsScreen(
     viewModel: DetailsViewModel = hiltViewModel<DetailsViewModel, DetailsViewModel.Factory>(creationCallback = { it.create(route) })
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
+    val snackbarHostStateError = remember { SnackbarHostState() }
 
     DetailsScreenContent(
         state = state,
-        dispatch = viewModel::dispatch
+        dispatch = viewModel::dispatch,
+        snackbarHostStateError = snackbarHostStateError
     )
+
+    ObserveAsEvents(
+        flow = viewModel.eventFlow
+    ) { event ->
+        when (event) {
+            is DetailsEvent.SnackbarErrorMessage -> {
+                snackbarHostStateError.currentSnackbarData?.dismiss()
+                scope.launch { snackbarHostStateError.showSnackbar(event.message) }
+            }
+        }
+    }
 }
 
 @Composable
 private fun DetailsScreenContent(
     state: DetailsModel,
-    dispatch: (DetailsIntent) -> Unit
+    dispatch: (DetailsIntent) -> Unit,
+    snackbarHostStateError: SnackbarHostState
 ) {
     val lazyListState = rememberLazyListState()
     val scope = rememberCoroutineScope()
@@ -168,7 +186,9 @@ private fun DetailsScreenContent(
     if (state.isWearWithSheetVisible) {
         DetailsWearWithSheet(
             products = state.wearWithProducts,
+            isProductInBasket = state::isProductInBasket,
             onProductClick = { dispatch(DetailsIntent.ProductClick(it)) },
+            onProductBasketClick = { dispatch(DetailsIntent.ProductBasketClick(it.id)) },
             onDismissRequest = { dispatch(DetailsIntent.HideWearWithSheet) }
         )
     }
@@ -178,7 +198,7 @@ private fun DetailsScreenContent(
             state = state.sizePickerState,
             onSizeClick = { dispatch(DetailsIntent.SizeClick(it)) },
             onSizeTableClick = { dispatch(DetailsIntent.SizeTableClick) },
-            onAddToBasketClick = { dispatch(DetailsIntent.HideSizePicker) },
+            onAddToBasketClick = { dispatch(DetailsIntent.AddToBasketClick) },
             onDismissRequest = { dispatch(DetailsIntent.HideSizePicker) }
         )
     }
@@ -200,9 +220,16 @@ private fun DetailsScreenContent(
                     .placeholder(
                         visible = state.isLoading,
                         highlight = PlaceholderHighlight.shimmer(),
-                        color = MaterialTheme.colorScheme.surface4,
+                        color = MaterialTheme.colorScheme.surfaceVariant,
                         shape = RoundedCornerShape(8.dp)
                     )
+            )
+        },
+        snackbarHost = {
+            SharedSnackbarHost(
+                hostState = snackbarHostStateError,
+                modifier = Modifier.padding(bottom = 8.dp),
+                containerColor = MaterialTheme.colorScheme.error
             )
         },
         floatingActionButtonPosition = FabPosition.Center,
@@ -226,7 +253,7 @@ private fun DetailsScreenContent(
                                 .placeholder(
                                     visible = true,
                                     highlight = PlaceholderHighlight.shimmer(),
-                                    color = MaterialTheme.colorScheme.surface4
+                                    color = MaterialTheme.colorScheme.surfaceVariant
                                 )
                         )
                     }
@@ -250,7 +277,7 @@ private fun DetailsScreenContent(
                                         .placeholder(
                                             visible = true,
                                             highlight = PlaceholderHighlight.shimmer(),
-                                            color = MaterialTheme.colorScheme.surface4,
+                                            color = MaterialTheme.colorScheme.surfaceVariant,
                                             shape = CircleShape
                                         )
                                 )
@@ -277,7 +304,7 @@ private fun DetailsScreenContent(
                                     .placeholder(
                                         visible = true,
                                         highlight = PlaceholderHighlight.shimmer(),
-                                        color = MaterialTheme.colorScheme.surface4,
+                                        color = MaterialTheme.colorScheme.surfaceVariant,
                                         shape = RoundedCornerShape(4.dp)
                                     )
                             )
@@ -295,7 +322,7 @@ private fun DetailsScreenContent(
                                         .placeholder(
                                             visible = true,
                                             highlight = PlaceholderHighlight.shimmer(),
-                                            color = MaterialTheme.colorScheme.surface4,
+                                            color = MaterialTheme.colorScheme.surfaceVariant,
                                             shape = RoundedCornerShape(4.dp)
                                         )
                                 )
@@ -308,7 +335,7 @@ private fun DetailsScreenContent(
                                         .placeholder(
                                             visible = true,
                                             highlight = PlaceholderHighlight.shimmer(),
-                                            color = MaterialTheme.colorScheme.surface4,
+                                            color = MaterialTheme.colorScheme.surfaceVariant,
                                             shape = RoundedCornerShape(4.dp)
                                         )
                                 )
@@ -434,7 +461,7 @@ private fun DetailsScreenContent(
                     if (state.isDescriptionTextVisible) {
                         item {
                             Text(
-                                text = state.descriptionText.orEmpty(), // fixme
+                                text = state.descriptionText.orEmpty(),
                                 modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp),
                                 style = MaterialTheme.typography.regular14.copy(
                                     color = MaterialTheme.colorScheme.onBackground,
@@ -454,7 +481,7 @@ private fun DetailsScreenContent(
                             item {
                                 HorizontalDivider(
                                     modifier = Modifier.padding(horizontal = 16.dp),
-                                    color = MaterialTheme.colorScheme.surface4
+                                    color = MaterialTheme.colorScheme.surfaceVariant
                                 )
                             }
                         }
@@ -463,7 +490,9 @@ private fun DetailsScreenContent(
                         item {
                             DetailsWearWithSection(
                                 products = state.wearWithProducts,
-                                onProductClick = { id -> dispatch(DetailsIntent.ProductClick(id)) }
+                                onProductClick = { id -> dispatch(DetailsIntent.ProductClick(id)) },
+                                isProductInBasket = state::isProductInBasket,
+                                onProductBasketClick = { dispatch(DetailsIntent.ProductBasketClick(it.id)) }
                             )
                         }
                     }
@@ -471,7 +500,9 @@ private fun DetailsScreenContent(
                         item {
                             DetailsCompleteSetSection(
                                 products = state.completeSetProducts,
-                                onProductClick = { id -> dispatch(DetailsIntent.ProductClick(id)) }
+                                onProductClick = { id -> dispatch(DetailsIntent.ProductClick(id)) },
+                                isProductInBasket = state::isProductInBasket,
+                                onProductBasketClick = { dispatch(DetailsIntent.ProductBasketClick(it.id)) }
                             )
                         }
                     }
@@ -501,6 +532,7 @@ private fun DetailsScreenContentPreview(
 ) {
     DetailsScreenContent(
         state = state,
-        dispatch = {}
+        dispatch = {},
+        snackbarHostStateError = remember { SnackbarHostState() }
     )
 }

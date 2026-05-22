@@ -67,6 +67,11 @@
     <string name="cart_sold">Продан</string>
     <string name="cart_in_stock">1 товар в наличии!</string>
     <string name="cart_edit">Изменить</string>
+    <string name="cart_edit_add_size">Добавить размер</string>
+    <string name="cart_edit_select_size">Изменить размер</string>
+    <string name="cart_edit_change_quantity">Изменить количество</string>
+    <string name="cart_edit_change_color">Изменить цвет</string>
+    <string name="cart_edit_cancel">Отмена</string>
     <string name="cart_delete">Удалить</string>
     <string name="cart_disassemble_look">Разобрать</string>
     <string name="cart_detach_from_look">Отделить\nот образа</string>
@@ -77,6 +82,8 @@
     <string name="cart_to_payment">К оплате:</string>
     <string name="cart_consultant_name">Екатерина</string><!--fixme-->
     <string name="cart_consultant_brand">Brioni</string><!--fixme-->
+    <string name="cart_empty_message">На данный момент Вы не добавили ни одного товара в заказ.</string>
+    <string name="cart_empty_tab_hint">Добавьте товары из каталога для оформления заказа</string>
 
     <plurals name="cart_all_items">
         <item quantity="one">ВСЕ ТОВАРЫ (%1$d)</item>

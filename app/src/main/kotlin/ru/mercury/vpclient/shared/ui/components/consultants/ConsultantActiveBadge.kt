@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.green
+import ru.mercury.vpclient.shared.ui.theme.success
 import ru.mercury.vpclient.shared.ui.theme.medium14
 
 @Composable
@@ -29,7 +29,7 @@ fun ConsultantActiveBadge(
         modifier = modifier
             .requiredHeight(31.dp)
             .clip(RoundedCornerShape(4.dp))
-            .background(MaterialTheme.colorScheme.green),
+            .background(MaterialTheme.colorScheme.success),
         contentAlignment = Alignment.Center
     ) {
         ConsultantTextStub(

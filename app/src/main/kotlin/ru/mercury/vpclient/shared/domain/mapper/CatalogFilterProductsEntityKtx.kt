@@ -1,10 +1,16 @@
 package ru.mercury.vpclient.shared.domain.mapper
 
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.encodeToJsonElement
 import ru.mercury.vpclient.shared.data.FORMAT_RUB
+import ru.mercury.vpclient.shared.data.network.entity.BasketAddLineOperationRequestItemDto
+import ru.mercury.vpclient.shared.data.network.entity.BasketOperationRequestDto
+import ru.mercury.vpclient.shared.data.network.entity.BasketOperationRequestTypeEnum
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
+import java.util.UUID
 import kotlin.math.roundToInt
 
 private val CatalogFilterProductsEntity.cardImageUrls: List<String>
@@ -23,7 +29,30 @@ val CatalogFilterProductsEntity.isDiscountLabelVisible: Boolean
 val CatalogFilterProductsEntity.imagePages: List<String>
     get() = cardImageUrls.ifEmpty { listOf("") }
 
+fun CatalogFilterProductsEntity.addProductToBasketRequest(
+    pairedUserId: String,
+    sizeId: String?
+): BasketOperationRequestDto {
+    return BasketOperationRequestDto(
+        pairedUserId = pairedUserId,
+        items = listOf(
+            catalogFilterProductJson.encodeToJsonElement(
+                BasketAddLineOperationRequestItemDto(
+                    operationType = BasketOperationRequestTypeEnum.ADD_LINE,
+                    operationOrder = 0,
+                    colorId = colorId,
+                    itemId = itemId,
+                    lineId = UUID.randomUUID().toString(),
+                    sizeId = sizeId
+                )
+            )
+        )
+    )
+}
 
+private val catalogFilterProductJson = Json {
+    explicitNulls = false
+}
 
 // fixme
 

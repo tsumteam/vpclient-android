@@ -54,7 +54,6 @@ import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.livretMedium19
 import ru.mercury.vpclient.shared.ui.theme.medium16
-import ru.mercury.vpclient.shared.ui.theme.surface4
 
 @Composable
 fun FilterColorSheet(
@@ -159,7 +158,7 @@ private fun FilterColorSheetContent(
                                         .placeholder(
                                             visible = true,
                                             highlight = PlaceholderHighlight.shimmer(),
-                                            color = MaterialTheme.colorScheme.surface4,
+                                            color = MaterialTheme.colorScheme.surfaceVariant,
                                             shape = RoundedCornerShape(12.dp)
                                         )
                                 )
@@ -172,7 +171,7 @@ private fun FilterColorSheetContent(
                                         .placeholder(
                                             visible = true,
                                             highlight = PlaceholderHighlight.shimmer(),
-                                            color = MaterialTheme.colorScheme.surface4,
+                                            color = MaterialTheme.colorScheme.surfaceVariant,
                                             shape = RoundedCornerShape(4.dp)
                                         )
                                 )
@@ -188,7 +187,7 @@ private fun FilterColorSheetContent(
                             .placeholder(
                                 visible = true,
                                 highlight = PlaceholderHighlight.shimmer(),
-                                color = MaterialTheme.colorScheme.surface4,
+                                color = MaterialTheme.colorScheme.surfaceVariant,
                                 shape = RoundedCornerShape(8.dp)
                             )
                     )

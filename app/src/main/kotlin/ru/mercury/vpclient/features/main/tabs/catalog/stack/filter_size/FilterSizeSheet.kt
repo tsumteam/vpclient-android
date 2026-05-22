@@ -64,7 +64,6 @@ import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.livretMedium19
 import ru.mercury.vpclient.shared.ui.theme.medium16
-import ru.mercury.vpclient.shared.ui.theme.surface4
 
 @Composable
 fun FilterSizeSheet(
@@ -166,7 +165,7 @@ private fun FilterSizeSheetContent(
                                         .placeholder(
                                             visible = true,
                                             highlight = PlaceholderHighlight.shimmer(),
-                                            color = MaterialTheme.colorScheme.surface4,
+                                            color = MaterialTheme.colorScheme.surfaceVariant,
                                             shape = CircleShape
                                         )
                                 )
@@ -182,7 +181,7 @@ private fun FilterSizeSheetContent(
                                 .placeholder(
                                     visible = true,
                                     highlight = PlaceholderHighlight.shimmer(),
-                                    color = MaterialTheme.colorScheme.surface4,
+                                    color = MaterialTheme.colorScheme.surfaceVariant,
                                     shape = RoundedCornerShape(6.dp)
                                 )
                         )
@@ -196,7 +195,7 @@ private fun FilterSizeSheetContent(
                                     .placeholder(
                                         visible = true,
                                         highlight = PlaceholderHighlight.shimmer(),
-                                        color = MaterialTheme.colorScheme.surface4,
+                                        color = MaterialTheme.colorScheme.surfaceVariant,
                                         shape = RoundedCornerShape(4.dp)
                                     )
                             )
@@ -211,7 +210,7 @@ private fun FilterSizeSheetContent(
                             .placeholder(
                                 visible = true,
                                 highlight = PlaceholderHighlight.shimmer(),
-                                color = MaterialTheme.colorScheme.surface4,
+                                color = MaterialTheme.colorScheme.surfaceVariant,
                                 shape = RoundedCornerShape(8.dp)
                             )
                     )
@@ -251,7 +250,7 @@ private fun FilterSizeSheetContent(
                                     if (index != visibleSizeValues.lastIndex) {
                                         HorizontalDivider(
                                             modifier = Modifier.padding(start = 48.dp),
-                                            color = MaterialTheme.colorScheme.surface4
+                                            color = MaterialTheme.colorScheme.surfaceVariant
                                         )
                                     }
                                 }

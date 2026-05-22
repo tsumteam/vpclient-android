@@ -25,7 +25,6 @@ import ru.mercury.vpclient.shared.ui.icons.Phone24
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.regular11
-import ru.mercury.vpclient.shared.ui.theme.surface3
 
 @Composable
 fun ConsultantActionButton(
@@ -41,7 +40,7 @@ fun ConsultantActionButton(
             .height(52.dp)
             .defaultMinSize(minWidth = 1.dp)
             .clip(RoundedCornerShape(4.dp))
-            .background(MaterialTheme.colorScheme.surface3)
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
             .clickable(onClick = onClick)
             .padding(start = 4.dp, top = 5.dp, end = 4.dp, bottom = 4.dp),
         horizontalAlignment = Alignment.CenterHorizontally,

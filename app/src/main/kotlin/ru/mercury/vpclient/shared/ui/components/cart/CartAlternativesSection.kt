@@ -24,6 +24,8 @@ fun CartAlternativesSection(
     onAlternativeClick: (CartProductAlternative) -> Unit = {},
     onRemoveClick: (CartProductAlternative) -> Unit = {}
 ) {
+    val highlightedAlternativeId = alternatives.firstOrNull { it.isOriginal }?.id ?: selectedAlternativeId
+
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
@@ -40,7 +42,7 @@ fun CartAlternativesSection(
                 CartAlternativeProductCard(
                     alternative = alternative,
                     isStartBorderVisible = index == 0,
-                    isSelected = alternative.id == selectedAlternativeId,
+                    isHighlighted = alternative.id == highlightedAlternativeId,
                     onClick = { onAlternativeClick(alternative) },
                     onRemoveClick = { onRemoveClick(alternative) }
                 )

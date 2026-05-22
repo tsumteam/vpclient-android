@@ -25,8 +25,7 @@ import ru.mercury.vpclient.shared.ui.icons.Disassemble24
 import ru.mercury.vpclient.shared.ui.preview.CartProductProvider
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.cartSwipeDelete
-import ru.mercury.vpclient.shared.ui.theme.cartSwipeDisassemble
+import ru.mercury.vpclient.shared.ui.theme.cartSwipeEdit
 
 @Composable
 fun CartLookCard(
@@ -63,7 +62,7 @@ fun CartLookCard(
             )
     ) {
         CartProductSwipeableCard(
-            trailingActionsContent = { swipeProgress ->
+            trailingActionsContent = { swipeProgress, onSwipeActionClick ->
                 val actionWidth = 88.dp * swipeProgress
 
                 Box(
@@ -76,8 +75,8 @@ fun CartLookCard(
                     CartProductSwipeAction(
                         imageVector = Disassemble24,
                         text = stringResource(ClientStrings.CartDisassembleLook),
-                        backgroundColor = MaterialTheme.colorScheme.cartSwipeDisassemble,
-                        onClick = onDisassembleLookSwipeClick
+                        backgroundColor = MaterialTheme.colorScheme.cartSwipeEdit,
+                        onClick = { onSwipeActionClick(onDisassembleLookSwipeClick) }
                     )
                 }
 
@@ -91,8 +90,8 @@ fun CartLookCard(
                     CartProductSwipeAction(
                         imageVector = Delete24,
                         text = stringResource(ClientStrings.CartDelete),
-                        backgroundColor = MaterialTheme.colorScheme.cartSwipeDelete,
-                        onClick = onDeleteLookSwipeClick
+                        backgroundColor = MaterialTheme.colorScheme.error,
+                        onClick = { onSwipeActionClick(onDeleteLookSwipeClick) }
                     )
                 }
             },

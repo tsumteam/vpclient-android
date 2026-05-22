@@ -32,7 +32,6 @@ import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.regular11
 import ru.mercury.vpclient.shared.ui.theme.regular14
 import ru.mercury.vpclient.shared.ui.theme.regular15
-import ru.mercury.vpclient.shared.ui.theme.secondary6
 
 @Composable
 fun CartProductCard(
@@ -76,26 +75,26 @@ fun CartProductCard(
     ).count { it }
 
     CartProductSwipeableCard(
-        leadingActionsContent = { swipeProgress ->
+        leadingActionsContent = { swipeProgress, onSwipeActionClick ->
             CartProductLeadingSwipeActions(
                 swipeProgress = swipeProgress,
                 isReturnOriginalVisible = isReturnOriginalSwipeActionVisible,
                 isShowAlternativesVisible = isShowAlternativesSwipeActionVisible,
                 isHideAlternativesVisible = isHideAlternativesSwipeActionVisible,
-                onReturnOriginalClick = onReturnOriginalSwipeClick,
-                onShowAlternativesClick = onShowAlternativesSwipeClick,
-                onHideAlternativesClick = onHideAlternativesSwipeClick
+                onReturnOriginalClick = { onSwipeActionClick(onReturnOriginalSwipeClick) },
+                onShowAlternativesClick = { onSwipeActionClick(onShowAlternativesSwipeClick) },
+                onHideAlternativesClick = { onSwipeActionClick(onHideAlternativesSwipeClick) }
             )
         },
-        trailingActionsContent = { swipeProgress ->
+        trailingActionsContent = { swipeProgress, onSwipeActionClick ->
             CartProductTrailingSwipeActions(
                 swipeProgress = swipeProgress,
                 isEditVisible = isEditSwipeActionVisible,
                 isDetachFromLookVisible = isDetachFromLookSwipeActionVisible,
                 isDeleteVisible = true,
-                onEditClick = onEditSwipeClick,
-                onDetachFromLookClick = onDetachFromLookSwipeClick,
-                onDeleteClick = onDeleteSwipeClick
+                onEditClick = { onSwipeActionClick(onEditSwipeClick) },
+                onDetachFromLookClick = { onSwipeActionClick(onDetachFromLookSwipeClick) },
+                onDeleteClick = { onSwipeActionClick(onDeleteSwipeClick) }
             )
         },
         leadingSwipeSize = (88 * leadingSwipeActionsCount).dp,
@@ -249,7 +248,7 @@ fun CartProductCard(
                                 end.linkTo(sold.end)
                             },
                             style = MaterialTheme.typography.regular14.copy(
-                                color = MaterialTheme.colorScheme.secondary6,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 lineHeight = 18.sp,
                                 letterSpacing = .2.sp
                             )

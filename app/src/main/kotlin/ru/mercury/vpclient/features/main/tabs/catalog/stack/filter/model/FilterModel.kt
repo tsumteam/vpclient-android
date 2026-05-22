@@ -23,6 +23,7 @@ import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_size.model.Fi
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_tree.model.FilterTreeSheetState
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_tree.model.FilterTreeValue
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_values.model.FilterValuesSheetState
+import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 
 data class FilterModel(
     val filterData: FilterData = FilterData.Empty,
@@ -45,6 +46,8 @@ data class FilterModel(
     val filterValuesDialogPickerCollectionJob: Job? = null,
     val filterValuesDialogQuantityCollectionJob: Job? = null,
     val loadProductsQuantityJob: Job? = null,
+    val basketProductIds: Set<String> = emptySet(),
+    val basketProductKeys: Set<String> = emptySet(),
     val cartSize: Int = 0,
     val cartBadge: Int = 0
 ): Model {
@@ -215,6 +218,11 @@ data class FilterModel(
 
     fun selectedFilterValueIds(chipId: String): Set<String> {
         return selectedFilterValueChipIds.filter { valueChipId -> valueChipId.startsWith("${chipId}_") }.toSet()
+    }
+
+    fun isProductInBasket(entity: CatalogFilterProductsEntity): Boolean {
+        return entity.id in basketProductIds ||
+            "${entity.itemId}:${entity.colorId}" in basketProductKeys
     }
 
     fun currentDialogSelectedFilterValueChipIds(): Set<String> {

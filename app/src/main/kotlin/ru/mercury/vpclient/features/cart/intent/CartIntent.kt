@@ -1,7 +1,6 @@
 package ru.mercury.vpclient.features.cart.intent
 
 import ru.mercury.vpclient.features.cart.model.CartPayMode
-import ru.mercury.vpclient.features.cart.model.CartViewMode
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
 import ru.mercury.vpclient.shared.mvi.Intent
@@ -19,6 +18,7 @@ sealed interface CartIntent: Intent {
     data object BuyClick: CartIntent
     data object HideSelectSizeDialog: CartIntent
     data object HideSizePicker: CartIntent
+    data object HideEditProductSheet: CartIntent
     data object ConfirmSizePicker: CartIntent
     data class ProductClick(val id: String): CartIntent
     data class ChangePaySwitch(val product: CartProduct, val paySwitch: Boolean): CartIntent
@@ -28,6 +28,9 @@ sealed interface CartIntent: Intent {
     data class RemoveAlternativeClick(val alternative: CartProductAlternative): CartIntent
     data class HideAlternativesClick(val product: CartProduct): CartIntent
     data class EditProductSwipeClick(val product: CartProduct): CartIntent
+    data class AddSizeClick(val product: CartProduct): CartIntent
+    data class ChangeQuantityClick(val product: CartProduct): CartIntent
+    data class ChangeColorClick(val product: CartProduct): CartIntent
     data class DeleteProductSwipeClick(val product: CartProduct): CartIntent
     data class DetachProductFromLookSwipeClick(val product: CartProduct): CartIntent
     data class ReturnOriginalSwipeClick(val product: CartProduct): CartIntent
@@ -37,5 +40,4 @@ sealed interface CartIntent: Intent {
     data class DeleteLookSwipeClick(val lookId: String): CartIntent
     data class ToggleSizePickerItem(val index: Int): CartIntent
     data class SelectPayMode(val mode: CartPayMode): CartIntent
-    data class SelectViewMode(val mode: CartViewMode): CartIntent
 }

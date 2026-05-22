@@ -4,9 +4,11 @@ package ru.mercury.vpclient.features.cart
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -30,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewWrapper
@@ -39,13 +42,17 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.cart.event.CartEvent
 import ru.mercury.vpclient.features.cart.intent.CartIntent
+import ru.mercury.vpclient.features.cart.model.CartEditProductAction
 import ru.mercury.vpclient.features.cart.model.CartModel
 import ru.mercury.vpclient.features.cart.model.CartPayMode
 import ru.mercury.vpclient.features.cart.model.CartProductGroup
 import ru.mercury.vpclient.features.cart.model.CartViewMode
+import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
+import ru.mercury.vpclient.shared.ui.components.SharedTabRow
+import ru.mercury.vpclient.shared.ui.components.SharedTabRowState
 import ru.mercury.vpclient.shared.ui.components.cart.CartBottomBar
-import ru.mercury.vpclient.shared.ui.components.cart.CartListLoading
+import ru.mercury.vpclient.shared.ui.components.cart.CartEditProductSheet
 import ru.mercury.vpclient.shared.ui.components.cart.CartLookCard
 import ru.mercury.vpclient.shared.ui.components.cart.CartProductCard
 import ru.mercury.vpclient.shared.ui.components.cart.CartProductDivider
@@ -53,18 +60,15 @@ import ru.mercury.vpclient.shared.ui.components.cart.CartProductLargeCard
 import ru.mercury.vpclient.shared.ui.components.cart.CartSelectSizeDialog
 import ru.mercury.vpclient.shared.ui.components.cart.CartSizePickerSheet
 import ru.mercury.vpclient.shared.ui.components.cart.CartSummary
-import ru.mercury.vpclient.shared.ui.components.cart.CartTabsState
-import ru.mercury.vpclient.shared.ui.components.cart.CartToolbar
-import ru.mercury.vpclient.shared.ui.components.cart.CartToolbarLoading
-import ru.mercury.vpclient.shared.ui.components.cart.CartToolbarState
-import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.preview.CartProductProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
+import ru.mercury.vpclient.shared.ui.theme.medium13
 import ru.mercury.vpclient.shared.ui.theme.medium18
+import ru.mercury.vpclient.shared.ui.theme.regular14
 
 @Composable
 fun CartScreen(
@@ -98,6 +102,30 @@ private fun CartScreenContent(
     dispatch: (CartIntent) -> Unit,
     snackbarHostStateError: SnackbarHostState
 ) {
+    state.editProduct?.let { product ->
+        CartEditProductSheet(
+            actions = listOf(
+                CartEditProductAction(
+                    text = stringResource(ClientStrings.CartEditAddSize),
+                    onClick = { dispatch(CartIntent.AddSizeClick(product)) }
+                ),
+                CartEditProductAction(
+                    text = stringResource(ClientStrings.CartEditSelectSize),
+                    onClick = { dispatch(CartIntent.ShowSizePicker(product)) }
+                ),
+                CartEditProductAction(
+                    text = stringResource(ClientStrings.CartEditChangeQuantity),
+                    onClick = { dispatch(CartIntent.ChangeQuantityClick(product)) }
+                ),
+                CartEditProductAction(
+                    text = stringResource(ClientStrings.CartEditChangeColor),
+                    onClick = { dispatch(CartIntent.ChangeColorClick(product)) }
+                )
+            ),
+            onDismissRequest = { dispatch(CartIntent.HideEditProductSheet) }
+        )
+    }
+
     state.selectSizeProduct?.let { product ->
         CartSelectSizeDialog(
             onSelectSizeClick = { dispatch(CartIntent.SelectSizeClick(product)) },
@@ -148,23 +176,41 @@ private fun CartScreenContent(
                 )
 
                 when {
-                    state.products.isEmpty() -> CartToolbarLoading()
-                    else -> {
-                        CartToolbar(
-                            state = CartToolbarState(
-                                tabsState = when (state.payMode) {
-                                    CartPayMode.All -> CartTabsState.All
-                                    CartPayMode.Payment -> CartTabsState.Payment
-                                },
-                                viewMode = state.viewMode,
-                                isViewModeSwitcherVisible = state.isViewModeSwitcherVisible,
-                                allItemsCount = state.allItemsCount,
-                                paymentItemsCount = state.paymentItemsCount,
-                                onAllClick = { dispatch(CartIntent.SelectPayMode(CartPayMode.All)) },
-                                onPaymentClick = { dispatch(CartIntent.SelectPayMode(CartPayMode.Payment)) },
-                                onCardsClick = { dispatch(CartIntent.SelectViewMode(CartViewMode.Cards)) },
-                                onListClick = { dispatch(CartIntent.SelectViewMode(CartViewMode.List)) }
+                    state.products.isEmpty() -> {
+                        Text(
+                            text = stringResource(ClientStrings.CartEmptyTabHint),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            style = MaterialTheme.typography.regular14.copy(
+                                color = MaterialTheme.colorScheme.outline,
+                                textAlign = TextAlign.Center
                             )
+                        )
+                    }
+                    else -> {
+                        SharedTabRow(
+                            state = SharedTabRowState(
+                                selectedIndex = when (state.payMode) {
+                                    CartPayMode.All -> 0
+                                    CartPayMode.Payment -> 1
+                                },
+                                firstTabText = pluralStringResource(
+                                    ClientStrings.CartAllItems,
+                                    state.allItemsCount,
+                                    state.allItemsCount
+                                ),
+                                secondTabText = pluralStringResource(
+                                    ClientStrings.CartPaymentItems,
+                                    state.paymentItemsCount,
+                                    state.paymentItemsCount
+                                ),
+                                onFirstTabClick = { dispatch(CartIntent.SelectPayMode(CartPayMode.All)) },
+                                onSecondTabClick = { dispatch(CartIntent.SelectPayMode(CartPayMode.Payment)) },
+                                isLoading = false
+                            ),
+                            textStyle = MaterialTheme.typography.medium13,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                         )
                     }
                 }
@@ -176,7 +222,8 @@ private fun CartScreenContent(
                 chatBrand = state.cartChatBrand,
                 onFittingClick = { dispatch(CartIntent.FittingClick) },
                 onBuyClick = { dispatch(CartIntent.BuyClick) },
-                onChatClick = { dispatch(CartIntent.ChatClick) }
+                onChatClick = { dispatch(CartIntent.ChatClick) },
+                isActionsEnabled = state.products.isNotEmpty()
             )
         },
         snackbarHost = {
@@ -193,9 +240,21 @@ private fun CartScreenContent(
 
         when {
             state.products.isEmpty() -> {
-                CartListLoading(
-                    contentPadding = innerPadding
-                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                        .padding(horizontal = 32.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(ClientStrings.CartEmptyMessage),
+                        style = MaterialTheme.typography.regular14.copy(
+                            color = MaterialTheme.colorScheme.outline,
+                            textAlign = TextAlign.Center
+                        )
+                    )
+                }
             }
             else -> {
                 PullToRefreshBox(

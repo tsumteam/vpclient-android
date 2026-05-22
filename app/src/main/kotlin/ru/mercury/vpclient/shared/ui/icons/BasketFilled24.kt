@@ -14,13 +14,13 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 
-val DetachFromLook24: ImageVector
+val BasketFilled24: ImageVector
     get() {
-        if (_detachFromLook24 != null) {
-            return _detachFromLook24!!
+        if (_basketFilled24 != null) {
+            return _basketFilled24!!
         }
-        _detachFromLook24 = ImageVector.Builder(
-            name = "DetachFromLook24",
+        _basketFilled24 = ImageVector.Builder(
+            name = "BasketFilled24",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
             viewportWidth = 24F,
@@ -75,17 +75,17 @@ val DetachFromLook24: ImageVector
                 pathFillType = PathFillType.NonZero
             )
         }.build()
-        return _detachFromLook24!!
+        return _basketFilled24!!
     }
 
-private var _detachFromLook24: ImageVector? = null
+private var _basketFilled24: ImageVector? = null
 
 @PreviewWrapper(ThemeWrapper::class)
 @Preview(showBackground = true)
 @Composable
-private fun DetachFromLook24Preview() {
+private fun BasketFilled24Preview() {
     Icon(
-        imageVector = DetachFromLook24,
+        imageVector = BasketFilled24,
         contentDescription = null,
         tint = Color.Black
     )

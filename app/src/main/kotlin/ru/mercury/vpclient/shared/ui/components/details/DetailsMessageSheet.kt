@@ -46,8 +46,6 @@ import ru.mercury.vpclient.shared.ui.icons.Message24
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.livretMedium19
 import ru.mercury.vpclient.shared.ui.theme.regular15
-import ru.mercury.vpclient.shared.ui.theme.secondary4
-import ru.mercury.vpclient.shared.ui.theme.secondary6
 
 @Composable
 fun DetailsMessageSheet(
@@ -112,7 +110,7 @@ fun DetailsMessageSheet(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 val commentTextStyle = MaterialTheme.typography.regular15.copy(
-                    color = MaterialTheme.colorScheme.secondary6,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     lineHeight = 19.sp,
                     letterSpacing = .2.sp
                 )
@@ -125,7 +123,7 @@ fun DetailsMessageSheet(
                         .height(48.dp)
                         .border(
                             width = 1.dp,
-                            color = MaterialTheme.colorScheme.secondary4,
+                            color = MaterialTheme.colorScheme.outline,
                             shape = RoundedCornerShape(50.dp)
                         )
                         .padding(start = 20.dp, end = 20.dp),

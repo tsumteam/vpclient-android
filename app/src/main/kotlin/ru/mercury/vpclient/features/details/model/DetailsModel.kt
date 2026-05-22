@@ -17,7 +17,9 @@ data class DetailsModel(
     val selectedOtherColorIndex: Int? = null,
     val isSizePickerSheetVisible: Boolean = false,
     val isWearWithSheetVisible: Boolean = false,
-    val isMessageSheetVisible: Boolean = false
+    val isMessageSheetVisible: Boolean = false,
+    val basketProductIds: Set<String> = emptySet(),
+    val basketProductKeys: Set<String> = emptySet()
 ): Model {
 
     val pagerImageUrls: List<String>
@@ -86,6 +88,11 @@ data class DetailsModel(
 
     val completeSetProducts: List<CatalogFilterProductsEntity>
         get() = productEntity.completeSetProducts.mapIndexed { index, item -> item.toCatalogFilterProductsEntity(index) }
+
+    fun isProductInBasket(entity: CatalogFilterProductsEntity): Boolean {
+        return entity.id in basketProductIds ||
+            "${entity.itemId}:${entity.colorId}" in basketProductKeys
+    }
 
     val sizePickerState: SizeSelectorState
         get() {

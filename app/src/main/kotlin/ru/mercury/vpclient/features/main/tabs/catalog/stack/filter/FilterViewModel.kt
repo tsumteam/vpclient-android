@@ -111,6 +111,21 @@ class FilterViewModel @AssistedInject constructor(
                             reduce { it.copy(cartSize = size) }
                         }
                 }
+                launch {
+                    interactor.cartProductsFlow.collectLatest { products ->
+                        reduce {
+                            it.copy(
+                                basketProductIds = products.map { product -> product.detailId }
+                                    .filter(String::isNotEmpty)
+                                    .toSet(),
+                                basketProductKeys = products
+                                    .filter { product -> product.itemId.isNotEmpty() && product.colorId.isNotEmpty() }
+                                    .map { product -> "${product.itemId}:${product.colorId}" }
+                                    .toSet()
+                            )
+                        }
+                    }
+                }
             }
             is FilterIntent.CollectActiveEmployee -> {
                 launch {
@@ -171,6 +186,10 @@ class FilterViewModel @AssistedInject constructor(
             is FilterIntent.BackClick -> launch { CatalogStackEventManager.send(BackRoute) }
             is FilterIntent.CartClick -> launch { MainEventManager.send(CartRoute) }
             is FilterIntent.ProductClick -> launch { CatalogStackEventManager.send(DetailsRoute(intent.id)) }
+            is FilterIntent.ProductBasketClick -> launch {
+                interactor.addProductToBasket(intent.id, null)
+                dispatch(FilterIntent.LoadCartData)
+            }
             is FilterIntent.ShowSortDialog -> reduce { it.copy(isSortDialogVisible = true) }
             is FilterIntent.HideSortDialog -> reduce { it.copy(isSortDialogVisible = false) }
             is FilterIntent.ShowFilterValuesDialog -> {

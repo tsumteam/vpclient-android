@@ -51,7 +51,6 @@ import ru.mercury.vpclient.shared.ui.ktx.rememberSyncedTextFieldState
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.regular12
 import ru.mercury.vpclient.shared.ui.theme.regular15
-import ru.mercury.vpclient.shared.ui.theme.surface3
 
 @Composable
 fun ClientTextField(
@@ -151,9 +150,9 @@ fun ClientTextField(
             focusedTextColor = MaterialTheme.colorScheme.onBackground,
             unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
             cursorColor = MaterialTheme.colorScheme.error,
-            focusedContainerColor = MaterialTheme.colorScheme.surface3,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surface3,
-            errorContainerColor = MaterialTheme.colorScheme.surface3,
+            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            errorContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
             errorIndicatorColor = Color.Transparent,
@@ -225,9 +224,9 @@ fun ClientTextField(
             focusedTextColor = MaterialTheme.colorScheme.onBackground,
             unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
             cursorColor = MaterialTheme.colorScheme.error,
-            focusedContainerColor = MaterialTheme.colorScheme.surface3,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surface3,
-            disabledContainerColor = MaterialTheme.colorScheme.surface3,
+            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
             disabledIndicatorColor = Color.Transparent,
@@ -339,9 +338,9 @@ fun ClientTextField(
             focusedTextColor = MaterialTheme.colorScheme.onBackground,
             unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
             cursorColor = MaterialTheme.colorScheme.error,
-            focusedContainerColor = MaterialTheme.colorScheme.surface3,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surface3,
-            errorContainerColor = MaterialTheme.colorScheme.surface3,
+            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            errorContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
             errorIndicatorColor = Color.Transparent,

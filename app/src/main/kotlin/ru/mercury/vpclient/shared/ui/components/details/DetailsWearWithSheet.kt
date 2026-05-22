@@ -34,7 +34,9 @@ import ru.mercury.vpclient.shared.ui.theme.livretMedium19
 @Composable
 fun DetailsWearWithSheet(
     products: List<CatalogFilterProductsEntity>,
+    isProductInBasket: (CatalogFilterProductsEntity) -> Boolean = { false },
     onProductClick: (String) -> Unit,
+    onProductBasketClick: (CatalogFilterProductsEntity) -> Unit = {},
     onDismissRequest: () -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -88,7 +90,9 @@ fun DetailsWearWithSheet(
             items(products) { product ->
                 CatalogProductCard(
                     entity = product,
-                    onClick = { onProductClick(product.id) }
+                    isInBasket = isProductInBasket(product),
+                    onClick = { onProductClick(product.id) },
+                    onBasketClick = { onProductBasketClick(product) }
                 )
             }
         }

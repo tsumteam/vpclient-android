@@ -6,31 +6,32 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import ru.mercury.vpclient.activity.event.MainEventManager
+import ru.mercury.vpclient.features.details.event.DetailsEvent
 import ru.mercury.vpclient.features.details.intent.DetailsIntent
 import ru.mercury.vpclient.features.details.model.DetailsModel
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.features.main.tabs.catalog.event.CatalogStackEventManager
-import ru.mercury.vpclient.shared.data.entity.BrandEntity
-import ru.mercury.vpclient.shared.domain.interactor.Interactor
 import ru.mercury.vpclient.features.mediaviewer.navigation.MediaViewerRoute
+import ru.mercury.vpclient.shared.data.entity.BrandEntity
+import ru.mercury.vpclient.shared.data.error.AddProductToBasketException
+import ru.mercury.vpclient.shared.domain.interactor.Interactor
 import ru.mercury.vpclient.shared.domain.mapper.BRAND_VIEW_TYPE
 import ru.mercury.vpclient.shared.domain.mapper.toCatalogLinkData
 import ru.mercury.vpclient.shared.domain.mapper.toFilterRoute
-import ru.mercury.vpclient.activity.event.MainEventManager
+import ru.mercury.vpclient.shared.domain.mapper.withCenterLoading
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
-import ru.mercury.vpclient.shared.mvi.Event
 import ru.mercury.vpclient.shared.navigation.BackRoute
-
-// fixme
 
 @HiltViewModel(assistedFactory = DetailsViewModel.Factory::class)
 class DetailsViewModel @AssistedInject constructor(
     @Assisted private val route: DetailsRoute,
     private val interactor: Interactor
-): ClientViewModel<DetailsIntent, DetailsModel, Event>(DetailsModel()) {
+): ClientViewModel<DetailsIntent, DetailsModel, DetailsEvent>(DetailsModel()) {
 
     init {
         dispatch(DetailsIntent.CollectProduct)
+        dispatch(DetailsIntent.CollectCartProducts)
         dispatch(DetailsIntent.LoadProduct)
     }
 
@@ -39,6 +40,21 @@ class DetailsViewModel @AssistedInject constructor(
             is DetailsIntent.CollectProduct -> launch {
                 interactor.productFlow(route.id).collectLatest { productEntity ->
                     reduce { it.copy(productEntity = productEntity) }
+                }
+            }
+            is DetailsIntent.CollectCartProducts -> launch {
+                interactor.cartProductsFlow.collectLatest { products ->
+                    reduce {
+                        it.copy(
+                            basketProductIds = products.map { product -> product.detailId }
+                                .filter(String::isNotEmpty)
+                                .toSet(),
+                            basketProductKeys = products
+                                .filter { product -> product.itemId.isNotEmpty() && product.colorId.isNotEmpty() }
+                                .map { product -> "${product.itemId}:${product.colorId}" }
+                                .toSet()
+                        )
+                    }
                 }
             }
             is DetailsIntent.LoadProduct -> launch { interactor.loadProduct(route.id) }
@@ -52,16 +68,26 @@ class DetailsViewModel @AssistedInject constructor(
             is DetailsIntent.SizeTableClick -> Unit
             is DetailsIntent.AddToBasketClick -> {
                 val state = stateFlow.value
-                if (state.selectedSizeId == null && state.isSizePickerVisible) {
-                    val selectedSizeId = state.productEntity.availableSizes?.items
-                        ?.firstOrNull { it.inStock }
-                        ?.sizeId
-                        ?: state.productEntity.availableSizes?.items?.firstOrNull()?.sizeId
-                    reduce {
-                        it.copy(
-                            selectedSizeId = selectedSizeId,
-                            isSizePickerSheetVisible = true
-                        )
+                when {
+                    state.selectedSizeId == null && state.isSizePickerVisible -> {
+                        val selectedSizeId = state.productEntity.availableSizes?.items
+                            ?.firstOrNull { it.inStock }
+                            ?.sizeId
+                            ?: state.productEntity.availableSizes?.items?.firstOrNull()?.sizeId
+                        reduce {
+                            it.copy(
+                                selectedSizeId = selectedSizeId,
+                                isSizePickerSheetVisible = true
+                            )
+                        }
+                    }
+                    else -> {
+                        reduce { it.copy(isSizePickerSheetVisible = false) }
+                        launch {
+                            withCenterLoading {
+                                interactor.addProductToBasket(route.id, state.selectedSizeId)
+                            }
+                        }
                     }
                 }
             }
@@ -125,6 +151,7 @@ class DetailsViewModel @AssistedInject constructor(
                     else -> CatalogStackEventManager.send(DetailsRoute(intent.id))
                 }
             }
+            is DetailsIntent.ProductBasketClick -> launch { interactor.addProductToBasket(intent.id, null) }
             is DetailsIntent.OpenMediaViewer -> launch {
                 val state = stateFlow.value
                 val totalCount = state.pagerImageUrls.size + if (state.selectedColorVideoUrl != null) 1 else 0
@@ -138,6 +165,15 @@ class DetailsViewModel @AssistedInject constructor(
                     )
                 }
             }
+        }
+    }
+
+    override fun catch(throwable: Throwable) {
+        when (throwable) {
+            is AddProductToBasketException -> {
+                launch { send(DetailsEvent.SnackbarErrorMessage(throwable.message)) }
+            }
+            else -> super.catch(throwable)
         }
     }
 

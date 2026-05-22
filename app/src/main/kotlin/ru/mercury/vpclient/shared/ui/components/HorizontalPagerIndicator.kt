@@ -28,7 +28,6 @@ import kotlin.math.absoluteValue
 import kotlin.math.sign
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.theme.surface4
 
 @Composable
 fun HorizontalPagerIndicator(
@@ -37,7 +36,7 @@ fun HorizontalPagerIndicator(
     pageCount: Int = pagerState.pageCount,
     pageIndexMapping: (Int) -> Int = { it },
     activeColor: Color = MaterialTheme.colorScheme.onBackground,
-    inactiveColor: Color = MaterialTheme.colorScheme.surface4,
+    inactiveColor: Color = MaterialTheme.colorScheme.surfaceVariant,
     indicatorWidth: Dp = 5.dp,
     indicatorHeight: Dp = indicatorWidth,
     spacing: Dp = 4.dp,

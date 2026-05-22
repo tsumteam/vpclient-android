@@ -23,8 +23,6 @@ import ru.mercury.vpclient.shared.ui.icons.Video24
 import ru.mercury.vpclient.shared.ui.preview.BooleanParameterProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.theme.secondary4
-import ru.mercury.vpclient.shared.ui.theme.secondary5
 
 @Composable
 fun DetailsPagerIndicator(
@@ -44,7 +42,7 @@ fun DetailsPagerIndicator(
             pageCount = pageCount,
             pageIndexMapping = pageIndexMapping,
             activeColor = MaterialTheme.colorScheme.onBackground,
-            inactiveColor = MaterialTheme.colorScheme.secondary5,
+            inactiveColor = MaterialTheme.colorScheme.outlineVariant,
             indicatorWidth = 6.dp,
             indicatorHeight = 6.dp,
             spacing = 10.dp
@@ -53,7 +51,7 @@ fun DetailsPagerIndicator(
         if (showVideoIcon) {
             val isLastPage = pageIndexMapping(pagerState.currentPage) == pageCount - 1
             val videoIconColor by animateColorAsState(
-                targetValue = if (isLastPage) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.secondary4
+                targetValue = if (isLastPage) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.outline
             )
 
             Icon(

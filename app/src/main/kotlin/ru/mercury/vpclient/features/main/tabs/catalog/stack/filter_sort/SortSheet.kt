@@ -45,7 +45,6 @@ import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.livretMedium19
 import ru.mercury.vpclient.shared.ui.theme.medium16
-import ru.mercury.vpclient.shared.ui.theme.secondary5
 
 @Composable
 fun SortSheet(
@@ -132,7 +131,7 @@ private fun SortSheetContent(
 
             HorizontalDivider(
                 modifier = Modifier.padding(start = 48.dp),
-                color = MaterialTheme.colorScheme.secondary5
+                color = MaterialTheme.colorScheme.outlineVariant
             )
 
             FilterListRow(
@@ -143,7 +142,7 @@ private fun SortSheetContent(
 
             HorizontalDivider(
                 modifier = Modifier.padding(start = 48.dp),
-                color = MaterialTheme.colorScheme.secondary5
+                color = MaterialTheme.colorScheme.outlineVariant
             )
 
             FilterListRow(
@@ -154,7 +153,7 @@ private fun SortSheetContent(
 
             HorizontalDivider(
                 modifier = Modifier.padding(start = 48.dp),
-                color = MaterialTheme.colorScheme.secondary5
+                color = MaterialTheme.colorScheme.outlineVariant
             )
 
             FilterListRow(

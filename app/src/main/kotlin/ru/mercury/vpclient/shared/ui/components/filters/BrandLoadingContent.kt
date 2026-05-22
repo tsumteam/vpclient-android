@@ -24,7 +24,6 @@ import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
-import ru.mercury.vpclient.shared.ui.theme.surface4
 
 @Composable
 fun BrandLoadingContent(
@@ -53,7 +52,7 @@ fun BrandLoadingContent(
                         .placeholder(
                             visible = true,
                             highlight = PlaceholderHighlight.shimmer(),
-                            color = MaterialTheme.colorScheme.surface4,
+                            color = MaterialTheme.colorScheme.surfaceVariant,
                             shape = RoundedCornerShape(8.dp)
                         )
                 )
@@ -71,7 +70,7 @@ fun BrandLoadingContent(
                         .placeholder(
                             visible = true,
                             highlight = PlaceholderHighlight.shimmer(),
-                            color = MaterialTheme.colorScheme.surface4,
+                            color = MaterialTheme.colorScheme.surfaceVariant,
                             shape = RoundedCornerShape(4.dp)
                         )
                 )
@@ -94,7 +93,7 @@ fun BrandLoadingContent(
                                         .placeholder(
                                             visible = true,
                                             highlight = PlaceholderHighlight.shimmer(),
-                                            color = MaterialTheme.colorScheme.surface4,
+                                            color = MaterialTheme.colorScheme.surfaceVariant,
                                             shape = RoundedCornerShape(4.dp)
                                         )
                                 )
@@ -111,7 +110,7 @@ fun BrandLoadingContent(
                         .placeholder(
                             visible = true,
                             highlight = PlaceholderHighlight.shimmer(),
-                            color = MaterialTheme.colorScheme.surface4,
+                            color = MaterialTheme.colorScheme.surfaceVariant,
                             shape = RoundedCornerShape(4.dp)
                         )
                 )
@@ -130,7 +129,7 @@ fun BrandLoadingContent(
                         .placeholder(
                             visible = true,
                             highlight = PlaceholderHighlight.shimmer(),
-                            color = MaterialTheme.colorScheme.surface4,
+                            color = MaterialTheme.colorScheme.surfaceVariant,
                             shape = RoundedCornerShape(4.dp)
                         )
                 )
@@ -146,7 +145,7 @@ fun BrandLoadingContent(
                 .placeholder(
                     visible = true,
                     highlight = PlaceholderHighlight.shimmer(),
-                    color = MaterialTheme.colorScheme.surface4,
+                    color = MaterialTheme.colorScheme.surfaceVariant,
                     shape = RoundedCornerShape(8.dp)
                 )
         )

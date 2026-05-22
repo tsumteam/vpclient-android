@@ -16,7 +16,6 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import ru.mercury.vpclient.R
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.theme.surface4
 
 @Composable
 fun ClientAsyncImage(
@@ -27,7 +26,7 @@ fun ClientAsyncImage(
 ) {
     val context = LocalContext.current
     val isInspectionMode = LocalInspectionMode.current
-    val painter = ColorPainter(MaterialTheme.colorScheme.surface4)
+    val painter = ColorPainter(MaterialTheme.colorScheme.surfaceVariant)
 
     AsyncImage(
         model = ImageRequest.Builder(context)

@@ -33,7 +33,6 @@ import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.regular15
-import ru.mercury.vpclient.shared.ui.theme.secondary5
 
 @Composable
 fun ConsultantCard(
@@ -139,7 +138,7 @@ fun ConsultantCard(
 
         HorizontalDivider(
             modifier = Modifier.padding(horizontal = 16.dp),
-            color = MaterialTheme.colorScheme.secondary5
+            color = MaterialTheme.colorScheme.outlineVariant
         )
     }
 }

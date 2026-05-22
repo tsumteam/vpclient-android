@@ -18,7 +18,6 @@ import ru.mercury.vpclient.shared.ui.preview.ConsultantAvatarPlaceholderStylePro
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.regular21
 import ru.mercury.vpclient.shared.ui.theme.regular32
-import ru.mercury.vpclient.shared.ui.theme.secondary4
 
 @Composable
 fun ConsultantAvatarPlaceholder(
@@ -39,7 +38,7 @@ fun ConsultantAvatarPlaceholder(
         modifier = modifier
             .size(size)
             .background(
-                color = MaterialTheme.colorScheme.secondary4,
+                color = MaterialTheme.colorScheme.outline,
                 shape = CircleShape
             ),
         contentAlignment = Alignment.Center

@@ -21,7 +21,6 @@ import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.regular14
 import ru.mercury.vpclient.shared.ui.theme.regular15
-import ru.mercury.vpclient.shared.ui.theme.secondary6
 
 @Composable
 fun CartAlternativesEmpty(
@@ -41,7 +40,7 @@ fun CartAlternativesEmpty(
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.regular14.copy(
-                color = MaterialTheme.colorScheme.secondary6,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 lineHeight = 18.sp,
                 letterSpacing = .2.sp
             )

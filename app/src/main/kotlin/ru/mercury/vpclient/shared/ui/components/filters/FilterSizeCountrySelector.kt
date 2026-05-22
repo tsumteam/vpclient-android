@@ -20,7 +20,6 @@ import ru.mercury.vpclient.shared.ui.preview.SizeCountryProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.regular15
-import ru.mercury.vpclient.shared.ui.theme.secondary6
 
 @Composable
 fun FilterSizeCountrySelector(
@@ -65,7 +64,7 @@ fun FilterSizeCountrySelector(
                 .fillMaxWidth()
                 .padding(top = 16.dp, bottom = 8.dp),
             style = MaterialTheme.typography.regular15.copy(
-                color = MaterialTheme.colorScheme.secondary6,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 lineHeight = 19.sp,
                 letterSpacing = .2.sp,
                 textAlign = TextAlign.Center

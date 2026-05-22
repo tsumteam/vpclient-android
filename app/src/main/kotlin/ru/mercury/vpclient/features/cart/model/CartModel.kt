@@ -16,10 +16,10 @@ private const val DEFAULT_CART_CONSULTANT_NAME = "Персональный ме�
 data class CartModel(
     val payMode: CartPayMode = CartPayMode.All,
     val viewMode: CartViewMode = CartViewMode.List,
-    val isViewModeSwitcherVisible: Boolean = false,
     val isRefreshing: Boolean = false,
     val activeEmployee: EmployeeEntity = EmployeeEntity.Empty,
     val products: List<CartProduct> = emptyList(),
+    val editProduct: CartProduct? = null,
     val selectSizeProduct: CartProduct? = null,
     val sizePickerProduct: CartProduct? = null,
     val sizePickerSizes: ProductAvailableSizesEntity? = null,

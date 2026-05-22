@@ -4,106 +4,35 @@ import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 
-val Primary = Color(0xFF1F1F1F)
-val OnPrimary = Color(0xFFFFFFFF)
-val Secondary = Color(0xFF666061)
-val Secondary3 = Color(0xFFAFAFAF)
-val Secondary4 = Color(0xFF97A0AE)
-val Secondary5 = Color(0xFFDADCE1)
-val Secondary6 = Color(0xFF6F757E)
-val Background = Color(0xFFFFFFFF)
-val OnBackground = Color(0xFF1F1F1F)
-val Surface = Color(0xFFF6F3F3)
-val Surface3 = Color(0xFFF5F4F9)
-val Surface2 = Color(0xFFDCD2D2)
-val Surface4 = Color(0xFFEDE7E7)
-val Surface5 = Color(0xFFF7F7F7)
-val OnSurfaceVariant = Color(0xFF666161)
-val Error = Color(0xFFD76B6B)
-val Divider = Color(0xFFD0C4C4)
-val Divider2 = Color(0xFFCAC4D0)
-val Green = Color(0xFF5DC590)
-val Black1 = Color(0xFF1B1B1B)
-val Black50 = Color(0x80000000)
-val Disabled = Color(0xFFCBC9C9)
-val OnDisabled = Color(0xFFF8F5F5)
-val CartSwipeEdit = Color(0xFFC7C9CD)
-val CartSwipeDelete = Color(0xFFD76B6B)
-val CartSwipeDetach = Color(0xFF666061)
-val CartSwipeDisassemble = Color(0xFFC7C9CD)
-val CartSwipeReturnOriginal = Color(0xFF97A0AE)
-val CartSwipeAlternatives = Color(0xFFF5F4F9)
-
 val LightColorScheme = lightColorScheme(
-    primary = Primary,
-    onPrimary = OnPrimary,
-    secondary = Secondary,
-    background = Background,
-    onBackground = OnBackground,
-    surface = Surface,
-    onSurfaceVariant = OnSurfaceVariant,
-    error = Error
+    primary = Color(0xFF1F1F1F),
+    onPrimary = Color(0xFFFFFFFF),
+    secondary = Color(0xFF666061),
+    background = Color(0xFFFFFFFF),
+    onBackground = Color(0xFF1F1F1F),
+    surface = Color(0xFFF6F3F3),
+    onSurface = Color(0xFF1F1F1F),
+    surfaceVariant = Color(0xFFEDE7E7),
+    surfaceContainer = Color(0xFFF7F7F7),
+    surfaceContainerHigh = Color(0xFFF5F4F9),
+    onSurfaceVariant = Color(0xFF6F757E),
+    outline = Color(0xFF97A0AE),
+    outlineVariant = Color(0xFFDADCE1),
+    scrim = Color(0x80000000),
+    error = Color(0xFFD76B6B)
 )
 
-val ColorScheme.secondary3: Color
-    get() = Secondary3
-
-val ColorScheme.secondary4: Color
-    get() = Secondary4
-
-val ColorScheme.secondary5: Color
-    get() = Secondary5
-
-val ColorScheme.secondary6: Color
-    get() = Secondary6
-
-val ColorScheme.surface2: Color
-    get() = Surface2
-
-val ColorScheme.surface3: Color
-    get() = Surface3
-
-val ColorScheme.surface4: Color
-    get() = Surface4
-
-val ColorScheme.surface5: Color
-    get() = Surface5
-
 val ColorScheme.divider: Color
-    get() = Divider
+    get() = Color(0xFFD0C4C4)
 
-val ColorScheme.divider2: Color
-    get() = Divider2
-
-val ColorScheme.green: Color
-    get() = Green
-
-val ColorScheme.black1: Color
-    get() = Black1
-
-val ColorScheme.black50: Color
-    get() = Black50
+val ColorScheme.success: Color
+    get() = Color(0xFF5DC590)
 
 val ColorScheme.disabled: Color
-    get() = Disabled
+    get() = Color(0xFFCBC9C9)
 
 val ColorScheme.onDisabled: Color
-    get() = OnDisabled
+    get() = Color(0xFFF8F5F5)
 
 val ColorScheme.cartSwipeEdit: Color
-    get() = CartSwipeEdit
-
-val ColorScheme.cartSwipeDelete: Color
-    get() = CartSwipeDelete
-
-val ColorScheme.cartSwipeDetach: Color
-    get() = CartSwipeDetach
-
-val ColorScheme.cartSwipeDisassemble: Color
-    get() = CartSwipeDisassemble
-
-val ColorScheme.cartSwipeReturnOriginal: Color
-    get() = CartSwipeReturnOriginal
-
-val ColorScheme.cartSwipeAlternatives: Color
-    get() = CartSwipeAlternatives
+    get() = Color(0xFFC7C9CD)

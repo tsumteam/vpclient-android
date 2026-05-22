@@ -51,9 +51,6 @@ import ru.mercury.vpclient.shared.ui.theme.divider
 import ru.mercury.vpclient.shared.ui.theme.regular11
 import ru.mercury.vpclient.shared.ui.theme.regular14
 import ru.mercury.vpclient.shared.ui.theme.regular15
-import ru.mercury.vpclient.shared.ui.theme.secondary4
-import ru.mercury.vpclient.shared.ui.theme.secondary5
-import ru.mercury.vpclient.shared.ui.theme.secondary6
 
 @Composable
 fun CartProductLargeCard(
@@ -97,26 +94,26 @@ fun CartProductLargeCard(
     ).count { it }
 
     CartProductSwipeableCard(
-        leadingActionsContent = { swipeProgress ->
+        leadingActionsContent = { swipeProgress, onSwipeActionClick ->
             CartProductLeadingSwipeActions(
                 swipeProgress = swipeProgress,
                 isReturnOriginalVisible = isReturnOriginalSwipeActionVisible,
                 isShowAlternativesVisible = isShowAlternativesSwipeActionVisible,
                 isHideAlternativesVisible = isHideAlternativesSwipeActionVisible,
-                onReturnOriginalClick = onReturnOriginalSwipeClick,
-                onShowAlternativesClick = onShowAlternativesSwipeClick,
-                onHideAlternativesClick = onHideAlternativesSwipeClick
+                onReturnOriginalClick = { onSwipeActionClick(onReturnOriginalSwipeClick) },
+                onShowAlternativesClick = { onSwipeActionClick(onShowAlternativesSwipeClick) },
+                onHideAlternativesClick = { onSwipeActionClick(onHideAlternativesSwipeClick) }
             )
         },
-        trailingActionsContent = { swipeProgress ->
+        trailingActionsContent = { swipeProgress, onSwipeActionClick ->
             CartProductTrailingSwipeActions(
                 swipeProgress = swipeProgress,
                 isEditVisible = isEditSwipeActionVisible,
                 isDetachFromLookVisible = isDetachFromLookSwipeActionVisible,
                 isDeleteVisible = true,
-                onEditClick = onEditSwipeClick,
-                onDetachFromLookClick = onDetachFromLookSwipeClick,
-                onDeleteClick = onDeleteSwipeClick
+                onEditClick = { onSwipeActionClick(onEditSwipeClick) },
+                onDetachFromLookClick = { onSwipeActionClick(onDetachFromLookSwipeClick) },
+                onDeleteClick = { onSwipeActionClick(onDeleteSwipeClick) }
             )
         },
         leadingSwipeSize = (88 * leadingSwipeActionsCount).dp,
@@ -200,7 +197,7 @@ fun CartProductLargeCard(
                         pageCount = pagerImages.size,
                         pageIndexMapping = { it % pagerImages.size },
                         activeColor = MaterialTheme.colorScheme.onBackground,
-                        inactiveColor = MaterialTheme.colorScheme.secondary5,
+                        inactiveColor = MaterialTheme.colorScheme.outlineVariant,
                         indicatorWidth = 6.dp,
                         indicatorHeight = 6.dp,
                         spacing = 10.dp
@@ -337,7 +334,7 @@ fun CartProductLargeCard(
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             style = MaterialTheme.typography.regular14.copy(
-                                color = MaterialTheme.colorScheme.secondary6,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 letterSpacing = .2.sp,
                                 lineHeight = 18.sp
                             )
@@ -374,7 +371,7 @@ fun CartProductLargeCard(
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             style = MaterialTheme.typography.regular14.copy(
-                                color = MaterialTheme.colorScheme.secondary4,
+                                color = MaterialTheme.colorScheme.outline,
                                 letterSpacing = .2.sp,
                                 lineHeight = 18.sp
                             )

@@ -83,8 +83,6 @@ import ru.mercury.vpclient.shared.ui.theme.livretMedium19
 import ru.mercury.vpclient.shared.ui.theme.medium16
 import ru.mercury.vpclient.shared.ui.theme.regular12
 import ru.mercury.vpclient.shared.ui.theme.regular15
-import ru.mercury.vpclient.shared.ui.theme.secondary5
-import ru.mercury.vpclient.shared.ui.theme.secondary6
 import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
@@ -362,7 +360,7 @@ private fun FilterBrandSheetContent(
                                         Text(
                                             text = stringResource(ClientStrings.FilterBrandEmptySearch),
                                             style = MaterialTheme.typography.regular15.copy(
-                                                color = MaterialTheme.colorScheme.secondary6,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                                 lineHeight = 19.sp,
                                                 letterSpacing = .2.sp,
                                                 textAlign = TextAlign.Center
@@ -392,7 +390,7 @@ private fun FilterBrandSheetContent(
                                         if (index != brands.lastIndex) {
                                             HorizontalDivider(
                                                 modifier = Modifier.padding(start = 48.dp),
-                                                color = MaterialTheme.colorScheme.secondary5
+                                                color = MaterialTheme.colorScheme.outlineVariant
                                             )
                                         }
                                     }

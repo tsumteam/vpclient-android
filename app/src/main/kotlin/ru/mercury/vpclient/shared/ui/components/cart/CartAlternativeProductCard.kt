@@ -33,24 +33,19 @@ import ru.mercury.vpclient.shared.ui.preview.CartProductAlternativeProvider
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.livretMedium18
 import ru.mercury.vpclient.shared.ui.theme.regular11
-import ru.mercury.vpclient.shared.ui.theme.secondary5
 
 @Composable
 fun CartAlternativeProductCard(
     alternative: CartProductAlternative,
     modifier: Modifier = Modifier,
     isStartBorderVisible: Boolean = true,
-    isSelected: Boolean = false,
+    isHighlighted: Boolean = false,
     onClick: () -> Unit = {},
     onRemoveClick: () -> Unit = {}
 ) {
     val borderColor = when {
-        isSelected -> MaterialTheme.colorScheme.error
-        else -> MaterialTheme.colorScheme.secondary5
-    }
-    val borderWidth = when {
-        isSelected -> 2.dp
-        else -> 1.dp
+        isHighlighted -> MaterialTheme.colorScheme.error
+        else -> MaterialTheme.colorScheme.outlineVariant
     }
 
     Box(
@@ -58,7 +53,7 @@ fun CartAlternativeProductCard(
             .size(width = 112.dp, height = 156.dp)
             .background(MaterialTheme.colorScheme.background)
             .drawBehind {
-                val strokeWidth = borderWidth.toPx()
+                val strokeWidth = 1.dp.toPx()
                 val strokeCenter = strokeWidth / 2
 
                 drawLine(

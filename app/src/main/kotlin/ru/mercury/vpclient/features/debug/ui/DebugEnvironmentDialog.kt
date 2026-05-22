@@ -25,9 +25,7 @@ import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.data.network.env.ClientEnvironment
 import ru.mercury.vpclient.shared.ui.components.RadioRow
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.theme.divider2
 import ru.mercury.vpclient.shared.ui.theme.regular22
-import ru.mercury.vpclient.shared.ui.theme.surface4
 
 @Composable
 fun DebugEnvironmentDialog(
@@ -41,7 +39,7 @@ fun DebugEnvironmentDialog(
             .fillMaxWidth()
             .wrapContentHeight()
             .clip(RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.surface4)
+            .background(MaterialTheme.colorScheme.surfaceVariant)
     ) {
         Column(
             verticalArrangement = Arrangement.Top,
@@ -68,7 +66,7 @@ fun DebugEnvironmentDialog(
 
             HorizontalDivider(
                 modifier = Modifier.padding(horizontal = 24.dp),
-                color = MaterialTheme.colorScheme.divider2
+                color = MaterialTheme.colorScheme.outline
             )
 
             RadioRow(
@@ -83,7 +81,7 @@ fun DebugEnvironmentDialog(
 
             HorizontalDivider(
                 modifier = Modifier.padding(horizontal = 24.dp),
-                color = MaterialTheme.colorScheme.divider2
+                color = MaterialTheme.colorScheme.outline
             )
 
             RadioRow(

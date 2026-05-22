@@ -27,8 +27,6 @@ import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.medium14
 import ru.mercury.vpclient.shared.ui.theme.regular12
 import ru.mercury.vpclient.shared.ui.theme.regular14
-import ru.mercury.vpclient.shared.ui.theme.secondary4
-import ru.mercury.vpclient.shared.ui.theme.secondary6
 
 @Composable
 fun DetailsSizeSelector(
@@ -97,7 +95,7 @@ fun DetailsSizeSelector(
                 text = state.bottomText.ifEmpty { selectedSize?.bottomText.orEmpty() },
                 modifier = Modifier.padding(top = 6.dp),
                 style = MaterialTheme.typography.regular14.copy(
-                    color = MaterialTheme.colorScheme.secondary6,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     letterSpacing = .2.sp
                 )
             )
@@ -133,7 +131,7 @@ fun DetailsSizeSelector(
             },
             style = MaterialTheme.typography.regular12.copy(
                 color = when {
-                    selectedSize == null -> MaterialTheme.colorScheme.secondary4
+                    selectedSize == null -> MaterialTheme.colorScheme.outline
                     else -> MaterialTheme.colorScheme.error
                 },
                 lineHeight = 16.sp,

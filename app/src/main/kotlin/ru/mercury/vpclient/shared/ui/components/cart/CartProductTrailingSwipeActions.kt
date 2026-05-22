@@ -14,13 +14,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
+import ru.mercury.vpclient.shared.ui.icons.BasketFilled24
 import ru.mercury.vpclient.shared.ui.icons.Delete24
-import ru.mercury.vpclient.shared.ui.icons.DetachFromLook24
 import ru.mercury.vpclient.shared.ui.icons.Edit24
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.cartSwipeDelete
-import ru.mercury.vpclient.shared.ui.theme.cartSwipeDetach
 import ru.mercury.vpclient.shared.ui.theme.cartSwipeEdit
 
 @Composable
@@ -62,9 +60,9 @@ fun CartProductTrailingSwipeActions(
             contentAlignment = Alignment.CenterStart
         ) {
             CartProductSwipeAction(
-                imageVector = DetachFromLook24,
+                imageVector = BasketFilled24,
                 text = stringResource(ClientStrings.CartDetachFromLook),
-                backgroundColor = MaterialTheme.colorScheme.cartSwipeDetach,
+                backgroundColor = MaterialTheme.colorScheme.secondary,
                 onClick = onDetachFromLookClick
             )
         }
@@ -81,7 +79,7 @@ fun CartProductTrailingSwipeActions(
             CartProductSwipeAction(
                 imageVector = Delete24,
                 text = stringResource(ClientStrings.CartDelete),
-                backgroundColor = MaterialTheme.colorScheme.cartSwipeDelete,
+                backgroundColor = MaterialTheme.colorScheme.error,
                 onClick = onDeleteClick
             )
         }

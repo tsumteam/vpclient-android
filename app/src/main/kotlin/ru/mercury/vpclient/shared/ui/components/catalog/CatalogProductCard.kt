@@ -1,12 +1,18 @@
 package ru.mercury.vpclient.shared.ui.components.catalog
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
@@ -17,7 +23,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import kotlinx.coroutines.delay
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.domain.mapper.cardDiscountLabel
@@ -42,22 +54,38 @@ import ru.mercury.vpclient.shared.ui.components.HorizontalPagerIndicator
 import ru.mercury.vpclient.shared.ui.components.PriceText
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.icons.Basket24
+import ru.mercury.vpclient.shared.ui.icons.BasketFilled24
 import ru.mercury.vpclient.shared.ui.icons.Message24
 import ru.mercury.vpclient.shared.ui.preview.CatalogFilterProductsEntityProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
+import ru.mercury.vpclient.shared.ui.theme.regular12
 import ru.mercury.vpclient.shared.ui.theme.regular14
+import kotlin.time.Duration.Companion.milliseconds
+
+private const val ADDED_TO_BASKET_BADGE_VISIBLE_DURATION = 1_500L
+private const val ADDED_TO_BASKET_BADGE_FADE_OUT_DURATION = 800
 
 @Composable
 fun CatalogProductCard(
     entity: CatalogFilterProductsEntity,
     modifier: Modifier = Modifier,
+    isInBasket: Boolean = false,
     onClick: () -> Unit = {},
     onMessageClick: () -> Unit = {},
     onBasketClick: () -> Unit = {}
 ) {
     val pagerImages = remember(entity.imagePages) { entity.imagePages }
     val pagerState = rememberPagerState(pageCount = { pagerImages.size })
+    var isAddedToBasketBadgeVisible by remember { mutableStateOf(false) }
+    var addedToBasketBadgeTrigger by remember { mutableIntStateOf(0) }
+
+    LaunchedEffect(addedToBasketBadgeTrigger) {
+        if (addedToBasketBadgeTrigger == 0) return@LaunchedEffect
+        isAddedToBasketBadgeVisible = true
+        delay(ADDED_TO_BASKET_BADGE_VISIBLE_DURATION.milliseconds)
+        isAddedToBasketBadgeVisible = false
+    }
 
     ConstraintLayout(
         modifier = modifier
@@ -70,6 +98,7 @@ fun CatalogProductCard(
         val (
             messageButton,
             basketButton,
+            addedToBasketBadge,
             pager,
             pagerIndicator,
             brand,
@@ -94,18 +123,58 @@ fun CatalogProductCard(
         }
 
         IconButton(
-            onClick = onBasketClick,
+            onClick = {
+                if (!isInBasket) {
+                    addedToBasketBadgeTrigger += 1
+                }
+                onBasketClick()
+            },
             modifier = Modifier.constrainAs(basketButton) {
                 top.linkTo(parent.top, 2.dp)
                 end.linkTo(parent.end, 2.dp)
             }
         ) {
             Icon(
-                imageVector = Basket24,
+                imageVector = if (isInBasket) BasketFilled24 else Basket24,
                 contentDescription = null,
                 modifier = Modifier.size(24.dp),
-                tint = Color.Unspecified
+                tint = when {
+                    isInBasket -> MaterialTheme.colorScheme.onBackground
+                    else -> Color.Unspecified
+                }
             )
+        }
+
+        AnimatedVisibility(
+            visible = isAddedToBasketBadgeVisible,
+            enter = EnterTransition.None,
+            exit = fadeOut(
+                animationSpec = tween(durationMillis = ADDED_TO_BASKET_BADGE_FADE_OUT_DURATION)
+            ),
+            modifier = Modifier.constrainAs(addedToBasketBadge) {
+                top.linkTo(basketButton.top)
+                end.linkTo(basketButton.start)
+                bottom.linkTo(basketButton.bottom)
+            }
+        ) {
+            Box(
+                modifier = Modifier
+                    .height(28.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                    .padding(start = 8.dp, end = 8.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Добавлено в корзину",
+                    maxLines = 1,
+                    overflow = TextOverflow.Clip,
+                    style = MaterialTheme.typography.regular12.copy(
+                        color = MaterialTheme.colorScheme.onBackground,
+                        lineHeight = 16.sp
+                    )
+                )
+            }
         }
 
         HorizontalPager(

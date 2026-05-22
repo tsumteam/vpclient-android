@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.ui.preview.BooleanParameterProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.theme.secondary5
 
 @Composable
 fun FilterSizeRuButton(
@@ -59,7 +58,7 @@ fun FilterSizeRuButton(
                 .size(26.dp)
                 .border(
                     width = 1.dp,
-                    color = MaterialTheme.colorScheme.secondary5,
+                    color = MaterialTheme.colorScheme.outlineVariant,
                     shape = CircleShape
                 ),
             contentAlignment = Alignment.Center

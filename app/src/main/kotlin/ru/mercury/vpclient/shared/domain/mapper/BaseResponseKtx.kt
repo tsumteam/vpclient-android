@@ -54,6 +54,16 @@ suspend fun <T> handleResponse(
                         else -> throw ClientException(error.message)
                     }
                 }
+                response.status != null && response.status >= 400 -> {
+                    val error = ClientError.Http(
+                        message = response.title.orEmpty().ifEmpty { "Ошибка запроса" },
+                        httpCode = response.status
+                    )
+                    when {
+                        onFailure != null -> onFailure(error)
+                        else -> throw ClientException(error.message)
+                    }
+                }
                 else -> onEmpty()
             }
         }
@@ -97,6 +107,10 @@ suspend fun <T> handleResponseResult(
             }
             errors != null -> {
                 val message = errors.values.flatten().joinToString(", ")
+                Result.failure(ClientException(message))
+            }
+            response.status != null && response.status >= 400 -> {
+                val message = response.title.orEmpty().ifEmpty { "Ошибка запроса" }
                 Result.failure(ClientException(message))
             }
             else -> {

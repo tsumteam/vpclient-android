@@ -34,7 +34,6 @@ import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.medium14
 import ru.mercury.vpclient.shared.ui.theme.regular14
-import ru.mercury.vpclient.shared.ui.theme.surface4
 
 @Composable
 fun DetailsFieldRow(
@@ -120,7 +119,7 @@ private fun DetailsFieldRowPreview(
                 item {
                     HorizontalDivider(
                         modifier = Modifier.padding(horizontal = 16.dp),
-                        color = MaterialTheme.colorScheme.surface4
+                        color = MaterialTheme.colorScheme.surfaceVariant
                     )
                 }
             }

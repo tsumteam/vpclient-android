@@ -45,9 +45,7 @@ import ru.mercury.vpclient.shared.data.CODE_LENGTH
 import ru.mercury.vpclient.shared.data.entity.SmsCodeInputState
 import ru.mercury.vpclient.shared.ui.preview.SmsCodeInputStateProvider
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.theme.black1
 import ru.mercury.vpclient.shared.ui.theme.medium17
-import ru.mercury.vpclient.shared.ui.theme.surface3
 
 @Composable
 fun SmsCodeInput(
@@ -114,7 +112,7 @@ fun SmsCodeInput(
                         modifier = Modifier
                             .size(56.dp)
                             .background(
-                                color = MaterialTheme.colorScheme.surface3,
+                                color = MaterialTheme.colorScheme.surfaceContainerHigh,
                                 shape = RoundedCornerShape(8.dp)
                             )
                             .border(
@@ -128,7 +126,7 @@ fun SmsCodeInput(
                             Text(
                                 text = symbol,
                                 style = MaterialTheme.typography.medium17.copy(
-                                    color = MaterialTheme.colorScheme.black1
+                                    color = MaterialTheme.colorScheme.onBackground
                                 )
                             )
                         }

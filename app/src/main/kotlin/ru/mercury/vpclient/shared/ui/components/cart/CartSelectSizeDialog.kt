@@ -27,7 +27,6 @@ import ru.mercury.vpclient.shared.ui.components.system.ClientButton
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.medium18
-import ru.mercury.vpclient.shared.ui.theme.surface4
 
 @Composable
 fun CartSelectSizeDialog(
@@ -43,7 +42,7 @@ fun CartSelectSizeDialog(
         Column(
             modifier = Modifier
                 .clip(RoundedCornerShape(16.dp))
-                .background(MaterialTheme.colorScheme.surface4)
+                .background(MaterialTheme.colorScheme.surfaceVariant)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally

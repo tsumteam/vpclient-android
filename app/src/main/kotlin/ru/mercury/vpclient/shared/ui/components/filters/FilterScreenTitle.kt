@@ -28,8 +28,6 @@ import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.medium15
 import ru.mercury.vpclient.shared.ui.theme.regular14
-import ru.mercury.vpclient.shared.ui.theme.secondary6
-import ru.mercury.vpclient.shared.ui.theme.surface4
 
 @Composable
 fun FilterScreenTitle(
@@ -60,7 +58,7 @@ fun FilterScreenTitle(
                 .placeholder(
                     visible = isTitlePlaceholderVisible,
                     highlight = PlaceholderHighlight.shimmer(),
-                    color = MaterialTheme.colorScheme.surface4,
+                    color = MaterialTheme.colorScheme.surfaceVariant,
                     shape = RoundedCornerShape(4.dp)
                 ),
             maxLines = 1,
@@ -85,13 +83,13 @@ fun FilterScreenTitle(
                 .placeholder(
                     visible = isSubtitlePlaceholderVisible,
                     highlight = PlaceholderHighlight.shimmer(),
-                    color = MaterialTheme.colorScheme.surface4,
+                    color = MaterialTheme.colorScheme.surfaceVariant,
                     shape = RoundedCornerShape(4.dp)
                 ),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.regular14.copy(
-                color = MaterialTheme.colorScheme.secondary6,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 letterSpacing = .2.sp,
                 textAlign = TextAlign.Center
             )

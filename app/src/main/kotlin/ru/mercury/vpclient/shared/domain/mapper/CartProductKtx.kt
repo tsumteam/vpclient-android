@@ -10,6 +10,7 @@ import ru.mercury.vpclient.shared.data.network.entity.BasketChangeLineSizeOperat
 import ru.mercury.vpclient.shared.data.network.entity.BasketOperationRequestDto
 import ru.mercury.vpclient.shared.data.network.entity.BasketOperationRequestTypeEnum
 import ru.mercury.vpclient.shared.data.network.entity.BasketRemoveLineOperationRequestItemDto
+import ru.mercury.vpclient.shared.data.network.entity.BasketSwitchAlternativeBackToOriginalOperationRequestItemDto
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 
 val CartProduct.imagePages: List<String>
@@ -124,6 +125,41 @@ fun CartProduct.basketHideAlternativesRequest(
                     operationOrder = 0,
                     lineId = id,
                     paletteState = BasketAlternativesPaletteState.HIDDEN
+                )
+            )
+        )
+    )
+}
+
+fun CartProduct.basketShowAlternativesRequest(
+    pairedUserId: String
+): BasketOperationRequestDto {
+    return BasketOperationRequestDto(
+        pairedUserId = pairedUserId,
+        items = listOf(
+            cartProductJson.encodeToJsonElement(
+                BasketChangeAlternativePaletteStateOperationRequestItemDto(
+                    operationType = BasketOperationRequestTypeEnum.CHANGE_ALTERNATIVE_PALETTE_STATE,
+                    operationOrder = 0,
+                    lineId = id,
+                    paletteState = BasketAlternativesPaletteState.OPEN
+                )
+            )
+        )
+    )
+}
+
+fun CartProduct.basketReturnOriginalRequest(
+    pairedUserId: String
+): BasketOperationRequestDto {
+    return BasketOperationRequestDto(
+        pairedUserId = pairedUserId,
+        items = listOf(
+            cartProductJson.encodeToJsonElement(
+                BasketSwitchAlternativeBackToOriginalOperationRequestItemDto(
+                    operationType = BasketOperationRequestTypeEnum.SWITCH_ALTERNATIVE_BACK_TO_ORIGINAL,
+                    operationOrder = 0,
+                    lineId = id
                 )
             )
         )

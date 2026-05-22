@@ -33,7 +33,6 @@ import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.disabled
 import ru.mercury.vpclient.shared.ui.theme.medium15
 import ru.mercury.vpclient.shared.ui.theme.onDisabled
-import ru.mercury.vpclient.shared.ui.theme.surface4
 
 @Composable
 fun CartSizePickerSheet(
@@ -112,7 +111,7 @@ fun CartSizePickerSheetContent(
                 .placeholder(
                     visible = state == SizeSelectorState.Empty,
                     highlight = PlaceholderHighlight.shimmer(),
-                    color = MaterialTheme.colorScheme.surface4,
+                    color = MaterialTheme.colorScheme.surfaceVariant,
                     shape = RoundedCornerShape(8.dp)
                 )
         )

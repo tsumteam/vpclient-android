@@ -20,7 +20,8 @@ fun CartBottomBar(
     chatBrand: String,
     onFittingClick: () -> Unit,
     onBuyClick: () -> Unit,
-    onChatClick: () -> Unit
+    onChatClick: () -> Unit,
+    isActionsEnabled: Boolean = true
 ) {
     Column(
         modifier = Modifier
@@ -37,12 +38,14 @@ fun CartBottomBar(
             CartActionButton(
                 text = stringResource(ClientStrings.CartFitting),
                 onClick = onFittingClick,
+                enabled = isActionsEnabled,
                 modifier = Modifier.weight(2F)
             )
 
             CartActionButton(
                 text = stringResource(ClientStrings.CartBuy),
                 onClick = onBuyClick,
+                enabled = isActionsEnabled,
                 modifier = Modifier.weight(1F)
             )
         }

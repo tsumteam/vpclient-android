@@ -21,7 +21,6 @@ import ru.mercury.vpclient.shared.ui.ktx.clickableWithoutRipple
 import ru.mercury.vpclient.shared.ui.preview.BooleanParameterProvider
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.medium13
-import ru.mercury.vpclient.shared.ui.theme.secondary4
 
 @Composable
 fun CartTab(
@@ -45,7 +44,7 @@ fun CartTab(
             style = MaterialTheme.typography.medium13.copy(
                 color = when (selected) {
                     true -> MaterialTheme.colorScheme.onBackground
-                    false -> MaterialTheme.colorScheme.secondary4
+                    false -> MaterialTheme.colorScheme.outline
                 },
                 lineHeight = 16.sp,
                 textAlign = TextAlign.Center

@@ -11,6 +11,8 @@ import ru.mercury.vpclient.features.cart.intent.CartIntent
 import ru.mercury.vpclient.features.cart.model.CartModel
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.shared.data.error.BasketHideAlternativesException
+import ru.mercury.vpclient.shared.data.error.BasketReturnOriginalException
+import ru.mercury.vpclient.shared.data.error.BasketShowAlternativesException
 import ru.mercury.vpclient.shared.data.error.ChangePaySwitchException
 import ru.mercury.vpclient.shared.data.error.ClientException
 import ru.mercury.vpclient.shared.data.error.DeleteLookException
@@ -189,6 +191,19 @@ class CartViewModel @Inject constructor(
             is CartIntent.HideAlternativesClick -> {
                 launch { cartInteractor.basketHideAlternatives(intent.product) }
             }
+            is CartIntent.HideAlternativesSwipeClick -> {
+                launch { cartInteractor.basketHideAlternatives(intent.product) }
+            }
+            is CartIntent.ShowAlternativesSwipeClick -> {
+                launch { cartInteractor.basketShowAlternatives(intent.product) }
+            }
+            is CartIntent.ReturnOriginalSwipeClick -> {
+                launch {
+                    withCenterLoading {
+                        cartInteractor.basketReturnOriginal(intent.product)
+                    }
+                }
+            }
             is CartIntent.DeleteProductSwipeClick -> {
                 launch {
                     withCenterLoading {
@@ -211,13 +226,13 @@ class CartViewModel @Inject constructor(
                     }
                 }
             }
-            is CartIntent.EditProductSwipeClick,
-            is CartIntent.DetachProductFromLookSwipeClick,
-            is CartIntent.ReturnOriginalSwipeClick,
-            is CartIntent.ShowAlternativesSwipeClick,
-            is CartIntent.HideAlternativesSwipeClick -> return
+            is CartIntent.EditProductSwipeClick -> reduce { it.copy(editProduct = intent.product) }
+            is CartIntent.HideEditProductSheet -> reduce { it.copy(editProduct = null) }
+            is CartIntent.AddSizeClick,
+            is CartIntent.ChangeQuantityClick,
+            is CartIntent.ChangeColorClick -> return
+            is CartIntent.DetachProductFromLookSwipeClick -> return
             is CartIntent.SelectPayMode -> reduce { it.copy(payMode = intent.mode) }
-            is CartIntent.SelectViewMode -> reduce { it.copy(viewMode = intent.mode) }
             is CartIntent.ChatClick,
             is CartIntent.FittingClick,
             is CartIntent.BuyClick -> return
@@ -230,6 +245,12 @@ class CartViewModel @Inject constructor(
                 launch { send(CartEvent.SnackbarErrorMessage(throwable.message.orEmpty())) }
             }
             is BasketHideAlternativesException -> {
+                launch { send(CartEvent.SnackbarErrorMessage(throwable.message)) }
+            }
+            is BasketShowAlternativesException -> {
+                launch { send(CartEvent.SnackbarErrorMessage(throwable.message)) }
+            }
+            is BasketReturnOriginalException -> {
                 launch { send(CartEvent.SnackbarErrorMessage(throwable.message)) }
             }
             is DeleteProductException -> {

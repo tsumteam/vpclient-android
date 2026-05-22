@@ -29,7 +29,6 @@ import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.medium14
 import ru.mercury.vpclient.shared.ui.theme.regular14
 import ru.mercury.vpclient.shared.ui.theme.regular22
-import ru.mercury.vpclient.shared.ui.theme.surface4
 
 @Composable
 fun ProfileLogoutDialog(
@@ -43,7 +42,7 @@ fun ProfileLogoutDialog(
         Column(
             modifier = Modifier
                 .clip(RoundedCornerShape(16.dp))
-                .background(MaterialTheme.colorScheme.surface4),
+                .background(MaterialTheme.colorScheme.surfaceVariant),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {

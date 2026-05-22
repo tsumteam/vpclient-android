@@ -5,7 +5,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
+import ru.mercury.vpclient.shared.data.error.AddProductToBasketException
 import ru.mercury.vpclient.shared.data.error.BasketHideAlternativesException
+import ru.mercury.vpclient.shared.data.error.BasketReturnOriginalException
+import ru.mercury.vpclient.shared.data.error.BasketShowAlternativesException
 import ru.mercury.vpclient.shared.data.error.ChangePaySwitchException
 import ru.mercury.vpclient.shared.data.error.DeleteLookException
 import ru.mercury.vpclient.shared.data.error.DeleteProductException
@@ -20,7 +23,10 @@ import ru.mercury.vpclient.shared.data.persistence.database.dao.CartProductDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogFilterProductsDao
 import ru.mercury.vpclient.shared.data.persistence.datastore.PreferenceKey
 import ru.mercury.vpclient.shared.data.persistence.datastore.SettingsDataStore
+import ru.mercury.vpclient.shared.domain.mapper.addProductToBasketRequest
 import ru.mercury.vpclient.shared.domain.mapper.basketHideAlternativesRequest
+import ru.mercury.vpclient.shared.domain.mapper.basketReturnOriginalRequest
+import ru.mercury.vpclient.shared.domain.mapper.basketShowAlternativesRequest
 import ru.mercury.vpclient.shared.domain.mapper.cartProduct
 import ru.mercury.vpclient.shared.domain.mapper.cartProductWithLook
 import ru.mercury.vpclient.shared.domain.mapper.catalogFilterProductsEntity
@@ -36,6 +42,8 @@ import ru.mercury.vpclient.shared.domain.mapper.removeAlternativeRequest
 import ru.mercury.vpclient.shared.domain.mapper.switchProductWithAlternativeRequest
 import ru.mercury.vpclient.shared.domain.repository.CartRepository
 import javax.inject.Inject
+
+private const val ADD_PRODUCT_TO_BASKET_ERROR_MESSAGE = "Не удалось добавить товар в корзину"
 
 class CartRepositoryImpl @Inject constructor(
     private val networkService: NetworkService,
@@ -97,6 +105,24 @@ class CartRepositoryImpl @Inject constructor(
                 loadBasket()
                 throw ChangePaySwitchException(error.message)
             }
+        )
+    }
+
+    override suspend fun addProductToBasket(productId: String, sizeId: String?) {
+        val pairedUserId = settingsDataStore.getValue(PreferenceKey.PairedUser).orEmpty()
+        if (pairedUserId.isEmpty()) return
+
+        val product = catalogFilterProductsDao.select(productId)
+            ?: throw AddProductToBasketException(ADD_PRODUCT_TO_BASKET_ERROR_MESSAGE)
+
+        handleResponse(
+            request = {
+                val request = product.addProductToBasketRequest(pairedUserId, sizeId)
+                networkService.basket(request)
+            },
+            onSuccess = { loadBasket() },
+            onEmpty = { loadBasket() },
+            onFailure = { error -> throw AddProductToBasketException(error.message) }
         )
     }
 
@@ -202,6 +228,36 @@ class CartRepositoryImpl @Inject constructor(
             },
             onSuccess = { loadBasket() },
             onFailure = { error -> throw BasketHideAlternativesException(error.message) }
+        )
+    }
+
+    override suspend fun basketShowAlternatives(product: CartProduct) {
+        val pairedUserId = settingsDataStore.getValue(PreferenceKey.PairedUser).orEmpty()
+        if (pairedUserId.isEmpty()) return
+
+        cartProductDao.updateIsAlternativesPaletteOpen(product.id, true)
+        handleResponse(
+            request = {
+                val request = product.basketShowAlternativesRequest(pairedUserId)
+                networkService.basket(request)
+            },
+            onSuccess = { loadBasket() },
+            onFailure = { error -> throw BasketShowAlternativesException(error.message) }
+        )
+    }
+
+    override suspend fun basketReturnOriginal(product: CartProduct) {
+        val pairedUserId = settingsDataStore.getValue(PreferenceKey.PairedUser).orEmpty()
+        if (pairedUserId.isEmpty()) return
+
+        handleResponse(
+            request = {
+                val request = product.basketReturnOriginalRequest(pairedUserId)
+                networkService.basket(request)
+            },
+            onSuccess = { loadBasket() },
+            onEmpty = { loadBasket() },
+            onFailure = { error -> throw BasketReturnOriginalException(error.message) }
         )
     }
 

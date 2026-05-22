@@ -17,7 +17,6 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.ui.ktx.blockClickable
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.theme.black50
 
 @Composable
 fun LoadingBox(
@@ -31,7 +30,7 @@ fun LoadingBox(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.black50)
+                .background(MaterialTheme.colorScheme.scrim)
                 .blockClickable(),
             contentAlignment = Alignment.Center
         ) {

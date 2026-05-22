@@ -19,7 +19,6 @@ import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
-import ru.mercury.vpclient.shared.ui.theme.surface4
 
 @Composable
 fun FilterProductCardPlaceholder(
@@ -41,7 +40,7 @@ fun FilterProductCardPlaceholder(
                 .placeholder(
                     visible = true,
                     highlight = PlaceholderHighlight.shimmer(),
-                    color = MaterialTheme.colorScheme.surface4,
+                    color = MaterialTheme.colorScheme.surfaceVariant,
                     shape = RoundedCornerShape(4.dp)
                 )
         )
@@ -54,7 +53,7 @@ fun FilterProductCardPlaceholder(
                 .placeholder(
                     visible = true,
                     highlight = PlaceholderHighlight.shimmer(),
-                    color = MaterialTheme.colorScheme.surface4,
+                    color = MaterialTheme.colorScheme.surfaceVariant,
                     shape = RoundedCornerShape(4.dp)
                 )
         )
@@ -67,7 +66,7 @@ fun FilterProductCardPlaceholder(
                 .placeholder(
                     visible = true,
                     highlight = PlaceholderHighlight.shimmer(),
-                    color = MaterialTheme.colorScheme.surface4,
+                    color = MaterialTheme.colorScheme.surfaceVariant,
                     shape = RoundedCornerShape(4.dp)
                 )
         )
@@ -80,7 +79,7 @@ fun FilterProductCardPlaceholder(
                 .placeholder(
                     visible = true,
                     highlight = PlaceholderHighlight.shimmer(),
-                    color = MaterialTheme.colorScheme.surface4,
+                    color = MaterialTheme.colorScheme.surfaceVariant,
                     shape = RoundedCornerShape(4.dp)
                 )
         )

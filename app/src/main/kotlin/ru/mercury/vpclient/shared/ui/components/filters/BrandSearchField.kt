@@ -36,8 +36,6 @@ import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.regular16
-import ru.mercury.vpclient.shared.ui.theme.secondary6
-import ru.mercury.vpclient.shared.ui.theme.surface3
 
 @Composable
 fun BrandSearchField(
@@ -53,7 +51,7 @@ fun BrandSearchField(
         modifier = modifier
             .height(56.dp)
             .background(
-                color = MaterialTheme.colorScheme.surface3,
+                color = MaterialTheme.colorScheme.surfaceContainerHigh,
                 shape = RoundedCornerShape(8.dp)
             )
             .clip(RoundedCornerShape(8.dp)),
@@ -66,7 +64,7 @@ fun BrandSearchField(
                 .align(Alignment.CenterStart)
                 .padding(start = 16.dp)
                 .size(24.dp),
-            tint = MaterialTheme.colorScheme.secondary6
+            tint = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
         BasicTextField(
@@ -102,7 +100,7 @@ fun BrandSearchField(
                         Text(
                             text = stringResource(ClientStrings.FilterBrandSearchPlaceholder),
                             style = MaterialTheme.typography.regular16.copy(
-                                color = MaterialTheme.colorScheme.secondary6,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 lineHeight = 20.sp,
                                 letterSpacing = .2.sp
                             )
@@ -123,7 +121,7 @@ fun BrandSearchField(
                 Icon(
                     imageVector = Close24,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.secondary6
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }

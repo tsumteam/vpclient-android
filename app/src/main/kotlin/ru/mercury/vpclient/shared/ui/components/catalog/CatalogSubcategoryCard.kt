@@ -29,7 +29,6 @@ import ru.mercury.vpclient.shared.ui.preview.CatalogCategoryEntityProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
-import ru.mercury.vpclient.shared.ui.theme.black1
 import ru.mercury.vpclient.shared.ui.theme.livretMedium13
 
 @Composable
@@ -69,7 +68,7 @@ fun CatalogSubcategoryCard(
                     highlight = PlaceholderHighlight.shimmer(),
                     shape = RoundedCornerShape(4.dp)
                 ),
-            color = MaterialTheme.colorScheme.black1,
+            color = MaterialTheme.colorScheme.onBackground,
             maxLines = 2,
             style = MaterialTheme.typography.livretMedium13.copy(
                 textAlign = TextAlign.Center

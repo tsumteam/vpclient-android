@@ -28,6 +28,7 @@ fun DetailsCompleteSetSection(
     products: List<CatalogFilterProductsEntity>,
     onProductClick: (String) -> Unit,
     modifier: Modifier = Modifier,
+    isProductInBasket: (CatalogFilterProductsEntity) -> Boolean = { false },
     onProductMessageClick: (CatalogFilterProductsEntity) -> Unit = {},
     onProductBasketClick: (CatalogFilterProductsEntity) -> Unit = {}
 ) {
@@ -59,6 +60,7 @@ fun DetailsCompleteSetSection(
                         CatalogProductCard(
                             entity = product,
                             modifier = Modifier.weight(1F),
+                            isInBasket = isProductInBasket(product),
                             onClick = { onProductClick(product.id) },
                             onMessageClick = { onProductMessageClick(product) },
                             onBasketClick = { onProductBasketClick(product) }

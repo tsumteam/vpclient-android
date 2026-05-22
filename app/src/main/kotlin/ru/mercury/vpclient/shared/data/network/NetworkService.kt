@@ -11,9 +11,12 @@ import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import ru.mercury.vpclient.shared.data.network.entity.ActionItemDto
 import ru.mercury.vpclient.shared.data.network.entity.ActionPushRequestDto
@@ -48,6 +51,7 @@ import ru.mercury.vpclient.shared.data.network.entity.AxLoyaltyCardRollBackBonus
 import ru.mercury.vpclient.shared.data.network.entity.BarcodeScanRequestDto
 import ru.mercury.vpclient.shared.data.network.entity.BasketAddProductByBarcodeAndLocationIdRequestDto
 import ru.mercury.vpclient.shared.data.network.entity.BasketAddProductByBarcodeRequestDto
+import ru.mercury.vpclient.shared.data.network.entity.BasketAddProductFromCatalogWithSelectedRussianSizeRequestDto
 import ru.mercury.vpclient.shared.data.network.entity.BasketAddProductFromDetailedStocksRequestDto
 import ru.mercury.vpclient.shared.data.network.entity.BasketCheckoutOrderResponseDto
 import ru.mercury.vpclient.shared.data.network.entity.BasketForCheckoutResponseDto
@@ -249,6 +253,7 @@ import ru.mercury.vpclient.shared.data.network.response.CatalogProductDetailCard
 import ru.mercury.vpclient.shared.data.network.response.CurrentUserResponse
 import ru.mercury.vpclient.shared.data.network.response.EmployeeBadgesResponse
 import ru.mercury.vpclient.shared.data.network.response.EmployeeResponse
+import ru.mercury.vpclient.shared.data.network.response.ErrorResponse
 import ru.mercury.vpclient.shared.data.network.response.FilterValuesResponse
 import ru.mercury.vpclient.shared.data.network.response.FilteredProductsQuantityResponse
 import ru.mercury.vpclient.shared.data.network.response.FilteredProductsResponse
@@ -256,6 +261,11 @@ import ru.mercury.vpclient.shared.data.network.response.FiltersResponse
 import ru.mercury.vpclient.shared.data.network.response.MyEmployeesResponse
 import ru.mercury.vpclient.shared.data.network.response.TokenResponse
 import javax.inject.Inject
+
+private val baseResponseJson = Json {
+    ignoreUnknownKeys = true
+    explicitNulls = false
+}
 
 class NetworkService @Inject constructor(
     private val ktorHttpClient: HttpClient
@@ -620,7 +630,15 @@ class NetworkService @Inject constructor(
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("basket/add-product-from-detailed-stocks") {
             setBody(request)
-        }.body()
+        }.bodyAsBaseResponse()
+    }
+
+    suspend fun basketAddProductsFromCatalogWithSelectedRussianSize(
+        request: BasketAddProductFromCatalogWithSelectedRussianSizeRequestDto
+    ): BaseResponse<JsonElement> {
+        return ktorHttpClient.post("basket/add-products-from-catalog-with-selected-russian-size") {
+            setBody(request)
+        }.bodyAsBaseResponse()
     }
 
     suspend fun basketByPairedUserId(
@@ -865,7 +883,7 @@ class NetworkService @Inject constructor(
     ): BaseResponse<DetailedStocksResponseDto> {
         return ktorHttpClient.post("catalog/detailed-stocks") {
             setBody(request)
-        }.body()
+        }.bodyAsBaseResponse()
     }
 
     suspend fun catalogReserveBySerialid(
@@ -2228,4 +2246,33 @@ class NetworkService @Inject constructor(
     private fun Enum<*>.serialNameValue(): String {
         return javaClass.getField(name).getAnnotation(SerialName::class.java)?.value ?: name
     }
+}
+
+private suspend inline fun <reified T> HttpResponse.bodyAsBaseResponse(): BaseResponse<T> {
+    val responseText = bodyAsText()
+    if (responseText.isNotBlank()) {
+        val response = runCatching { baseResponseJson.decodeFromString<BaseResponse<T>>(responseText) }
+        response.getOrNull()?.let { decodedResponse -> return decodedResponse }
+        if (status.value < 400) {
+            return response.getOrThrow()
+        }
+    }
+
+    return BaseResponse(
+        data = null,
+        error = when {
+            status.value >= 400 -> ErrorResponse(
+                code = status.value,
+                display = null,
+                msg = null,
+                reason = status.description
+            )
+            else -> null
+        },
+        errors = null,
+        type = null,
+        title = status.description,
+        status = status.value,
+        traceId = null
+    )
 }

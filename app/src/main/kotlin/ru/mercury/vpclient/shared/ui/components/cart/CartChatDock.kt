@@ -26,7 +26,6 @@ import ru.mercury.vpclient.shared.ui.icons.ChevronUp24
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.medium14
 import ru.mercury.vpclient.shared.ui.theme.regular15
-import ru.mercury.vpclient.shared.ui.theme.secondary6
 import kotlin.math.min
 
 @Composable
@@ -83,7 +82,7 @@ fun CartChatDock(
             text = brand,
             maxLines = 1,
             style = MaterialTheme.typography.regular15.copy(
-                color = MaterialTheme.colorScheme.secondary6,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 lineHeight = 18.sp,
                 letterSpacing = .2.sp
             )

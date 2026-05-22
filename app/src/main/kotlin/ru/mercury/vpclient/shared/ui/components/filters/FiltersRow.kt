@@ -36,7 +36,6 @@ import ru.mercury.vpclient.shared.ui.preview.FiltersRowStateProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
-import ru.mercury.vpclient.shared.ui.theme.surface4
 
 // fixme
 
@@ -151,7 +150,7 @@ fun FiltersRow(
                                 .placeholder(
                                     visible = true,
                                     highlight = PlaceholderHighlight.shimmer(),
-                                    color = MaterialTheme.colorScheme.surface4,
+                                    color = MaterialTheme.colorScheme.surfaceVariant,
                                     shape = RoundedCornerShape(10.dp)
                                 )
                         )
@@ -166,7 +165,7 @@ fun FiltersRow(
                                 .placeholder(
                                     visible = true,
                                     highlight = PlaceholderHighlight.shimmer(),
-                                    color = MaterialTheme.colorScheme.surface4,
+                                    color = MaterialTheme.colorScheme.surfaceVariant,
                                     shape = RoundedCornerShape(10.dp)
                                 )
                         )
@@ -266,7 +265,7 @@ fun FiltersRow(
                                 .placeholder(
                                     visible = true,
                                     highlight = PlaceholderHighlight.shimmer(),
-                                    color = MaterialTheme.colorScheme.surface4,
+                                    color = MaterialTheme.colorScheme.surfaceVariant,
                                     shape = RoundedCornerShape(10.dp)
                                 )
                         )

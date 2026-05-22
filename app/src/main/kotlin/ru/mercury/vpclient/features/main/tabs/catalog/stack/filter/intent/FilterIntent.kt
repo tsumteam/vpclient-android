@@ -26,6 +26,7 @@ sealed interface FilterIntent: Intent {
     data object ToggleBrandFavorited: FilterIntent
     data object InitializeBrandFavoriteStatus: FilterIntent
     data class ProductClick(val id: String): FilterIntent
+    data class ProductBasketClick(val id: String): FilterIntent
     data class ConfirmSort(val sortType: SortType): FilterIntent
     data class ShowFilterValuesDialog(val chipId: String): FilterIntent
     data class UpdateFilterValuesSelection(val selectedValueIds: Set<String>): FilterIntent

@@ -1,4 +1,4 @@
-package ru.mercury.vpclient.shared.ui.components.cart
+package ru.mercury.vpclient.shared.data.entity
 
 sealed class CartTabsState {
     data object All: CartTabsState()

@@ -25,9 +25,7 @@ import ru.mercury.vpclient.shared.ui.preview.CatalogCategoryEntityProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
-import ru.mercury.vpclient.shared.ui.theme.black1
 import ru.mercury.vpclient.shared.ui.theme.livretMedium19
-import ru.mercury.vpclient.shared.ui.theme.surface4
 
 @Composable
 fun CatalogClothingCard(
@@ -38,11 +36,11 @@ fun CatalogClothingCard(
         modifier = modifier
             .fillMaxWidth()
             .height(149.dp)
-            .background(MaterialTheme.colorScheme.surface4)
+            .background(MaterialTheme.colorScheme.surfaceVariant)
             .placeholder(
                 visible = entity.isEmpty,
                 highlight = PlaceholderHighlight.shimmer(),
-                color = MaterialTheme.colorScheme.surface4
+                color = MaterialTheme.colorScheme.surfaceVariant
             )
     ) {
         ClientAsyncImage(
@@ -60,7 +58,7 @@ fun CatalogClothingCard(
             overflow = TextOverflow.Ellipsis,
             maxLines = 1,
             style = MaterialTheme.typography.livretMedium19.copy(
-                color = MaterialTheme.colorScheme.black1
+                color = MaterialTheme.colorScheme.onBackground
             )
         )
     }

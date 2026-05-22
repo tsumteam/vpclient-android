@@ -22,6 +22,10 @@ class CartInteractorImpl @Inject constructor(
         withContext(dispatchers.io) { cartRepository.changePaySwitch(product, paySwitch) }
     }
 
+    override suspend fun addProductToBasket(productId: String, sizeId: String?) {
+        withContext(dispatchers.io) { cartRepository.addProductToBasket(productId, sizeId) }
+    }
+
     override suspend fun setProductSize(product: CartProduct, sizeId: String) {
         withContext(dispatchers.io) { cartRepository.setProductSize(product, sizeId) }
     }
@@ -48,6 +52,14 @@ class CartInteractorImpl @Inject constructor(
 
     override suspend fun basketHideAlternatives(product: CartProduct) {
         withContext(dispatchers.io) { cartRepository.basketHideAlternatives(product) }
+    }
+
+    override suspend fun basketShowAlternatives(product: CartProduct) {
+        withContext(dispatchers.io) { cartRepository.basketShowAlternatives(product) }
+    }
+
+    override suspend fun basketReturnOriginal(product: CartProduct) {
+        withContext(dispatchers.io) { cartRepository.basketReturnOriginal(product) }
     }
 
     override suspend fun loadBasket() {
