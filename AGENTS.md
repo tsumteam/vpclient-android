@@ -6,7 +6,8 @@
 - When the user writes "синхронизируй инструкции", update AGENTS.md in both vpdelivery-android and vpclient-android
 - Use standard project conventions and follow existing documentation when making changes;
 - Do not run tests
-- Do not compile the project
+- After completing work, launch the default product flavor on the selected device with:
+  `/Users/mihailbelyj/Library/Android/sdk/platform-tools/adb -s adb-28031FDH200J07-fDuL5b._adb-tls-connect._tcp shell am start -W -n ru.mercury.vpclient.uat/ru.mercury.vpclient.activity.MainActivity`
 - Place all PreviewParameterProvider classes in ui/preview
 - When creating a composable function, always create a preview for it
 - Add new colors through MaterialTheme.colorScheme
