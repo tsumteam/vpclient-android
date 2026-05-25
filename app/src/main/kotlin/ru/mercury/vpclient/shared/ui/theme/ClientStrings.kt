@@ -90,6 +90,18 @@ object ClientStrings {
     val CartConsultantBrand = R.string.cart_consultant_brand
     val CartEmptyMessage = R.string.cart_empty_message
     val CartEmptyTabHint = R.string.cart_empty_tab_hint
+    val CartFittingSheetTitle = R.string.cart_fitting_sheet_title
+    val CartFittingSheetGreeting = R.string.cart_fitting_sheet_greeting
+    val CartFittingSheetDescription = R.string.cart_fitting_sheet_description
+    val CartFittingSheetAllProducts = R.string.cart_fitting_sheet_all_products
+    val CartFittingSheetPaymentProducts = R.string.cart_fitting_sheet_payment_products
+    val CartFittingSheetManual = R.string.cart_fitting_sheet_manual
+    val CartFittingSheetFittingTabHintPrefix = R.string.cart_fitting_sheet_fitting_tab_hint_prefix
+    val CartFittingSheetFittingTabHintAccent = R.string.cart_fitting_sheet_fitting_tab_hint_accent
+    val CartFittingSheetFittingTabHintSuffix = R.string.cart_fitting_sheet_fitting_tab_hint_suffix
+    val CartFittingSheetNoSizeHint = R.string.cart_fitting_sheet_no_size_hint
+    val CartFittingSheetConfirm = R.string.cart_fitting_sheet_confirm
+    val CartFittingSheetContinue = R.string.cart_fitting_sheet_continue
 
     val FilterProductsQuantity = R.plurals.filter_products_quantity
     val FilterShowProductsQuantity = R.plurals.filter_show_products_quantity

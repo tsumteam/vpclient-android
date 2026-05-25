@@ -71,6 +71,7 @@ import ru.mercury.vpclient.shared.ui.components.SharedTabRow
 import ru.mercury.vpclient.shared.ui.components.SharedTabRowState
 import ru.mercury.vpclient.shared.ui.components.cart.CartBottomBar
 import ru.mercury.vpclient.shared.ui.components.cart.CartEditProductSheet
+import ru.mercury.vpclient.shared.ui.components.cart.CartFittingSheet
 import ru.mercury.vpclient.shared.ui.components.cart.CartLookCard
 import ru.mercury.vpclient.shared.ui.components.cart.CartProductCard
 import ru.mercury.vpclient.shared.ui.components.cart.CartProductDivider
@@ -158,6 +159,18 @@ private fun CartScreenContent(
                 )
             ),
             onDismissRequest = { dispatch(CartIntent.HideEditProductSheet) }
+        )
+    }
+
+    if (state.isFittingSheetVisible) {
+        CartFittingSheet(
+            allProductsCount = state.fittingProductsCount,
+            allProductsSummary = state.fittingProductsSummary,
+            paymentProductsCount = state.fittingPaymentProductsCount,
+            paymentProductsSummary = state.fittingPaymentProductsSummary,
+            hasProductsWithoutSize = state.hasProductsWithoutSize,
+            onConfirmClick = { _ -> dispatch(CartIntent.ConfirmFittingSheet) },
+            onDismissRequest = { dispatch(CartIntent.HideFittingSheet) }
         )
     }
 

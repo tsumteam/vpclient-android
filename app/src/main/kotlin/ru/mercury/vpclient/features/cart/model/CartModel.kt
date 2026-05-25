@@ -21,6 +21,7 @@ data class CartModel(
     val products: List<CartProduct> = emptyList(),
     val editProduct: CartProduct? = null,
     val selectSizeProduct: CartProduct? = null,
+    val isFittingSheetVisible: Boolean = false,
     val sizePickerProduct: CartProduct? = null,
     val sizePickerSizes: ProductAvailableSizesEntity? = null,
     val sizePickerSelectedId: String? = null,
@@ -103,9 +104,44 @@ data class CartModel(
             return summary(paymentProducts)
         }
 
+    val fittingProductsCount: Int
+        get() {
+            return fittingProducts.sumOf { it.itemsCount }
+        }
+
+    val fittingPaymentProductsCount: Int
+        get() {
+            return fittingPaymentProducts.sumOf { it.itemsCount }
+        }
+
+    val fittingProductsSummary: String
+        get() {
+            return summary(fittingProducts)
+        }
+
+    val fittingPaymentProductsSummary: String
+        get() {
+            return summary(fittingPaymentProducts)
+        }
+
+    val hasProductsWithoutSize: Boolean
+        get() {
+            return products.any { it.size.isBlank() && !it.isSold }
+        }
+
     private val paymentProducts: List<CartProduct>
         get() {
             return products.filter { it.isForPayment && !it.isSold }
+        }
+
+    private val fittingProducts: List<CartProduct>
+        get() {
+            return products.filter { it.size.isNotBlank() && !it.isSold }
+        }
+
+    private val fittingPaymentProducts: List<CartProduct>
+        get() {
+            return fittingProducts.filter { it.isForPayment }
         }
 
     val cartChatName: String

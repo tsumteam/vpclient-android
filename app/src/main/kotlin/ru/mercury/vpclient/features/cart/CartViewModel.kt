@@ -84,6 +84,9 @@ class CartViewModel @Inject constructor(
             }
             is CartIntent.RefreshCompleted -> reduce { it.copy(isRefreshing = false) }
             is CartIntent.CloseClick -> launch { MainEventManager.send(BackRoute) }
+            is CartIntent.FittingClick -> reduce { it.copy(isFittingSheetVisible = true) }
+            is CartIntent.HideFittingSheet -> reduce { it.copy(isFittingSheetVisible = false) }
+            is CartIntent.ConfirmFittingSheet -> reduce { it.copy(isFittingSheetVisible = false) }
             is CartIntent.ProductClick -> {
                 launch { MainEventManager.send(DetailsRoute(intent.id, openedFromCart = true)) }
             }
@@ -250,7 +253,6 @@ class CartViewModel @Inject constructor(
             }
             is CartIntent.SelectPayMode -> reduce { it.copy(payMode = intent.mode) }
             is CartIntent.ChatClick,
-            is CartIntent.FittingClick,
             is CartIntent.BuyClick -> return
         }
     }

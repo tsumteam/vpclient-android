@@ -84,6 +84,18 @@
     <string name="cart_consultant_brand">Brioni</string><!--fixme-->
     <string name="cart_empty_message">На данный момент Вы не добавили ни одного товара в заказ.</string>
     <string name="cart_empty_tab_hint">Добавьте товары из каталога для оформления заказа</string>
+    <string name="cart_fitting_sheet_title">Оформить примерку</string>
+    <string name="cart_fitting_sheet_greeting">Уважаемый Иван Иванович</string>
+    <string name="cart_fitting_sheet_description">Выберите вещи для добавления в примерку, пожалуйста.</string>
+    <string name="cart_fitting_sheet_all_products">Все вещи из корзины</string>
+    <string name="cart_fitting_sheet_payment_products">Только вещи с пометкой «Купить»</string>
+    <string name="cart_fitting_sheet_manual">Выбрать вещи вручную</string>
+    <string name="cart_fitting_sheet_fitting_tab_hint_prefix">Вещи на примерку сохраняются во вкладке</string>
+    <string name="cart_fitting_sheet_fitting_tab_hint_accent">Примерка</string>
+    <string name="cart_fitting_sheet_fitting_tab_hint_suffix">, где Вы сможете их просматривать, изменять \nи оплачивать.</string>
+    <string name="cart_fitting_sheet_no_size_hint">У вас в Корзине есть вещи с признаком «Выберите размер». Они не могут быть заказаны для примерки \nи останутся в Корзине. Вы сможете позже добавить их в Примерку, выбрав в Корзине размер.</string>
+    <string name="cart_fitting_sheet_confirm">Подтвердить примерку</string>
+    <string name="cart_fitting_sheet_continue">Продолжить</string>
 
     <plurals name="cart_all_items">
         <item quantity="one">ВСЕ ТОВАРЫ (%1$d)</item>
