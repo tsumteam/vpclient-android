@@ -22,6 +22,8 @@ interface CartRepository {
 
     suspend fun disassembleLook(products: List<CartProduct>)
 
+    suspend fun moveProductsAfterDrag(products: List<CartProduct>)
+
     suspend fun removeAlternative(alternative: CartProductAlternative)
 
     suspend fun switchProductWithAlternative(alternative: CartProductAlternative)

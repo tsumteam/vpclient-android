@@ -40,4 +40,5 @@ sealed interface CartIntent: Intent {
     data class DeleteLookSwipeClick(val lookId: String): CartIntent
     data class ToggleSizePickerItem(val index: Int): CartIntent
     data class SelectPayMode(val mode: CartPayMode): CartIntent
+    data class MoveProductAfterDrag(val productId: String, val targetProductId: String, val placeAfterTarget: Boolean): CartIntent
 }

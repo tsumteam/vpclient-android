@@ -36,6 +36,7 @@ import ru.mercury.vpclient.shared.ui.theme.regular15
 @Composable
 fun CartProductCard(
     product: CartProduct,
+    modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
     onSelectSizeClick: () -> Unit = {},
     onBuySwitchChange: (Boolean) -> Unit = {},
@@ -75,6 +76,7 @@ fun CartProductCard(
     ).count { it }
 
     CartProductSwipeableCard(
+        modifier = modifier,
         leadingActionsContent = { swipeProgress, onSwipeActionClick ->
             CartProductLeadingSwipeActions(
                 swipeProgress = swipeProgress,

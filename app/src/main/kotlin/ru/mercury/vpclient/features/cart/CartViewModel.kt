@@ -10,6 +10,7 @@ import ru.mercury.vpclient.features.cart.event.CartEvent
 import ru.mercury.vpclient.features.cart.intent.CartIntent
 import ru.mercury.vpclient.features.cart.model.CartModel
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
+import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.error.BasketHideAlternativesException
 import ru.mercury.vpclient.shared.data.error.BasketReturnOriginalException
 import ru.mercury.vpclient.shared.data.error.BasketShowAlternativesException
@@ -18,6 +19,7 @@ import ru.mercury.vpclient.shared.data.error.ClientException
 import ru.mercury.vpclient.shared.data.error.DeleteLookException
 import ru.mercury.vpclient.shared.data.error.DeleteProductException
 import ru.mercury.vpclient.shared.data.error.DisassembleLookException
+import ru.mercury.vpclient.shared.data.error.MoveProductsAfterDragException
 import ru.mercury.vpclient.shared.data.error.RemoveAlternativeException
 import ru.mercury.vpclient.shared.data.error.SetProductSizeException
 import ru.mercury.vpclient.shared.data.error.SwitchProductWithAlternativeException
@@ -232,6 +234,20 @@ class CartViewModel @Inject constructor(
             is CartIntent.ChangeQuantityClick,
             is CartIntent.ChangeColorClick -> return
             is CartIntent.DetachProductFromLookSwipeClick -> return
+            is CartIntent.MoveProductAfterDrag -> {
+                val movedProducts = stateFlow.value.products.moveProductAfterDrag(
+                    productId = intent.productId,
+                    targetProductId = intent.targetProductId,
+                    placeAfterTarget = intent.placeAfterTarget
+                )
+                when (movedProducts) {
+                    stateFlow.value.products -> return
+                    else -> {
+                        reduce { it.copy(products = movedProducts) }
+                        launch { cartInteractor.moveProductsAfterDrag(movedProducts) }
+                    }
+                }
+            }
             is CartIntent.SelectPayMode -> reduce { it.copy(payMode = intent.mode) }
             is CartIntent.ChatClick,
             is CartIntent.FittingClick,
@@ -262,6 +278,9 @@ class CartViewModel @Inject constructor(
             is DisassembleLookException -> {
                 launch { send(CartEvent.SnackbarErrorMessage(throwable.message)) }
             }
+            is MoveProductsAfterDragException -> {
+                launch { send(CartEvent.SnackbarErrorMessage(throwable.message)) }
+            }
             is ChangePaySwitchException -> {
                 launch { send(CartEvent.SnackbarErrorMessage(throwable.message)) }
             }
@@ -280,4 +299,42 @@ class CartViewModel @Inject constructor(
             else -> super.catch(throwable)
         }
     }
+}
+
+private fun List<CartProduct>.moveProductAfterDrag(
+    productId: String,
+    targetProductId: String,
+    placeAfterTarget: Boolean
+): List<CartProduct> {
+    if (productId == targetProductId) {
+        return this
+    }
+
+    val fromIndex = indexOfFirst { it.id == productId }
+    val targetIndex = indexOfFirst { it.id == targetProductId }
+    if (fromIndex == -1 || targetIndex == -1) {
+        return this
+    }
+
+    val targetProduct = this[targetIndex]
+    val product = this[fromIndex].copy(
+        lookId = targetProduct.lookId,
+        lookName = targetProduct.lookName,
+        lookImageUrl = targetProduct.lookImageUrl
+    )
+    val products = toMutableList()
+    products.removeAt(fromIndex)
+
+    val actualTargetIndex = products.indexOfFirst { it.id == targetProductId }
+    if (actualTargetIndex == -1) {
+        return this
+    }
+
+    val insertIndex = when {
+        placeAfterTarget -> actualTargetIndex + 1
+        else -> actualTargetIndex
+    }.coerceIn(0, products.size)
+    products.add(insertIndex, product)
+
+    return products
 }

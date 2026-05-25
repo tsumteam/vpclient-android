@@ -15,6 +15,9 @@ interface CartProductDao {
     @Query("SELECT COALESCE(SUM(quantity * sizeCount), 0) FROM CartProduct")
     fun cartSizeFlow(): Flow<Int>
 
+    @Query("SELECT * FROM CartProduct ORDER BY position ASC")
+    suspend fun selectAll(): List<CartProductEntity>
+
     @Upsert
     suspend fun upsert(entities: List<CartProductEntity>)
 

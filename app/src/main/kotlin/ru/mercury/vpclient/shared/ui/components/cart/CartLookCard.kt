@@ -48,6 +48,7 @@ fun CartLookCard(
     onHideAlternativesSwipeClick: (CartProduct) -> Unit = {},
     onDisassembleLookSwipeClick: () -> Unit = {},
     onDeleteLookSwipeClick: () -> Unit = {},
+    productModifier: (CartProduct) -> Modifier = { Modifier },
     selectedAlternativeId: String? = null,
     modifier: Modifier = Modifier
 ) {
@@ -109,6 +110,7 @@ fun CartLookCard(
                 true -> {
                     CartProductLargeCard(
                         product = product,
+                        modifier = productModifier(product),
                         onClick = { onProductClick(product) },
                         onSelectSizeClick = { onSelectSizeClick(product) },
                         onBuySwitchChange = { paySwitch -> onBuySwitchChange(product, paySwitch) },
@@ -130,6 +132,7 @@ fun CartLookCard(
 
                     CartProductCard(
                         product = product,
+                        modifier = productModifier(product),
                         onClick = { onProductClick(product) },
                         onSelectSizeClick = { onSelectSizeClick(product) },
                         onBuySwitchChange = { paySwitch -> onBuySwitchChange(product, paySwitch) },

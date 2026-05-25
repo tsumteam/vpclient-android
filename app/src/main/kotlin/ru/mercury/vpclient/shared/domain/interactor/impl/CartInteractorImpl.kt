@@ -42,6 +42,10 @@ class CartInteractorImpl @Inject constructor(
         withContext(dispatchers.io) { cartRepository.disassembleLook(products) }
     }
 
+    override suspend fun moveProductsAfterDrag(products: List<CartProduct>) {
+        withContext(dispatchers.io) { cartRepository.moveProductsAfterDrag(products) }
+    }
+
     override suspend fun removeAlternative(alternative: CartProductAlternative) {
         withContext(dispatchers.io) { cartRepository.removeAlternative(alternative) }
     }

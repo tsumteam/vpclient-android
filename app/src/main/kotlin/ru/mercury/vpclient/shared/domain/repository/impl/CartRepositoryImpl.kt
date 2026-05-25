@@ -13,6 +13,7 @@ import ru.mercury.vpclient.shared.data.error.ChangePaySwitchException
 import ru.mercury.vpclient.shared.data.error.DeleteLookException
 import ru.mercury.vpclient.shared.data.error.DeleteProductException
 import ru.mercury.vpclient.shared.data.error.DisassembleLookException
+import ru.mercury.vpclient.shared.data.error.MoveProductsAfterDragException
 import ru.mercury.vpclient.shared.data.error.RemoveAlternativeException
 import ru.mercury.vpclient.shared.data.error.SetProductSizeException
 import ru.mercury.vpclient.shared.data.error.SwitchProductWithAlternativeException
@@ -29,6 +30,7 @@ import ru.mercury.vpclient.shared.domain.mapper.basketReturnOriginalRequest
 import ru.mercury.vpclient.shared.domain.mapper.basketShowAlternativesRequest
 import ru.mercury.vpclient.shared.domain.mapper.cartProduct
 import ru.mercury.vpclient.shared.domain.mapper.cartProductWithLook
+import ru.mercury.vpclient.shared.domain.mapper.cartProductsAfterDragRequest
 import ru.mercury.vpclient.shared.domain.mapper.catalogFilterProductsEntity
 import ru.mercury.vpclient.shared.domain.mapper.changeSizeRequest
 import ru.mercury.vpclient.shared.domain.mapper.deleteLookRequest
@@ -183,6 +185,40 @@ class CartRepositoryImpl @Inject constructor(
             onSuccess = { loadBasket() },
             onEmpty = { loadBasket() },
             onFailure = { error -> throw DisassembleLookException(error.message) }
+        )
+    }
+
+    override suspend fun moveProductsAfterDrag(products: List<CartProduct>) {
+        val pairedUserId = settingsDataStore.getValue(PreferenceKey.PairedUser).orEmpty()
+        if (pairedUserId.isEmpty()) return
+
+        val currentProducts = cartProductDao.selectAll().map { it.cartProduct }
+        val changedLookProducts = products.filter { product ->
+            currentProducts.firstOrNull { it.id == product.id }?.lookId != product.lookId
+        }
+        appDatabase.withTransaction {
+            cartProductDao.upsert(
+                products.mapIndexed { index, product ->
+                    product.entity(index)
+                }
+            )
+        }
+
+        handleResponse(
+            request = {
+                val request = cartProductsAfterDragRequest(
+                    products = products,
+                    changedLookProducts = changedLookProducts,
+                    pairedUserId = pairedUserId
+                )
+                networkService.basket(request)
+            },
+            onSuccess = { loadBasket() },
+            onEmpty = { loadBasket() },
+            onFailure = { error ->
+                loadBasket()
+                throw MoveProductsAfterDragException(error.message)
+            }
         )
     }
 
