@@ -13,10 +13,11 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.mercury.vpclient.features.main.tabs.profile.intent.ProfileIntent
 import ru.mercury.vpclient.features.main.tabs.profile.model.ProfileModel
-import ru.mercury.vpclient.shared.data.entity.TopBarState
 import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.system.ClientOutlinedButton
+import ru.mercury.vpclient.shared.ui.components.system.TopBarActionsState
+import ru.mercury.vpclient.shared.ui.components.system.TopBarState
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
@@ -42,7 +43,22 @@ private fun ProfileScreenContent(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             ClientCenterAlignedTopAppBar(
-                state = TopBarState.Title(stringResource(ClientStrings.ProfileTitle))
+                state = TopBarState.Title(
+                    title = stringResource(ClientStrings.ProfileTitle),
+                    actionsState = TopBarActionsState(
+                        showCartButton = true,
+                        cartText = state.cartText,
+                        showCartBadge = state.showCartBadge,
+                        cartClick = { dispatch(ProfileIntent.CartClick) },
+                        fittingText = state.fittingText,
+                        showFittingButton = state.showFittingButton,
+                        showFittingBadge = state.showFittingBadge,
+                        fittingClick = { dispatch(ProfileIntent.FittingClick) },
+                        showMessengerButton = true,
+                        showMessengerBadge = state.showMessengerBadge,
+                        messengerClick = { dispatch(ProfileIntent.MessengerClick) }
+                    )
+                )
             )
         },
         bottomBar = {

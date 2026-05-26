@@ -38,28 +38,30 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.code.event.CodeEvents
 import ru.mercury.vpclient.features.code.intent.CodeIntent
 import ru.mercury.vpclient.features.code.model.CodeModel
 import ru.mercury.vpclient.features.code.ui.SmsCodeInput
+import ru.mercury.vpclient.features.code.ui.SmsCodeInputState
 import ru.mercury.vpclient.shared.data.entity.CodeValidationError
-import ru.mercury.vpclient.shared.data.entity.SmsCodeInputState
-import ru.mercury.vpclient.shared.data.entity.TopBarState
+import ru.mercury.vpclient.shared.data.persistence.database.entity.ClientEntity
 import ru.mercury.vpclient.shared.domain.mapper.formatCodeResendTime
 import ru.mercury.vpclient.shared.domain.mapper.formatPhoneForDisplay
 import ru.mercury.vpclient.shared.ui.components.system.ClientButton
 import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
+import ru.mercury.vpclient.shared.ui.components.system.TopBarState
 import ru.mercury.vpclient.shared.ui.components.system.ClientInlineTextButton
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
-import ru.mercury.vpclient.shared.ui.preview.CodeModelProvider
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.livretMedium21
@@ -281,4 +283,26 @@ private fun CodeScreenContentPreview(
         focusRequester = remember { FocusRequester() },
         snackbarHostStateError = remember { SnackbarHostState() }
     )
+}
+
+private class CodeModelProvider: PreviewParameterProvider<CodeModel> {
+    override val values: Sequence<CodeModel> = sequenceOf(
+        baseState,
+        baseState.copy(code = "123"),
+        baseState.copy(codeValidationError = CodeValidationError.Empty),
+        baseState.copy(code = "123456", codeValidationError = CodeValidationError.Invalid),
+        baseState.copy(code = "123456", isLoading = true),
+        baseState.copy(resendSecondsLeft = 22, resendTimerJob = Job()),
+        baseState.copy(resendCodeJob = Job()),
+        baseState.copy(code = "123456", resendSecondsLeft = 12, resendCodeJob = Job())
+    )
+
+    companion object {
+        private val baseState = CodeModel(
+            clientEntity = ClientEntity(
+                phone = "+79991234567",
+                name = "Иван"
+            )
+        )
+    }
 }

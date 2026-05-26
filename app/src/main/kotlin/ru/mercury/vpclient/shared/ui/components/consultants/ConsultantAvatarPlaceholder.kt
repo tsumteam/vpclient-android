@@ -11,10 +11,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.data.entity.ConsultantAvatarPlaceholderStyle
-import ru.mercury.vpclient.shared.ui.preview.ConsultantAvatarPlaceholderStyleProvider
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.regular21
 import ru.mercury.vpclient.shared.ui.theme.regular32
@@ -61,5 +61,12 @@ private fun ConsultantAvatarPlaceholderPreview(
     ConsultantAvatarPlaceholder(
         name = "Анастасия",
         style = style
+    )
+}
+
+private class ConsultantAvatarPlaceholderStyleProvider: PreviewParameterProvider<ConsultantAvatarPlaceholderStyle> {
+    override val values: Sequence<ConsultantAvatarPlaceholderStyle> = sequenceOf(
+        ConsultantAvatarPlaceholderStyle.Card,
+        ConsultantAvatarPlaceholderStyle.Screen
     )
 }

@@ -9,10 +9,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.data.entity.BrandFilterValue
-import ru.mercury.vpclient.shared.ui.preview.BrandFilterValuesProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 
@@ -60,5 +60,40 @@ private fun BrandChipsGridPreview(
         brands = brands,
         onToggle = {},
         modifier = Modifier.padding(vertical = 16.dp)
+    )
+}
+
+private class BrandFilterValuesProvider: PreviewParameterProvider<List<BrandFilterValue>> {
+    override val values: Sequence<List<BrandFilterValue>> = sequenceOf(
+        listOf(
+            BrandFilterValue(
+                id = "mercury",
+                label = "Mercury",
+                labelPhotoUrl = null,
+                isFavorite = true,
+                isTopBrand = true
+            ),
+            BrandFilterValue(
+                id = "dolce-gabbana",
+                label = "Dolce & Gabbana",
+                labelPhotoUrl = null,
+                isFavorite = true,
+                isTopBrand = false
+            ),
+            BrandFilterValue(
+                id = "loewe",
+                label = "LOEWE",
+                labelPhotoUrl = "https://example.com/brand-logo.png",
+                isFavorite = false,
+                isTopBrand = true
+            ),
+            BrandFilterValue(
+                id = "prada",
+                label = "Prada",
+                labelPhotoUrl = null,
+                isFavorite = false,
+                isTopBrand = true
+            )
+        )
     )
 }

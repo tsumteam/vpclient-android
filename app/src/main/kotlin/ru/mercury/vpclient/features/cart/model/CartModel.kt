@@ -3,15 +3,18 @@ package ru.mercury.vpclient.features.cart.model
 import kotlinx.coroutines.Job
 import ru.mercury.vpclient.shared.data.FORMAT_RUB
 import ru.mercury.vpclient.shared.data.entity.CartProduct
-import ru.mercury.vpclient.shared.data.entity.SizeSelectorState
-import ru.mercury.vpclient.shared.data.entity.SizeState
+import ru.mercury.vpclient.shared.data.entity.FittingDeliveryHeader
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductAvailableSizesEntity
+import ru.mercury.vpclient.shared.domain.mapper.hasFittingProducts
 import ru.mercury.vpclient.shared.domain.mapper.thousandsSeparator
 import ru.mercury.vpclient.shared.mvi.Model
+import ru.mercury.vpclient.shared.ui.components.cart.SizeSelectorState
+import ru.mercury.vpclient.shared.ui.components.details.SizeState
 import kotlin.math.roundToInt
 
 private const val DEFAULT_CART_CONSULTANT_NAME = "Персональный менеджер"
+private const val DEFAULT_FITTING_SHEET_CLIENT_NAME = "Клиент"
 
 data class CartModel(
     val payMode: CartPayMode = CartPayMode.All,
@@ -19,15 +22,20 @@ data class CartModel(
     val isRefreshing: Boolean = false,
     val activeEmployee: EmployeeEntity = EmployeeEntity.Empty,
     val products: List<CartProduct> = emptyList(),
+    val apiFittingProducts: List<CartProduct> = emptyList(),
+    val apiFittingDeliveryHeader: FittingDeliveryHeader = FittingDeliveryHeader.Empty,
     val editProduct: CartProduct? = null,
     val selectSizeProduct: CartProduct? = null,
     val isFittingSheetVisible: Boolean = false,
+    val isFittingProductsSheetVisible: Boolean = false,
     val sizePickerProduct: CartProduct? = null,
     val sizePickerSizes: ProductAvailableSizesEntity? = null,
     val sizePickerSelectedId: String? = null,
     val selectedAlternativeId: String? = null,
     val paySwitchJob: Job? = null,
-    val sizePickerJob: Job? = null
+    val sizePickerJob: Job? = null,
+    val fittingSheetClientName: String = DEFAULT_FITTING_SHEET_CLIENT_NAME,
+    val isFittingSheetClientFeminine: Boolean = false
 ): Model {
     val sizePickerState: SizeSelectorState
         get() {
@@ -57,31 +65,20 @@ data class CartModel(
 
     val visibleProductGroups: List<CartProductGroup>
         get() {
-            val products = visibleProducts
-            val lookProducts = products.filter { !it.lookId.isNullOrEmpty() }
-            val noLookProducts = products.filter { it.lookId.isNullOrEmpty() }
-            val lookGroups = lookProducts
-                .groupBy { it.lookId.orEmpty() }
-                .toSortedMap()
-                .map { (_, products) ->
-                    val firstProduct = products.first()
-                    CartProductGroup(
-                        lookId = firstProduct.lookId,
-                        lookName = firstProduct.lookName.orEmpty(),
-                        lookImageUrl = firstProduct.lookImageUrl,
-                        products = products
-                    )
-                }
-            val productGroups = noLookProducts.map { product ->
-                CartProductGroup(
-                    lookId = null,
-                    lookName = "",
-                    lookImageUrl = null,
-                    products = listOf(product)
-                )
-            }
+            return visibleProducts.toProductGroups()
+        }
 
-            return lookGroups + productGroups
+    val visibleFittingProducts: List<CartProduct>
+        get() {
+            return when (payMode) {
+                CartPayMode.All -> apiFittingProducts
+                CartPayMode.Payment -> apiFittingPaymentProducts
+            }
+        }
+
+    val visibleFittingProductGroups: List<CartProductGroup>
+        get() {
+            return visibleFittingProducts.toProductGroups()
         }
 
     val allItemsCount: Int
@@ -104,6 +101,16 @@ data class CartModel(
             return summary(paymentProducts)
         }
 
+    val fittingProducts: List<CartProduct>
+        get() {
+            return products.filter { it.size.isNotBlank() && !it.isSold }
+        }
+
+    val fittingPaymentProducts: List<CartProduct>
+        get() {
+            return fittingProducts.filter { it.isForPayment }
+        }
+
     val fittingProductsCount: Int
         get() {
             return fittingProducts.sumOf { it.itemsCount }
@@ -124,9 +131,34 @@ data class CartModel(
             return summary(fittingPaymentProducts)
         }
 
+    val apiFittingProductsCount: Int
+        get() {
+            return apiFittingProducts.sumOf { it.itemsCount }
+        }
+
+    val apiFittingPaymentProductsCount: Int
+        get() {
+            return apiFittingPaymentProducts.sumOf { it.itemsCount }
+        }
+
+    val apiFittingProductsSummary: String
+        get() {
+            return summary(apiFittingProducts)
+        }
+
+    val apiFittingPaymentProductsSummary: String
+        get() {
+            return summary(apiFittingPaymentProducts)
+        }
+
     val hasProductsWithoutSize: Boolean
         get() {
             return products.any { it.size.isBlank() && !it.isSold }
+        }
+
+    val hasFittingProducts: Boolean
+        get() {
+            return activeEmployee.hasFittingProducts
         }
 
     private val paymentProducts: List<CartProduct>
@@ -134,14 +166,9 @@ data class CartModel(
             return products.filter { it.isForPayment && !it.isSold }
         }
 
-    private val fittingProducts: List<CartProduct>
+    private val apiFittingPaymentProducts: List<CartProduct>
         get() {
-            return products.filter { it.size.isNotBlank() && !it.isSold }
-        }
-
-    private val fittingPaymentProducts: List<CartProduct>
-        get() {
-            return fittingProducts.filter { it.isForPayment }
+            return apiFittingProducts.filter { it.isForPayment && !it.isSold }
         }
 
     val cartChatName: String
@@ -158,6 +185,33 @@ data class CartModel(
         val itemsCount = products.sumOf { it.itemsCount }
         val sum = products.sumOf { (it.priceValue * it.itemsCount).roundToInt() }
         return "$itemsCount ${itemsCount.productsWord} на сумму ${FORMAT_RUB.format(sum.thousandsSeparator)}"
+    }
+
+    private fun List<CartProduct>.toProductGroups(): List<CartProductGroup> {
+        val lookProducts = filter { !it.lookId.isNullOrEmpty() }
+        val noLookProducts = filter { it.lookId.isNullOrEmpty() }
+        val lookGroups = lookProducts
+            .groupBy { it.lookId.orEmpty() }
+            .toSortedMap()
+            .map { (_, products) ->
+                val firstProduct = products.first()
+                CartProductGroup(
+                    lookId = firstProduct.lookId,
+                    lookName = firstProduct.lookName.orEmpty(),
+                    lookImageUrl = firstProduct.lookImageUrl,
+                    products = products
+                )
+            }
+        val productGroups = noLookProducts.map { product ->
+            CartProductGroup(
+                lookId = null,
+                lookName = "",
+                lookImageUrl = null,
+                products = listOf(product)
+            )
+        }
+
+        return lookGroups + productGroups
     }
 
     private val CartProduct.itemsCount: Int

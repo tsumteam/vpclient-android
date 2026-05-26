@@ -7,3 +7,15 @@ val EmployeeEntity.hasBasketBadge: Boolean
 
 val EmployeeEntity.basketText: String
     get() = if (hasBasketBadge) basketBadge.toString() else ""
+
+val EmployeeEntity.hasFittingProducts: Boolean
+    get() = fittingNumber > 0
+
+val EmployeeEntity.fittingText: String
+    get() = if (hasFittingProducts) fittingNumber.toString() else ""
+
+val EmployeeEntity.hasFittingBadge: Boolean
+    get() = fittingBadge > 0
+
+val EmployeeEntity.hasMessengerBadge: Boolean
+    get() = messengerBadge > 0

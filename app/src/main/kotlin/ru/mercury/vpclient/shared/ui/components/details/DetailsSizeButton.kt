@@ -18,14 +18,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.mercury.vpclient.shared.data.entity.SizeState
-import ru.mercury.vpclient.shared.ui.preview.SizeStateProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.regular14
+
+data class SizeState(
+    val topText: String,
+    val bottomText: String,
+    val selected: Boolean,
+    val enabled: Boolean
+)
 
 @Composable
 fun DetailsSizeButton(
@@ -83,5 +89,34 @@ private fun DetailsSizeButtonPreview(
         state = state,
         onClick = {},
         modifier = Modifier.padding(8.dp)
+    )
+}
+
+private class SizeStateProvider: PreviewParameterProvider<SizeState> {
+    override val values: Sequence<SizeState> = sequenceOf(
+        SizeState(
+            topText = "RU 36",
+            bottomText = "IT 34",
+            selected = false,
+            enabled = true
+        ),
+        SizeState(
+            topText = "RU 36",
+            bottomText = "IT 34",
+            selected = true,
+            enabled = true
+        ),
+        SizeState(
+            topText = "RU 36",
+            bottomText = "IT 34",
+            selected = false,
+            enabled = false
+        ),
+        SizeState(
+            topText = "RU 36",
+            bottomText = "IT 34",
+            selected = true,
+            enabled = false
+        )
     )
 }

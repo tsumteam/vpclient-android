@@ -21,6 +21,7 @@ class EmployeeEntityProvider: PreviewParameterProvider<EmployeeEntity> {
             employeeBrand = "MVST",
             isActive = false,
             basketBadge = 1,
+            fittingNumber = 2,
             fittingBadge = 1,
             messengerBadge = 1,
             orderBadge = 1,

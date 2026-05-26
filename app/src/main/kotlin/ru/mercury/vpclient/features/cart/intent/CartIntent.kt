@@ -8,22 +8,28 @@ import ru.mercury.vpclient.shared.mvi.Intent
 sealed interface CartIntent: Intent {
     data object CollectCart: CartIntent
     data object CollectActiveEmployee: CartIntent
+    data object LoadCurrentUser: CartIntent
     data object LoadActiveEmployee: CartIntent
     data object LoadCart: CartIntent
+    data object LoadFitting: CartIntent
     data object PullToRefresh: CartIntent
     data object RefreshCompleted: CartIntent
     data object CloseClick: CartIntent
     data object ChatClick: CartIntent
     data object FittingClick: CartIntent
+    data object FittingTabClick: CartIntent
+    data object FittingDeliveryClick: CartIntent
     data object BuyClick: CartIntent
     data object HideFittingSheet: CartIntent
-    data object ConfirmFittingSheet: CartIntent
+    data object ShowFittingProductsSheet: CartIntent
+    data object HideFittingProductsSheet: CartIntent
     data object HideSelectSizeDialog: CartIntent
     data object HideSizePicker: CartIntent
     data object HideEditProductSheet: CartIntent
     data object ConfirmSizePicker: CartIntent
     data class ProductClick(val id: String): CartIntent
     data class ChangePaySwitch(val product: CartProduct, val paySwitch: Boolean): CartIntent
+    data class ChangeFittingPaySwitch(val product: CartProduct, val paySwitch: Boolean): CartIntent
     data class ShowSizePicker(val product: CartProduct): CartIntent
     data class SelectSizeClick(val product: CartProduct): CartIntent
     data class AlternativeClick(val alternative: CartProductAlternative): CartIntent
@@ -43,4 +49,6 @@ sealed interface CartIntent: Intent {
     data class ToggleSizePickerItem(val index: Int): CartIntent
     data class SelectPayMode(val mode: CartPayMode): CartIntent
     data class MoveProductAfterDrag(val productId: String, val targetProductId: String, val placeAfterTarget: Boolean): CartIntent
+    data class ConfirmFittingSheet(val productIds: List<String>): CartIntent
+    data class ConfirmFittingProductsSheet(val productIds: List<String>): CartIntent
 }

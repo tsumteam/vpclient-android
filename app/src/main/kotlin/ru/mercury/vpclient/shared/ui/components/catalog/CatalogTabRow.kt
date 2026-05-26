@@ -17,12 +17,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.data.entity.CatalogTabData
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.placeholder
-import ru.mercury.vpclient.shared.ui.preview.CatalogTabsProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
@@ -111,5 +111,16 @@ private fun CatalogTabRowPreview(
         tabs = tabs,
         selectedTabIndex = 0,
         onTabClick = {}
+    )
+}
+
+private class CatalogTabsProvider: PreviewParameterProvider<List<CatalogTabData>> {
+    override val values: Sequence<List<CatalogTabData>> = sequenceOf(
+        listOf(
+            CatalogTabData(title = "Женское", rootId = 2, selected = true),
+            CatalogTabData(title = "Мужское", rootId = 3, selected = false),
+            CatalogTabData(title = "Детское", rootId = 4, selected = false)
+        ),
+        emptyList()
     )
 }

@@ -30,11 +30,15 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_values.intent.FilterValuesIntent
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_values.model.FilterValuesSheetState
+import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValueItemEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesQuantityEntity
 import ru.mercury.vpclient.shared.domain.mapper.quantityWithThousandsSeparator
 import ru.mercury.vpclient.shared.domain.mapper.requireQuantity
 import ru.mercury.vpclient.shared.domain.mapper.values
@@ -46,7 +50,6 @@ import ru.mercury.vpclient.shared.ui.components.filters.FilterSelectableRow
 import ru.mercury.vpclient.shared.ui.components.system.ClientButton
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.placeholder
-import ru.mercury.vpclient.shared.ui.preview.FilterValuesSheetStateProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
@@ -235,4 +238,38 @@ private fun FilterValuesSheetPreview(
             dispatch = {}
         )
     }
+}
+
+private class FilterValuesSheetStateProvider: PreviewParameterProvider<FilterValuesSheetState> {
+    override val values: Sequence<FilterValuesSheetState> = sequenceOf(
+        FilterValuesSheetState(
+            entity = FilterValuesEntity(
+                chipId = "attribute_length",
+                title = "ДЛИНА",
+                items = listOf(
+                    FilterValueItemEntity(id = "attribute_length_mini", label = "Мини"),
+                    FilterValueItemEntity(id = "attribute_length_midi", label = "Миди"),
+                    FilterValueItemEntity(id = "attribute_length_maxi", label = "Макси"),
+                    FilterValueItemEntity(id = "attribute_length_ankle", label = "До щиколотки")
+                )
+            ),
+            selectedIds = setOf("attribute_length_midi", "attribute_length_maxi"),
+            quantityEntity = FilterValuesQuantityEntity(
+                chipId = "attribute_length",
+                quantity = 128
+            ),
+            isProductsQuantityLoading = false,
+            isLoading = false
+        ),
+        FilterValuesSheetState(
+            entity = FilterValuesEntity(
+                chipId = "attribute_length",
+                title = "ДЛИНА"
+            ),
+            selectedIds = emptySet(),
+            quantityEntity = FilterValuesQuantityEntity.Empty,
+            isProductsQuantityLoading = false,
+            isLoading = true
+        )
+    )
 }

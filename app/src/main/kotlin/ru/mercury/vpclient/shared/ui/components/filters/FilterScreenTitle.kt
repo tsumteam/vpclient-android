@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -22,7 +23,8 @@ import ru.mercury.vpclient.shared.domain.mapper.isEmpty
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.ktx.clickableWithoutRipple
 import ru.mercury.vpclient.shared.ui.placeholder
-import ru.mercury.vpclient.shared.ui.preview.FilterTitleEntityProvider
+import ru.mercury.vpclient.shared.ui.preview.CatalogCategoryEntityProvider
+import ru.mercury.vpclient.shared.ui.preview.CatalogCategoryEntityProvider2
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
@@ -106,5 +108,18 @@ private fun FilterScreenTitlePreview(
     FilterScreenTitle(
         entity = entity,
         onClick = {}
+    )
+}
+
+private class FilterTitleEntityProvider: PreviewParameterProvider<FilterTitleEntity> {
+    private val titleCatalogCategoryEntity = CatalogCategoryEntityProvider().values.first()
+    private val subtitleCatalogCategoryEntity = CatalogCategoryEntityProvider2().values.first()
+
+    override val values: Sequence<FilterTitleEntity> = sequenceOf(
+        FilterTitleEntity.Empty,
+        FilterTitleEntity(
+            titleCatalogCategoryEntity = titleCatalogCategoryEntity,
+            subtitleCatalogCategoryEntity = subtitleCatalogCategoryEntity
+        )
     )
 }

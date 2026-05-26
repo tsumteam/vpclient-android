@@ -30,6 +30,10 @@ import ru.mercury.vpclient.features.consultant.ConsultantScreen
 import ru.mercury.vpclient.features.consultant.navigation.ConsultantRoute
 import ru.mercury.vpclient.features.details.DetailsScreen
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
+import ru.mercury.vpclient.features.fitting_confirmation.FittingConfirmationScreen
+import ru.mercury.vpclient.features.fitting_confirmation.navigation.FittingConfirmationRoute
+import ru.mercury.vpclient.features.fitting_success.FittingSuccessScreen
+import ru.mercury.vpclient.features.fitting_success.navigation.FittingSuccessRoute
 import ru.mercury.vpclient.features.login.LoginScreen
 import ru.mercury.vpclient.features.login.navigation.LoginRoute
 import ru.mercury.vpclient.features.main.MainScreen
@@ -62,9 +66,11 @@ fun MainActivityContent(
                 entry<RegisterRoute> { RegisterScreen() }
                 entry<LoginRoute> { LoginScreen() }
                 entry<CodeRoute> { CodeScreen() }
-                entry<MainRoute> { MainScreen() }
-                entry<CartRoute> { CartScreen() }
+                entry<MainRoute> { MainScreen(it) }
+                entry<CartRoute> { CartScreen(it) }
                 entry<DetailsRoute> { DetailsScreen(it) }
+                entry<FittingConfirmationRoute> { FittingConfirmationScreen(it) }
+                entry<FittingSuccessRoute> { FittingSuccessScreen() }
                 entry<ConsultantRoute> { ConsultantScreen(it) }
                 entry<MediaViewerRoute> { MediaViewerScreen(it) }
             }

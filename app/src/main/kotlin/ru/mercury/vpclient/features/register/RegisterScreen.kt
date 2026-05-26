@@ -35,6 +35,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -45,15 +46,14 @@ import ru.mercury.vpclient.features.register.intent.RegisterIntent
 import ru.mercury.vpclient.features.register.model.RegisterModel
 import ru.mercury.vpclient.shared.data.entity.NameValidationError
 import ru.mercury.vpclient.shared.data.entity.PhoneValidationError
-import ru.mercury.vpclient.shared.data.entity.TopBarState
 import ru.mercury.vpclient.shared.ui.components.AgreementText
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.system.ClientButton
 import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.system.ClientTextField
+import ru.mercury.vpclient.shared.ui.components.system.TopBarState
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
-import ru.mercury.vpclient.shared.ui.preview.RegisterModelProvider
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.livretMedium21
@@ -224,5 +224,22 @@ private fun RegisterScreenContentPreview(
         dispatch = {},
         focusRequester = remember { FocusRequester() },
         snackbarHostStateError = remember { SnackbarHostState() }
+    )
+}
+
+private class RegisterModelProvider: PreviewParameterProvider<RegisterModel> {
+    override val values: Sequence<RegisterModel> = sequenceOf(
+        RegisterModel(),
+        RegisterModel(name = "Иван"),
+        RegisterModel(phone = "79991234567"),
+        RegisterModel(name = "Иван", phone = "79991234567"),
+        RegisterModel(nameValidationError = NameValidationError.Empty),
+        RegisterModel(phoneValidationError = PhoneValidationError.Empty),
+        RegisterModel(phoneValidationError = PhoneValidationError.Invalid),
+        RegisterModel(
+            nameValidationError = NameValidationError.Empty,
+            phoneValidationError = PhoneValidationError.Empty
+        ),
+        RegisterModel(name = "Иван", phone = "79991234567", isLoading = true)
     )
 }

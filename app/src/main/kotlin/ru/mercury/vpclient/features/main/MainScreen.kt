@@ -38,6 +38,7 @@ import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.features.main.event.MainTabsEventManager
 import ru.mercury.vpclient.features.main.intent.MainIntent
 import ru.mercury.vpclient.features.main.model.MainModel
+import ru.mercury.vpclient.features.main.navigation.MainRoute
 import ru.mercury.vpclient.features.main.tabs.brands.BrandsScreen
 import ru.mercury.vpclient.features.main.tabs.brands.navigation.BrandsRoute
 import ru.mercury.vpclient.features.main.tabs.catalog.CatalogStackScreen
@@ -63,6 +64,7 @@ import ru.mercury.vpclient.shared.ui.theme.regular11
 
 @Composable
 fun MainScreen(
+    route: MainRoute = MainRoute(),
     viewModel: MainViewModel = hiltViewModel()
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
@@ -72,6 +74,13 @@ fun MainScreen(
     LaunchedEffect(state.selectedRoute) {
         mainBackStack.clear()
         mainBackStack.add(state.selectedRoute)
+    }
+
+    LaunchedEffect(route.selectedTab) {
+        when (route.selectedTab) {
+            MainRoute.CATALOG_TAB -> viewModel.dispatch(MainIntent.SelectTab(CatalogStackRoute))
+            MainRoute.FITTING_TAB -> viewModel.dispatch(MainIntent.SelectTab(FittingRoute))
+        }
     }
 
     MainScreenContent(

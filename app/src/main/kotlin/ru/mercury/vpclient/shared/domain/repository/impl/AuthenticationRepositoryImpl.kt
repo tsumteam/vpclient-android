@@ -9,11 +9,13 @@ import ru.mercury.vpclient.shared.data.network.NetworkService
 import ru.mercury.vpclient.shared.data.network.request.AuthenticationContinueLoginRequest
 import ru.mercury.vpclient.shared.data.network.request.AuthenticationLoginRequest
 import ru.mercury.vpclient.shared.data.network.request.AuthenticationRegisterRequest
+import ru.mercury.vpclient.shared.data.network.response.CurrentUserResponse
 import ru.mercury.vpclient.shared.data.persistence.database.dao.ClientDao
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ClientEntity
 import ru.mercury.vpclient.shared.data.persistence.datastore.PreferenceKey
 import ru.mercury.vpclient.shared.data.persistence.datastore.SettingsDataStore
 import ru.mercury.vpclient.shared.domain.mapper.handleResponse
+import ru.mercury.vpclient.shared.domain.mapper.handleResponseResult
 import ru.mercury.vpclient.shared.domain.repository.AuthenticationRepository
 import java.util.Locale
 import javax.inject.Inject
@@ -88,6 +90,12 @@ class AuthenticationRepositoryImpl @Inject constructor(
             },
             onFailure = { error -> throw ContinueLoginException(error.message) }
         )
+    }
+
+    override suspend fun currentUser(): CurrentUserResponse {
+        return handleResponseResult {
+            networkService.userCurrentUser()
+        }.getOrThrow()
     }
 
     override suspend fun logout() {

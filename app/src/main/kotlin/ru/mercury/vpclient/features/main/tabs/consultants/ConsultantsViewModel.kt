@@ -51,7 +51,7 @@ class ConsultantsViewModel @Inject constructor(
             is ConsultantsIntent.ConsultantClick -> {
                 launch { MainEventManager.send(ConsultantRoute(intent.consultantId)) }
             }
-            is ConsultantsIntent.CartClick -> launch { MainEventManager.send(CartRoute) }
+            is ConsultantsIntent.CartClick -> launch { MainEventManager.send(CartRoute()) }
         }
     }
 

@@ -7,6 +7,7 @@ import ru.mercury.vpclient.shared.coroutines.ClientDispatchers
 import ru.mercury.vpclient.shared.data.entity.CodeValidationError
 import ru.mercury.vpclient.shared.data.entity.NameValidationError
 import ru.mercury.vpclient.shared.data.entity.PhoneValidationError
+import ru.mercury.vpclient.shared.data.network.response.CurrentUserResponse
 import ru.mercury.vpclient.shared.domain.interactor.AuthenticationInteractor
 import ru.mercury.vpclient.shared.domain.mapper.isValidPhoneNumber
 import ru.mercury.vpclient.shared.domain.mapper.normalizePhoneInput
@@ -54,6 +55,10 @@ class AuthenticationInteractorImpl @Inject constructor(
 
     override suspend fun continueLogin(code: String) {
         withContext(dispatchers.io) { authenticationRepository.continueLogin(code) }
+    }
+
+    override suspend fun currentUser(): CurrentUserResponse {
+        return withContext(dispatchers.io) { authenticationRepository.currentUser() }
     }
 
     override suspend fun logout() {

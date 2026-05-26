@@ -11,6 +11,9 @@ import ru.mercury.vpclient.shared.data.network.entity.BasketOperationRequestDto
 import ru.mercury.vpclient.shared.data.network.entity.BasketOperationRequestTypeEnum
 import ru.mercury.vpclient.shared.data.network.entity.BasketRemoveLineOperationRequestItemDto
 import ru.mercury.vpclient.shared.data.network.entity.BasketSwitchAlternativeBackToOriginalOperationRequestItemDto
+import ru.mercury.vpclient.shared.data.network.entity.FittingChangeLinePaySwitchOperationRequestItemDto
+import ru.mercury.vpclient.shared.data.network.entity.FittingOperationRequestDto
+import ru.mercury.vpclient.shared.data.network.entity.FittingOperationRequestTypeDto
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 
 val CartProduct.imagePages: List<String>
@@ -60,6 +63,25 @@ fun CartProduct.paySwitchRequest(
             cartProductJson.encodeToJsonElement(
                 BasketChangeLinePaySwitchOperationRequestItemDto(
                     operationType = BasketOperationRequestTypeEnum.CHANGE_LINE_PAY_SWITCH,
+                    operationOrder = 0,
+                    lineId = id,
+                    paySwitch = paySwitch
+                )
+            )
+        )
+    )
+}
+
+fun CartProduct.fittingPaySwitchRequest(
+    pairedUserId: String,
+    paySwitch: Boolean
+): FittingOperationRequestDto {
+    return FittingOperationRequestDto(
+        pairedUserId = pairedUserId,
+        items = listOf(
+            cartProductJson.encodeToJsonElement(
+                FittingChangeLinePaySwitchOperationRequestItemDto(
+                    operationType = FittingOperationRequestTypeDto.CHANGE_LINE_PAY_SWITCH,
                     operationOrder = 0,
                     lineId = id,
                     paySwitch = paySwitch

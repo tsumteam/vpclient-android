@@ -53,6 +53,8 @@ object ClientStrings {
     val CatalogViewAllClothing = R.string.catalog_view_all_clothing
 
     val CartTitle = R.string.cart_title
+    val CartToolbarCart = R.string.cart_toolbar_cart
+    val CartToolbarFitting = R.string.cart_toolbar_fitting
     val CartAllItems = R.plurals.cart_all_items
     val CartPaymentItems = R.plurals.cart_payment_items
     val CartChat = R.string.cart_chat
@@ -85,13 +87,15 @@ object ClientStrings {
     val CartShowAlternatives = R.string.cart_show_alternatives
     val CartHideAlternativesList = R.string.cart_hide_alternatives_list
     val CartInBasket = R.string.cart_in_basket
+    val CartToFitting = R.string.cart_to_fitting
     val CartToPayment = R.string.cart_to_payment
     val CartConsultantName = R.string.cart_consultant_name
     val CartConsultantBrand = R.string.cart_consultant_brand
     val CartEmptyMessage = R.string.cart_empty_message
     val CartEmptyTabHint = R.string.cart_empty_tab_hint
     val CartFittingSheetTitle = R.string.cart_fitting_sheet_title
-    val CartFittingSheetGreeting = R.string.cart_fitting_sheet_greeting
+    val CartFittingSheetGreetingMale = R.string.cart_fitting_sheet_greeting_male
+    val CartFittingSheetGreetingFemale = R.string.cart_fitting_sheet_greeting_female
     val CartFittingSheetDescription = R.string.cart_fitting_sheet_description
     val CartFittingSheetAllProducts = R.string.cart_fitting_sheet_all_products
     val CartFittingSheetPaymentProducts = R.string.cart_fitting_sheet_payment_products
@@ -102,6 +106,33 @@ object ClientStrings {
     val CartFittingSheetNoSizeHint = R.string.cart_fitting_sheet_no_size_hint
     val CartFittingSheetConfirm = R.string.cart_fitting_sheet_confirm
     val CartFittingSheetContinue = R.string.cart_fitting_sheet_continue
+    val CartFittingProductsSheetTitle = R.string.cart_fitting_products_sheet_title
+    val CartFittingProductsSheetSelect = R.string.cart_fitting_products_sheet_select
+
+    val FittingConfirmationTitle = R.string.fitting_confirmation_title
+    val FittingConfirmationProductsTitle = R.plurals.fitting_confirmation_products_title
+    val FittingConfirmationPlaceTitle = R.string.fitting_confirmation_place_title
+    val FittingConfirmationPlaceValue = R.string.fitting_confirmation_place_value
+    val FittingConfirmationPlaceHint = R.string.fitting_confirmation_place_hint
+    val FittingConfirmationPlaceBoutique = R.string.fitting_confirmation_place_boutique
+    val FittingConfirmationPlaceHome = R.string.fitting_confirmation_place_home
+    val FittingConfirmationPlaceOther = R.string.fitting_confirmation_place_other
+    val FittingConfirmationDeliveryTitle = R.string.fitting_confirmation_delivery_title
+    val FittingConfirmationDeliveryValue = R.string.fitting_confirmation_delivery_value
+    val FittingConfirmationDeliveryHint = R.string.fitting_confirmation_delivery_hint
+    val FittingConfirmationCommentTitle = R.string.fitting_confirmation_comment_title
+    val FittingConfirmationCommentPlaceholder = R.string.fitting_confirmation_comment_placeholder
+    val FittingConfirmationTotalTitle = R.string.fitting_confirmation_total_title
+    val FittingConfirmationConfirm = R.string.fitting_confirmation_confirm
+    val FittingSuccessThanks = R.string.fitting_success_thanks
+    val FittingSuccessDeliveryPrefix = R.string.fitting_success_delivery_prefix
+    val FittingSuccessDeliveryDate = R.string.fitting_success_delivery_date
+    val FittingSuccessDeliveryProducts = R.string.fitting_success_delivery_products
+    val FittingSuccessDeliveryAddressPrefix = R.string.fitting_success_delivery_address_prefix
+    val FittingSuccessDeliveryAddress = R.string.fitting_success_delivery_address
+    val FittingSuccessInfo = R.string.fitting_success_info
+    val FittingSuccessFitting = R.string.fitting_success_fitting
+    val FittingSuccessCatalog = R.string.fitting_success_catalog
 
     val FilterProductsQuantity = R.plurals.filter_products_quantity
     val FilterShowProductsQuantity = R.plurals.filter_show_products_quantity

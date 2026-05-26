@@ -1,0 +1,4 @@
+interface:
+  display_name: "VPClient New Screen"
+  short_description: "Create VPClient Android screens."
+  default_prompt: "Use $vpclient-new-screen to create a new VPClient Android screen with the required MVI, navigation, Compose, preview, and validation conventions."

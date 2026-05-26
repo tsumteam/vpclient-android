@@ -17,12 +17,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.data.entity.BrandFilterValue
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
-import ru.mercury.vpclient.shared.ui.preview.BrandFilterValueProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.regular15
@@ -77,5 +77,24 @@ private fun BrandChipPreview(
     BrandChip(
         brand = brand,
         onClick = {}
+    )
+}
+
+private class BrandFilterValueProvider: PreviewParameterProvider<BrandFilterValue> {
+    override val values: Sequence<BrandFilterValue> = sequenceOf(
+        BrandFilterValue(
+            id = "mercury",
+            label = "Mercury",
+            labelPhotoUrl = null,
+            isFavorite = true,
+            isTopBrand = true
+        ),
+        BrandFilterValue(
+            id = "loewe",
+            label = "LOEWE",
+            labelPhotoUrl = "https://example.com/brand-logo.png",
+            isFavorite = true,
+            isTopBrand = true
+        )
     )
 }

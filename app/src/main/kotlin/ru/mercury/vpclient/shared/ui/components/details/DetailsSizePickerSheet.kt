@@ -19,8 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.shared.data.entity.SizeSelectorState
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
+import ru.mercury.vpclient.shared.ui.components.cart.SizeSelectorState
 import ru.mercury.vpclient.shared.ui.components.system.ClientButton
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings

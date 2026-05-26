@@ -34,6 +34,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -43,15 +44,14 @@ import ru.mercury.vpclient.features.login.event.LoginEvents
 import ru.mercury.vpclient.features.login.intent.LoginIntent
 import ru.mercury.vpclient.features.login.model.LoginModel
 import ru.mercury.vpclient.shared.data.entity.PhoneValidationError
-import ru.mercury.vpclient.shared.data.entity.TopBarState
 import ru.mercury.vpclient.shared.ui.components.AgreementText
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.system.ClientButton
 import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.system.ClientTextField
+import ru.mercury.vpclient.shared.ui.components.system.TopBarState
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
-import ru.mercury.vpclient.shared.ui.preview.LoginModelProvider
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.livretMedium21
@@ -198,5 +198,16 @@ private fun LoginScreenContentPreview(
         dispatch = {},
         focusRequester = remember { FocusRequester() },
         snackbarHostStateError = remember { SnackbarHostState() }
+    )
+}
+
+private class LoginModelProvider: PreviewParameterProvider<LoginModel> {
+    override val values: Sequence<LoginModel> = sequenceOf(
+        LoginModel(),
+        LoginModel(phone = "79991234567"),
+        LoginModel(phoneValidationError = PhoneValidationError.Empty),
+        LoginModel(phoneValidationError = PhoneValidationError.Invalid),
+        LoginModel(phone = "79991234567", phoneValidationError = PhoneValidationError.Empty),
+        LoginModel(phone = "79991234567", isLoading = true)
     )
 }

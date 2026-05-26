@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,7 +30,6 @@ import ru.mercury.vpclient.features.details.model.DetailsModel
 import ru.mercury.vpclient.shared.data.entity.DetailsField
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
 import ru.mercury.vpclient.shared.ui.icons.Copy24
-import ru.mercury.vpclient.shared.ui.preview.InfoRowProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.medium14
@@ -95,6 +95,21 @@ fun DetailsFieldRow(
             }
         }
     }
+}
+
+private class InfoRowProvider: PreviewParameterProvider<ProductEntity> {
+    override val values: Sequence<ProductEntity> = sequenceOf(
+        ProductEntity.Empty.copy(
+            id = "preview-1",
+            brand = "Jil Sander",
+            colorName = "БЕЛЫЙ (Белый_102)",
+            productionStructure = "Хлопок-100%",
+            country = "Италия",
+            itemId = "7015929",
+            article = "J03GC0134/J20244",
+            technicalDescription = "Параметры изделия для размера S: Обхват груди 100 см, длина рукава от горловины 37 см, длина изделия по спинке 67 см."
+        )
+    )
 }
 
 @PreviewWrapper(ThemeWrapper::class)

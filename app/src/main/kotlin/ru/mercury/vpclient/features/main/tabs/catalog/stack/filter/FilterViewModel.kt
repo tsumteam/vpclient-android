@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.activity.event.MainEventManager
+import ru.mercury.vpclient.features.cart.navigation.CartPage
 import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.features.main.tabs.catalog.event.CatalogStackEventManager
@@ -30,6 +31,7 @@ import ru.mercury.vpclient.shared.data.entity.SortType
 import ru.mercury.vpclient.shared.data.error.ClientException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
+import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesQuantityEntity
 import ru.mercury.vpclient.shared.domain.interactor.Interactor
@@ -73,6 +75,7 @@ class FilterViewModel @AssistedInject constructor(
         dispatch(FilterIntent.CollectFilterData)
         dispatch(FilterIntent.CollectCartSize)
         dispatch(FilterIntent.CollectActiveEmployee)
+        dispatch(FilterIntent.LoadEmployees)
         dispatch(FilterIntent.LoadCartData)
         dispatch(FilterIntent.LoadCatalogFilters)
         dispatch(FilterIntent.LoadProductsQuantity)
@@ -130,15 +133,17 @@ class FilterViewModel @AssistedInject constructor(
             is FilterIntent.CollectActiveEmployee -> {
                 launch {
                     interactor.employeeEntitiesFlow
-                        .map { employees -> employees.firstOrNull { it.isActive }?.employeeId.orEmpty() }
+                        .map { employees -> employees.firstOrNull { it.isActive } }
                         .distinctUntilChanged()
-                        .collectLatest { employeeId ->
+                        .collectLatest { employee ->
+                            reduce { it.copy(activeEmployee = employee ?: EmployeeEntity.Empty) }
                             when {
-                                employeeId.isNotEmpty() -> dispatch(FilterIntent.LoadCartData)
+                                employee != null -> dispatch(FilterIntent.LoadCartData)
                             }
                         }
                 }
             }
+            is FilterIntent.LoadEmployees -> launch { runCatching { interactor.syncEmployees() } }
             is FilterIntent.LoadCartData -> {
                 launch {
                     runCatching { interactor.loadBasket() }
@@ -184,7 +189,9 @@ class FilterViewModel @AssistedInject constructor(
             }
             is FilterIntent.RefreshCompleted -> reduce { it.copy(isRefreshing = false) }
             is FilterIntent.BackClick -> launch { CatalogStackEventManager.send(BackRoute) }
-            is FilterIntent.CartClick -> launch { MainEventManager.send(CartRoute) }
+            is FilterIntent.CartClick -> launch { MainEventManager.send(CartRoute()) }
+            is FilterIntent.FittingClick -> launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
+            is FilterIntent.MessengerClick -> return
             is FilterIntent.ProductClick -> launch { CatalogStackEventManager.send(DetailsRoute(intent.id)) }
             is FilterIntent.ProductBasketClick -> launch {
                 interactor.addProductToBasket(intent.id, null)

@@ -11,9 +11,10 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.mercury.vpclient.features.main.tabs.brands.intent.BrandsIntent
 import ru.mercury.vpclient.features.main.tabs.brands.model.BrandsModel
-import ru.mercury.vpclient.shared.data.entity.TopBarState
 import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
+import ru.mercury.vpclient.shared.ui.components.system.TopBarActionsState
+import ru.mercury.vpclient.shared.ui.components.system.TopBarState
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
@@ -39,7 +40,24 @@ private fun BrandsScreenContent(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             ClientCenterAlignedTopAppBar(
-                state = TopBarState.Title(stringResource(ClientStrings.MainTabBrands))
+                state = TopBarState.Title(
+                    title = stringResource(ClientStrings.MainTabBrands),
+                    showSearch = true,
+                    searchClick = { dispatch(BrandsIntent.SearchClick) },
+                    actionsState = TopBarActionsState(
+                        showCartButton = true,
+                        cartText = state.cartText,
+                        showCartBadge = state.showCartBadge,
+                        cartClick = { dispatch(BrandsIntent.CartClick) },
+                        fittingText = state.fittingText,
+                        showFittingButton = state.showFittingButton,
+                        showFittingBadge = state.showFittingBadge,
+                        fittingClick = { dispatch(BrandsIntent.FittingClick) },
+                        showMessengerButton = true,
+                        showMessengerBadge = state.showMessengerBadge,
+                        messengerClick = { dispatch(BrandsIntent.MessengerClick) }
+                    )
+                )
             )
         }
     ) { innerPadding ->

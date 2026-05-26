@@ -10,9 +10,10 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.mercury.vpclient.features.main.tabs.home.intent.HomeIntent
 import ru.mercury.vpclient.features.main.tabs.home.model.HomeModel
-import ru.mercury.vpclient.shared.data.entity.TopBarState
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
+import ru.mercury.vpclient.shared.ui.components.system.TopBarActionsState
+import ru.mercury.vpclient.shared.ui.components.system.TopBarState
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 
@@ -38,9 +39,20 @@ private fun HomeScreenContent(
         topBar = {
             ClientCenterAlignedTopAppBar(
                 state = TopBarState.Home(
-                    cartText = state.cartText,
-                    showCartBadge = state.showCartBadge,
-                    cartClick = { dispatch(HomeIntent.CartClick) }
+                    actionsState = TopBarActionsState(
+                        showCartButton = true,
+                        cartText = state.cartText,
+                        showCartBadge = state.showCartBadge,
+                        cartClick = { dispatch(HomeIntent.CartClick) },
+                        fittingText = state.fittingText,
+                        showFittingButton = state.showFittingButton,
+                        showFittingBadge = state.showFittingBadge,
+                        fittingClick = { dispatch(HomeIntent.FittingClick) },
+                        showMessengerButton = true,
+                        showMessengerBadge = state.showMessengerBadge,
+                        messengerClick = { dispatch(HomeIntent.MessengerClick) }
+                    ),
+                    searchClick = { dispatch(HomeIntent.SearchClick) }
                 )
             )
         }

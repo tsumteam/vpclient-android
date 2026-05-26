@@ -5,8 +5,12 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.activity.event.MainEventManager
+import ru.mercury.vpclient.features.cart.navigation.CartPage
+import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.features.details.event.DetailsEvent
 import ru.mercury.vpclient.features.details.intent.DetailsIntent
 import ru.mercury.vpclient.features.details.model.DetailsModel
@@ -15,6 +19,7 @@ import ru.mercury.vpclient.features.main.tabs.catalog.event.CatalogStackEventMan
 import ru.mercury.vpclient.features.mediaviewer.navigation.MediaViewerRoute
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.error.AddProductToBasketException
+import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.domain.interactor.Interactor
 import ru.mercury.vpclient.shared.domain.mapper.BRAND_VIEW_TYPE
 import ru.mercury.vpclient.shared.domain.mapper.toCatalogLinkData
@@ -32,6 +37,10 @@ class DetailsViewModel @AssistedInject constructor(
     init {
         dispatch(DetailsIntent.CollectProduct)
         dispatch(DetailsIntent.CollectCartProducts)
+        dispatch(DetailsIntent.CollectCartSize)
+        dispatch(DetailsIntent.CollectActiveEmployee)
+        dispatch(DetailsIntent.LoadEmployees)
+        dispatch(DetailsIntent.LoadCartData)
         dispatch(DetailsIntent.LoadProduct)
     }
 
@@ -57,6 +66,37 @@ class DetailsViewModel @AssistedInject constructor(
                     }
                 }
             }
+            is DetailsIntent.CollectCartSize -> {
+                launch {
+                    interactor.cartSize
+                        .distinctUntilChanged()
+                        .collectLatest { size ->
+                            reduce { it.copy(cartSize = size) }
+                        }
+                }
+            }
+            is DetailsIntent.CollectActiveEmployee -> {
+                launch {
+                    interactor.employeeEntitiesFlow
+                        .map { employees -> employees.firstOrNull { it.isActive } }
+                        .distinctUntilChanged()
+                        .collectLatest { employee ->
+                            reduce { it.copy(activeEmployee = employee ?: EmployeeEntity.Empty) }
+                            if (employee != null) {
+                                dispatch(DetailsIntent.LoadCartData)
+                            }
+                        }
+                }
+            }
+            is DetailsIntent.LoadEmployees -> launch { runCatching { interactor.syncEmployees() } }
+            is DetailsIntent.LoadCartData -> {
+                launch {
+                    runCatching { interactor.loadBasket() }
+
+                    val badge = runCatching { interactor.cartBadge() }.getOrDefault(0)
+                    reduce { it.copy(cartBadge = badge) }
+                }
+            }
             is DetailsIntent.LoadProduct -> launch { interactor.loadProduct(route.id) }
             is DetailsIntent.BackClick -> launch {
                 when {
@@ -64,6 +104,9 @@ class DetailsViewModel @AssistedInject constructor(
                     else -> CatalogStackEventManager.send(BackRoute)
                 }
             }
+            is DetailsIntent.CartClick -> launch { MainEventManager.send(CartRoute()) }
+            is DetailsIntent.FittingClick -> launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
+            is DetailsIntent.MessengerClick -> return
             is DetailsIntent.MessageClick -> reduce { it.copy(isMessageSheetVisible = true) }
             is DetailsIntent.SizeTableClick -> Unit
             is DetailsIntent.AddToBasketClick -> {

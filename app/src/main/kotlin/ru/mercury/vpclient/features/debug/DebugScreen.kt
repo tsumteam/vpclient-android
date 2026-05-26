@@ -112,7 +112,8 @@ private fun DebugActivityContent(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { dispatch(DebugIntent.BackClick) }
+                        onClick = { dispatch(DebugIntent.BackClick) },
+                        modifier = Modifier.size(42.dp)
                     ) {
                         Icon(
                             imageVector = Close24,

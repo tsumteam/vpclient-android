@@ -1,8 +1,8 @@
 package ru.mercury.vpclient.shared.ui.preview
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import ru.mercury.vpclient.shared.data.entity.SizeState
-import ru.mercury.vpclient.shared.data.entity.SizeSelectorState
+import ru.mercury.vpclient.shared.ui.components.cart.SizeSelectorState
+import ru.mercury.vpclient.shared.ui.components.details.SizeState
 
 class SizeSelectorStateProvider: PreviewParameterProvider<SizeSelectorState> {
 

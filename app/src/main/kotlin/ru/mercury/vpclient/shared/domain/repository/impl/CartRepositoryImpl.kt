@@ -5,10 +5,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
+import ru.mercury.vpclient.shared.data.entity.FittingData
+import ru.mercury.vpclient.shared.data.entity.FittingDeliveryHeader
 import ru.mercury.vpclient.shared.data.error.AddProductToBasketException
 import ru.mercury.vpclient.shared.data.error.BasketHideAlternativesException
 import ru.mercury.vpclient.shared.data.error.BasketReturnOriginalException
 import ru.mercury.vpclient.shared.data.error.BasketShowAlternativesException
+import ru.mercury.vpclient.shared.data.error.ChangeFittingPaySwitchException
 import ru.mercury.vpclient.shared.data.error.ChangePaySwitchException
 import ru.mercury.vpclient.shared.data.error.DeleteLookException
 import ru.mercury.vpclient.shared.data.error.DeleteProductException
@@ -37,8 +40,11 @@ import ru.mercury.vpclient.shared.domain.mapper.deleteLookRequest
 import ru.mercury.vpclient.shared.domain.mapper.deleteProductRequest
 import ru.mercury.vpclient.shared.domain.mapper.disassembleLookRequest
 import ru.mercury.vpclient.shared.domain.mapper.entity
+import ru.mercury.vpclient.shared.domain.mapper.fittingPaySwitchRequest
+import ru.mercury.vpclient.shared.domain.mapper.fittingDeliveryHeader
 import ru.mercury.vpclient.shared.domain.mapper.handleResponse
 import ru.mercury.vpclient.shared.domain.mapper.handleResponseResult
+import ru.mercury.vpclient.shared.domain.mapper.cartProduct
 import ru.mercury.vpclient.shared.domain.mapper.paySwitchRequest
 import ru.mercury.vpclient.shared.domain.mapper.removeAlternativeRequest
 import ru.mercury.vpclient.shared.domain.mapper.switchProductWithAlternativeRequest
@@ -90,6 +96,28 @@ class CartRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun loadFitting(): FittingData {
+        val pairedUserId = settingsDataStore.getValue(PreferenceKey.PairedUser).orEmpty()
+        if (pairedUserId.isEmpty()) {
+            return FittingData()
+        }
+
+        val fitting = handleResponseResult {
+            networkService.fittingsByPairedUserId(pairedUserId)
+        }.getOrThrow()
+        val deliveries = fitting.deliveries.orEmpty().sortedBy { it.order ?: Int.MAX_VALUE }
+        val products = deliveries.flatMap { delivery ->
+            delivery.lines.orEmpty()
+                .sortedBy { it.order ?: Int.MAX_VALUE }
+                .mapNotNull { it.cartProduct }
+        }
+
+        return FittingData(
+            products = products,
+            deliveryHeader = deliveries.firstOrNull()?.fittingDeliveryHeader ?: FittingDeliveryHeader.Empty
+        )
+    }
+
     override suspend fun changePaySwitch(product: CartProduct, paySwitch: Boolean) {
         val pairedUserId = settingsDataStore.getValue(PreferenceKey.PairedUser).orEmpty()
         if (pairedUserId.isEmpty()) return
@@ -107,6 +135,20 @@ class CartRepositoryImpl @Inject constructor(
                 loadBasket()
                 throw ChangePaySwitchException(error.message)
             }
+        )
+    }
+
+    override suspend fun changeFittingPaySwitch(product: CartProduct, paySwitch: Boolean) {
+        val pairedUserId = settingsDataStore.getValue(PreferenceKey.PairedUser).orEmpty()
+        if (pairedUserId.isEmpty()) return
+
+        handleResponse(
+            request = {
+                val request = product.fittingPaySwitchRequest(pairedUserId, paySwitch)
+                networkService.fittingsAddOperations(request)
+            },
+            onSuccess = {},
+            onFailure = { error -> throw ChangeFittingPaySwitchException(error.message) }
         )
     }
 

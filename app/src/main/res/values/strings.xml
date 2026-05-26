@@ -49,6 +49,8 @@
     <string name="catalog_view_all_clothing">Смотреть всю одежду</string>
 
     <string name="cart_title">Корзина</string>
+    <string name="cart_toolbar_cart">КОРЗИНА</string>
+    <string name="cart_toolbar_fitting">ПРИМЕРКА</string>
     <string name="cart_chat">Перейти в диалог с консультантом</string>
     <string name="cart_fitting">Оформить примерку</string>
     <string name="cart_buy">Купить</string>
@@ -79,13 +81,15 @@
     <string name="cart_show_alternatives">Показать\nсписок\nальтернатив</string>
     <string name="cart_hide_alternatives_list">Скрыть\nсписок\nальтернатив</string>
     <string name="cart_in_basket">В корзине:</string>
+    <string name="cart_to_fitting">К примерке:</string>
     <string name="cart_to_payment">К оплате:</string>
     <string name="cart_consultant_name">Екатерина</string><!--fixme-->
     <string name="cart_consultant_brand">Brioni</string><!--fixme-->
     <string name="cart_empty_message">На данный момент Вы не добавили ни одного товара в заказ.</string>
     <string name="cart_empty_tab_hint">Добавьте товары из каталога для оформления заказа</string>
     <string name="cart_fitting_sheet_title">Оформить примерку</string>
-    <string name="cart_fitting_sheet_greeting">Уважаемый Иван Иванович</string>
+    <string name="cart_fitting_sheet_greeting_male">Уважаемый %1$s</string>
+    <string name="cart_fitting_sheet_greeting_female">Уважаемая %1$s</string>
     <string name="cart_fitting_sheet_description">Выберите вещи для добавления в примерку, пожалуйста.</string>
     <string name="cart_fitting_sheet_all_products">Все вещи из корзины</string>
     <string name="cart_fitting_sheet_payment_products">Только вещи с пометкой «Купить»</string>
@@ -96,6 +100,31 @@
     <string name="cart_fitting_sheet_no_size_hint">У вас в Корзине есть вещи с признаком «Выберите размер». Они не могут быть заказаны для примерки \nи останутся в Корзине. Вы сможете позже добавить их в Примерку, выбрав в Корзине размер.</string>
     <string name="cart_fitting_sheet_confirm">Подтвердить примерку</string>
     <string name="cart_fitting_sheet_continue">Продолжить</string>
+    <string name="cart_fitting_products_sheet_title">ВЫБЕРИТЕ ТОВАРЫ</string>
+    <string name="cart_fitting_products_sheet_select">Выбрать</string>
+    <string name="fitting_confirmation_title">Подтвердить примерку</string>
+    <string name="fitting_confirmation_place_title">Место примерки</string>
+    <string name="fitting_confirmation_place_value">Бутик VIP Platinum</string>
+    <string name="fitting_confirmation_place_hint">Консультант уточнит удобный адрес примерки</string>
+    <string name="fitting_confirmation_place_boutique">Бутик VIP Platinum</string>
+    <string name="fitting_confirmation_place_home">Адрес клиента</string>
+    <string name="fitting_confirmation_place_other">Другое место</string>
+    <string name="fitting_confirmation_delivery_title">Способ примерки</string>
+    <string name="fitting_confirmation_delivery_value">В бутике</string>
+    <string name="fitting_confirmation_delivery_hint">Доступные интервалы будут согласованы после подтверждения</string>
+    <string name="fitting_confirmation_comment_title">Комментарий</string>
+    <string name="fitting_confirmation_comment_placeholder">Напишите ваши пожелания по примерке</string>
+    <string name="fitting_confirmation_total_title">Итого</string>
+    <string name="fitting_confirmation_confirm">Подтвердить примерку</string>
+    <string name="fitting_success_thanks">Спасибо за заказ</string>
+    <string name="fitting_success_delivery_prefix">Примерка будет доставлена \n</string>
+    <string name="fitting_success_delivery_date">13 мая с 10:00 до 12:00</string>
+    <string name="fitting_success_delivery_products"> (4 товара)\n</string>
+    <string name="fitting_success_delivery_address_prefix">по адресу </string>
+    <string name="fitting_success_delivery_address">Brioni, Третьяковский проезд.</string>
+    <string name="fitting_success_info">Подробную информацию вы можете \nпосмотреть в</string>
+    <string name="fitting_success_fitting">Примерка</string>
+    <string name="fitting_success_catalog">Перейти в каталог</string>
 
     <plurals name="cart_all_items">
         <item quantity="one">ВСЕ ТОВАРЫ (%1$d)</item>
@@ -108,6 +137,12 @@
         <item quantity="few">К ОПЛАТЕ (%1$d)</item>
         <item quantity="many">К ОПЛАТЕ (%1$d)</item>
         <item quantity="other">К ОПЛАТЕ (%1$d)</item>
+    </plurals>
+    <plurals name="fitting_confirmation_products_title">
+        <item quantity="one">%1$d товар для примерки</item>
+        <item quantity="few">%1$d товара для примерки</item>
+        <item quantity="many">%1$d товаров для примерки</item>
+        <item quantity="other">%1$d товара для примерки</item>
     </plurals>
     <plurals name="filter_products_quantity">
         <item quantity="one">%1$s товар</item>

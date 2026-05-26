@@ -7,9 +7,12 @@ sealed interface CategoryIntent: Intent {
     data object CollectCategoryPojos: CategoryIntent
     data object CollectCartSize: CategoryIntent
     data object CollectActiveEmployee: CategoryIntent
+    data object LoadEmployees: CategoryIntent
     data object LoadCartData: CategoryIntent
     data object LoadCatalogCategoriesBottom: CategoryIntent
     data object BackClick: CategoryIntent
     data object CartClick: CategoryIntent
+    data object FittingClick: CategoryIntent
+    data object MessengerClick: CategoryIntent
     data class FilterClick(val categoryId: Int, val titleCategoryId: Int, val subtitleCategoryId: Int): CategoryIntent
 }

@@ -11,13 +11,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.data.FORMAT_PLUS
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
-import ru.mercury.vpclient.shared.ui.preview.CatalogProductColorsRowProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.regular12
@@ -86,5 +86,30 @@ private fun CatalogProductColorsRowPreview(
 ) {
     CatalogProductColorsRow(
         colorPhotoUrls = colorPhotoUrls
+    )
+}
+
+private class CatalogProductColorsRowProvider: PreviewParameterProvider<List<String>> {
+    override val values: Sequence<List<String>> = sequenceOf(
+        listOf(
+            "https://st.vip-platinum.ru/catalog/ColorSearchCard/Blue.png"
+        ),
+        listOf(
+            "https://st.vip-platinum.ru/catalog/ColorSearchCard/Blue.png",
+            "https://st.vip-platinum.ru/catalog/ColorSearchCard/Bordo.png"
+        ),
+        listOf(
+            "https://st.vip-platinum.ru/catalog/ColorSearchCard/Blue.png",
+            "https://st.vip-platinum.ru/catalog/ColorSearchCard/Bordo.png",
+            "https://st.vip-platinum.ru/catalog/ColorSearchCard/Black.png"
+        ),
+        listOf(
+            "https://st.vip-platinum.ru/catalog/ColorSearchCard/Blue.png",
+            "https://st.vip-platinum.ru/catalog/ColorSearchCard/Bordo.png",
+            "https://st.vip-platinum.ru/catalog/ColorSearchCard/Black.png",
+            "https://st.vip-platinum.ru/catalog/ColorSearchCard/Grey.png",
+            "https://st.vip-platinum.ru/catalog/ColorSearchCard/Green.png",
+            "https://st.vip-platinum.ru/catalog/ColorSearchCard/Blue.png"
+        )
     )
 }

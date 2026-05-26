@@ -42,6 +42,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -52,7 +53,6 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
-import kotlin.math.max
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.dropWhile
@@ -74,31 +74,42 @@ import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_sort.intent.S
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_tree.FilterTreeSheet
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_values.FilterValuesSheet
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_values.intent.FilterValuesIntent
-import ru.mercury.vpclient.shared.data.entity.FiltersRowState
-import ru.mercury.vpclient.shared.data.entity.TopBarState
+import ru.mercury.vpclient.shared.data.entity.FilterChip
+import ru.mercury.vpclient.shared.data.entity.FilterData
+import ru.mercury.vpclient.shared.data.entity.FilterRibbonData
+import ru.mercury.vpclient.shared.data.entity.FilterTitleEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsQuantityEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValueItemEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesEntity
 import ru.mercury.vpclient.shared.domain.mapper.isSortChipSelected
 import ru.mercury.vpclient.shared.domain.mapper.productsQuantityWithThousandsSeparator
 import ru.mercury.vpclient.shared.domain.mapper.requireProductsQuantity
 import ru.mercury.vpclient.shared.ui.components.PagingFailureBox
 import ru.mercury.vpclient.shared.ui.components.PagingLoadingBox
+import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.catalog.CatalogProductCard
 import ru.mercury.vpclient.shared.ui.components.filters.FilterBrandFavoritesBar
 import ru.mercury.vpclient.shared.ui.components.filters.FilterProductsLoadingContent
 import ru.mercury.vpclient.shared.ui.components.filters.FiltersRow
+import ru.mercury.vpclient.shared.ui.components.filters.FiltersRowState
 import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
-import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
+import ru.mercury.vpclient.shared.ui.components.system.TopBarActionsState
+import ru.mercury.vpclient.shared.ui.components.system.TopBarState
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.ktx.isContentVisible
 import ru.mercury.vpclient.shared.ui.ktx.isPagingFailure
 import ru.mercury.vpclient.shared.ui.ktx.isPagingLoading
 import ru.mercury.vpclient.shared.ui.ktx.isRefreshFailure
 import ru.mercury.vpclient.shared.ui.ktx.isRefreshLoading
-import ru.mercury.vpclient.shared.ui.preview.FilterModelProvider
+import ru.mercury.vpclient.shared.ui.preview.CatalogCategoryEntityProvider
+import ru.mercury.vpclient.shared.ui.preview.CatalogCategoryEntityProvider2
+import ru.mercury.vpclient.shared.ui.preview.CatalogFilterProductsEntitiesProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.regular15
+import kotlin.math.max
 
 @Composable
 fun FilterScreen(
@@ -250,10 +261,19 @@ private fun FilterScreenContent(
                             entity = state.brandEntity,
                             navigationClick = { dispatch(FilterIntent.BackClick) },
                             searchClick = {},
-                            showCartButton = true,
-                            cartText = state.cartText,
-                            showCartBadge = state.showCartBadge,
-                            cartClick = { dispatch(FilterIntent.CartClick) }
+                            actionsState = TopBarActionsState(
+                                showCartButton = true,
+                                cartText = state.cartText,
+                                showCartBadge = state.showCartBadge,
+                                cartClick = { dispatch(FilterIntent.CartClick) },
+                                fittingText = state.fittingText,
+                                showFittingButton = state.showFittingButton,
+                                showFittingBadge = state.showFittingBadge,
+                                fittingClick = { dispatch(FilterIntent.FittingClick) },
+                                showMessengerButton = true,
+                                showMessengerBadge = state.showMessengerBadge,
+                                messengerClick = { dispatch(FilterIntent.MessengerClick) }
+                            )
                         )
                     }
                     state.isSingleLineTitle -> {
@@ -261,10 +281,19 @@ private fun FilterScreenContent(
                             title = state.filterData.filterTitleEntity.titleCatalogCategoryEntity.name,
                             navigationClick = { dispatch(FilterIntent.BackClick) },
                             searchClick = {},
-                            showCartButton = true,
-                            cartText = state.cartText,
-                            showCartBadge = state.showCartBadge,
-                            cartClick = { dispatch(FilterIntent.CartClick) }
+                            actionsState = TopBarActionsState(
+                                showCartButton = true,
+                                cartText = state.cartText,
+                                showCartBadge = state.showCartBadge,
+                                cartClick = { dispatch(FilterIntent.CartClick) },
+                                fittingText = state.fittingText,
+                                showFittingButton = state.showFittingButton,
+                                showFittingBadge = state.showFittingBadge,
+                                fittingClick = { dispatch(FilterIntent.FittingClick) },
+                                showMessengerButton = true,
+                                showMessengerBadge = state.showMessengerBadge,
+                                messengerClick = { dispatch(FilterIntent.MessengerClick) }
+                            )
                         )
                     }
                     else -> {
@@ -278,10 +307,19 @@ private fun FilterScreenContent(
                             },
                             navigationClick = { dispatch(FilterIntent.BackClick) },
                             searchClick = {},
-                            showCartButton = true,
-                            cartText = state.cartText,
-                            showCartBadge = state.showCartBadge,
-                            cartClick = { dispatch(FilterIntent.CartClick) }
+                            actionsState = TopBarActionsState(
+                                showCartButton = true,
+                                cartText = state.cartText,
+                                showCartBadge = state.showCartBadge,
+                                cartClick = { dispatch(FilterIntent.CartClick) },
+                                fittingText = state.fittingText,
+                                showFittingButton = state.showFittingButton,
+                                showFittingBadge = state.showFittingBadge,
+                                fittingClick = { dispatch(FilterIntent.FittingClick) },
+                                showMessengerButton = true,
+                                showMessengerBadge = state.showMessengerBadge,
+                                messengerClick = { dispatch(FilterIntent.MessengerClick) }
+                            )
                         )
                     }
                 }
@@ -469,5 +507,77 @@ private fun FilterScreenPreview(
         pagingItems = pagingItems,
         dispatch = {},
         snackbarHostStateError = remember { SnackbarHostState() }
+    )
+}
+
+private class FilterModelProvider: PreviewParameterProvider<Pair<FilterModel, List<CatalogFilterProductsEntity>>> {
+
+    private val titleCatalogCategoryEntity = CatalogCategoryEntityProvider().values.first()
+    private val subtitleCatalogCategoryEntity = CatalogCategoryEntityProvider2().values.first()
+    private val quantityEntity = CatalogFilterProductsQuantityEntity(
+        categoryId = 1,
+        titleCategoryId = 1,
+        productsQuantity = 5717
+    )
+    private val productsEntities = CatalogFilterProductsEntitiesProvider().values.first()
+
+    override val values: Sequence<Pair<FilterModel, List<CatalogFilterProductsEntity>>> = sequenceOf(
+        FilterModel() to productsEntities,
+        FilterModel(
+            filterData = FilterData(
+                filterTitleEntity = FilterTitleEntity(
+                    titleCatalogCategoryEntity = titleCatalogCategoryEntity,
+                    subtitleCatalogCategoryEntity = subtitleCatalogCategoryEntity
+                ),
+                filterRibbonData = FilterRibbonData(
+                    topFilterChips = listOf(
+                        FilterChip(
+                            id = "brand",
+                            label = "Бренд"
+                        ),
+                        FilterChip(
+                            id = "size",
+                            label = "Размер"
+                        ),
+                        FilterChip(
+                            id = "color",
+                            label = "Цвет"
+                        )
+                    ),
+                    topFilterValueChips = listOf(
+                        FilterChip(
+                            id = "brand_nike",
+                            label = "Nike"
+                        ),
+                        FilterChip(
+                            id = "brand_adidas",
+                            label = "Adidas"
+                        )
+                    ),
+                    bottomFilterChips = listOf(
+                        FilterChip(
+                            id = "materialAttribute",
+                            label = "Материал"
+                        ),
+                        FilterChip(
+                            id = "attribute_length",
+                            label = "Длина"
+                        )
+                    )
+                ),
+                quantityEntity = quantityEntity,
+                filterValuesEntities = listOf(
+                    FilterValuesEntity(
+                        chipId = "attribute_length",
+                        title = "Длина",
+                        items = listOf(
+                            FilterValueItemEntity(id = "attribute_length_mini", label = "Мини"),
+                            FilterValueItemEntity(id = "attribute_length_midi", label = "Миди"),
+                            FilterValueItemEntity(id = "attribute_length_maxi", label = "Макси")
+                        )
+                    )
+                )
+            )
+        ) to productsEntities
     )
 }

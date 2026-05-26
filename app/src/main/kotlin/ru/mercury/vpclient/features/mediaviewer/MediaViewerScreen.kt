@@ -71,7 +71,8 @@ private fun MediaViewerScreenContent(
                 title = {},
                 navigationIcon = {
                     IconButton(
-                        onClick = { dispatch(MediaViewerIntent.BackClick) }
+                        onClick = { dispatch(MediaViewerIntent.BackClick) },
+                        modifier = Modifier.size(42.dp)
                     ) {
                         Icon(
                             imageVector = Close24,

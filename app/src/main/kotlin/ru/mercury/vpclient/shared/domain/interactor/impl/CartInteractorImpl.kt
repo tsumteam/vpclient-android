@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
+import ru.mercury.vpclient.shared.data.entity.FittingData
 import ru.mercury.vpclient.shared.coroutines.ClientDispatchers
 import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
 import ru.mercury.vpclient.shared.domain.repository.CartRepository
@@ -20,6 +21,10 @@ class CartInteractorImpl @Inject constructor(
 
     override suspend fun changePaySwitch(product: CartProduct, paySwitch: Boolean) {
         withContext(dispatchers.io) { cartRepository.changePaySwitch(product, paySwitch) }
+    }
+
+    override suspend fun changeFittingPaySwitch(product: CartProduct, paySwitch: Boolean) {
+        withContext(dispatchers.io) { cartRepository.changeFittingPaySwitch(product, paySwitch) }
     }
 
     override suspend fun addProductToBasket(productId: String, sizeId: String?) {
@@ -68,6 +73,10 @@ class CartInteractorImpl @Inject constructor(
 
     override suspend fun loadBasket() {
         withContext(dispatchers.io) { cartRepository.loadBasket() }
+    }
+
+    override suspend fun loadFitting(): FittingData {
+        return withContext(dispatchers.io) { cartRepository.loadFitting() }
     }
 
     override suspend fun cartBadge(): Int {

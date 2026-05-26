@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -23,6 +22,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -33,15 +33,18 @@ import ru.mercury.vpclient.features.main.tabs.catalog.stack.catalog.event.Catalo
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.catalog.intent.CatalogIntent
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.catalog.model.CatalogModel
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.catalog.ui.CatalogClothingContent
-import ru.mercury.vpclient.shared.data.entity.TopBarState
+import ru.mercury.vpclient.shared.data.entity.CatalogData
+import ru.mercury.vpclient.shared.data.entity.CatalogTabData
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogCategoryEntity
 import ru.mercury.vpclient.shared.ui.components.catalog.CatalogClothingCard
 import ru.mercury.vpclient.shared.ui.components.catalog.CatalogTabRow
 import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
+import ru.mercury.vpclient.shared.ui.components.system.TopBarActionsState
+import ru.mercury.vpclient.shared.ui.components.system.TopBarState
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
-import ru.mercury.vpclient.shared.ui.preview.CatalogModelProvider
+import ru.mercury.vpclient.shared.ui.preview.CatalogCategoryEntityProvider
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 
 @Composable
@@ -111,9 +114,19 @@ private fun CatalogScreenContent(
                         navigationClick = {
                             // fixme
                         },
-                        cartText = state.cartText,
-                        showCartBadge = state.showCartBadge,
-                        cartClick = { dispatch(CatalogIntent.CartClick) }
+                        actionsState = TopBarActionsState(
+                            showCartButton = true,
+                            cartText = state.cartText,
+                            showCartBadge = state.showCartBadge,
+                            cartClick = { dispatch(CatalogIntent.CartClick) },
+                            fittingText = state.fittingText,
+                            showFittingButton = state.showFittingButton,
+                            showFittingBadge = state.showFittingBadge,
+                            fittingClick = { dispatch(CatalogIntent.FittingClick) },
+                            showMessengerButton = true,
+                            showMessengerBadge = state.showMessengerBadge,
+                            messengerClick = { dispatch(CatalogIntent.MessengerClick) }
+                        )
                     )
                 )
 
@@ -178,5 +191,32 @@ private fun CatalogScreenContentPreview(
         state = state,
         dispatch = {},
         snackbarHostStateError = remember { SnackbarHostState() }
+    )
+}
+
+private class CatalogModelProvider: PreviewParameterProvider<CatalogModel> {
+    override val values: Sequence<CatalogModel> = sequenceOf(
+        CatalogModel(),
+        CatalogModel(
+            catalogData = CatalogData(
+                tabs = listOf(
+                    CatalogTabData(title = "Мужская", rootId = 3, selected = true),
+                    CatalogTabData(title = "Женская", rootId = 2, selected = false),
+                    CatalogTabData(title = "Детская", rootId = 4, selected = false)
+                ),
+                pages = listOf(
+                    listOf(
+                        CatalogCategoryEntityProvider().values.first(),
+                        CatalogCategoryEntityProvider().values.first().copy(
+                            id = 11,
+                            parentId = 3,
+                            rootId = 3,
+                            name = "Аксессуары",
+                            position = 2
+                        )
+                    )
+                )
+            )
+        )
     )
 }

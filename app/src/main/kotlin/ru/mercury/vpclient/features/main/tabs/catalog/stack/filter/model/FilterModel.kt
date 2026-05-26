@@ -24,6 +24,11 @@ import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_tree.model.Fi
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_tree.model.FilterTreeValue
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_values.model.FilterValuesSheetState
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
+import ru.mercury.vpclient.shared.domain.mapper.fittingText
+import ru.mercury.vpclient.shared.domain.mapper.hasFittingBadge
+import ru.mercury.vpclient.shared.domain.mapper.hasFittingProducts
+import ru.mercury.vpclient.shared.domain.mapper.hasMessengerBadge
 
 data class FilterModel(
     val filterData: FilterData = FilterData.Empty,
@@ -49,7 +54,8 @@ data class FilterModel(
     val basketProductIds: Set<String> = emptySet(),
     val basketProductKeys: Set<String> = emptySet(),
     val cartSize: Int = 0,
-    val cartBadge: Int = 0
+    val cartBadge: Int = 0,
+    val activeEmployee: EmployeeEntity = EmployeeEntity.Empty
 ): Model {
 
     // fixme
@@ -66,6 +72,18 @@ data class FilterModel(
         get() {
             return cartBadge > 0
         }
+
+    val fittingText: String
+        get() = activeEmployee.fittingText
+
+    val showFittingButton: Boolean
+        get() = activeEmployee.hasFittingProducts
+
+    val showFittingBadge: Boolean
+        get() = activeEmployee.hasFittingBadge
+
+    val showMessengerBadge: Boolean
+        get() = activeEmployee.hasMessengerBadge
 
     val selectedFilterValueChipIds: Set<String>
         get() = selectedFilterValueChips.map(FilterChip::id).toSet()

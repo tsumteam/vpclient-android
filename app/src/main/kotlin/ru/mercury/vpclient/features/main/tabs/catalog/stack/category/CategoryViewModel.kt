@@ -9,12 +9,14 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.activity.event.MainEventManager
+import ru.mercury.vpclient.features.cart.navigation.CartPage
 import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.features.main.tabs.catalog.event.CatalogStackEventManager
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.category.intent.CategoryIntent
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.category.model.CategoryModel
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.category.navigation.CategoryRoute
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter.navigation.FilterRoute
+import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.domain.interactor.Interactor
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.mvi.Event
@@ -31,6 +33,7 @@ class CategoryViewModel @AssistedInject constructor(
         dispatch(CategoryIntent.CollectCategoryPojos)
         dispatch(CategoryIntent.CollectCartSize)
         dispatch(CategoryIntent.CollectActiveEmployee)
+        dispatch(CategoryIntent.LoadEmployees)
         dispatch(CategoryIntent.LoadCartData)
         dispatch(CategoryIntent.LoadCatalogCategoriesBottom)
     }
@@ -63,15 +66,17 @@ class CategoryViewModel @AssistedInject constructor(
             is CategoryIntent.CollectActiveEmployee -> {
                 launch {
                     interactor.employeeEntitiesFlow
-                        .map { employees -> employees.firstOrNull { it.isActive }?.employeeId.orEmpty() }
+                        .map { employees -> employees.firstOrNull { it.isActive } }
                         .distinctUntilChanged()
-                        .collectLatest { employeeId ->
-                            if (employeeId.isNotEmpty()) {
+                        .collectLatest { employee ->
+                            reduce { it.copy(activeEmployee = employee ?: EmployeeEntity.Empty) }
+                            if (employee != null) {
                                 dispatch(CategoryIntent.LoadCartData)
                             }
                         }
                 }
             }
+            is CategoryIntent.LoadEmployees -> launch { runCatching { interactor.syncEmployees() } }
             is CategoryIntent.LoadCartData -> {
                 launch {
                     runCatching { interactor.loadBasket() }
@@ -82,7 +87,9 @@ class CategoryViewModel @AssistedInject constructor(
             }
             is CategoryIntent.LoadCatalogCategoriesBottom -> launch { interactor.loadCatalogCategoriesBottom(route.categoryId) }
             is CategoryIntent.BackClick -> launch { CatalogStackEventManager.send(BackRoute) }
-            is CategoryIntent.CartClick -> launch { MainEventManager.send(CartRoute) }
+            is CategoryIntent.CartClick -> launch { MainEventManager.send(CartRoute()) }
+            is CategoryIntent.FittingClick -> launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
+            is CategoryIntent.MessengerClick -> return
             is CategoryIntent.FilterClick -> {
                 launch {
                     CatalogStackEventManager.send(

@@ -2,12 +2,17 @@ package ru.mercury.vpclient.features.details.model
 
 import ru.mercury.vpclient.shared.domain.mapper.toField
 import ru.mercury.vpclient.shared.data.entity.DetailsField
-import ru.mercury.vpclient.shared.data.entity.SizeSelectorState
-import ru.mercury.vpclient.shared.data.entity.SizeState
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
+import ru.mercury.vpclient.shared.domain.mapper.fittingText
+import ru.mercury.vpclient.shared.domain.mapper.hasFittingBadge
+import ru.mercury.vpclient.shared.domain.mapper.hasFittingProducts
+import ru.mercury.vpclient.shared.domain.mapper.hasMessengerBadge
 import ru.mercury.vpclient.shared.domain.mapper.toCatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.mvi.Model
+import ru.mercury.vpclient.shared.ui.components.cart.SizeSelectorState
+import ru.mercury.vpclient.shared.ui.components.details.SizeState
 
 // fixme
 
@@ -19,7 +24,10 @@ data class DetailsModel(
     val isWearWithSheetVisible: Boolean = false,
     val isMessageSheetVisible: Boolean = false,
     val basketProductIds: Set<String> = emptySet(),
-    val basketProductKeys: Set<String> = emptySet()
+    val basketProductKeys: Set<String> = emptySet(),
+    val cartSize: Int = 0,
+    val cartBadge: Int = 0,
+    val activeEmployee: EmployeeEntity = EmployeeEntity.Empty
 ): Model {
 
     val pagerImageUrls: List<String>
@@ -46,6 +54,27 @@ data class DetailsModel(
 
     val isLoading: Boolean
         get() = productEntity == ProductEntity.Empty
+
+    val cartText: String
+        get() = when {
+            cartSize > 0 -> cartSize.toString()
+            else -> ""
+        }
+
+    val showCartBadge: Boolean
+        get() = cartBadge > 0
+
+    val fittingText: String
+        get() = activeEmployee.fittingText
+
+    val showFittingButton: Boolean
+        get() = activeEmployee.hasFittingProducts
+
+    val showFittingBadge: Boolean
+        get() = activeEmployee.hasFittingBadge
+
+    val showMessengerBadge: Boolean
+        get() = activeEmployee.hasMessengerBadge
 
     val hasVideo: Boolean
         get() = selectedColorVideoUrl != null

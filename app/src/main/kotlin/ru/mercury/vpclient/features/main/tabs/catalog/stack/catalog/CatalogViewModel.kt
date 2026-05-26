@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.activity.event.MainEventManager
+import ru.mercury.vpclient.features.cart.navigation.CartPage
 import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.features.main.tabs.catalog.event.CatalogStackEventManager
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.catalog.event.CatalogEvent
@@ -15,6 +16,7 @@ import ru.mercury.vpclient.features.main.tabs.catalog.stack.category.navigation.
 import ru.mercury.vpclient.shared.data.error.ClientException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
+import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.domain.interactor.Interactor
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import javax.inject.Inject
@@ -29,6 +31,7 @@ class CatalogViewModel @Inject constructor(
         dispatch(CatalogIntent.LoadCatalogCategoriesTop)
         dispatch(CatalogIntent.CollectCartSize)
         dispatch(CatalogIntent.CollectActiveEmployee)
+        dispatch(CatalogIntent.LoadEmployees)
         dispatch(CatalogIntent.LoadCartData)
     }
 
@@ -56,15 +59,17 @@ class CatalogViewModel @Inject constructor(
             is CatalogIntent.CollectActiveEmployee -> {
                 launch {
                     interactor.employeeEntitiesFlow
-                        .map { employees -> employees.firstOrNull { it.isActive }?.employeeId.orEmpty() }
+                        .map { employees -> employees.firstOrNull { it.isActive } }
                         .distinctUntilChanged()
-                        .collectLatest { employeeId ->
-                            if (employeeId.isNotEmpty()) {
+                        .collectLatest { employee ->
+                            reduce { it.copy(activeEmployee = employee ?: EmployeeEntity.Empty) }
+                            if (employee != null) {
                                 dispatch(CatalogIntent.LoadCartData)
                             }
                         }
                 }
             }
+            is CatalogIntent.LoadEmployees -> launch { runCatching { interactor.syncEmployees() } }
             is CatalogIntent.LoadCartData -> {
                 launch {
                     runCatching { interactor.loadBasket() }
@@ -82,7 +87,9 @@ class CatalogViewModel @Inject constructor(
             is CatalogIntent.CategoryClick -> {
                 launch { CatalogStackEventManager.send(CategoryRoute(categoryId = intent.categoryId)) }
             }
-            is CatalogIntent.CartClick -> launch { MainEventManager.send(CartRoute) }
+            is CatalogIntent.CartClick -> launch { MainEventManager.send(CartRoute()) }
+            is CatalogIntent.FittingClick -> launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
+            is CatalogIntent.MessengerClick -> return
         }
     }
 

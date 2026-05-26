@@ -12,22 +12,24 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.main.tabs.consultants.event.ConsultantsEvents
 import ru.mercury.vpclient.features.main.tabs.consultants.intent.ConsultantsIntent
 import ru.mercury.vpclient.features.main.tabs.consultants.model.ConsultantsModel
-import ru.mercury.vpclient.shared.data.entity.TopBarState
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity.Companion.ID_CART
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.consultants.ConsultantCard
 import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
+import ru.mercury.vpclient.shared.ui.components.system.TopBarState
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
-import ru.mercury.vpclient.shared.ui.preview.ConsultantsModelProvider
+import ru.mercury.vpclient.shared.ui.preview.EmployeeEntityProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
@@ -125,5 +127,30 @@ private fun ConsultantsScreenContentPreview(
         state = state,
         dispatch = {},
         snackbarHostStateError = remember { SnackbarHostState() }
+    )
+}
+
+private class ConsultantsModelProvider: PreviewParameterProvider<ConsultantsModel> {
+    override val values: Sequence<ConsultantsModel> = sequenceOf(
+        ConsultantsModel(
+            employees = listOf(
+                EmployeeEntityProvider().values.first(),
+                EmployeeEntityProvider().values.first().copy(
+                    employeeId = "2",
+                    employeeName = "Екатерина",
+                    employeeSurname = "Орлова",
+                    employeeBrand = "BORK",
+                    employeeBotiqueAddress = "Москва, Петровка, 2",
+                    employeeBotiqueAddressShort = "Петровка, 2",
+                    isActive = true,
+                    basketBadge = 0,
+                    fittingNumber = 2,
+                    fittingBadge = 2,
+                    messengerBadge = 3,
+                    orderBadge = 0
+                )
+            )
+        ),
+        ConsultantsModel(loadConsultantsJob = Job())
     )
 }

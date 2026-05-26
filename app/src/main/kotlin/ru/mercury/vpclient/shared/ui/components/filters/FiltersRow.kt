@@ -23,21 +23,30 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.shared.data.entity.FilterChip
-import ru.mercury.vpclient.shared.data.entity.FiltersRowState
+import ru.mercury.vpclient.shared.data.entity.FilterRibbonData
 import ru.mercury.vpclient.shared.domain.mapper.isEmpty
 import ru.mercury.vpclient.shared.domain.mapper.isNotEmpty
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.placeholder
-import ru.mercury.vpclient.shared.ui.preview.FiltersRowStateProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
 
-// fixme
+data class FiltersRowState(
+    val filterRibbonData: FilterRibbonData = FilterRibbonData.Empty,
+    val sortSelected: Boolean = false,
+    val selectedFilterValueChips: List<FilterChip> = emptyList()
+) {
+    companion object {
+        const val SORT_CHIP_KEY = "sort_chip"
+        const val RESET_CHIP_KEY = "reset_chip"
+    }
+}
 
 @Composable
 fun FiltersRow(
@@ -329,5 +338,79 @@ private fun FiltersRowPreview(
         onFilterChipClick = {},
         onFilterValueChipClick = {},
         onReset = {}
+    )
+}
+
+private class FiltersRowStateProvider: PreviewParameterProvider<FiltersRowState> {
+
+    private val filterRibbonData = FilterRibbonData(
+        topFilterChips = listOf(
+            FilterChip(
+                id = "brand",
+                label = "Бренд"
+            ),
+            FilterChip(
+                id = "size",
+                label = "Размер"
+            ),
+            FilterChip(
+                id = "color",
+                label = "Цвет"
+            )
+        ),
+        topFilterValueChips = listOf(
+            FilterChip(
+                id = "brand_nike",
+                label = "Nike"
+            ),
+            FilterChip(
+                id = "brand_adidas",
+                label = "Adidas"
+            )
+        ),
+        bottomFilterChips = listOf(
+            FilterChip(
+                id = "materialAttribute",
+                label = "Материал"
+            ),
+            FilterChip(
+                id = "season",
+                label = "Сезон"
+            )
+        )
+    )
+
+    override val values: Sequence<FiltersRowState> = sequenceOf(
+        FiltersRowState(),
+        FiltersRowState(
+            filterRibbonData = filterRibbonData
+        ),
+        FiltersRowState(
+            filterRibbonData = filterRibbonData,
+            sortSelected = true
+        ),
+        FiltersRowState(
+            filterRibbonData = filterRibbonData,
+            selectedFilterValueChips = listOf(
+                FilterChip(
+                    id = "brand_nike",
+                    label = "Nike"
+                )
+            )
+        ),
+        FiltersRowState(
+            filterRibbonData = filterRibbonData,
+            sortSelected = true,
+            selectedFilterValueChips = listOf(
+                FilterChip(
+                    id = "brand_nike",
+                    label = "Nike"
+                ),
+                FilterChip(
+                    id = "season_summer",
+                    label = "Лето"
+                )
+            )
+        )
     )
 }

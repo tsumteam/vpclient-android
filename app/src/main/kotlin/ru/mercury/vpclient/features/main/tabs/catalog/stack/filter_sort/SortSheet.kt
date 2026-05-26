@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
@@ -40,7 +41,6 @@ import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.filters.FilterListRow
 import ru.mercury.vpclient.shared.ui.components.system.ClientButton
 import ru.mercury.vpclient.shared.ui.icons.Close24
-import ru.mercury.vpclient.shared.ui.preview.SortTypeProvider
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.livretMedium19
@@ -193,4 +193,13 @@ private fun SortSheetPreview(
             dispatch = {}
         )
     }
+}
+
+private class SortTypeProvider: PreviewParameterProvider<SortType> {
+    override val values: Sequence<SortType> = sequenceOf(
+        SortType.OurChoice,
+        SortType.PriceAscending,
+        SortType.PriceDescending,
+        SortType.ArrivalDateDescending
+    )
 }

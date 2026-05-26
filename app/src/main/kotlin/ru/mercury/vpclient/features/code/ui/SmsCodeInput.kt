@@ -38,14 +38,18 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.data.CODE_LENGTH
-import ru.mercury.vpclient.shared.data.entity.SmsCodeInputState
-import ru.mercury.vpclient.shared.ui.preview.SmsCodeInputStateProvider
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.medium17
+
+data class SmsCodeInputState(
+    val value: String,
+    val isErrorVisible: Boolean
+)
 
 @Composable
 fun SmsCodeInput(
@@ -160,5 +164,16 @@ private fun SmsCodeInputPreview(
         state = state,
         onValueChange = {},
         focusRequester = remember { FocusRequester() }
+    )
+}
+
+private class SmsCodeInputStateProvider: PreviewParameterProvider<SmsCodeInputState> {
+    override val values: Sequence<SmsCodeInputState> = sequenceOf(
+        SmsCodeInputState(value = "", isErrorVisible = false),
+        SmsCodeInputState(value = "123", isErrorVisible = false),
+        SmsCodeInputState(value = "123456", isErrorVisible = false),
+        SmsCodeInputState(value = "", isErrorVisible = true),
+        SmsCodeInputState(value = "123", isErrorVisible = true),
+        SmsCodeInputState(value = "123456", isErrorVisible = true)
     )
 }

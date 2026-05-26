@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -19,14 +20,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.category.intent.CategoryIntent
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.category.model.CategoryModel
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.category.navigation.CategoryRoute
-import ru.mercury.vpclient.shared.data.entity.TopBarState
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogCategoryEntity
 import ru.mercury.vpclient.shared.data.persistence.database.pojo.SubcategoryPojo
 import ru.mercury.vpclient.shared.ui.components.catalog.CatalogCategorySection
 import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.system.ClientOutlinedButton
-import ru.mercury.vpclient.shared.ui.preview.CategoryModelProvider
+import ru.mercury.vpclient.shared.ui.components.system.TopBarActionsState
+import ru.mercury.vpclient.shared.ui.components.system.TopBarState
+import ru.mercury.vpclient.shared.ui.preview.CatalogCategoryEntityProvider
+import ru.mercury.vpclient.shared.ui.preview.CatalogCategoryEntityProvider2
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
@@ -57,10 +60,19 @@ private fun CategoryScreenContent(
                     title = state.entity.name,
                     navigationClick = { dispatch(CategoryIntent.BackClick) },
                     searchClick = {},
-                    showCartButton = true,
-                    cartText = state.cartText,
-                    showCartBadge = state.showCartBadge,
-                    cartClick = { dispatch(CategoryIntent.CartClick) }
+                    actionsState = TopBarActionsState(
+                        showCartButton = true,
+                        cartText = state.cartText,
+                        showCartBadge = state.showCartBadge,
+                        cartClick = { dispatch(CategoryIntent.CartClick) },
+                        fittingText = state.fittingText,
+                        showFittingButton = state.showFittingButton,
+                        showFittingBadge = state.showFittingBadge,
+                        fittingClick = { dispatch(CategoryIntent.FittingClick) },
+                        showMessengerButton = true,
+                        showMessengerBadge = state.showMessengerBadge,
+                        messengerClick = { dispatch(CategoryIntent.MessengerClick) }
+                    )
                 )
             )
         }
@@ -151,5 +163,25 @@ private fun CategoryScreenPreview(
     CategoryScreenContent(
         state = state,
         dispatch = {}
+    )
+}
+
+private class CategoryModelProvider: PreviewParameterProvider<CategoryModel> {
+    private val catalogCategoryEntity = CatalogCategoryEntityProvider().values.first()
+    private val childCategoryEntity = CatalogCategoryEntityProvider2().values.first()
+    private val categoryPojo = SubcategoryPojo(
+        entity = catalogCategoryEntity.copy(
+            level = CatalogCategoryEntity.LEVEL_BOTTOM,
+            name = "КУРТКИ"
+        ),
+        children = listOf(childCategoryEntity)
+    )
+
+    override val values: Sequence<CategoryModel> = sequenceOf(
+        CategoryModel(
+            entity = catalogCategoryEntity,
+            pojos = listOf(categoryPojo)
+        ),
+        CategoryModel()
     )
 }

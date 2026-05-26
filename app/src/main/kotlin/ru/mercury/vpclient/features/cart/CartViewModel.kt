@@ -10,10 +10,13 @@ import ru.mercury.vpclient.features.cart.event.CartEvent
 import ru.mercury.vpclient.features.cart.intent.CartIntent
 import ru.mercury.vpclient.features.cart.model.CartModel
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
+import ru.mercury.vpclient.features.fitting_confirmation.navigation.FittingConfirmationRoute
 import ru.mercury.vpclient.shared.data.entity.CartProduct
+import ru.mercury.vpclient.shared.data.entity.FittingData
 import ru.mercury.vpclient.shared.data.error.BasketHideAlternativesException
 import ru.mercury.vpclient.shared.data.error.BasketReturnOriginalException
 import ru.mercury.vpclient.shared.data.error.BasketShowAlternativesException
+import ru.mercury.vpclient.shared.data.error.ChangeFittingPaySwitchException
 import ru.mercury.vpclient.shared.data.error.ChangePaySwitchException
 import ru.mercury.vpclient.shared.data.error.ClientException
 import ru.mercury.vpclient.shared.data.error.DeleteLookException
@@ -26,9 +29,12 @@ import ru.mercury.vpclient.shared.data.error.SwitchProductWithAlternativeExcepti
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
+import ru.mercury.vpclient.shared.domain.interactor.AuthenticationInteractor
 import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
 import ru.mercury.vpclient.shared.domain.interactor.EmployeeInteractor
 import ru.mercury.vpclient.shared.domain.interactor.ProductInteractor
+import ru.mercury.vpclient.shared.domain.mapper.clientFullName
+import ru.mercury.vpclient.shared.domain.mapper.isFeminine
 import ru.mercury.vpclient.shared.domain.mapper.withCenterLoading
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.navigation.BackRoute
@@ -38,6 +44,7 @@ private const val SIZE_PICKER_LOAD_ERROR_MESSAGE = "Не удалось загр
 
 @HiltViewModel
 class CartViewModel @Inject constructor(
+    private val authenticationInteractor: AuthenticationInteractor,
     private val cartInteractor: CartInteractor,
     private val employeeInteractor: EmployeeInteractor,
     private val productInteractor: ProductInteractor
@@ -46,8 +53,10 @@ class CartViewModel @Inject constructor(
     init {
         dispatch(CartIntent.CollectCart)
         dispatch(CartIntent.CollectActiveEmployee)
+        dispatch(CartIntent.LoadCurrentUser)
         dispatch(CartIntent.LoadActiveEmployee)
         dispatch(CartIntent.LoadCart)
+        dispatch(CartIntent.LoadFitting)
     }
 
     override fun dispatch(intent: CartIntent) {
@@ -69,14 +78,45 @@ class CartViewModel @Inject constructor(
                         }
                 }
             }
+            is CartIntent.LoadCurrentUser -> {
+                launch {
+                    runCatching { authenticationInteractor.currentUser() }
+                        .onSuccess { currentUser ->
+                            reduce {
+                                it.copy(
+                                    fittingSheetClientName = currentUser.clientFullName,
+                                    isFittingSheetClientFeminine = currentUser.isFeminine
+                                )
+                            }
+                        }
+                }
+            }
             is CartIntent.LoadActiveEmployee -> launch { runCatching { employeeInteractor.syncActiveEmployee() } }
             is CartIntent.LoadCart -> launch { cartInteractor.loadBasket() }
+            is CartIntent.LoadFitting -> {
+                launch {
+                    val fitting = runCatching { cartInteractor.loadFitting() }.getOrDefault(FittingData())
+                    reduce {
+                        it.copy(
+                            apiFittingProducts = fitting.products,
+                            apiFittingDeliveryHeader = fitting.deliveryHeader
+                        )
+                    }
+                }
+            }
             is CartIntent.PullToRefresh -> {
                 if (stateFlow.value.isRefreshing) return
                 reduce { it.copy(isRefreshing = true) }
                 launch {
                     try {
                         cartInteractor.loadBasket()
+                        val fitting = runCatching { cartInteractor.loadFitting() }.getOrDefault(FittingData())
+                        reduce {
+                            it.copy(
+                                apiFittingProducts = fitting.products,
+                                apiFittingDeliveryHeader = fitting.deliveryHeader
+                            )
+                        }
                     } finally {
                         dispatch(CartIntent.RefreshCompleted)
                     }
@@ -85,8 +125,28 @@ class CartViewModel @Inject constructor(
             is CartIntent.RefreshCompleted -> reduce { it.copy(isRefreshing = false) }
             is CartIntent.CloseClick -> launch { MainEventManager.send(BackRoute) }
             is CartIntent.FittingClick -> reduce { it.copy(isFittingSheetVisible = true) }
+            is CartIntent.FittingTabClick -> return
+            is CartIntent.FittingDeliveryClick -> {
+                launch { MainEventManager.send(FittingConfirmationRoute(stateFlow.value.apiFittingProducts.map { product -> product.id })) }
+            }
             is CartIntent.HideFittingSheet -> reduce { it.copy(isFittingSheetVisible = false) }
-            is CartIntent.ConfirmFittingSheet -> reduce { it.copy(isFittingSheetVisible = false) }
+            is CartIntent.ConfirmFittingSheet -> {
+                reduce { it.copy(isFittingSheetVisible = false) }
+                launch { MainEventManager.send(FittingConfirmationRoute(intent.productIds)) }
+            }
+            is CartIntent.ShowFittingProductsSheet -> {
+                reduce {
+                    it.copy(
+                        isFittingSheetVisible = false,
+                        isFittingProductsSheetVisible = true
+                    )
+                }
+            }
+            is CartIntent.HideFittingProductsSheet -> reduce { it.copy(isFittingProductsSheetVisible = false) }
+            is CartIntent.ConfirmFittingProductsSheet -> {
+                reduce { it.copy(isFittingProductsSheetVisible = false) }
+                launch { MainEventManager.send(FittingConfirmationRoute(intent.productIds)) }
+            }
             is CartIntent.ProductClick -> {
                 launch { MainEventManager.send(DetailsRoute(intent.id, openedFromCart = true)) }
             }
@@ -105,6 +165,18 @@ class CartViewModel @Inject constructor(
                             }
                         }
                         reduce { it.copy(paySwitchJob = paySwitchJob) }
+                    }
+                }
+            }
+            is CartIntent.ChangeFittingPaySwitch -> {
+                launch {
+                    cartInteractor.changeFittingPaySwitch(intent.product, intent.paySwitch)
+                    val fitting = runCatching { cartInteractor.loadFitting() }.getOrDefault(FittingData())
+                    reduce {
+                        it.copy(
+                            apiFittingProducts = fitting.products,
+                            apiFittingDeliveryHeader = fitting.deliveryHeader
+                        )
                     }
                 }
             }
@@ -284,6 +356,9 @@ class CartViewModel @Inject constructor(
                 launch { send(CartEvent.SnackbarErrorMessage(throwable.message)) }
             }
             is ChangePaySwitchException -> {
+                launch { send(CartEvent.SnackbarErrorMessage(throwable.message)) }
+            }
+            is ChangeFittingPaySwitchException -> {
                 launch { send(CartEvent.SnackbarErrorMessage(throwable.message)) }
             }
             is RemoveAlternativeException -> {

@@ -3,6 +3,7 @@ package ru.mercury.vpclient.shared.domain.interactor
 import kotlinx.coroutines.flow.Flow
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
+import ru.mercury.vpclient.shared.data.entity.FittingData
 
 interface CartInteractor {
 
@@ -11,6 +12,8 @@ interface CartInteractor {
     val cartSize: Flow<Int>
 
     suspend fun changePaySwitch(product: CartProduct, paySwitch: Boolean)
+
+    suspend fun changeFittingPaySwitch(product: CartProduct, paySwitch: Boolean)
 
     suspend fun addProductToBasket(productId: String, sizeId: String?)
 
@@ -35,6 +38,8 @@ interface CartInteractor {
     suspend fun basketReturnOriginal(product: CartProduct)
 
     suspend fun loadBasket()
+
+    suspend fun loadFitting(): FittingData
 
     suspend fun cartBadge(): Int
 }

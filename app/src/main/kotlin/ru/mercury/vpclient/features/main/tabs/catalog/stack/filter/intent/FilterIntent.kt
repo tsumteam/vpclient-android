@@ -7,6 +7,7 @@ sealed interface FilterIntent: Intent {
     data object CollectFilterData: FilterIntent
     data object CollectCartSize: FilterIntent
     data object CollectActiveEmployee: FilterIntent
+    data object LoadEmployees: FilterIntent
     data object LoadCartData: FilterIntent
     data object LoadCatalogFilters: FilterIntent
     data object LoadProductsQuantity: FilterIntent
@@ -15,6 +16,8 @@ sealed interface FilterIntent: Intent {
     data object RefreshCompleted: FilterIntent
     data object BackClick: FilterIntent
     data object CartClick: FilterIntent
+    data object FittingClick: FilterIntent
+    data object MessengerClick: FilterIntent
     data object ShowSortDialog: FilterIntent
     data object HideSortDialog: FilterIntent
     data object HideFilterValuesDialog: FilterIntent

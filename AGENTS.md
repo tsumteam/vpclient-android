@@ -6,8 +6,6 @@
 - When the user writes "синхронизируй инструкции", update AGENTS.md in both vpdelivery-android and vpclient-android
 - Use standard project conventions and follow existing documentation when making changes;
 - Do not run tests
-- After completing work, launch the default product flavor on the selected device with:
-  `/Users/mihailbelyj/Library/Android/sdk/platform-tools/adb -s adb-28031FDH200J07-fDuL5b._adb-tls-connect._tcp shell am start -W -n ru.mercury.vpclient.uat/ru.mercury.vpclient.activity.MainActivity`
 - Place all PreviewParameterProvider classes in ui/preview
 - When creating a composable function, always create a preview for it
 - Add new colors through MaterialTheme.colorScheme
@@ -25,9 +23,11 @@
 - For composable function calls, order arguments exactly the same way as they are declared in the SDK/component signature
 - For Compose `padding(...)`, order named parameters the same way as in the method signature: `start`, `top`, `end`, `bottom`
 - For Compose `Modifier.offset(...)` backed by state, use the lambda overload, for example `Modifier.offset { ... }`
+- For `floatingActionButton`, place the button directly in the slot and apply padding to the button modifier; do not wrap it in `Box` only to add full-width, navigation bar padding, or horizontal padding
 - In Compose containers, separate sibling composable calls with a blank line
 - Do not place classes or constants inside MVI classes; declare them at file level or in dedicated files/packages
 - Do not create or store variables in ViewModel classes; keep them in Model classes
+- When creating a new screen, read and follow `skills/vpclient-new-screen/SKILL.md`; create its ViewModel, Model, and Intent files immediately
 - For screen models backed by local collections, avoid storing or updating `isLoading` when loading can be derived from the collection state; treat the screen as loading when the backing collection is empty
 - For screen data backed by Room and refreshed from network, use separate `Collect...` and `Load...` intents: `Collect...` reads Room data, `Load...` performs the network request and saves the result to Room
 - Do not write mappers in repositories; place mapping logic in mapper KTX files

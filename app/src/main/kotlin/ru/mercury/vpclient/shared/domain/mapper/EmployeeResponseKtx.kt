@@ -14,6 +14,10 @@ fun EmployeeResponse.entity(
         return this?.badge ?: 0
     }
 
+    fun EmployeeBadgeResponse?.number(): Int {
+        return this?.icon?.number ?: 0
+    }
+
     return EmployeeEntity(
         employeeId = employeeId.orEmpty().ifEmpty { current.employeeId },
         employeeEmail = employeeEmail.orEmpty().ifEmpty { current.employeeEmail },
@@ -30,6 +34,7 @@ fun EmployeeResponse.entity(
         employeeBrand = employeeBrand.orEmpty().ifEmpty { current.employeeBrand },
         isActive = isActive,
         basketBadge = badges.basketIcon.badge(),
+        fittingNumber = badges.fittingIcon.number(),
         fittingBadge = badges.fittingIcon.badge(),
         messengerBadge = badges.messengerIcon.badge(),
         orderBadge = badges.orderIcon.badge(),

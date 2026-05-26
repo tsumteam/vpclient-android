@@ -6,9 +6,11 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.activity.event.MainEventManager
+import ru.mercury.vpclient.features.cart.navigation.CartPage
 import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.features.main.tabs.home.intent.HomeIntent
 import ru.mercury.vpclient.features.main.tabs.home.model.HomeModel
+import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.domain.interactor.Interactor
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.mvi.Event
@@ -22,6 +24,7 @@ class HomeViewModel @Inject constructor(
     init {
         dispatch(HomeIntent.CollectCartSize)
         dispatch(HomeIntent.CollectActiveEmployee)
+        dispatch(HomeIntent.LoadEmployees)
         dispatch(HomeIntent.LoadCartData)
     }
 
@@ -39,15 +42,17 @@ class HomeViewModel @Inject constructor(
             is HomeIntent.CollectActiveEmployee -> {
                 launch {
                     interactor.employeeEntitiesFlow
-                        .map { employees -> employees.firstOrNull { it.isActive }?.employeeId.orEmpty() }
+                        .map { employees -> employees.firstOrNull { it.isActive } }
                         .distinctUntilChanged()
-                        .collectLatest { employeeId ->
-                            if (employeeId.isNotEmpty()) {
+                        .collectLatest { employee ->
+                            reduce { it.copy(activeEmployee = employee ?: EmployeeEntity.Empty) }
+                            if (employee != null) {
                                 dispatch(HomeIntent.LoadCartData)
                             }
                         }
                 }
             }
+            is HomeIntent.LoadEmployees -> launch { runCatching { interactor.syncEmployees() } }
             is HomeIntent.LoadCartData -> {
                 launch {
                     runCatching { interactor.loadBasket() }
@@ -56,7 +61,10 @@ class HomeViewModel @Inject constructor(
                     reduce { it.copy(cartBadge = badge) }
                 }
             }
-            is HomeIntent.CartClick -> launch { MainEventManager.send(CartRoute) }
+            is HomeIntent.CartClick -> launch { MainEventManager.send(CartRoute()) }
+            is HomeIntent.FittingClick -> launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
+            is HomeIntent.MessengerClick -> return
+            is HomeIntent.SearchClick -> return
         }
     }
 }

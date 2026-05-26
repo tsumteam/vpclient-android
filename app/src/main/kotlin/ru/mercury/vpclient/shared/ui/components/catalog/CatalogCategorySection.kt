@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -27,7 +28,8 @@ import ru.mercury.vpclient.shared.domain.mapper.isEmpty
 import ru.mercury.vpclient.shared.domain.mapper.isNotEmpty
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.placeholder
-import ru.mercury.vpclient.shared.ui.preview.SubcategoryPojoProvider
+import ru.mercury.vpclient.shared.ui.preview.CatalogCategoryEntityProvider
+import ru.mercury.vpclient.shared.ui.preview.CatalogCategoryEntityProvider2
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
@@ -131,5 +133,36 @@ private fun CatalogCategorySectionPreview(
         pojo = pojo,
         onClick = {},
         onItemClick = {}
+    )
+}
+
+private class SubcategoryPojoProvider: PreviewParameterProvider<SubcategoryPojo> {
+    private val catalogCategoryEntity = CatalogCategoryEntityProvider().values.first()
+    private val childCategoryEntity = CatalogCategoryEntityProvider2().values.first()
+
+    override val values: Sequence<SubcategoryPojo> = sequenceOf(
+        SubcategoryPojo(
+            entity = catalogCategoryEntity.copy(
+                level = CatalogCategoryEntity.LEVEL_BOTTOM,
+                name = "КУРТКИ"
+            ),
+            children = listOf(
+                childCategoryEntity,
+                childCategoryEntity.copy(
+                    id = 2,
+                    name = "БОМБЕРЫ",
+                    position = 2
+                ),
+                childCategoryEntity.copy(
+                    id = 3,
+                    name = "ПАЛЬТО",
+                    position = 3
+                )
+            )
+        ),
+        SubcategoryPojo(
+            entity = CatalogCategoryEntity.Empty,
+            children = emptyList()
+        )
     )
 }

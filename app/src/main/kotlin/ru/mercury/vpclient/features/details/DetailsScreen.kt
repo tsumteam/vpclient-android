@@ -41,6 +41,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -53,7 +54,11 @@ import ru.mercury.vpclient.features.details.model.DetailsModel
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.entity.DetailsMediaItem
-import ru.mercury.vpclient.shared.data.entity.TopBarState
+import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductButtonEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductOtherColorEntity
+import ru.mercury.vpclient.shared.ui.components.system.TopBarActionsState
+import ru.mercury.vpclient.shared.ui.components.system.TopBarState
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
@@ -75,7 +80,6 @@ import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopApp
 import ru.mercury.vpclient.shared.ui.components.system.ClientOutlinedButton
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.placeholder
-import ru.mercury.vpclient.shared.ui.preview.DetailsModelProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.annotation.HightPreview
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
@@ -159,7 +163,20 @@ private fun DetailsScreenContent(
                 navigationClick = { dispatch(DetailsIntent.BackClick) },
                 onClick = {},
                 entity = BrandEntity.Empty,
-                showBrandBox = false
+                showBrandBox = false,
+                actionsState = TopBarActionsState(
+                    showCartButton = true,
+                    cartText = state.cartText,
+                    showCartBadge = state.showCartBadge,
+                    cartClick = { dispatch(DetailsIntent.CartClick) },
+                    fittingText = state.fittingText,
+                    showFittingButton = state.showFittingButton,
+                    showFittingBadge = state.showFittingBadge,
+                    fittingClick = { dispatch(DetailsIntent.FittingClick) },
+                    showMessengerButton = true,
+                    showMessengerBadge = state.showMessengerBadge,
+                    messengerClick = { dispatch(DetailsIntent.MessengerClick) }
+                )
             )
         }
         else -> {
@@ -170,7 +187,20 @@ private fun DetailsScreenContent(
                     brand = state.productEntity.brand.orEmpty(),
                     urlBrandLogo = state.productEntity.urlBrandLogo
                 ),
-                showBrandBox = isToolbarBrandVisible
+                showBrandBox = isToolbarBrandVisible,
+                actionsState = TopBarActionsState(
+                    showCartButton = true,
+                    cartText = state.cartText,
+                    showCartBadge = state.showCartBadge,
+                    cartClick = { dispatch(DetailsIntent.CartClick) },
+                    fittingText = state.fittingText,
+                    showFittingButton = state.showFittingButton,
+                    showFittingBadge = state.showFittingBadge,
+                    fittingClick = { dispatch(DetailsIntent.FittingClick) },
+                    showMessengerButton = true,
+                    showMessengerBadge = state.showMessengerBadge,
+                    messengerClick = { dispatch(DetailsIntent.MessengerClick) }
+                )
             )
         }
     }
@@ -534,5 +564,44 @@ private fun DetailsScreenContentPreview(
         state = state,
         dispatch = {},
         snackbarHostStateError = remember { SnackbarHostState() }
+    )
+}
+
+private class DetailsModelProvider: PreviewParameterProvider<DetailsModel> {
+    override val values: Sequence<DetailsModel> = sequenceOf(
+        DetailsModel(),
+        DetailsModel(
+            productEntity = ProductEntity.Empty.copy(
+                id = "preview",
+                name = "Куртка из кожи",
+                price = 129_900.0,
+                itemId = "5558447",
+                brand = "SAINT LAURENT",
+                article = "BRG-CARVE-STEER",
+                longDescription = "Куртка прямого кроя с лаконичной отделкой и мягкой фактурой.",
+                productionStructure = "натуральная кожа 100%",
+                country = "Италия",
+                technicalDescription = "Длина изделия 62 см, длина рукава 64 см.",
+                breadcrumbs = listOf("Каталог", "Женское", "Одежда", "Куртки"),
+                buttons = listOf(
+                    ProductButtonEntity(title = "Женская одежда"),
+                    ProductButtonEntity(title = "Куртки")
+                ),
+                colorImageUrls = listOf(
+                    "https://st-m-vpr-s3.vp.ru/cms/98/43/98437c3a-da76-4aaa-87b7-fdf5f4a1fd70.jpg",
+                    "https://st-m-vpr-s3.vp.ru/cms/51/f0/51f07d1d-0449-41a7-9e2a-952d85f279a7.jpg"
+                ),
+                otherColors = listOf(
+                    ProductOtherColorEntity(
+                        imageUrls = listOf("https://st-m-vpr-s3.vp.ru/cms/98/43/98437c3a-da76-4aaa-87b7-fdf5f4a1fd70.jpg")
+                    ),
+                    ProductOtherColorEntity(
+                        imageUrls = listOf("https://st-m-vpr-s3.vp.ru/cms/51/f0/51f07d1d-0449-41a7-9e2a-952d85f279a7.jpg")
+                    )
+                ),
+                hasWearWith = true,
+                wearWithButtonEnabled = true
+            )
+        )
     )
 }

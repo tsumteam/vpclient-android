@@ -32,12 +32,16 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_color.intent.FilterColorIntent
 import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter_color.model.FilterColorSheetState
+import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValueItemEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesQuantityEntity
 import ru.mercury.vpclient.shared.domain.mapper.colorValues
 import ru.mercury.vpclient.shared.domain.mapper.quantityWithThousandsSeparator
 import ru.mercury.vpclient.shared.domain.mapper.requireQuantity
@@ -47,7 +51,6 @@ import ru.mercury.vpclient.shared.ui.components.SharedAnimatedVisibility
 import ru.mercury.vpclient.shared.ui.components.system.ClientButton
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.placeholder
-import ru.mercury.vpclient.shared.ui.preview.FilterColorSheetStateProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
@@ -260,4 +263,40 @@ private fun FilterColorSheetPreview(
             dispatch = {}
         )
     }
+}
+
+private class FilterColorSheetStateProvider: PreviewParameterProvider<FilterColorSheetState> {
+    override val values: Sequence<FilterColorSheetState> = sequenceOf(
+        FilterColorSheetState(
+            entity = FilterValuesEntity(
+                chipId = "color",
+                title = "Цвет",
+                items = listOf(
+                    FilterValueItemEntity(id = "color_7", label = "Бордовый", labelPhotoUrl = "https://st.vip-platinum.ru/catalog/color/62.png"),
+                    FilterValueItemEntity(id = "color_13", label = "Белый", labelPhotoUrl = "https://st.vip-platinum.ru/catalog/color/68.png"),
+                    FilterValueItemEntity(id = "color_9", label = "Черный", labelPhotoUrl = "https://st.vip-platinum.ru/catalog/color/64.png"),
+                    FilterValueItemEntity(id = "color_3", label = "Голубой", labelPhotoUrl = "https://st.vip-platinum.ru/catalog/color/58.png"),
+                    FilterValueItemEntity(id = "color_20", label = "Желтый", labelPhotoUrl = "https://st.vip-platinum.ru/catalog/color/75.png"),
+                    FilterValueItemEntity(id = "color_10", label = "Зеленый", labelPhotoUrl = "https://st.vip-platinum.ru/catalog/color/65.png")
+                )
+            ),
+            selectedIds = setOf("color_7", "color_9"),
+            quantityEntity = FilterValuesQuantityEntity(
+                chipId = "color",
+                quantity = 128
+            ),
+            isProductsQuantityLoading = false,
+            isLoading = false
+        ),
+        FilterColorSheetState(
+            entity = FilterValuesEntity(
+                chipId = "color",
+                title = "Цвет"
+            ),
+            selectedIds = emptySet(),
+            quantityEntity = FilterValuesQuantityEntity.Empty,
+            isProductsQuantityLoading = false,
+            isLoading = true
+        )
+    )
 }
