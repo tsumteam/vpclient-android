@@ -99,7 +99,7 @@ class CartViewModel @Inject constructor(
                     reduce {
                         it.copy(
                             apiFittingProducts = fitting.products,
-                            apiFittingDeliveryHeader = fitting.deliveryHeader
+                            apiFittingDeliveries = fitting.deliveries
                         )
                     }
                 }
@@ -114,7 +114,7 @@ class CartViewModel @Inject constructor(
                         reduce {
                             it.copy(
                                 apiFittingProducts = fitting.products,
-                                apiFittingDeliveryHeader = fitting.deliveryHeader
+                                apiFittingDeliveries = fitting.deliveries
                             )
                         }
                     } finally {
@@ -127,7 +127,15 @@ class CartViewModel @Inject constructor(
             is CartIntent.FittingClick -> reduce { it.copy(isFittingSheetVisible = true) }
             is CartIntent.FittingTabClick -> return
             is CartIntent.FittingDeliveryClick -> {
-                launch { MainEventManager.send(FittingConfirmationRoute(stateFlow.value.apiFittingProducts.map { product -> product.id })) }
+                launch {
+                    MainEventManager.send(
+                        FittingConfirmationRoute(
+                            productIds = intent.productIds,
+                            deliveryId = intent.deliveryId,
+                            fittingType = intent.fittingType
+                        )
+                    )
+                }
             }
             is CartIntent.HideFittingSheet -> reduce { it.copy(isFittingSheetVisible = false) }
             is CartIntent.ConfirmFittingSheet -> {
@@ -175,7 +183,7 @@ class CartViewModel @Inject constructor(
                     reduce {
                         it.copy(
                             apiFittingProducts = fitting.products,
-                            apiFittingDeliveryHeader = fitting.deliveryHeader
+                            apiFittingDeliveries = fitting.deliveries
                         )
                     }
                 }

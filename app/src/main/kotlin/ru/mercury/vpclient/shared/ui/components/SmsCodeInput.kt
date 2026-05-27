@@ -1,4 +1,4 @@
-package ru.mercury.vpclient.features.code.ui
+package ru.mercury.vpclient.shared.ui.components
 
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -11,6 +11,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
@@ -30,21 +31,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.data.CODE_LENGTH
+import ru.mercury.vpclient.shared.ui.preview.SmsCodeInputStateProvider
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.medium17
+
+private val SmsCodeInputCellMaxSize = 56.dp
+private val SmsCodeInputCellSpacing = 9.dp
+private val SmsCodeInputCellShape = RoundedCornerShape(8.dp)
 
 data class SmsCodeInputState(
     val value: String,
@@ -63,6 +66,7 @@ fun SmsCodeInput(
     val interactionSource = remember { MutableInteractionSource() }
     val keyboardController = LocalSoftwareKeyboardController.current
     val filteredValue = state.value.filter(Char::isDigit).take(CODE_LENGTH)
+    val transparentColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0F)
     val infiniteTransition = rememberInfiniteTransition(label = "sms_code_cursor_transition")
     val cursorAlpha by infiniteTransition.animateFloat(
         initialValue = 1F,
@@ -78,8 +82,11 @@ fun SmsCodeInput(
         value = filteredValue,
         onValueChange = { onValueChange(it.filter(Char::isDigit).take(CODE_LENGTH)) },
         singleLine = true,
-        textStyle = TextStyle(color = Color.Transparent, fontSize = 1.sp),
-        cursorBrush = SolidColor(Color.Transparent),
+        textStyle = MaterialTheme.typography.medium17.copy(
+            color = transparentColor,
+            fontSize = 1.sp
+        ),
+        cursorBrush = SolidColor(transparentColor),
         keyboardOptions = KeyboardOptions.Default.copy(
             keyboardType = KeyboardType.NumberPassword,
             imeAction = ImeAction.Done
@@ -94,58 +101,73 @@ fun SmsCodeInput(
                 }
             },
         decorationBox = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable(
-                        interactionSource = interactionSource,
-                        indication = null
-                    ) {
-                        focusRequester.requestFocus()
-                        keyboardController?.show()
-                },
-                horizontalArrangement = Arrangement.spacedBy(9.dp, Alignment.CenterHorizontally),
-                verticalAlignment = Alignment.CenterVertically
+            BoxWithConstraints(
+                modifier = Modifier.fillMaxWidth()
             ) {
-                repeat(CODE_LENGTH) { index ->
-                    val symbol = filteredValue.getOrNull(index)?.toString().orEmpty()
-                    val activeIndex = filteredValue.length.takeIf { it < CODE_LENGTH }
-                    val shouldShowCursor = isFocused && activeIndex == index
+                val totalSpacing = SmsCodeInputCellSpacing * (CODE_LENGTH - 1).toFloat()
+                val cellSize = ((maxWidth - totalSpacing) / CODE_LENGTH.toFloat())
+                    .coerceAtMost(SmsCodeInputCellMaxSize)
 
-                    Box(
-                        modifier = Modifier
-                            .size(56.dp)
-                            .background(
-                                color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                                shape = RoundedCornerShape(8.dp)
-                            )
-                            .border(
-                                width = 1.dp,
-                                color = if (state.isErrorVisible) MaterialTheme.colorScheme.error else Color.Transparent,
-                                shape = RoundedCornerShape(8.dp)
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        if (symbol.isNotEmpty()) {
-                            Text(
-                                text = symbol,
-                                style = MaterialTheme.typography.medium17.copy(
-                                    color = MaterialTheme.colorScheme.onBackground
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(
+                            interactionSource = interactionSource,
+                            indication = null
+                        ) {
+                            focusRequester.requestFocus()
+                            keyboardController?.show()
+                        },
+                    horizontalArrangement = Arrangement.spacedBy(
+                        space = SmsCodeInputCellSpacing,
+                        alignment = Alignment.CenterHorizontally
+                    ),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    repeat(CODE_LENGTH) { index ->
+                        val symbol = filteredValue.getOrNull(index)?.toString().orEmpty()
+                        val activeIndex = filteredValue.length.takeIf { it < CODE_LENGTH }
+                        val shouldShowCursor = isFocused && activeIndex == index
+
+                        Box(
+                            modifier = Modifier
+                                .size(cellSize)
+                                .background(
+                                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                    shape = SmsCodeInputCellShape
                                 )
-                            )
-                        }
-
-                        if (shouldShowCursor) {
-                            Box(
-                                modifier = Modifier
-                                    .align(Alignment.Center)
-                                    .size(width = 2.dp, height = 20.dp)
-                                    .background(
-                                        MaterialTheme.colorScheme.error.copy(
-                                            alpha = cursorAlpha
-                                        )
+                                .border(
+                                    width = 1.dp,
+                                    color = if (state.isErrorVisible) {
+                                        MaterialTheme.colorScheme.error
+                                    } else {
+                                        transparentColor
+                                    },
+                                    shape = SmsCodeInputCellShape
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (symbol.isNotEmpty()) {
+                                Text(
+                                    text = symbol,
+                                    style = MaterialTheme.typography.medium17.copy(
+                                        color = MaterialTheme.colorScheme.onBackground
                                     )
-                            )
+                                )
+                            }
+
+                            if (shouldShowCursor) {
+                                Box(
+                                    modifier = Modifier
+                                        .align(Alignment.Center)
+                                        .size(width = 2.dp, height = 20.dp)
+                                        .background(
+                                            MaterialTheme.colorScheme.error.copy(
+                                                alpha = cursorAlpha
+                                            )
+                                        )
+                                )
+                            }
                         }
                     }
                 }
@@ -164,16 +186,5 @@ private fun SmsCodeInputPreview(
         state = state,
         onValueChange = {},
         focusRequester = remember { FocusRequester() }
-    )
-}
-
-private class SmsCodeInputStateProvider: PreviewParameterProvider<SmsCodeInputState> {
-    override val values: Sequence<SmsCodeInputState> = sequenceOf(
-        SmsCodeInputState(value = "", isErrorVisible = false),
-        SmsCodeInputState(value = "123", isErrorVisible = false),
-        SmsCodeInputState(value = "123456", isErrorVisible = false),
-        SmsCodeInputState(value = "", isErrorVisible = true),
-        SmsCodeInputState(value = "123", isErrorVisible = true),
-        SmsCodeInputState(value = "123456", isErrorVisible = true)
     )
 }

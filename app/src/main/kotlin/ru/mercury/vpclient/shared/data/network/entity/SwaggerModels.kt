@@ -3133,6 +3133,7 @@ data class GetCheckOutFlagsResponseDtoResponseDto(
 data class GetDeliveryIntervalsForExistingFittingRequestDto(
     val pairedUserId: String? = null,
     val deliveryId: String? = null,
+    val fittingLineIds: List<String>? = null,
     val fittingType: FittingTypeDtoEnum? = null,
     val kittingType: KittingTypeDto? = null,
     val deliveryType: DeliveryTypeDto? = null,

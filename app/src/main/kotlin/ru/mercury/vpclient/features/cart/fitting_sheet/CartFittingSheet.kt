@@ -113,19 +113,6 @@ private fun CartFittingSheetContent(
             .fillMaxWidth()
             .navigationBarsPadding()
     ) {
-        IconButton(
-            onClick = onDismissClick,
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(start = 8.dp, top = 8.dp)
-        ) {
-            Icon(
-                imageVector = Close24,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onBackground
-            )
-        }
-
         LazyColumn(
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -182,7 +169,7 @@ private fun CartFittingSheetContent(
                     title = stringResource(ClientStrings.CartFittingSheetPaymentProducts),
                     subtitle = paymentProductsSummary,
                     selected = selectedOption == CartFittingSheetOption.PaymentProducts,
-                    enabled = paymentProductsCount > 0,
+                    enabled = true,
                     onClick = { onOptionClick(CartFittingSheetOption.PaymentProducts) }
                 )
             }
@@ -239,6 +226,19 @@ private fun CartFittingSheetContent(
                     modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp)
                 )
             }
+        }
+
+        IconButton(
+            onClick = onDismissClick,
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(start = 8.dp, top = 8.dp)
+        ) {
+            Icon(
+                imageVector = Close24,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onBackground
+            )
         }
     }
 }
@@ -374,7 +374,7 @@ private fun CartFittingSheetDivider(
 @Composable
 private fun CartFittingSheetContentPreview() {
     CartFittingSheetContent(
-        clientName = "Андрей Андреевич Якубов",
+        clientName = "Иван Петрович",
         clientFeminine = false,
         selectedOption = CartFittingSheetOption.AllProducts,
         allProductsCount = 3,

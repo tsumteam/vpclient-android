@@ -70,7 +70,7 @@ fun MainActivityContent(
                 entry<CartRoute> { CartScreen(it) }
                 entry<DetailsRoute> { DetailsScreen(it) }
                 entry<FittingConfirmationRoute> { FittingConfirmationScreen(it) }
-                entry<FittingSuccessRoute> { FittingSuccessScreen() }
+                entry<FittingSuccessRoute> { FittingSuccessScreen(it) }
                 entry<ConsultantRoute> { ConsultantScreen(it) }
                 entry<MediaViewerRoute> { MediaViewerScreen(it) }
             }

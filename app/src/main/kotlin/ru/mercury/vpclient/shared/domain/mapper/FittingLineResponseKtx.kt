@@ -41,7 +41,7 @@ val FittingLineResponseDto.cartProduct: CartProduct?
             imageUrl = imageUrl,
             imageUrls = imageUrls,
             isForPayment = paySwitch ?: product.paySwitch ?: false,
-            isSold = logisticStatusRejectReason != null,
+            isSold = false,
             isLastInStock = sizes.any { it.isLastInStock == true || it.availableStockQuantity == 1.0 },
             hasActions = product.actions.orEmpty().isNotEmpty(),
             discountPercentage = product.discountPercentage ?: 0,

@@ -3,7 +3,12 @@ package ru.mercury.vpclient.shared.domain.interactor
 import kotlinx.coroutines.flow.Flow
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
+import ru.mercury.vpclient.shared.data.entity.FittingConfirmationData
+import ru.mercury.vpclient.shared.data.entity.FittingConfirmationDeliveryGroup
+import ru.mercury.vpclient.shared.data.entity.FittingConfirmationDeliveryInterval
+import ru.mercury.vpclient.shared.data.entity.FittingConfirmationResult
 import ru.mercury.vpclient.shared.data.entity.FittingData
+import ru.mercury.vpclient.shared.data.network.entity.FittingTypeDtoEnum
 
 interface CartInteractor {
 
@@ -40,6 +45,26 @@ interface CartInteractor {
     suspend fun loadBasket()
 
     suspend fun loadFitting(): FittingData
+
+    suspend fun loadFittingConfirmationData(
+        products: List<CartProduct>,
+        fittingType: FittingTypeDtoEnum
+    ): FittingConfirmationData
+
+    suspend fun loadExistingFittingConfirmationData(
+        products: List<CartProduct>,
+        deliveryId: String,
+        fittingType: FittingTypeDtoEnum
+    ): FittingConfirmationData
+
+    suspend fun confirmFitting(
+        products: List<CartProduct>,
+        fittingType: FittingTypeDtoEnum,
+        singleInterval: FittingConfirmationDeliveryInterval?,
+        deliveryGroups: List<FittingConfirmationDeliveryGroup>,
+        selectedDeliveryIntervalIds: Map<String, String>,
+        useSingleDelivery: Boolean
+    ): FittingConfirmationResult
 
     suspend fun cartBadge(): Int
 }

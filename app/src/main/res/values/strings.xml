@@ -96,7 +96,7 @@
     <string name="cart_fitting_sheet_manual">Выбрать вещи вручную</string>
     <string name="cart_fitting_sheet_fitting_tab_hint_prefix">Вещи на примерку сохраняются во вкладке</string>
     <string name="cart_fitting_sheet_fitting_tab_hint_accent">Примерка</string>
-    <string name="cart_fitting_sheet_fitting_tab_hint_suffix">, где Вы сможете их просматривать, изменять \nи оплачивать.</string>
+    <string name="cart_fitting_sheet_fitting_tab_hint_suffix">, где Вы сможете их просматривать, изменять и оплачивать.</string>
     <string name="cart_fitting_sheet_no_size_hint">У вас в Корзине есть вещи с признаком «Выберите размер». Они не могут быть заказаны для примерки \nи останутся в Корзине. Вы сможете позже добавить их в Примерку, выбрав в Корзине размер.</string>
     <string name="cart_fitting_sheet_confirm">Подтвердить примерку</string>
     <string name="cart_fitting_sheet_continue">Продолжить</string>
@@ -109,6 +109,13 @@
     <string name="fitting_confirmation_place_boutique">Бутик VIP Platinum</string>
     <string name="fitting_confirmation_place_home">Адрес клиента</string>
     <string name="fitting_confirmation_place_other">Другое место</string>
+    <string name="fitting_confirmation_select_address">Выберите адрес</string>
+    <string name="fitting_confirmation_multiple_delivery_info">По заказу доступно несколько вариантов доставки</string>
+    <string name="fitting_confirmation_multiple_deliveries">НЕСКОЛЬКО ДОСТАВОК</string>
+    <string name="fitting_confirmation_single_delivery">ОДНА ДОСТАВКА</string>
+    <string name="fitting_confirmation_change_time">Изменить время</string>
+    <string name="fitting_confirmation_confirm_time">Подтвердить время</string>
+    <string name="fitting_confirmation_intervals_empty">Нет доступных интервалов</string>
     <string name="fitting_confirmation_delivery_title">Способ примерки</string>
     <string name="fitting_confirmation_delivery_value">В бутике</string>
     <string name="fitting_confirmation_delivery_hint">Доступные интервалы будут согласованы после подтверждения</string>
@@ -143,6 +150,12 @@
         <item quantity="few">%1$d товара для примерки</item>
         <item quantity="many">%1$d товаров для примерки</item>
         <item quantity="other">%1$d товара для примерки</item>
+    </plurals>
+    <plurals name="fitting_confirmation_delivery_products_count">
+        <item quantity="one">%1$d товар</item>
+        <item quantity="few">%1$d товара</item>
+        <item quantity="many">%1$d товаров</item>
+        <item quantity="other">%1$d товара</item>
     </plurals>
     <plurals name="filter_products_quantity">
         <item quantity="one">%1$s товар</item>

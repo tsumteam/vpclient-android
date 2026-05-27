@@ -385,7 +385,7 @@ private fun CartScreenContent(
                         paymentItemsCount = state.apiFittingPaymentProductsCount,
                         showSummary = false,
                         showFittingSummary = true,
-                        showFittingDeliveryHeader = state.payMode == CartPayMode.All,
+                        showFittingDeliveryHeader = true,
                         isFittingPage = true,
                         dragEnabled = false,
                         draggingProductId = draggingProductId,
@@ -608,60 +608,129 @@ private fun CartProductsPageContent(
                             }
                         )
                     ) {
-                        if (showFittingDeliveryHeader) {
-                            item {
-                                CartFittingDeliveryHeader(
-                                    header = state.apiFittingDeliveryHeader,
-                                    onClick = { dispatch(CartIntent.FittingDeliveryClick) }
-                                )
+                        when {
+                            isFittingPage && showFittingDeliveryHeader -> {
+                                state.visibleFittingDeliveryGroups.forEachIndexed { deliveryIndex, deliveryGroup ->
+                                    item(
+                                        key = "fitting_delivery_header_${deliveryIndex}_${deliveryGroup.header.date}_${deliveryGroup.header.address}"
+                                    ) {
+                                        val productIds = deliveryGroup.productGroups
+                                            .flatMap { group -> group.products }
+                                            .map { product -> product.id }
 
-                                CartProductDivider()
-                            }
-                        }
+                                        if (deliveryIndex > 0) {
+                                            CartProductDivider()
+                                        }
 
-                        itemsIndexed(
-                            items = visibleProductGroups,
-                            key = { _, group -> group.key }
-                        ) { index, group ->
-                            Box(
-                                modifier = Modifier.zIndex(
-                                    when {
-                                        group.products.any { product -> product.id == draggingProductId } -> 1F
-                                        else -> 0F
-                                    }
-                                )
-                            ) {
-                                CartProductGroupItem(
-                                    group = group,
-                                    viewMode = state.viewMode,
-                                    selectedAlternativeId = state.selectedAlternativeId,
-                                    productModifier = { product ->
-                                        Modifier.cartProductDrag(
-                                            product = product,
-                                            enabled = dragEnabled,
-                                            productBounds = productBounds,
-                                            draggingProductId = draggingProductId,
-                                            onDragStart = onDragStart,
-                                            onDrag = onDrag,
-                                            onDragEnd = onDragEnd,
-                                            onDragCancel = onDragCancel
+                                        CartFittingDeliveryHeader(
+                                            header = deliveryGroup.header,
+                                            onClick = {
+                                                dispatch(
+                                                    CartIntent.FittingDeliveryClick(
+                                                        productIds = productIds,
+                                                        deliveryId = deliveryGroup.id,
+                                                        fittingType = deliveryGroup.fittingType
+                                                    )
+                                                )
+                                            }
                                         )
-                                    },
-                                    isFittingPage = isFittingPage,
-                                    dispatch = dispatch
-                                )
+
+                                        CartProductDivider()
+                                    }
+
+                                    itemsIndexed(
+                                        items = deliveryGroup.productGroups,
+                                        key = { _, group -> "${deliveryIndex}_${group.key}" }
+                                    ) { index, group ->
+                                        Box(
+                                            modifier = Modifier.zIndex(
+                                                when {
+                                                    group.products.any { product -> product.id == draggingProductId } -> 1F
+                                                    else -> 0F
+                                                }
+                                            )
+                                        ) {
+                                            CartProductGroupItem(
+                                                group = group,
+                                                viewMode = state.viewMode,
+                                                selectedAlternativeId = state.selectedAlternativeId,
+                                                productModifier = { product ->
+                                                    Modifier.cartProductDrag(
+                                                        product = product,
+                                                        enabled = dragEnabled,
+                                                        productBounds = productBounds,
+                                                        draggingProductId = draggingProductId,
+                                                        onDragStart = onDragStart,
+                                                        onDrag = onDrag,
+                                                        onDragEnd = onDragEnd,
+                                                        onDragCancel = onDragCancel
+                                                    )
+                                                },
+                                                isFittingPage = isFittingPage,
+                                                dispatch = dispatch
+                                            )
+                                        }
+
+                                        val product = group.products.firstOrNull()
+                                        val isAlternativesVisible = product?.isAlternativesPaletteOpen == true &&
+                                            product.alternatives.isNotEmpty()
+                                        val isDividerVisible = state.viewMode == CartViewMode.List &&
+                                            !group.isLook &&
+                                            index < deliveryGroup.productGroups.lastIndex &&
+                                            !isAlternativesVisible
+
+                                        if (isDividerVisible) {
+                                            CartProductDivider()
+                                        }
+                                    }
+                                }
                             }
+                            else -> {
+                                itemsIndexed(
+                                    items = visibleProductGroups,
+                                    key = { _, group -> group.key }
+                                ) { index, group ->
+                                    Box(
+                                        modifier = Modifier.zIndex(
+                                            when {
+                                                group.products.any { product -> product.id == draggingProductId } -> 1F
+                                                else -> 0F
+                                            }
+                                        )
+                                    ) {
+                                        CartProductGroupItem(
+                                            group = group,
+                                            viewMode = state.viewMode,
+                                            selectedAlternativeId = state.selectedAlternativeId,
+                                            productModifier = { product ->
+                                                Modifier.cartProductDrag(
+                                                    product = product,
+                                                    enabled = dragEnabled,
+                                                    productBounds = productBounds,
+                                                    draggingProductId = draggingProductId,
+                                                    onDragStart = onDragStart,
+                                                    onDrag = onDrag,
+                                                    onDragEnd = onDragEnd,
+                                                    onDragCancel = onDragCancel
+                                                )
+                                            },
+                                            isFittingPage = isFittingPage,
+                                            dispatch = dispatch
+                                        )
+                                    }
 
-                            val product = group.products.firstOrNull()
-                            val isAlternativesVisible = product?.isAlternativesPaletteOpen == true &&
-                                product.alternatives.isNotEmpty()
-                            val isDividerVisible = state.viewMode == CartViewMode.List &&
-                                !group.isLook &&
-                                index < visibleProductGroups.lastIndex &&
-                                !isAlternativesVisible
+                                    val product = group.products.firstOrNull()
+                                    val isAlternativesVisible = product?.isAlternativesPaletteOpen == true &&
+                                        product.alternatives.isNotEmpty()
+                                    val isDividerVisible = state.viewMode == CartViewMode.List &&
+                                        !group.isLook &&
+                                        index < visibleProductGroups.lastIndex &&
+                                        !isAlternativesVisible
 
-                            if (isDividerVisible) {
-                                CartProductDivider()
+                                    if (isDividerVisible) {
+                                        CartProductDivider()
+                                    }
+                                }
                             }
                         }
 

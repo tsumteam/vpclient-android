@@ -3,7 +3,7 @@ package ru.mercury.vpclient.features.main.tabs.fitting.model
 import ru.mercury.vpclient.features.cart.model.CartPayMode
 import ru.mercury.vpclient.shared.data.FORMAT_RUB
 import ru.mercury.vpclient.shared.data.entity.CartProduct
-import ru.mercury.vpclient.shared.data.entity.FittingDeliveryHeader
+import ru.mercury.vpclient.shared.data.entity.FittingDeliveryData
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.domain.mapper.fittingText
 import ru.mercury.vpclient.shared.domain.mapper.hasFittingBadge
@@ -19,7 +19,7 @@ data class FittingModel(
     val activeEmployee: EmployeeEntity = EmployeeEntity.Empty,
     val products: List<CartProduct> = emptyList(),
     val apiFittingProducts: List<CartProduct> = emptyList(),
-    val apiFittingDeliveryHeader: FittingDeliveryHeader = FittingDeliveryHeader.Empty,
+    val apiFittingDeliveries: List<FittingDeliveryData> = emptyList(),
     val payMode: CartPayMode = CartPayMode.All
 ): Model {
 

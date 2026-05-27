@@ -117,6 +117,14 @@ object ClientStrings {
     val FittingConfirmationPlaceBoutique = R.string.fitting_confirmation_place_boutique
     val FittingConfirmationPlaceHome = R.string.fitting_confirmation_place_home
     val FittingConfirmationPlaceOther = R.string.fitting_confirmation_place_other
+    val FittingConfirmationSelectAddress = R.string.fitting_confirmation_select_address
+    val FittingConfirmationMultipleDeliveryInfo = R.string.fitting_confirmation_multiple_delivery_info
+    val FittingConfirmationMultipleDeliveries = R.string.fitting_confirmation_multiple_deliveries
+    val FittingConfirmationSingleDelivery = R.string.fitting_confirmation_single_delivery
+    val FittingConfirmationChangeTime = R.string.fitting_confirmation_change_time
+    val FittingConfirmationConfirmTime = R.string.fitting_confirmation_confirm_time
+    val FittingConfirmationIntervalsEmpty = R.string.fitting_confirmation_intervals_empty
+    val FittingConfirmationDeliveryProductsCount = R.plurals.fitting_confirmation_delivery_products_count
     val FittingConfirmationDeliveryTitle = R.string.fitting_confirmation_delivery_title
     val FittingConfirmationDeliveryValue = R.string.fitting_confirmation_delivery_value
     val FittingConfirmationDeliveryHint = R.string.fitting_confirmation_delivery_hint

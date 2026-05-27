@@ -80,7 +80,7 @@ class FittingViewModel @Inject constructor(
                     reduce {
                         it.copy(
                             apiFittingProducts = fitting.products,
-                            apiFittingDeliveryHeader = fitting.deliveryHeader
+                            apiFittingDeliveries = fitting.deliveries
                         )
                     }
                 }
@@ -103,7 +103,7 @@ class FittingViewModel @Inject constructor(
                     reduce {
                         it.copy(
                             apiFittingProducts = fitting.products,
-                            apiFittingDeliveryHeader = fitting.deliveryHeader
+                            apiFittingDeliveries = fitting.deliveries
                         )
                     }
                 }

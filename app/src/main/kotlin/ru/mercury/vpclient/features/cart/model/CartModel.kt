@@ -3,7 +3,7 @@ package ru.mercury.vpclient.features.cart.model
 import kotlinx.coroutines.Job
 import ru.mercury.vpclient.shared.data.FORMAT_RUB
 import ru.mercury.vpclient.shared.data.entity.CartProduct
-import ru.mercury.vpclient.shared.data.entity.FittingDeliveryHeader
+import ru.mercury.vpclient.shared.data.entity.FittingDeliveryData
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductAvailableSizesEntity
 import ru.mercury.vpclient.shared.domain.mapper.hasFittingProducts
@@ -23,7 +23,7 @@ data class CartModel(
     val activeEmployee: EmployeeEntity = EmployeeEntity.Empty,
     val products: List<CartProduct> = emptyList(),
     val apiFittingProducts: List<CartProduct> = emptyList(),
-    val apiFittingDeliveryHeader: FittingDeliveryHeader = FittingDeliveryHeader.Empty,
+    val apiFittingDeliveries: List<FittingDeliveryData> = emptyList(),
     val editProduct: CartProduct? = null,
     val selectSizeProduct: CartProduct? = null,
     val isFittingSheetVisible: Boolean = false,
@@ -79,6 +79,18 @@ data class CartModel(
     val visibleFittingProductGroups: List<CartProductGroup>
         get() {
             return visibleFittingProducts.toProductGroups()
+        }
+
+    val visibleFittingDeliveryGroups: List<CartFittingDeliveryGroup>
+        get() {
+            return visibleFittingDeliveries.map { delivery ->
+                CartFittingDeliveryGroup(
+                    id = delivery.id,
+                    fittingType = delivery.fittingType,
+                    header = delivery.header,
+                    productGroups = delivery.products.toProductGroups()
+                )
+            }
         }
 
     val allItemsCount: Int
@@ -169,6 +181,18 @@ data class CartModel(
     private val apiFittingPaymentProducts: List<CartProduct>
         get() {
             return apiFittingProducts.filter { it.isForPayment && !it.isSold }
+        }
+
+    private val visibleFittingDeliveries: List<FittingDeliveryData>
+        get() {
+            return when (payMode) {
+                CartPayMode.All -> apiFittingDeliveries
+                CartPayMode.Payment -> apiFittingDeliveries.map { delivery ->
+                    delivery.copy(
+                        products = delivery.products.filter { product -> product.isForPayment && !product.isSold }
+                    )
+                }.filter { delivery -> delivery.products.isNotEmpty() }
+            }
         }
 
     val cartChatName: String

@@ -3,6 +3,7 @@ package ru.mercury.vpclient.features.cart.intent
 import ru.mercury.vpclient.features.cart.model.CartPayMode
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
+import ru.mercury.vpclient.shared.data.network.entity.FittingTypeDtoEnum
 import ru.mercury.vpclient.shared.mvi.Intent
 
 sealed interface CartIntent: Intent {
@@ -18,7 +19,6 @@ sealed interface CartIntent: Intent {
     data object ChatClick: CartIntent
     data object FittingClick: CartIntent
     data object FittingTabClick: CartIntent
-    data object FittingDeliveryClick: CartIntent
     data object BuyClick: CartIntent
     data object HideFittingSheet: CartIntent
     data object ShowFittingProductsSheet: CartIntent
@@ -27,6 +27,11 @@ sealed interface CartIntent: Intent {
     data object HideSizePicker: CartIntent
     data object HideEditProductSheet: CartIntent
     data object ConfirmSizePicker: CartIntent
+    data class FittingDeliveryClick(
+        val productIds: List<String>,
+        val deliveryId: String,
+        val fittingType: FittingTypeDtoEnum
+    ): CartIntent
     data class ProductClick(val id: String): CartIntent
     data class ChangePaySwitch(val product: CartProduct, val paySwitch: Boolean): CartIntent
     data class ChangeFittingPaySwitch(val product: CartProduct, val paySwitch: Boolean): CartIntent

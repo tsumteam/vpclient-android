@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -31,6 +32,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import ru.mercury.vpclient.features.fitting_success.intent.FittingSuccessIntent
+import ru.mercury.vpclient.features.fitting_success.navigation.FittingSuccessDeliveryLine
+import ru.mercury.vpclient.features.fitting_success.navigation.FittingSuccessRoute
 import ru.mercury.vpclient.shared.ui.components.system.ClientButton
 import ru.mercury.vpclient.shared.ui.icons.Logo117
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
@@ -42,15 +45,18 @@ import ru.mercury.vpclient.shared.ui.theme.regular14
 
 @Composable
 fun FittingSuccessScreen(
+    route: FittingSuccessRoute,
     viewModel: FittingSuccessViewModel = hiltViewModel()
 ) {
     FittingSuccessScreenContent(
+        route = route,
         dispatch = viewModel::dispatch
     )
 }
 
 @Composable
 private fun FittingSuccessScreenContent(
+    route: FittingSuccessRoute,
     dispatch: (FittingSuccessIntent) -> Unit
 ) {
     Scaffold(
@@ -93,6 +99,8 @@ private fun FittingSuccessScreenContent(
             )
 
             FittingSuccessDeliveryText(
+                deliveryLines = route.deliveryLines,
+                address = route.address,
                 modifier = Modifier.padding(start = 16.dp, top = 24.dp, end = 16.dp)
             )
 
@@ -136,6 +144,8 @@ private fun FittingSuccessScreenContent(
 
 @Composable
 private fun FittingSuccessDeliveryText(
+    deliveryLines: List<FittingSuccessDeliveryLine>,
+    address: String,
     modifier: Modifier = Modifier
 ) {
     val accentColor = MaterialTheme.colorScheme.error
@@ -144,12 +154,25 @@ private fun FittingSuccessDeliveryText(
         text = buildAnnotatedString {
             append(stringResource(ClientStrings.FittingSuccessDeliveryPrefix))
             withStyle(SpanStyle(color = accentColor)) {
-                append(stringResource(ClientStrings.FittingSuccessDeliveryDate))
+                deliveryLines.forEachIndexed { index, line ->
+                    if (index > 0) append("\n")
+                    append(line.intervalSummary)
+                    append(" (")
+                    append(
+                        pluralStringResource(
+                            ClientStrings.FittingConfirmationDeliveryProductsCount,
+                            line.productsCount,
+                            line.productsCount
+                        )
+                    )
+                    append(")")
+                }
             }
-            append(stringResource(ClientStrings.FittingSuccessDeliveryProducts))
-            append(stringResource(ClientStrings.FittingSuccessDeliveryAddressPrefix))
+            append("\n")
+            append(stringResource(ClientStrings.FittingSuccessDeliveryAddressPrefix).trimEnd())
+            append(" ")
             withStyle(SpanStyle(color = accentColor)) {
-                append(stringResource(ClientStrings.FittingSuccessDeliveryAddress))
+                append(address)
             }
         },
         modifier = modifier.fillMaxWidth(),
@@ -167,6 +190,15 @@ private fun FittingSuccessDeliveryText(
 @Composable
 private fun FittingSuccessScreenContentPreview() {
     FittingSuccessScreenContent(
+        route = FittingSuccessRoute(
+            deliveryLines = listOf(
+                FittingSuccessDeliveryLine(
+                    intervalSummary = "13 мая c 10:00 до 12:00",
+                    productsCount = 2
+                )
+            ),
+            address = "Brioni, Третьяковский проезд."
+        ),
         dispatch = {}
     )
 }
