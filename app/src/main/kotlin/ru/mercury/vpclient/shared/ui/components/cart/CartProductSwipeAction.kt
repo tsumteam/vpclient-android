@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.ui.icons.Edit24
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.theme.cartSwipeEdit
+import ru.mercury.vpclient.shared.ui.theme.surface2
 import ru.mercury.vpclient.shared.ui.theme.regular12
 
 @Composable
@@ -77,7 +77,7 @@ private fun CartProductSwipeActionPreview() {
     CartProductSwipeAction(
         imageVector = Edit24,
         text = "Изменить",
-        backgroundColor = MaterialTheme.colorScheme.cartSwipeEdit,
+        backgroundColor = MaterialTheme.colorScheme.surface2,
         modifier = Modifier
             .height(178.dp),
         width = 88.dp

@@ -3,16 +3,21 @@ package ru.mercury.vpclient.features.welcome
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,13 +26,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import ru.mercury.vpclient.features.welcome.intent.WelcomeIntent
-import ru.mercury.vpclient.shared.ui.components.system.ClientButton
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
-import ru.mercury.vpclient.shared.ui.components.system.ClientTextButton
+import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.icons.Logo117
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.livretMedium21
+import ru.mercury.vpclient.shared.ui.theme.medium15
 import ru.mercury.vpclient.shared.ui.theme.regular16
 
 @Composable
@@ -43,10 +48,7 @@ fun WelcomeScreen(
 private fun WelcomeScreenContent(
     dispatch: (WelcomeIntent) -> Unit
 ) {
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        containerColor = MaterialTheme.colorScheme.background
-    ) { innerPadding ->
+    SharedScaffold { innerPadding ->
         SharedLazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = innerPadding + PaddingValues(horizontal = 16.dp),
@@ -90,18 +92,48 @@ private fun WelcomeScreenContent(
                 )
             }
             item {
-                ClientButton(
+                Button(
                     onClick = { dispatch(WelcomeIntent.RegisterClick) },
-                    modifier = Modifier.padding(top = 61.dp),
-                    text = stringResource(ClientStrings.WelcomeRegister)
-                )
+                    modifier = Modifier
+                        .padding(top = 61.dp)
+                        .fillMaxWidth()
+                        .height(52.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    )
+                ) {
+                    Text(
+                        text = stringResource(ClientStrings.WelcomeRegister),
+                        style = MaterialTheme.typography.medium15.copy(
+                            textAlign = TextAlign.Center,
+                            letterSpacing = .3.sp
+                        )
+                    )
+                }
             }
             item {
-                ClientTextButton(
+                TextButton(
                     onClick = { dispatch(WelcomeIntent.LoginClick) },
-                    modifier = Modifier.padding(top = 8.dp),
-                    text = stringResource(ClientStrings.WelcomeLogin)
-                )
+                    modifier = Modifier
+                        .padding(top = 8.dp)
+                        .fillMaxWidth()
+                        .height(52.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent,
+                        contentColor = MaterialTheme.colorScheme.onBackground
+                    )
+                ) {
+                    Text(
+                        text = stringResource(ClientStrings.WelcomeLogin),
+                        style = MaterialTheme.typography.medium15.copy(
+                            textAlign = TextAlign.Center,
+                            letterSpacing = .3.sp
+                        )
+                    )
+                }
             }
         }
     }

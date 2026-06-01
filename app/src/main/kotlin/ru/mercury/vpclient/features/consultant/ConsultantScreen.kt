@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,7 +20,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,15 +38,14 @@ import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.entity.ConsultantAvatarPlaceholderStyle
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.ui.components.BrandBox
+import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
+import ru.mercury.vpclient.shared.ui.components.SharedScaffold
+import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.consultants.ConsultantActionsRow
 import ru.mercury.vpclient.shared.ui.components.consultants.ConsultantAvatarPlaceholder
-import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
-import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.system.ClientTopAppBar
 import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
-import ru.mercury.vpclient.shared.ui.preview.EmployeeEntityProvider
-import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.medium19
 import ru.mercury.vpclient.shared.ui.theme.regular16
@@ -83,8 +83,7 @@ private fun ConsultantScreenContent(
     dispatch: (ConsultantIntent) -> Unit,
     snackbarHostStateError: SnackbarHostState
 ) {
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
+    SharedScaffold(
         topBar = {
             ClientTopAppBar(
                 navigationIcon = {
@@ -184,10 +183,10 @@ private fun ConsultantScreenContent(
 }
 
 @PreviewWrapper(ThemeWrapper::class)
-@FontScalePreviews
+@Preview
 @Composable
 private fun ConsultantScreenPreview(
-    @PreviewParameter(EmployeeEntityProvider::class) state: EmployeeEntity
+    @PreviewParameter(ConsultantScreenEmployeeEntityProvider::class) state: EmployeeEntity
 ) {
     ConsultantScreenContent(
         state = ConsultantModel(
@@ -195,5 +194,33 @@ private fun ConsultantScreenPreview(
         ),
         dispatch = {},
         snackbarHostStateError = remember { SnackbarHostState() }
+    )
+}
+
+private class ConsultantScreenEmployeeEntityProvider: PreviewParameterProvider<EmployeeEntity> {
+    override val values: Sequence<EmployeeEntity> = sequenceOf(
+        EmployeeEntity(
+            employeeId = "1",
+            employeeEmail = "anna@example.com",
+            employeeMiddleName = "",
+            employeeName = "Анна",
+            employeePhone = "+79990000000",
+            employeeSurname = "Смирнова",
+            photoUrl = "https://i.pravatar.cc/144?img=32",
+            previewPhotoUrl = "https://i.pravatar.cc/144?img=32",
+            lastActivityColorHex = "",
+            lastActivityDate = "",
+            employeeBotiqueAddress = "Барвиха Luxury Village",
+            employeeBotiqueAddressShort = "Барвиха Luxury Village",
+            employeeBrand = "MVST",
+            isActive = false,
+            basketBadge = 1,
+            fittingNumber = 2,
+            fittingBadge = 1,
+            messengerBadge = 1,
+            orderBadge = 1,
+            compilationBadge = 0
+        ),
+        EmployeeEntity.Empty
     )
 }

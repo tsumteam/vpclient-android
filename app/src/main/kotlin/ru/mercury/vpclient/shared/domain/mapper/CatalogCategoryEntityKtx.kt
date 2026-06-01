@@ -1,6 +1,6 @@
 package ru.mercury.vpclient.shared.domain.mapper
 
-import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter.navigation.FilterRoute
+import ru.mercury.vpclient.features.filter.navigation.FilterRoute
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.network.response.FiltersResponse
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogCategoryEntity

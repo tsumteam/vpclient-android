@@ -34,5 +34,5 @@ val ColorScheme.disabled: Color
 val ColorScheme.onDisabled: Color
     get() = Color(0xFFF8F5F5)
 
-val ColorScheme.cartSwipeEdit: Color
+val ColorScheme.surface2: Color
     get() = Color(0xFFC7C9CD)

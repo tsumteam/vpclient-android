@@ -1,10 +1,12 @@
 package ru.mercury.vpclient.shared.ui.components.cart
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -16,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import ru.mercury.vpclient.shared.ui.components.SharedTextButton
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
@@ -54,19 +55,24 @@ fun CartLookHeader(
             )
         )
 
-        SharedTextButton(
+        TextButton(
             onClick = onAddClick,
-            text = stringResource(ClientStrings.CartLookAdd),
-            textStyle = MaterialTheme.typography.medium15.copy(
-                color = MaterialTheme.colorScheme.error,
-                letterSpacing = .3.sp
-            ),
-            modifier = Modifier.constrainAs(button) {
+            modifier = modifier.constrainAs(button) {
                 width = Dimension.wrapContent
+                height = Dimension.wrapContent
                 start.linkTo(parent.start, 8.dp)
                 top.linkTo(title.bottom, 8.dp)
-            }
-        )
+            },
+            contentPadding = PaddingValues(horizontal = 16.dp)
+        ) {
+            Text(
+                text = stringResource(ClientStrings.CartLookAdd),
+                style = MaterialTheme.typography.medium15.copy(
+                    color = MaterialTheme.colorScheme.error,
+                    letterSpacing = .3.sp
+                )
+            )
+        }
 
         ClientAsyncImage(
             imageUrl = imageUrl.orEmpty(),

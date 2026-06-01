@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
@@ -19,7 +20,6 @@ import ru.mercury.vpclient.shared.ui.icons.FittingShirt24
 import ru.mercury.vpclient.shared.ui.icons.Phone24
 import ru.mercury.vpclient.shared.ui.icons.Selection24
 import ru.mercury.vpclient.shared.ui.placeholder
-import ru.mercury.vpclient.shared.ui.preview.EmployeeEntityProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
@@ -113,10 +113,38 @@ fun ConsultantActionsRow(
 @FontScalePreviews
 @Composable
 private fun ConsultantActionsRowPreview(
-    @PreviewParameter(EmployeeEntityProvider::class) entity: EmployeeEntity
+    @PreviewParameter(ConsultantActionsRowEmployeeEntityProvider::class) entity: EmployeeEntity
 ) {
     ConsultantActionsRow(
         entity = entity,
         onClick = {}
+    )
+}
+
+private class ConsultantActionsRowEmployeeEntityProvider: PreviewParameterProvider<EmployeeEntity> {
+    override val values: Sequence<EmployeeEntity> = sequenceOf(
+        EmployeeEntity(
+            employeeId = "1",
+            employeeEmail = "anna@example.com",
+            employeeMiddleName = "",
+            employeeName = "Анна",
+            employeePhone = "+79990000000",
+            employeeSurname = "Смирнова",
+            photoUrl = "https://i.pravatar.cc/144?img=32",
+            previewPhotoUrl = "https://i.pravatar.cc/144?img=32",
+            lastActivityColorHex = "",
+            lastActivityDate = "",
+            employeeBotiqueAddress = "Барвиха Luxury Village",
+            employeeBotiqueAddressShort = "Барвиха Luxury Village",
+            employeeBrand = "MVST",
+            isActive = false,
+            basketBadge = 1,
+            fittingNumber = 2,
+            fittingBadge = 1,
+            messengerBadge = 1,
+            orderBadge = 1,
+            compilationBadge = 0
+        ),
+        EmployeeEntity.Empty
     )
 }

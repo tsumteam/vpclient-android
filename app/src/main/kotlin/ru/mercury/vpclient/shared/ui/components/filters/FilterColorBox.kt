@@ -22,7 +22,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import ru.mercury.vpclient.shared.ui.preview.BooleanParameterProvider
+import ru.mercury.vpclient.shared.ui.preview.BooleanPreviewParameterProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.livretRegular11
@@ -89,7 +89,7 @@ fun FilterColorBox(
 @FontScalePreviews
 @Composable
 private fun FilterColorBoxPreview(
-    @PreviewParameter(BooleanParameterProvider::class) selected: Boolean
+    @PreviewParameter(BooleanPreviewParameterProvider::class) selected: Boolean
 ) {
     FilterColorBox(
         text = "Бордовый",

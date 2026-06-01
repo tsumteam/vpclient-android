@@ -12,15 +12,17 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import ru.mercury.vpclient.shared.ui.components.cart.SizeSelectorState
-import ru.mercury.vpclient.shared.ui.preview.SizeSelectorStateProvider
+import ru.mercury.vpclient.features.cart_size_picker_sheet.SizeSelectorState
+import ru.mercury.vpclient.shared.ui.components.details.SizeState
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
@@ -81,7 +83,10 @@ fun DetailsSizeSelector(
                 top.linkTo(sizeListRef.top)
                 bottom.linkTo(sizeListRef.bottom)
             },
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.spacedBy(
+                space = 6.dp,
+                alignment = Alignment.CenterVertically
+            )
         ) {
             Text(
                 text = state.topText.ifEmpty { selectedSize?.topText.orEmpty() },
@@ -93,7 +98,6 @@ fun DetailsSizeSelector(
 
             Text(
                 text = state.bottomText.ifEmpty { selectedSize?.bottomText.orEmpty() },
-                modifier = Modifier.padding(top = 6.dp),
                 style = MaterialTheme.typography.regular14.copy(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     letterSpacing = .2.sp
@@ -145,11 +149,45 @@ fun DetailsSizeSelector(
 @FontScalePreviews
 @Composable
 private fun DetailsSizeSelectorPreview(
-    @PreviewParameter(SizeSelectorStateProvider::class) state: SizeSelectorState
+    @PreviewParameter(DetailsSizeSelectorSizeSelectorStateProvider::class) state: SizeSelectorState
 ) {
     DetailsSizeSelector(
         state = state,
         onSizeClick = {},
         onSizeTableClick = {}
+    )
+}
+
+private class DetailsSizeSelectorSizeSelectorStateProvider: PreviewParameterProvider<SizeSelectorState> {
+
+    private val sizes = listOf(
+        SizeState(topText = "RU 36", bottomText = "IT 34", selected = false, enabled = true),
+        SizeState(topText = "RU 38", bottomText = "IT 36", selected = false, enabled = true),
+        SizeState(topText = "RU 40", bottomText = "IT 38", selected = false, enabled = true),
+        SizeState(topText = "RU 42", bottomText = "IT 40", selected = false, enabled = false),
+        SizeState(topText = "RU 44", bottomText = "IT 42", selected = false, enabled = true),
+        SizeState(topText = "RU 46", bottomText = "IT 44", selected = false, enabled = false)
+    )
+
+    override val values: Sequence<SizeSelectorState> = sequenceOf(
+        SizeSelectorState.Empty,
+        SizeSelectorState(
+            sizes = sizes,
+            topText = "IT",
+            bottomText = "RU",
+            isSizeTableVisible = true
+        ),
+        SizeSelectorState(
+            sizes = sizes.mapIndexed { index, state -> state.copy(selected = index == 1) },
+            topText = "IT",
+            bottomText = "RU",
+            isSizeTableVisible = true
+        ),
+        SizeSelectorState(
+            sizes = sizes.mapIndexed { index, state -> state.copy(selected = index == 3) },
+            topText = "IT",
+            bottomText = "RU",
+            isSizeTableVisible = true
+        )
     )
 }

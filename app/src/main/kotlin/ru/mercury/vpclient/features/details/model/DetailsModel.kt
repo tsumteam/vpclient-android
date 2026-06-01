@@ -11,7 +11,7 @@ import ru.mercury.vpclient.shared.domain.mapper.hasFittingProducts
 import ru.mercury.vpclient.shared.domain.mapper.hasMessengerBadge
 import ru.mercury.vpclient.shared.domain.mapper.toCatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.mvi.Model
-import ru.mercury.vpclient.shared.ui.components.cart.SizeSelectorState
+import ru.mercury.vpclient.features.cart_size_picker_sheet.SizeSelectorState
 import ru.mercury.vpclient.shared.ui.components.details.SizeState
 
 // fixme

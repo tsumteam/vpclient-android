@@ -1,5 +1,8 @@
 package ru.mercury.vpclient.features.cart
 
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -9,19 +12,23 @@ import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.features.cart.event.CartEvent
 import ru.mercury.vpclient.features.cart.intent.CartIntent
 import ru.mercury.vpclient.features.cart.model.CartModel
+import ru.mercury.vpclient.features.cart.navigation.CartPage
+import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.features.fitting_confirmation.navigation.FittingConfirmationRoute
-import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.FittingData
 import ru.mercury.vpclient.shared.data.error.BasketHideAlternativesException
 import ru.mercury.vpclient.shared.data.error.BasketReturnOriginalException
 import ru.mercury.vpclient.shared.data.error.BasketShowAlternativesException
+import ru.mercury.vpclient.shared.data.error.ChangeFittingLineColorException
+import ru.mercury.vpclient.shared.data.error.ChangeFittingLineSizeException
 import ru.mercury.vpclient.shared.data.error.ChangeFittingPaySwitchException
 import ru.mercury.vpclient.shared.data.error.ChangePaySwitchException
 import ru.mercury.vpclient.shared.data.error.ClientException
 import ru.mercury.vpclient.shared.data.error.DeleteLookException
 import ru.mercury.vpclient.shared.data.error.DeleteProductException
 import ru.mercury.vpclient.shared.data.error.DisassembleLookException
+import ru.mercury.vpclient.shared.data.error.FittingReturnProductException
 import ru.mercury.vpclient.shared.data.error.MoveProductsAfterDragException
 import ru.mercury.vpclient.shared.data.error.RemoveAlternativeException
 import ru.mercury.vpclient.shared.data.error.SetProductSizeException
@@ -35,20 +42,26 @@ import ru.mercury.vpclient.shared.domain.interactor.EmployeeInteractor
 import ru.mercury.vpclient.shared.domain.interactor.ProductInteractor
 import ru.mercury.vpclient.shared.domain.mapper.clientFullName
 import ru.mercury.vpclient.shared.domain.mapper.isFeminine
+import ru.mercury.vpclient.shared.domain.mapper.moveProductAfterDrag
 import ru.mercury.vpclient.shared.domain.mapper.withCenterLoading
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.navigation.BackRoute
-import javax.inject.Inject
 
-private const val SIZE_PICKER_LOAD_ERROR_MESSAGE = "Не удалось загрузить размеры"
-
-@HiltViewModel
-class CartViewModel @Inject constructor(
+@HiltViewModel(assistedFactory = CartViewModel.Factory::class)
+class CartViewModel @AssistedInject constructor(
+    @Assisted route: CartRoute,
     private val authenticationInteractor: AuthenticationInteractor,
     private val cartInteractor: CartInteractor,
     private val employeeInteractor: EmployeeInteractor,
     private val productInteractor: ProductInteractor
-): ClientViewModel<CartIntent, CartModel, CartEvent>(CartModel()) {
+): ClientViewModel<CartIntent, CartModel, CartEvent>(
+    CartModel(
+        initialPage = when (route.page) {
+            CartPage.Cart -> CartModel.CART_PAGE_INDEX
+            CartPage.Fitting -> CartModel.FITTING_PAGE_INDEX
+        }
+    )
+) {
 
     init {
         dispatch(CartIntent.CollectCart)
@@ -196,7 +209,6 @@ class CartViewModel @Inject constructor(
             is CartIntent.ShowSizePicker -> {
                 val detailId = intent.product.detailId
                 if (detailId.isEmpty()) {
-                    launch { send(CartEvent.SnackbarErrorMessage(SIZE_PICKER_LOAD_ERROR_MESSAGE)) }
                     return
                 }
                 stateFlow.value.sizePickerJob?.cancel()
@@ -205,6 +217,7 @@ class CartViewModel @Inject constructor(
                         sizePickerProduct = intent.product,
                         sizePickerSizes = null,
                         sizePickerSelectedId = null,
+                        sizePickerForFitting = false,
                         sizePickerJob = null
                     )
                 }
@@ -225,6 +238,29 @@ class CartViewModel @Inject constructor(
                 }
                 reduce { it.copy(sizePickerJob = sizePickerJob) }
             }
+            is CartIntent.ShowFittingSizePicker -> {
+                stateFlow.value.sizePickerJob?.cancel()
+                reduce {
+                    it.copy(
+                        fittingEditProduct = null,
+                        sizePickerProduct = intent.product,
+                        sizePickerSizes = null,
+                        sizePickerSelectedId = null,
+                        sizePickerForFitting = true,
+                        sizePickerJob = null
+                    )
+                }
+                val sizePickerJob = launch {
+                    val sizes = cartInteractor.loadAvailableSizes(intent.product)
+                    reduce {
+                        when (it.sizePickerProduct?.id) {
+                            intent.product.id -> it.copy(sizePickerSizes = sizes)
+                            else -> it
+                        }
+                    }
+                }
+                reduce { it.copy(sizePickerJob = sizePickerJob) }
+            }
             is CartIntent.HideSizePicker -> {
                 stateFlow.value.sizePickerJob?.cancel()
                 reduce {
@@ -232,6 +268,7 @@ class CartViewModel @Inject constructor(
                         sizePickerProduct = null,
                         sizePickerSizes = null,
                         sizePickerSelectedId = null,
+                        sizePickerForFitting = false,
                         sizePickerJob = null
                     )
                 }
@@ -243,18 +280,92 @@ class CartViewModel @Inject constructor(
             is CartIntent.ConfirmSizePicker -> {
                 val product = stateFlow.value.sizePickerProduct ?: return
                 val sizeId = stateFlow.value.sizePickerSelectedId ?: return
+                val forFitting = stateFlow.value.sizePickerForFitting
                 stateFlow.value.sizePickerJob?.cancel()
                 reduce {
                     it.copy(
                         sizePickerProduct = null,
                         sizePickerSizes = null,
                         sizePickerSelectedId = null,
+                        sizePickerForFitting = false,
                         sizePickerJob = null
                     )
                 }
                 launch {
                     withCenterLoading {
-                        cartInteractor.setProductSize(product, sizeId)
+                        when {
+                            forFitting -> {
+                                cartInteractor.setFittingProductSize(product, sizeId)
+                                val fitting = runCatching { cartInteractor.loadFitting() }.getOrDefault(FittingData())
+                                reduce {
+                                    it.copy(
+                                        apiFittingProducts = fitting.products,
+                                        apiFittingDeliveries = fitting.deliveries
+                                    )
+                                }
+                            }
+                            else -> cartInteractor.setProductSize(product, sizeId)
+                        }
+                    }
+                }
+            }
+            is CartIntent.ShowColorPicker -> {
+                reduce {
+                    it.copy(
+                        fittingEditProduct = null,
+                        colorPickerProduct = intent.product,
+                        colorPickerColors = null,
+                        colorPickerSelectedId = null
+                    )
+                }
+                launch {
+                    val colors = cartInteractor.loadAvailableColors(intent.product)
+                    reduce {
+                        when (it.colorPickerProduct?.id) {
+                            intent.product.id -> {
+                                it.copy(
+                                    colorPickerColors = colors,
+                                    colorPickerSelectedId = colors.firstOrNull { color -> color.selected }?.id
+                                )
+                            }
+                            else -> it
+                        }
+                    }
+                }
+            }
+            is CartIntent.HideColorPicker -> {
+                reduce {
+                    it.copy(
+                        colorPickerProduct = null,
+                        colorPickerColors = null,
+                        colorPickerSelectedId = null
+                    )
+                }
+            }
+            is CartIntent.ToggleColorPickerItem -> {
+                val colorId = stateFlow.value.colorPickerColors?.getOrNull(intent.index)?.id
+                reduce { it.copy(colorPickerSelectedId = colorId) }
+            }
+            is CartIntent.ConfirmColorPicker -> {
+                val product = stateFlow.value.colorPickerProduct ?: return
+                val colorId = stateFlow.value.colorPickerSelectedId ?: return
+                reduce {
+                    it.copy(
+                        colorPickerProduct = null,
+                        colorPickerColors = null,
+                        colorPickerSelectedId = null
+                    )
+                }
+                launch {
+                    withCenterLoading {
+                        cartInteractor.setFittingProductColor(product, colorId)
+                        val fitting = runCatching { cartInteractor.loadFitting() }.getOrDefault(FittingData())
+                        reduce {
+                            it.copy(
+                                apiFittingProducts = fitting.products,
+                                apiFittingDeliveries = fitting.deliveries
+                            )
+                        }
                     }
                 }
             }
@@ -313,6 +424,23 @@ class CartViewModel @Inject constructor(
             }
             is CartIntent.EditProductSwipeClick -> reduce { it.copy(editProduct = intent.product) }
             is CartIntent.HideEditProductSheet -> reduce { it.copy(editProduct = null) }
+            is CartIntent.EditFittingProductSwipeClick -> reduce { it.copy(fittingEditProduct = intent.product) }
+            is CartIntent.HideFittingEditProductSheet -> reduce { it.copy(fittingEditProduct = null) }
+            is CartIntent.ReturnFittingProductToBasketSwipeClick -> {
+                launch {
+                    withCenterLoading {
+                        cartInteractor.fittingReturnProduct(intent.product)
+                        cartInteractor.loadBasket()
+                        val fitting = runCatching { cartInteractor.loadFitting() }.getOrDefault(FittingData())
+                        reduce {
+                            it.copy(
+                                apiFittingProducts = fitting.products,
+                                apiFittingDeliveries = fitting.deliveries
+                            )
+                        }
+                    }
+                }
+            }
             is CartIntent.AddSizeClick,
             is CartIntent.ChangeQuantityClick,
             is CartIntent.ChangeColorClick -> return
@@ -369,6 +497,15 @@ class CartViewModel @Inject constructor(
             is ChangeFittingPaySwitchException -> {
                 launch { send(CartEvent.SnackbarErrorMessage(throwable.message)) }
             }
+            is ChangeFittingLineSizeException -> {
+                launch { send(CartEvent.SnackbarErrorMessage(throwable.message)) }
+            }
+            is ChangeFittingLineColorException -> {
+                launch { send(CartEvent.SnackbarErrorMessage(throwable.message)) }
+            }
+            is FittingReturnProductException -> {
+                launch { send(CartEvent.SnackbarErrorMessage(throwable.message)) }
+            }
             is RemoveAlternativeException -> {
                 launch { send(CartEvent.SnackbarErrorMessage(throwable.message)) }
             }
@@ -384,42 +521,9 @@ class CartViewModel @Inject constructor(
             else -> super.catch(throwable)
         }
     }
-}
 
-private fun List<CartProduct>.moveProductAfterDrag(
-    productId: String,
-    targetProductId: String,
-    placeAfterTarget: Boolean
-): List<CartProduct> {
-    if (productId == targetProductId) {
-        return this
+    @AssistedFactory
+    interface Factory {
+        fun create(route: CartRoute): CartViewModel
     }
-
-    val fromIndex = indexOfFirst { it.id == productId }
-    val targetIndex = indexOfFirst { it.id == targetProductId }
-    if (fromIndex == -1 || targetIndex == -1) {
-        return this
-    }
-
-    val targetProduct = this[targetIndex]
-    val product = this[fromIndex].copy(
-        lookId = targetProduct.lookId,
-        lookName = targetProduct.lookName,
-        lookImageUrl = targetProduct.lookImageUrl
-    )
-    val products = toMutableList()
-    products.removeAt(fromIndex)
-
-    val actualTargetIndex = products.indexOfFirst { it.id == targetProductId }
-    if (actualTargetIndex == -1) {
-        return this
-    }
-
-    val insertIndex = when {
-        placeAfterTarget -> actualTargetIndex + 1
-        else -> actualTargetIndex
-    }.coerceIn(0, products.size)
-    products.add(insertIndex, product)
-
-    return products
 }

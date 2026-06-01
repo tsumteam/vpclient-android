@@ -10,10 +10,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
-import ru.mercury.vpclient.shared.ui.preview.BrandEntityProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.livretMedium21
@@ -53,9 +53,22 @@ fun BrandBox(
 @FontScalePreviews
 @Composable
 private fun BrandBoxPreview(
-    @PreviewParameter(BrandEntityProvider::class) entity: BrandEntity
+    @PreviewParameter(BrandBoxBrandEntityProvider::class) entity: BrandEntity
 ) {
     BrandBox(
         entity = entity
+    )
+}
+
+private class BrandBoxBrandEntityProvider: PreviewParameterProvider<BrandEntity> {
+    override val values: Sequence<BrandEntity> = sequenceOf(
+        BrandEntity(
+            brand = "SAINT LAURENT",
+            urlBrandLogo = null
+        ),
+        BrandEntity(
+            brand = "GUCCI",
+            urlBrandLogo = "https://example.com/brand-logo.png"
+        )
     )
 }

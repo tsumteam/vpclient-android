@@ -43,6 +43,9 @@ private const val TOP_BAR_ICON_SIZE_DP = 42
 
 sealed interface TopBarState {
     data object Logo: TopBarState
+    data class Back(
+        val navigationClick: () -> Unit
+    ): TopBarState
     data class Home(
         val actionsState: TopBarActionsState,
         val searchClick: () -> Unit
@@ -126,6 +129,7 @@ fun ClientCenterAlignedTopAppBar(
                         tint = Color.Black
                     )
                 }
+                is TopBarState.Back -> {}
                 is TopBarState.Home -> {
                     Icon(
                         imageVector = Logo82,
@@ -206,6 +210,19 @@ fun ClientCenterAlignedTopAppBar(
                 }
                 is TopBarState.Catalog -> {
                     SearchNavigationIcon(onClick = state.navigationClick)
+                }
+                is TopBarState.Back -> {
+                    IconButton(
+                        onClick = state.navigationClick,
+                        modifier = Modifier.size(42.dp)
+                    ) {
+                        Icon(
+                            imageVector = ChevronStart24,
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp),
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
                 }
                 is TopBarState.Details -> {
                     IconButton(
@@ -335,6 +352,7 @@ fun ClientCenterAlignedTopAppBar(
                 is TopBarState.Category,
                 is TopBarState.Filter,
                 is TopBarState.FilterBrand,
+                is TopBarState.Back,
                 is TopBarState.Details -> Color.White
                 else -> Color.Transparent
             }
@@ -401,6 +419,9 @@ private fun ClientCenterAlignedTopAppBarPreview(
 private class TopBarStateProvider: PreviewParameterProvider<TopBarState> {
     override val values: Sequence<TopBarState> = sequenceOf(
         TopBarState.Logo,
+        TopBarState.Back(
+            navigationClick = {}
+        ),
         TopBarState.Home(
             actionsState = TopBarActionsState(
                 showCartButton = true,

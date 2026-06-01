@@ -19,6 +19,7 @@ import ru.mercury.vpclient.shared.domain.interactor.Interactor
 import ru.mercury.vpclient.shared.domain.mapper.resendCodeTimerSec
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 class CodeViewModel @Inject constructor(
@@ -46,7 +47,7 @@ class CodeViewModel @Inject constructor(
                 stateFlow.value.resendTimerJob?.cancel()
                 val job = launch {
                     while (true) {
-                        delay(CODE_RESEND_TIMER_DELAY)
+                        delay(CODE_RESEND_TIMER_DELAY.milliseconds)
                         reduce { state ->
                             val resendSecondsLeft = state.clientEntity.resendCodeTimerSec()
                             when {

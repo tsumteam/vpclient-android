@@ -8,17 +8,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -33,6 +30,7 @@ import ru.mercury.vpclient.features.mediaviewer.intent.MediaViewerIntent
 import ru.mercury.vpclient.features.mediaviewer.model.MediaViewerModel
 import ru.mercury.vpclient.features.mediaviewer.navigation.MediaViewerRoute
 import ru.mercury.vpclient.shared.data.entity.DetailsMediaItem
+import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.details.DetailsPagerIndicator
 import ru.mercury.vpclient.shared.ui.components.details.DetailsVideoPlayer
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
@@ -64,8 +62,7 @@ private fun MediaViewerScreenContent(
         pageCount = { mediaItems.size }
     )
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
+    SharedScaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {},
@@ -95,11 +92,8 @@ private fun MediaViewerScreenContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(44.dp)
-                    .padding(horizontal = 16.dp)
             )
         },
-        floatingActionButtonPosition = FabPosition.Center,
-        containerColor = MaterialTheme.colorScheme.background,
         contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal)
     ) { innerPadding ->
         HorizontalPager(

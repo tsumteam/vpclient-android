@@ -12,9 +12,13 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.plus
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -54,17 +58,20 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.ClientEntity
 import ru.mercury.vpclient.shared.domain.mapper.formatCodeResendTime
 import ru.mercury.vpclient.shared.domain.mapper.formatPhoneForDisplay
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
+import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.SmsCodeInput
 import ru.mercury.vpclient.shared.ui.components.SmsCodeInputState
-import ru.mercury.vpclient.shared.ui.components.system.ClientButton
 import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
 import ru.mercury.vpclient.shared.ui.components.system.ClientInlineTextButton
 import ru.mercury.vpclient.shared.ui.components.system.TopBarState
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
+import ru.mercury.vpclient.shared.ui.theme.disabled
 import ru.mercury.vpclient.shared.ui.theme.livretMedium21
+import ru.mercury.vpclient.shared.ui.theme.medium15
+import ru.mercury.vpclient.shared.ui.theme.onDisabled
 import ru.mercury.vpclient.shared.ui.theme.regular12
 import ru.mercury.vpclient.shared.ui.theme.regular15
 
@@ -107,28 +114,53 @@ private fun CodeScreenContent(
     focusRequester: FocusRequester,
     snackbarHostStateError: SnackbarHostState
 ) {
-    Scaffold(
-        modifier = Modifier
-            .fillMaxSize()
-            .pointerInput(Unit) {
-                detectTapGestures(onTap = { dispatch(CodeIntent.HideKeyboard) })
-            },
+    SharedScaffold(
+        modifier = Modifier.pointerInput(Unit) {
+            detectTapGestures(onTap = { dispatch(CodeIntent.HideKeyboard) })
+        },
         topBar = {
             ClientCenterAlignedTopAppBar(
                 state = TopBarState.Logo
             )
         },
         bottomBar = {
-            ClientButton(
+            Button(
                 onClick = { dispatch(CodeIntent.ConfirmClick) },
-                text = stringResource(ClientStrings.CodeButton),
-                loading = state.isLoading,
-                enabled = state.isConfirmEnabled,
                 modifier = Modifier
                     .padding(16.dp)
                     .imePadding()
                     .navigationBarsPadding()
-            )
+                    .fillMaxWidth()
+                    .height(52.dp),
+                enabled = state.isConfirmEnabled && !state.isLoading,
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (state.isConfirmEnabled || state.isLoading) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.disabled,
+                    contentColor = if (state.isConfirmEnabled || state.isLoading) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onDisabled,
+                    disabledContainerColor = if (state.isConfirmEnabled || state.isLoading) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.disabled,
+                    disabledContentColor = if (state.isConfirmEnabled || state.isLoading) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onDisabled
+                )
+            ) {
+                when {
+                    state.isLoading -> {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            strokeWidth = 2.dp
+                        )
+                    }
+                    else -> {
+                        Text(
+                            text = stringResource(ClientStrings.CodeButton),
+                            maxLines = 1,
+                            style = MaterialTheme.typography.medium15.copy(
+                                textAlign = TextAlign.Center,
+                                letterSpacing = .3.sp
+                            )
+                        )
+                    }
+                }
+            }
         },
         snackbarHost = {
             SharedSnackbarHost(

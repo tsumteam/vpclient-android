@@ -21,6 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,7 +30,6 @@ import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
 import ru.mercury.vpclient.shared.ui.components.BrandBox
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.icons.Cancel14
-import ru.mercury.vpclient.shared.ui.preview.CartProductAlternativeProvider
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.livretMedium18
 import ru.mercury.vpclient.shared.ui.theme.regular11
@@ -146,9 +146,41 @@ fun CartAlternativeProductCard(
 @Preview(showBackground = true)
 @Composable
 private fun CartAlternativeProductCardPreview(
-    @PreviewParameter(CartProductAlternativeProvider::class) alternative: CartProductAlternative
+    @PreviewParameter(CartAlternativeProductCardCartProductAlternativeProvider::class) alternative: CartProductAlternative
 ) {
     CartAlternativeProductCard(
         alternative = alternative
+    )
+}
+
+private class CartAlternativeProductCardCartProductAlternativeProvider: PreviewParameterProvider<CartProductAlternative> {
+    override val values: Sequence<CartProductAlternative> = sequenceOf(
+        CartProductAlternative(
+            id = "1",
+            detailId = "1",
+            brand = "BALMAIN",
+            urlBrandLogo = null,
+            price = "580 000 ₽",
+            imageUrl = "",
+            isOriginal = true
+        ),
+        CartProductAlternative(
+            id = "2",
+            detailId = "2",
+            brand = "DOLCE&GABBANA",
+            urlBrandLogo = null,
+            price = "1 900 000 ₽",
+            imageUrl = "",
+            isOriginal = false
+        ),
+        CartProductAlternative(
+            id = "3",
+            detailId = "3",
+            brand = "MVST",
+            urlBrandLogo = null,
+            price = "800 000 ₽",
+            imageUrl = "",
+            isOriginal = false
+        )
     )
 }

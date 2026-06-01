@@ -19,12 +19,12 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.data.entity.FilterTitleEntity
+import ru.mercury.vpclient.shared.data.network.response.CatalogCategoryResponse
+import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogCategoryEntity
 import ru.mercury.vpclient.shared.domain.mapper.isEmpty
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.ktx.clickableWithoutRipple
 import ru.mercury.vpclient.shared.ui.placeholder
-import ru.mercury.vpclient.shared.ui.preview.CatalogCategoryEntityProvider
-import ru.mercury.vpclient.shared.ui.preview.CatalogCategoryEntityProvider2
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
@@ -112,14 +112,47 @@ private fun FilterScreenTitlePreview(
 }
 
 private class FilterTitleEntityProvider: PreviewParameterProvider<FilterTitleEntity> {
-    private val titleCatalogCategoryEntity = CatalogCategoryEntityProvider().values.first()
-    private val subtitleCatalogCategoryEntity = CatalogCategoryEntityProvider2().values.first()
+    private val titleCatalogCategoryEntity = FilterScreenTitleCatalogCategoryEntityProvider().values.first()
+    private val subtitleCatalogCategoryEntity = FilterScreenTitleCatalogCategoryEntityProvider2().values.first()
 
     override val values: Sequence<FilterTitleEntity> = sequenceOf(
         FilterTitleEntity.Empty,
         FilterTitleEntity(
             titleCatalogCategoryEntity = titleCatalogCategoryEntity,
             subtitleCatalogCategoryEntity = subtitleCatalogCategoryEntity
+        )
+    )
+}
+
+private class FilterScreenTitleCatalogCategoryEntityProvider: PreviewParameterProvider<CatalogCategoryEntity> {
+    override val values: Sequence<CatalogCategoryEntity> = sequenceOf(
+        CatalogCategoryEntity(
+            id = 10,
+            parentId = 2,
+            rootId = 2,
+            level = CatalogCategoryEntity.LEVEL_TOP,
+            name = "Одежда",
+            photoUrl = "",
+            categoryType = CatalogCategoryResponse.CATEGORY_TYPE_CATALOG,
+            sortSettingId = 0,
+            position = 1
+        ),
+        CatalogCategoryEntity.Empty
+    )
+}
+
+private class FilterScreenTitleCatalogCategoryEntityProvider2: PreviewParameterProvider<CatalogCategoryEntity> {
+    override val values: Sequence<CatalogCategoryEntity> = sequenceOf(
+        CatalogCategoryEntity(
+            id = 1,
+            parentId = 10,
+            rootId = 2,
+            level = CatalogCategoryEntity.LEVEL_BOTTOM,
+            name = "ПУХОВЫЕ",
+            photoUrl = "",
+            categoryType = "",
+            sortSettingId = 0,
+            position = 1
         )
     )
 }

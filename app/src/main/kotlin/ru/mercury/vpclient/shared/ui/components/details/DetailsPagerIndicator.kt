@@ -20,7 +20,7 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.ui.components.HorizontalPagerIndicator
 import ru.mercury.vpclient.shared.ui.icons.Video24
-import ru.mercury.vpclient.shared.ui.preview.BooleanParameterProvider
+import ru.mercury.vpclient.shared.ui.preview.BooleanPreviewParameterProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 
@@ -70,7 +70,7 @@ fun DetailsPagerIndicator(
 @FontScalePreviews
 @Composable
 private fun DetailsPagerIndicatorPreview(
-    @PreviewParameter(BooleanParameterProvider::class) showVideoIcon: Boolean
+    @PreviewParameter(BooleanPreviewParameterProvider::class) showVideoIcon: Boolean
 ) {
     val pagerState = rememberPagerState(
         initialPage = 1,

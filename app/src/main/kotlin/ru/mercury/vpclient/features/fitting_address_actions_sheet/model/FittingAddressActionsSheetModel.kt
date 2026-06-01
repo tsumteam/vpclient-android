@@ -1,0 +1,3 @@
+package ru.mercury.vpclient.features.fitting_address_actions_sheet.model
+
+class FittingAddressActionsSheetModel

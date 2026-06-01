@@ -18,7 +18,7 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.ui.ktx.clickableWithoutRipple
-import ru.mercury.vpclient.shared.ui.preview.BooleanParameterProvider
+import ru.mercury.vpclient.shared.ui.preview.BooleanPreviewParameterProvider
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.medium13
 
@@ -57,7 +57,7 @@ fun CartTab(
 @Preview(showBackground = true)
 @Composable
 private fun CartTabAllPreview(
-    @PreviewParameter(BooleanParameterProvider::class) selected: Boolean
+    @PreviewParameter(BooleanPreviewParameterProvider::class) selected: Boolean
 ) {
     CartTab(
         text = if (selected) "ВСЕ ТОВАРЫ (100)" else "В КОРЗИНЕ (0)",

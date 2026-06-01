@@ -82,7 +82,7 @@ class AuthenticationRepositoryImpl @Inject constructor(
             onSuccess = {
                 settingsDataStore.setValue(PreferenceKey.UserToken, it.token.orEmpty())
                 val currentUser = networkService.userCurrentUser()
-                val userId = currentUser.data?.id?.toString().orEmpty()
+                val userId = currentUser.data?.code.orEmpty()
                 settingsDataStore.setValue(PreferenceKey.UserId, userId)
                 val activeEmployee = networkService.clientActiveEmployee()
                 val activeEmployeeId = activeEmployee.data?.employeeId.orEmpty()
@@ -93,9 +93,11 @@ class AuthenticationRepositoryImpl @Inject constructor(
     }
 
     override suspend fun currentUser(): CurrentUserResponse {
-        return handleResponseResult {
+        val currentUser = handleResponseResult {
             networkService.userCurrentUser()
         }.getOrThrow()
+        settingsDataStore.setValue(PreferenceKey.UserId, currentUser.code.orEmpty())
+        return currentUser
     }
 
     override suspend fun logout() {

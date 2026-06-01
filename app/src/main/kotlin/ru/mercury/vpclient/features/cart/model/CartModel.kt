@@ -2,14 +2,19 @@ package ru.mercury.vpclient.features.cart.model
 
 import kotlinx.coroutines.Job
 import ru.mercury.vpclient.shared.data.FORMAT_RUB
+import ru.mercury.vpclient.shared.data.entity.CartFittingDeliveryGroup
+import ru.mercury.vpclient.shared.data.entity.CartPayMode
 import ru.mercury.vpclient.shared.data.entity.CartProduct
+import ru.mercury.vpclient.shared.data.entity.CartProductGroup
+import ru.mercury.vpclient.shared.data.entity.CartViewMode
 import ru.mercury.vpclient.shared.data.entity.FittingDeliveryData
+import ru.mercury.vpclient.shared.data.entity.ProductAvailableColor
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductAvailableSizesEntity
 import ru.mercury.vpclient.shared.domain.mapper.hasFittingProducts
 import ru.mercury.vpclient.shared.domain.mapper.thousandsSeparator
 import ru.mercury.vpclient.shared.mvi.Model
-import ru.mercury.vpclient.shared.ui.components.cart.SizeSelectorState
+import ru.mercury.vpclient.features.cart_size_picker_sheet.SizeSelectorState
 import ru.mercury.vpclient.shared.ui.components.details.SizeState
 import kotlin.math.roundToInt
 
@@ -17,6 +22,7 @@ private const val DEFAULT_CART_CONSULTANT_NAME = "Персональный ме�
 private const val DEFAULT_FITTING_SHEET_CLIENT_NAME = "Клиент"
 
 data class CartModel(
+    val initialPage: Int = CART_PAGE_INDEX,
     val payMode: CartPayMode = CartPayMode.All,
     val viewMode: CartViewMode = CartViewMode.List,
     val isRefreshing: Boolean = false,
@@ -25,12 +31,17 @@ data class CartModel(
     val apiFittingProducts: List<CartProduct> = emptyList(),
     val apiFittingDeliveries: List<FittingDeliveryData> = emptyList(),
     val editProduct: CartProduct? = null,
+    val fittingEditProduct: CartProduct? = null,
     val selectSizeProduct: CartProduct? = null,
     val isFittingSheetVisible: Boolean = false,
     val isFittingProductsSheetVisible: Boolean = false,
     val sizePickerProduct: CartProduct? = null,
     val sizePickerSizes: ProductAvailableSizesEntity? = null,
     val sizePickerSelectedId: String? = null,
+    val sizePickerForFitting: Boolean = false,
+    val colorPickerProduct: CartProduct? = null,
+    val colorPickerColors: List<ProductAvailableColor>? = null,
+    val colorPickerSelectedId: String? = null,
     val selectedAlternativeId: String? = null,
     val paySwitchJob: Job? = null,
     val sizePickerJob: Job? = null,
@@ -42,9 +53,13 @@ data class CartModel(
             val sizes = sizePickerSizes ?: return SizeSelectorState.Empty
             return SizeSelectorState(
                 sizes = sizes.items.map { size ->
+                    val displayText = size.sizeFullName.orEmpty().ifBlank { size.sizeId }
+                    val displayParts = displayText.split("|")
                     SizeState(
-                        topText = size.sizeId.uppercase(),
-                        bottomText = size.russianSize ?: "-",
+                        topText = displayParts.firstOrNull()?.shortSizeText() ?: size.sizeId.shortSizeText(),
+                        bottomText = size.russianSize?.shortSizeText()
+                            ?: displayParts.getOrNull(1)?.shortSizeText()
+                            ?: "-",
                         selected = size.sizeId == sizePickerSelectedId,
                         enabled = size.inStock
                     )
@@ -53,6 +68,14 @@ data class CartModel(
                 bottomText = "RU",
                 isSizeTableVisible = false
             )
+        }
+
+    val colorPickerColorsState: List<ProductAvailableColor>
+        get() {
+            val colors = colorPickerColors ?: return emptyList()
+            return colors.map { color ->
+                color.copy(selected = color.id == colorPickerSelectedId)
+            }
         }
 
     val visibleProducts: List<CartProduct>
@@ -211,6 +234,17 @@ data class CartModel(
         return "$itemsCount ${itemsCount.productsWord} на сумму ${FORMAT_RUB.format(sum.thousandsSeparator)}"
     }
 
+    private fun String.shortSizeText(): String {
+        val sizeText = substringBefore("|")
+            .substringAfterLast("—")
+            .substringAfterLast("-")
+            .trim()
+        return sizeText.split(" ")
+            .filter { it.isNotBlank() }
+            .lastOrNull()
+            ?: sizeText
+    }
+
     private fun List<CartProduct>.toProductGroups(): List<CartProductGroup> {
         val lookProducts = filter { !it.lookId.isNullOrEmpty() }
         val noLookProducts = filter { it.lookId.isNullOrEmpty() }
@@ -252,4 +286,10 @@ data class CartModel(
                 else -> "товаров"
             }
         }
+
+    companion object {
+        const val CART_PAGE_COUNT = 2
+        const val CART_PAGE_INDEX = 0
+        const val FITTING_PAGE_INDEX = 1
+    }
 }

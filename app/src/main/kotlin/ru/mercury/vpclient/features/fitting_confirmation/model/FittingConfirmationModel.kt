@@ -2,8 +2,13 @@ package ru.mercury.vpclient.features.fitting_confirmation.model
 
 import ru.mercury.vpclient.features.fitting_confirmation.navigation.FittingConfirmationRoute
 import ru.mercury.vpclient.shared.data.entity.CartProduct
+import ru.mercury.vpclient.shared.data.entity.ClientDeliveryAddress
+import ru.mercury.vpclient.shared.data.entity.ClientDeliveryAddressSuggestion
+import ru.mercury.vpclient.features.fitting_address_sheet.model.FittingAddressModel
+import ru.mercury.vpclient.shared.data.entity.FittingConfirmationDeliveryMode
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationDeliveryGroup
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationDeliveryInterval
+import ru.mercury.vpclient.shared.data.entity.FittingConfirmationPlaceType
 import ru.mercury.vpclient.shared.mvi.Model
 
 data class FittingConfirmationModel(
@@ -11,6 +16,19 @@ data class FittingConfirmationModel(
     val products: List<CartProduct> = emptyList(),
     val boutiqueAddress: String? = null,
     val clientAddress: String? = null,
+    val clientAddresses: List<ClientDeliveryAddress> = emptyList(),
+    val selectedClientAddressId: Int? = null,
+    val pendingClientAddressId: Int? = null,
+    val addressActionAddressId: Int? = null,
+    val deleteAddressId: Int? = null,
+    val isAddressFormVisible: Boolean = false,
+    val isAddressSearchVisible: Boolean = false,
+    val addressForm: FittingAddressModel = FittingAddressModel(),
+    val addressSuggestions: List<ClientDeliveryAddressSuggestion> = emptyList(),
+    val isAddressListLoading: Boolean = false,
+    val isAddressSuggestionsLoading: Boolean = false,
+    val isAddressSaving: Boolean = false,
+    val addressSearchQuery: String = "",
     val isClientAddressAvailable: Boolean = true,
     val selectedPlaceType: FittingConfirmationPlaceType = FittingConfirmationPlaceType.Boutique,
     val deliveryMode: FittingConfirmationDeliveryMode = FittingConfirmationDeliveryMode.Multiple,
@@ -32,11 +50,36 @@ data class FittingConfirmationModel(
             }
         }
 
+    val selectedClientAddress: ClientDeliveryAddress?
+        get() {
+            return clientAddresses.firstOrNull { address -> address.id == selectedClientAddressId }
+        }
+
+    val pendingClientAddress: ClientDeliveryAddress?
+        get() {
+            return clientAddresses.firstOrNull { address -> address.id == pendingClientAddressId }
+        }
+
+    val addressActionAddress: ClientDeliveryAddress?
+        get() {
+            return clientAddresses.firstOrNull { address -> address.id == addressActionAddressId }
+        }
+
+    val deleteAddress: ClientDeliveryAddress?
+        get() {
+            return clientAddresses.firstOrNull { address -> address.id == deleteAddressId }
+        }
+
+    val displayedClientAddress: String?
+        get() {
+            return selectedClientAddress?.title ?: clientAddress
+        }
+
     val isSelectedPlaceWithoutAddress: Boolean
         get() {
             return when (selectedPlaceType) {
                 FittingConfirmationPlaceType.Boutique -> false
-                FittingConfirmationPlaceType.Home -> clientAddress.isNullOrBlank()
+                FittingConfirmationPlaceType.Home -> displayedClientAddress.isNullOrBlank()
                 FittingConfirmationPlaceType.Other -> true
             }
         }

@@ -10,6 +10,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
@@ -18,7 +19,6 @@ import ru.mercury.vpclient.shared.domain.mapper.cardDiscountedPrice
 import ru.mercury.vpclient.shared.domain.mapper.cardOldPrice
 import ru.mercury.vpclient.shared.domain.mapper.cardPrice
 import ru.mercury.vpclient.shared.domain.mapper.isDiscountPriceVisible
-import ru.mercury.vpclient.shared.ui.preview.CatalogFilterProductsEntityProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.regular14
@@ -109,9 +109,52 @@ private fun PriceText(
 @FontScalePreviews
 @Composable
 private fun PriceTextPreview(
-    @PreviewParameter(CatalogFilterProductsEntityProvider::class) entity: CatalogFilterProductsEntity
+    @PreviewParameter(PriceTextCatalogFilterProductsEntityProvider::class) entity: CatalogFilterProductsEntity
 ) {
     PriceText(
         entity = entity
+    )
+}
+
+private class PriceTextCatalogFilterProductsEntityProvider: PreviewParameterProvider<CatalogFilterProductsEntity> {
+    override val values: Sequence<CatalogFilterProductsEntity> = sequenceOf(
+        CatalogFilterProductsEntity(
+            categoryId = 1,
+            titleCategoryId = 11,
+            position = 0,
+            id = "preview-1",
+            itemId = "item-1",
+            colorId = "black",
+            name = "Кожаная куртка oversize",
+            price = 189_900.0,
+            priceWithoutDiscount = 234_900.0,
+            brand = "SAINT LAURENT",
+            urlBrandLogo = "https://example.com/brand-logo.png",
+            imageUrl = "",
+            imageUrls = listOf("", ""),
+            additionalColorPhotoUrls = listOf(
+                "https://st.vip-platinum.ru/catalog/ColorSearchCard/Blue.png",
+                "https://st.vip-platinum.ru/catalog/ColorSearchCard/Bordo.png",
+                "https://st.vip-platinum.ru/catalog/ColorSearchCard/Black.png",
+                "https://st.vip-platinum.ru/catalog/ColorSearchCard/Grey.png",
+                "https://st.vip-platinum.ru/catalog/ColorSearchCard/Green.png"
+            )
+        ),
+        CatalogFilterProductsEntity(
+            categoryId = 1,
+            titleCategoryId = 11,
+            position = 1,
+            id = "preview-2",
+            itemId = "item-2",
+            colorId = "white",
+            name = "Хлопковая футболка с логотипом",
+            price = 32_700.0,
+            priceWithoutDiscount = null,
+            brand = "BRUNELLO CUCINELLI",
+            urlBrandLogo = null,
+            imageUrl = "",
+            imageUrls = listOf(""),
+            additionalColorPhotoUrls = emptyList()
+        )
     )
 }

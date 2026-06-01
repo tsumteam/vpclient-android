@@ -2,7 +2,7 @@ package ru.mercury.vpclient.shared.domain.interactor.impl
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
-import ru.mercury.vpclient.shared.coroutines.ClientDispatchers
+import ru.mercury.vpclient.shared.coroutines.SharedDispatchers
 import ru.mercury.vpclient.shared.data.entity.CatalogData
 import ru.mercury.vpclient.shared.domain.interactor.CatalogInteractor
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogCategoryEntity
@@ -11,7 +11,7 @@ import ru.mercury.vpclient.shared.domain.repository.CatalogRepository
 import javax.inject.Inject
 
 class CatalogInteractorImpl @Inject constructor(
-    private val dispatchers: ClientDispatchers,
+    private val dispatchers: SharedDispatchers,
     private val catalogRepository: CatalogRepository
 ): CatalogInteractor {
 

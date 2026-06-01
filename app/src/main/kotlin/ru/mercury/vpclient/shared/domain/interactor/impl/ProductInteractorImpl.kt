@@ -2,14 +2,14 @@ package ru.mercury.vpclient.shared.domain.interactor.impl
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
-import ru.mercury.vpclient.shared.coroutines.ClientDispatchers
+import ru.mercury.vpclient.shared.coroutines.SharedDispatchers
 import ru.mercury.vpclient.shared.domain.interactor.ProductInteractor
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
 import ru.mercury.vpclient.shared.domain.repository.ProductRepository
 import javax.inject.Inject
 
 class ProductInteractorImpl @Inject constructor(
-    private val dispatchers: ClientDispatchers,
+    private val dispatchers: SharedDispatchers,
     private val productRepository: ProductRepository
 ): ProductInteractor {
 

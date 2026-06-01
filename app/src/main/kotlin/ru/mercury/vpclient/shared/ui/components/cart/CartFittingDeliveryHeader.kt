@@ -1,5 +1,7 @@
 package ru.mercury.vpclient.shared.ui.components.cart
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.data.entity.FittingDeliveryHeader
 import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
-import ru.mercury.vpclient.shared.ui.ktx.clickableWithoutRipple
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.medium14
 import ru.mercury.vpclient.shared.ui.theme.regular11
@@ -45,10 +46,11 @@ fun CartFittingDeliveryHeader(
         modifier = modifier
             .fillMaxWidth()
             .height(48.dp)
-            .clickableWithoutRipple(onClick = onClick)
+            .clickable(onClick = onClick)
     ) {
         Column(
-            modifier = Modifier.padding(start = 16.dp, top = 7.dp)
+            modifier = Modifier.padding(start = 16.dp, top = 7.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Text(
                 text = buildAnnotatedString {
@@ -70,7 +72,6 @@ fun CartFittingDeliveryHeader(
 
             Text(
                 text = header.address,
-                modifier = Modifier.padding(top = 4.dp),
                 style = MaterialTheme.typography.regular11.copy(
                     color = secondaryTextColor
                 )

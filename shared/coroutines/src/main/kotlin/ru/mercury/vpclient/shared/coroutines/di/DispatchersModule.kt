@@ -6,13 +6,13 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import ru.mercury.vpclient.shared.coroutines.ClientDispatchers
-import ru.mercury.vpclient.shared.coroutines.impl.ClientDispatchersImpl
+import ru.mercury.vpclient.shared.coroutines.SharedDispatchers
+import ru.mercury.vpclient.shared.coroutines.impl.SharedDispatchersImpl
 
 @Module
 @InstallIn(SingletonComponent::class)
 interface DispatchersModule {
 
     @Binds
-    fun clientDispatchers(impl: ClientDispatchersImpl): ClientDispatchers
+    fun sharedDispatchers(impl: SharedDispatchersImpl): SharedDispatchers
 }

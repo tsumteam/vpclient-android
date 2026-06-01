@@ -19,7 +19,7 @@ import ru.mercury.vpclient.shared.ui.icons.Delete24
 import ru.mercury.vpclient.shared.ui.icons.Edit24
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.cartSwipeEdit
+import ru.mercury.vpclient.shared.ui.theme.surface2
 
 @Composable
 fun CartProductTrailingSwipeActions(
@@ -45,7 +45,7 @@ fun CartProductTrailingSwipeActions(
             CartProductSwipeAction(
                 imageVector = Edit24,
                 text = stringResource(ClientStrings.CartEdit),
-                backgroundColor = MaterialTheme.colorScheme.cartSwipeEdit,
+                backgroundColor = MaterialTheme.colorScheme.surface2,
                 onClick = onEditClick
             )
         }

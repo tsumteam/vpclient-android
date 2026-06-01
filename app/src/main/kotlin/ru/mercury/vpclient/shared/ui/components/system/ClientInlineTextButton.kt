@@ -21,7 +21,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.mercury.vpclient.shared.ui.preview.BooleanParameterProvider
+import ru.mercury.vpclient.shared.ui.preview.BooleanPreviewParameterProvider
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.medium15
 
@@ -65,7 +65,7 @@ fun ClientInlineTextButton(
 @Preview
 @Composable
 private fun ClientInlineTextButtonPreview(
-    @PreviewParameter(BooleanParameterProvider::class) isLoading: Boolean
+    @PreviewParameter(BooleanPreviewParameterProvider::class) isLoading: Boolean
 ) {
     Box(
         modifier = Modifier

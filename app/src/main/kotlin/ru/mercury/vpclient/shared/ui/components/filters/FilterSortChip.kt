@@ -19,7 +19,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.ui.icons.Sort24
-import ru.mercury.vpclient.shared.ui.preview.BooleanParameterProvider
+import ru.mercury.vpclient.shared.ui.preview.BooleanPreviewParameterProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 
@@ -63,7 +63,7 @@ fun FilterSortChip(
 @FontScalePreviews
 @Composable
 private fun FilterSortChipPreview(
-    @PreviewParameter(BooleanParameterProvider::class) selected: Boolean
+    @PreviewParameter(BooleanPreviewParameterProvider::class) selected: Boolean
 ) {
     FilterSortChip(
         selected = selected,

@@ -8,9 +8,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
-import ru.mercury.vpclient.shared.ui.preview.BrandEntityProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.livretMedium21
@@ -48,9 +48,22 @@ fun CartBrandBox(
 @FontScalePreviews
 @Composable
 private fun CartBrandBoxPreview(
-    @PreviewParameter(BrandEntityProvider::class) entity: BrandEntity
+    @PreviewParameter(CartBrandBoxBrandEntityProvider::class) entity: BrandEntity
 ) {
     CartBrandBox(
         entity = entity
+    )
+}
+
+private class CartBrandBoxBrandEntityProvider: PreviewParameterProvider<BrandEntity> {
+    override val values: Sequence<BrandEntity> = sequenceOf(
+        BrandEntity(
+            brand = "SAINT LAURENT",
+            urlBrandLogo = null
+        ),
+        BrandEntity(
+            brand = "GUCCI",
+            urlBrandLogo = "https://example.com/brand-logo.png"
+        )
     )
 }

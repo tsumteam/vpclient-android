@@ -47,7 +47,8 @@ val FittingLineResponseDto.cartProduct: CartProduct?
             discountPercentage = product.discountPercentage ?: 0,
             quantity = 1,
             sizeCount = sizes.size.coerceAtLeast(1),
-            priceValue = price
+            priceValue = price,
+            sizeId = sizes.firstOrNull()?.id.orEmpty()
         )
     }
 

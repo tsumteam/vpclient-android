@@ -1,5 +1,6 @@
 package ru.mercury.vpclient.features.details
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,10 +22,11 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.FabPosition
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -40,6 +42,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
@@ -52,42 +56,46 @@ import ru.mercury.vpclient.features.details.event.DetailsEvent
 import ru.mercury.vpclient.features.details.intent.DetailsIntent
 import ru.mercury.vpclient.features.details.model.DetailsModel
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
+import ru.mercury.vpclient.features.details_message_sheet.DetailsMessageSheet
+import ru.mercury.vpclient.features.details_message_sheet.intent.DetailsMessageSheetIntent
+import ru.mercury.vpclient.features.details_message_sheet.model.DetailsMessageSheetModel
+import ru.mercury.vpclient.features.details_size_picker_sheet.DetailsSizePickerSheet
+import ru.mercury.vpclient.features.details_size_picker_sheet.intent.DetailsSizePickerSheetIntent
+import ru.mercury.vpclient.features.details_size_picker_sheet.model.DetailsSizePickerSheetModel
+import ru.mercury.vpclient.features.details_wear_with_sheet.DetailsWearWithSheet
+import ru.mercury.vpclient.features.details_wear_with_sheet.intent.DetailsWearWithSheetIntent
+import ru.mercury.vpclient.features.details_wear_with_sheet.model.DetailsWearWithSheetModel
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.entity.DetailsMediaItem
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductButtonEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductOtherColorEntity
-import ru.mercury.vpclient.shared.ui.components.system.TopBarActionsState
-import ru.mercury.vpclient.shared.ui.components.system.TopBarState
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
+import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.details.DetailsColorImageSelector
 import ru.mercury.vpclient.shared.ui.components.details.DetailsCompleteSetSection
 import ru.mercury.vpclient.shared.ui.components.details.DetailsFieldRow
-import ru.mercury.vpclient.shared.ui.components.details.DetailsMessageSheet
 import ru.mercury.vpclient.shared.ui.components.details.DetailsOutfitButton
 import ru.mercury.vpclient.shared.ui.components.details.DetailsPagerIndicator
 import ru.mercury.vpclient.shared.ui.components.details.DetailsProductInfoBox
-import ru.mercury.vpclient.shared.ui.components.details.DetailsSizePickerSheet
 import ru.mercury.vpclient.shared.ui.components.details.DetailsSizeSelector
 import ru.mercury.vpclient.shared.ui.components.details.DetailsVideoPlayer
 import ru.mercury.vpclient.shared.ui.components.details.DetailsWearWithSection
-import ru.mercury.vpclient.shared.ui.components.details.DetailsWearWithSheet
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
-import ru.mercury.vpclient.shared.ui.components.system.ClientButton
 import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
-import ru.mercury.vpclient.shared.ui.components.system.ClientOutlinedButton
+import ru.mercury.vpclient.shared.ui.components.system.TopBarActionsState
+import ru.mercury.vpclient.shared.ui.components.system.TopBarState
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.placeholder
-import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.annotation.HightPreview
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
+import ru.mercury.vpclient.shared.ui.theme.livretRegular15
+import ru.mercury.vpclient.shared.ui.theme.medium15
 import ru.mercury.vpclient.shared.ui.theme.regular14
-
-// fixme
 
 @Composable
 fun DetailsScreen(
@@ -207,53 +215,103 @@ private fun DetailsScreenContent(
 
     if (state.isMessageSheetVisible) {
         DetailsMessageSheet(
-            productEntity = state.productEntity,
-            onSendClick = { dispatch(DetailsIntent.HideMessageSheet) },
-            onDismissRequest = { dispatch(DetailsIntent.HideMessageSheet) }
+            state = DetailsMessageSheetModel(
+                productEntity = state.productEntity
+            ),
+            dispatch = { intent ->
+                when (intent) {
+                    is DetailsMessageSheetIntent.CommentChange -> Unit
+                    is DetailsMessageSheetIntent.SendClick -> {
+                        dispatch(DetailsIntent.HideMessageSheet)
+                    }
+                    is DetailsMessageSheetIntent.DismissRequest -> {
+                        dispatch(DetailsIntent.HideMessageSheet)
+                    }
+                }
+            }
         )
     }
 
     if (state.isWearWithSheetVisible) {
         DetailsWearWithSheet(
-            products = state.wearWithProducts,
-            isProductInBasket = state::isProductInBasket,
-            onProductClick = { dispatch(DetailsIntent.ProductClick(it)) },
-            onProductBasketClick = { dispatch(DetailsIntent.ProductBasketClick(it.id)) },
-            onDismissRequest = { dispatch(DetailsIntent.HideWearWithSheet) }
+            state = DetailsWearWithSheetModel(
+                products = state.wearWithProducts,
+                basketProductIds = state.basketProductIds,
+                basketProductKeys = state.basketProductKeys
+            ),
+            dispatch = { intent ->
+                when (intent) {
+                    is DetailsWearWithSheetIntent.ProductClick -> {
+                        dispatch(DetailsIntent.ProductClick(intent.id))
+                    }
+                    is DetailsWearWithSheetIntent.ProductBasketClick -> {
+                        dispatch(DetailsIntent.ProductBasketClick(intent.product.id))
+                    }
+                    is DetailsWearWithSheetIntent.DismissRequest -> {
+                        dispatch(DetailsIntent.HideWearWithSheet)
+                    }
+                }
+            }
         )
     }
 
     if (state.isSizePickerSheetVisible) {
         DetailsSizePickerSheet(
-            state = state.sizePickerState,
-            onSizeClick = { dispatch(DetailsIntent.SizeClick(it)) },
-            onSizeTableClick = { dispatch(DetailsIntent.SizeTableClick) },
-            onAddToBasketClick = { dispatch(DetailsIntent.AddToBasketClick) },
-            onDismissRequest = { dispatch(DetailsIntent.HideSizePicker) }
+            state = DetailsSizePickerSheetModel(
+                sizeSelectorState = state.sizePickerState
+            ),
+            dispatch = { intent ->
+                when (intent) {
+                    is DetailsSizePickerSheetIntent.SizeClick -> {
+                        dispatch(DetailsIntent.SizeClick(intent.index))
+                    }
+                    is DetailsSizePickerSheetIntent.SizeTableClick -> {
+                        dispatch(DetailsIntent.SizeTableClick)
+                    }
+                    is DetailsSizePickerSheetIntent.AddToBasketClick -> {
+                        dispatch(DetailsIntent.AddToBasketClick)
+                    }
+                    is DetailsSizePickerSheetIntent.DismissRequest -> {
+                        dispatch(DetailsIntent.HideSizePicker)
+                    }
+                }
+            }
         )
     }
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
+    SharedScaffold(
         topBar = {
             ClientCenterAlignedTopAppBar(
                 state = topBarState
             )
         },
         floatingActionButton = {
-            ClientButton(
+            Button(
                 onClick = { dispatch(DetailsIntent.AddToBasketClick) },
-                text = stringResource(ClientStrings.DetailsAddToBasket),
                 modifier = Modifier
-                    .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
+                    .padding(bottom = 8.dp)
                     .fillMaxWidth()
+                    .height(52.dp)
                     .placeholder(
                         visible = state.isLoading,
                         highlight = PlaceholderHighlight.shimmer(),
                         color = MaterialTheme.colorScheme.surfaceVariant,
                         shape = RoundedCornerShape(8.dp)
+                    ),
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            ) {
+                Text(
+                    text = stringResource(ClientStrings.DetailsAddToBasket),
+                    style = MaterialTheme.typography.medium15.copy(
+                        textAlign = TextAlign.Center,
+                        letterSpacing = .3.sp
                     )
-            )
+                )
+            }
         },
         snackbarHost = {
             SharedSnackbarHost(
@@ -262,8 +320,6 @@ private fun DetailsScreenContent(
                 containerColor = MaterialTheme.colorScheme.error
             )
         },
-        floatingActionButtonPosition = FabPosition.Center,
-        containerColor = MaterialTheme.colorScheme.background,
         contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal)
     ) { innerPadding ->
         when {
@@ -538,13 +594,30 @@ private fun DetailsScreenContent(
                     }
                     state.productEntity.buttons.forEachIndexed { index, button ->
                         item {
-                            ClientOutlinedButton(
+                            OutlinedButton(
                                 onClick = { dispatch(DetailsIntent.ButtonClick(index)) },
-                                text = button.title,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(start = 16.dp, top = 16.dp, end = 16.dp)
-                            )
+                                .fillMaxWidth()
+                                .height(52.dp),
+                                shape = RoundedCornerShape(8.dp),
+                                border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.onBackground),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.background,
+                                    contentColor = MaterialTheme.colorScheme.onBackground,
+                                    disabledContainerColor = MaterialTheme.colorScheme.background,
+                                    disabledContentColor = MaterialTheme.colorScheme.onBackground
+                                ),
+                                contentPadding = PaddingValues(horizontal = 16.dp)
+                            ) {
+                                Text(
+                                    text = button.title,
+                                    style = MaterialTheme.typography.livretRegular15.copy(
+                                        textAlign = TextAlign.Center
+                                    )
+                                )
+                            }
                         }
                     }
                 }
@@ -554,7 +627,7 @@ private fun DetailsScreenContent(
 }
 
 @PreviewWrapper(ThemeWrapper::class)
-@FontScalePreviews
+@Preview
 @HightPreview
 @Composable
 private fun DetailsScreenContentPreview(

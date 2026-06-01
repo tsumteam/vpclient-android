@@ -2,10 +2,13 @@
 
 package ru.mercury.vpclient.activity
 
+import android.Manifest
+import android.os.Build
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -16,12 +19,6 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.activity.intent.MainActivityIntent
-import ru.mercury.vpclient.shared.data.event.CenterLoading
-import ru.mercury.vpclient.shared.navigation.BackRoute
-import ru.mercury.vpclient.shared.ui.components.system.ClientNavDisplay
-import ru.mercury.vpclient.shared.ui.components.LoadingBox
-import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
-import ru.mercury.vpclient.shared.ui.ktx.rememberRequestMultiplePermissions
 import ru.mercury.vpclient.features.cart.CartScreen
 import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.features.code.CodeScreen
@@ -30,6 +27,8 @@ import ru.mercury.vpclient.features.consultant.ConsultantScreen
 import ru.mercury.vpclient.features.consultant.navigation.ConsultantRoute
 import ru.mercury.vpclient.features.details.DetailsScreen
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
+import ru.mercury.vpclient.features.fitting_address_selection.FittingAddressSelectionScreen
+import ru.mercury.vpclient.features.fitting_address_selection.navigation.FittingAddressSelectionRoute
 import ru.mercury.vpclient.features.fitting_confirmation.FittingConfirmationScreen
 import ru.mercury.vpclient.features.fitting_confirmation.navigation.FittingConfirmationRoute
 import ru.mercury.vpclient.features.fitting_success.FittingSuccessScreen
@@ -38,12 +37,18 @@ import ru.mercury.vpclient.features.login.LoginScreen
 import ru.mercury.vpclient.features.login.navigation.LoginRoute
 import ru.mercury.vpclient.features.main.MainScreen
 import ru.mercury.vpclient.features.main.navigation.MainRoute
-import ru.mercury.vpclient.features.register.RegisterScreen
-import ru.mercury.vpclient.features.register.navigation.RegisterRoute
 import ru.mercury.vpclient.features.mediaviewer.MediaViewerScreen
 import ru.mercury.vpclient.features.mediaviewer.navigation.MediaViewerRoute
+import ru.mercury.vpclient.features.register.RegisterScreen
+import ru.mercury.vpclient.features.register.navigation.RegisterRoute
 import ru.mercury.vpclient.features.welcome.WelcomeScreen
 import ru.mercury.vpclient.features.welcome.navigation.WelcomeRoute
+import ru.mercury.vpclient.shared.data.event.CenterLoading
+import ru.mercury.vpclient.shared.navigation.BackRoute
+import ru.mercury.vpclient.shared.ui.components.LoadingBox
+import ru.mercury.vpclient.shared.ui.components.system.ClientNavDisplay
+import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
+import ru.mercury.vpclient.shared.ui.ktx.rememberRequestMultiplePermissions
 
 @Composable
 fun MainActivityContent(
@@ -53,7 +58,7 @@ fun MainActivityContent(
     if (state.startDestination == null) return
 
     val navBackStack: NavBackStack<NavKey> = rememberNavBackStack(requireNotNull(state.startDestination))
-    val requestPermissions = rememberRequestMultiplePermissions()
+    val requestPermissions = rememberRequestMultiplePermissions(if (Build.VERSION.SDK_INT >= 33) arrayOf(Manifest.permission.POST_NOTIFICATIONS) else emptyArray())
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -70,6 +75,7 @@ fun MainActivityContent(
                 entry<CartRoute> { CartScreen(it) }
                 entry<DetailsRoute> { DetailsScreen(it) }
                 entry<FittingConfirmationRoute> { FittingConfirmationScreen(it) }
+                entry<FittingAddressSelectionRoute> { FittingAddressSelectionScreen(it) }
                 entry<FittingSuccessRoute> { FittingSuccessScreen(it) }
                 entry<ConsultantRoute> { ConsultantScreen(it) }
                 entry<MediaViewerRoute> { MediaViewerScreen(it) }
@@ -81,7 +87,7 @@ fun MainActivityContent(
         )
     }
 
-    /*LaunchedEffect(Unit) { requestPermissions() }*/
+    LaunchedEffect(Unit) { requestPermissions() }
 
     ObserveAsEvents(
         flow = MainEventManager.eventFlow

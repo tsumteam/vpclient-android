@@ -4,14 +4,19 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.plus
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,6 +42,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
@@ -45,16 +51,19 @@ import ru.mercury.vpclient.features.login.intent.LoginIntent
 import ru.mercury.vpclient.features.login.model.LoginModel
 import ru.mercury.vpclient.shared.data.entity.PhoneValidationError
 import ru.mercury.vpclient.shared.ui.components.AgreementText
-import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
-import ru.mercury.vpclient.shared.ui.components.system.ClientButton
-import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
+import ru.mercury.vpclient.shared.ui.components.SharedScaffold
+import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
+import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
 import ru.mercury.vpclient.shared.ui.components.system.ClientTextField
 import ru.mercury.vpclient.shared.ui.components.system.TopBarState
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
+import ru.mercury.vpclient.shared.ui.theme.disabled
 import ru.mercury.vpclient.shared.ui.theme.livretMedium21
+import ru.mercury.vpclient.shared.ui.theme.medium15
+import ru.mercury.vpclient.shared.ui.theme.onDisabled
 import ru.mercury.vpclient.shared.ui.transformation.PhoneInputTransformation
 import ru.mercury.vpclient.shared.ui.transformation.PhoneOutputTransformation
 
@@ -105,28 +114,52 @@ private fun LoginScreenContent(
         null -> ""
     }
 
-    Scaffold(
-        modifier = Modifier
-            .fillMaxSize()
-            .pointerInput(Unit) {
-                detectTapGestures(onTap = { dispatch(LoginIntent.HideKeyboard) })
-            },
+    SharedScaffold(
+        modifier = Modifier.pointerInput(Unit) {
+            detectTapGestures(onTap = { dispatch(LoginIntent.HideKeyboard) })
+        },
         topBar = {
             ClientCenterAlignedTopAppBar(
                 state = TopBarState.Logo
             )
         },
         bottomBar = {
-            ClientButton(
+            Button(
                 onClick = { dispatch(LoginIntent.LoginClick) },
-                text = stringResource(ClientStrings.LoginButton),
-                loading = state.isLoading,
-                enabled = state.isLoginEnabled,
                 modifier = Modifier
                     .padding(16.dp)
                     .imePadding()
                     .navigationBarsPadding()
-            )
+                    .fillMaxWidth()
+                    .height(52.dp),
+                enabled = state.isLoginEnabled && !state.isLoading,
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (state.isLoginEnabled || state.isLoading) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.disabled,
+                    contentColor = if (state.isLoginEnabled || state.isLoading) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onDisabled,
+                    disabledContainerColor = if (state.isLoginEnabled || state.isLoading) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.disabled,
+                    disabledContentColor = if (state.isLoginEnabled || state.isLoading) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onDisabled
+                )
+            ) {
+                when {
+                    state.isLoading -> {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            strokeWidth = 2.dp
+                        )
+                    }
+                    else -> {
+                        Text(
+                            text = stringResource(ClientStrings.LoginButton),
+                            style = MaterialTheme.typography.medium15.copy(
+                                textAlign = TextAlign.Center,
+                                letterSpacing = .3.sp
+                            )
+                        )
+                    }
+                }
+            }
         },
         snackbarHost = {
             SharedSnackbarHost(

@@ -3,12 +3,16 @@ package ru.mercury.vpclient.shared.domain.repository
 import kotlinx.coroutines.flow.Flow
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
+import ru.mercury.vpclient.shared.data.entity.ClientDeliveryAddress
+import ru.mercury.vpclient.shared.data.entity.ClientDeliveryAddressSuggestion
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationData
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationDeliveryGroup
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationDeliveryInterval
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationResult
 import ru.mercury.vpclient.shared.data.entity.FittingData
+import ru.mercury.vpclient.shared.data.entity.ProductAvailableColor
 import ru.mercury.vpclient.shared.data.network.entity.FittingTypeDtoEnum
+import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductAvailableSizesEntity
 
 interface CartRepository {
 
@@ -23,6 +27,16 @@ interface CartRepository {
     suspend fun addProductToBasket(productId: String, sizeId: String?)
 
     suspend fun setProductSize(product: CartProduct, sizeId: String)
+
+    suspend fun fittingReturnProduct(product: CartProduct)
+
+    suspend fun setFittingProductSize(product: CartProduct, sizeId: String)
+
+    suspend fun setFittingProductColor(product: CartProduct, colorId: String)
+
+    suspend fun loadAvailableSizes(product: CartProduct): ProductAvailableSizesEntity
+
+    suspend fun loadAvailableColors(product: CartProduct): List<ProductAvailableColor>
 
     suspend fun deleteProduct(product: CartProduct)
 
@@ -48,23 +62,36 @@ interface CartRepository {
 
     suspend fun loadFittingConfirmationData(
         products: List<CartProduct>,
-        fittingType: FittingTypeDtoEnum
+        fittingType: FittingTypeDtoEnum,
+        clientAddress: ClientDeliveryAddress?
     ): FittingConfirmationData
 
     suspend fun loadExistingFittingConfirmationData(
         products: List<CartProduct>,
         deliveryId: String,
-        fittingType: FittingTypeDtoEnum
+        fittingType: FittingTypeDtoEnum,
+        clientAddress: ClientDeliveryAddress?
     ): FittingConfirmationData
 
     suspend fun confirmFitting(
         products: List<CartProduct>,
         fittingType: FittingTypeDtoEnum,
+        clientAddress: ClientDeliveryAddress?,
         singleInterval: FittingConfirmationDeliveryInterval?,
         deliveryGroups: List<FittingConfirmationDeliveryGroup>,
         selectedDeliveryIntervalIds: Map<String, String>,
         useSingleDelivery: Boolean
     ): FittingConfirmationResult
+
+    suspend fun loadClientDeliveryAddresses(): List<ClientDeliveryAddress>
+
+    suspend fun searchClientDeliveryAddress(query: String): List<ClientDeliveryAddressSuggestion>
+
+    suspend fun createClientDeliveryAddress(address: ClientDeliveryAddress): ClientDeliveryAddress
+
+    suspend fun updateClientDeliveryAddress(address: ClientDeliveryAddress): ClientDeliveryAddress
+
+    suspend fun deleteClientDeliveryAddress(addressId: Int)
 
     suspend fun cartBadge(): Int
 }

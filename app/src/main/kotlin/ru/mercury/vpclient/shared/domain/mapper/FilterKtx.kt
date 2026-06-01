@@ -1,7 +1,7 @@
 package ru.mercury.vpclient.shared.domain.mapper
 
-import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter.model.FilterModel
-import ru.mercury.vpclient.features.main.tabs.catalog.stack.filter.navigation.FilterRoute
+import ru.mercury.vpclient.features.filter.model.FilterModel
+import ru.mercury.vpclient.features.filter.navigation.FilterRoute
 import ru.mercury.vpclient.shared.data.entity.FilterChip
 import ru.mercury.vpclient.shared.data.network.request.CatalogFilterRequest
 

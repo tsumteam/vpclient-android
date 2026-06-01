@@ -1,13 +1,18 @@
 package ru.mercury.vpclient.shared.ui.components.cart
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -16,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -24,9 +30,7 @@ import androidx.constraintlayout.compose.Dimension
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
-import ru.mercury.vpclient.shared.ui.components.SharedOutlinedButton2
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
-import ru.mercury.vpclient.shared.ui.preview.CartProductProvider
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.regular11
@@ -49,6 +53,8 @@ fun CartProductCard(
     onReturnOriginalSwipeClick: () -> Unit = {},
     onShowAlternativesSwipeClick: () -> Unit = {},
     onHideAlternativesSwipeClick: () -> Unit = {},
+    onReturnToBasketSwipeClick: () -> Unit = {},
+    useFittingSwipeActions: Boolean = false,
     selectedAlternativeId: String? = null
 ) {
     val articleText = product.article.takeIf { it.isNotEmpty() } ?: product.itemId
@@ -64,16 +70,26 @@ fun CartProductCard(
         product.isAlternativesPaletteOpen
     val isEditSwipeActionVisible = hasSize && product.sizeCount in 1..2
     val isDetachFromLookSwipeActionVisible = !product.lookId.isNullOrEmpty()
-    val leadingSwipeActionsCount = listOf(
-        isReturnOriginalSwipeActionVisible,
-        isShowAlternativesSwipeActionVisible,
-        isHideAlternativesSwipeActionVisible
-    ).count { it }
-    val trailingSwipeActionsCount = listOf(
-        isEditSwipeActionVisible,
-        isDetachFromLookSwipeActionVisible,
-        true
-    ).count { it }
+    val leadingSwipeActionsCount = when {
+        useFittingSwipeActions -> 0
+        else -> {
+            listOf(
+                isReturnOriginalSwipeActionVisible,
+                isShowAlternativesSwipeActionVisible,
+                isHideAlternativesSwipeActionVisible
+            ).count { it }
+        }
+    }
+    val trailingSwipeActionsCount = when {
+        useFittingSwipeActions -> 2
+        else -> {
+            listOf(
+                isEditSwipeActionVisible,
+                isDetachFromLookSwipeActionVisible,
+                true
+            ).count { it }
+        }
+    }
 
     CartProductSwipeableCard(
         modifier = modifier,
@@ -89,15 +105,26 @@ fun CartProductCard(
             )
         },
         trailingActionsContent = { swipeProgress, onSwipeActionClick ->
-            CartProductTrailingSwipeActions(
-                swipeProgress = swipeProgress,
-                isEditVisible = isEditSwipeActionVisible,
-                isDetachFromLookVisible = isDetachFromLookSwipeActionVisible,
-                isDeleteVisible = true,
-                onEditClick = { onSwipeActionClick(onEditSwipeClick) },
-                onDetachFromLookClick = { onSwipeActionClick(onDetachFromLookSwipeClick) },
-                onDeleteClick = { onSwipeActionClick(onDeleteSwipeClick) }
-            )
+            when {
+                useFittingSwipeActions -> {
+                    CartProductFittingSwipeActions(
+                        swipeProgress = swipeProgress,
+                        onEditClick = { onSwipeActionClick(onEditSwipeClick) },
+                        onReturnToBasketClick = { onSwipeActionClick(onReturnToBasketSwipeClick) }
+                    )
+                }
+                else -> {
+                    CartProductTrailingSwipeActions(
+                        swipeProgress = swipeProgress,
+                        isEditVisible = isEditSwipeActionVisible,
+                        isDetachFromLookVisible = isDetachFromLookSwipeActionVisible,
+                        isDeleteVisible = true,
+                        onEditClick = { onSwipeActionClick(onEditSwipeClick) },
+                        onDetachFromLookClick = { onSwipeActionClick(onDetachFromLookSwipeClick) },
+                        onDeleteClick = { onSwipeActionClick(onDeleteSwipeClick) }
+                    )
+                }
+            }
         },
         leadingSwipeSize = (88 * leadingSwipeActionsCount).dp,
         trailingSwipeSize = (88 * trailingSwipeActionsCount).dp
@@ -257,19 +284,34 @@ fun CartProductCard(
                         )
                     }
                     !product.isSold && !hasSize -> {
-                        SharedOutlinedButton2(
+                        OutlinedButton(
                             onClick = onSelectSizeClick,
-                            text = stringResource(ClientStrings.CartSelectSize),
-                            textStyle = MaterialTheme.typography.regular15.copy(
-                                color = MaterialTheme.colorScheme.onBackground,
-                                lineHeight = 19.sp,
-                                letterSpacing = .2.sp
-                            ),
-                            modifier = Modifier.constrainAs(size) {
+                            modifier = modifier.constrainAs(size) {
+                                width = Dimension.wrapContent
+                                height = Dimension.value(32.dp)
                                 top.linkTo(buySwitch.bottom, 21.dp)
                                 end.linkTo(buySwitch.end)
-                            }
-                        )
+                            },
+                            shape = RoundedCornerShape(4.dp),
+                            border = BorderStroke(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.onBackground
+                            ),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.background,
+                                contentColor = MaterialTheme.colorScheme.onBackground
+                            ),
+                            contentPadding = PaddingValues(horizontal = 8.dp)
+                        ) {
+                            Text(
+                                text = stringResource(ClientStrings.CartSelectSize),
+                                style = MaterialTheme.typography.regular15.copy(
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    lineHeight = 19.sp,
+                                    letterSpacing = .2.sp
+                                )
+                            )
+                        }
                     }
                     else -> {
                         Text(
@@ -345,9 +387,112 @@ fun CartProductCard(
 @Preview(showBackground = true)
 @Composable
 private fun CartProductCardPreview(
-    @PreviewParameter(CartProductProvider::class) product: CartProduct
+    @PreviewParameter(CartProductCardCartProductProvider::class) product: CartProduct
 ) {
     CartProductCard(
         product = product
+    )
+}
+
+private class CartProductCardCartProductProvider: PreviewParameterProvider<CartProduct> {
+    override val values: Sequence<CartProduct> = previewCartProducts()
+}
+
+private fun previewCartProducts(): Sequence<CartProduct> {
+    return sequenceOf(
+        CartProduct(
+            id = "1",
+            detailId = "1",
+            itemId = "1",
+            colorId = "1",
+            brand = "BRUNELLO CUCINELLI",
+            urlBrandLogo = null,
+            name = "Хлопковая футболка с логотипом",
+            article = "MP827743",
+            color = "Белый",
+            size = "IT 48",
+            price = "1 600 000 ₽",
+            lookId = "look_1",
+            lookName = "Образ",
+            lookImageUrl = "",
+            imageUrl = "",
+            isForPayment = true,
+            priceValue = 1_600_000.0
+        ),
+        CartProduct(
+            id = "2",
+            detailId = "2",
+            itemId = "2",
+            colorId = "2",
+            brand = "SAINT LAURENT",
+            urlBrandLogo = null,
+            name = "Кожаная куртка",
+            article = "SL908221",
+            color = "Черный",
+            size = "FR 38",
+            price = "300 000 ₽",
+            oldPrice = "400 000 ₽",
+            lookId = "look_1",
+            lookName = "Образ",
+            lookImageUrl = "",
+            imageUrl = "",
+            isForPayment = false,
+            quantity = 2,
+            priceValue = 300_000.0
+        ),
+        CartProduct(
+            id = "3",
+            detailId = "3",
+            itemId = "3",
+            colorId = "3",
+            brand = "LORO PIANA",
+            urlBrandLogo = null,
+            name = "Кашемировый джемпер",
+            article = "LP112490",
+            color = "Серый",
+            size = "M",
+            price = "580 000 ₽",
+            imageUrl = "",
+            isForPayment = false,
+            isSold = true,
+            isAlternativesPaletteOpen = true,
+            alternatives = listOf(
+                CartProductAlternative(
+                    id = "1",
+                    detailId = "1",
+                    brand = "LORO PIANA",
+                    urlBrandLogo = null,
+                    price = "580 000 ₽",
+                    imageUrl = "",
+                    isOriginal = true
+                ),
+                CartProductAlternative(
+                    id = "2",
+                    detailId = "2",
+                    brand = "DOLCE&GABBANA",
+                    urlBrandLogo = null,
+                    price = "1 900 000 ₽",
+                    imageUrl = "",
+                    isOriginal = false
+                )
+            ),
+            priceValue = 580_000.0
+        ),
+        CartProduct(
+            id = "4",
+            detailId = "4",
+            itemId = "4",
+            colorId = "4",
+            brand = "KITON",
+            urlBrandLogo = null,
+            name = "Шерстяной жакет",
+            article = "KT554210",
+            color = "Темно-синий",
+            size = "",
+            price = "920 000 ₽",
+            imageUrl = "",
+            isForPayment = false,
+            priceValue = 920_000.0
+        )
     )
 }

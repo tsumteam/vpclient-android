@@ -16,7 +16,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -29,6 +28,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -38,16 +38,18 @@ import ru.mercury.vpclient.BuildConfig
 import ru.mercury.vpclient.features.debug.event.DebugEvent
 import ru.mercury.vpclient.features.debug.intent.DebugIntent
 import ru.mercury.vpclient.features.debug.model.DebugModel
-import ru.mercury.vpclient.features.debug.ui.DebugEnvironmentDialog
-import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
+import ru.mercury.vpclient.features.debug_env_dialog.DebugEnvironmentDialog
+import ru.mercury.vpclient.features.debug_env_dialog.intent.DebugEnvironmentDialogIntent
+import ru.mercury.vpclient.features.debug_env_dialog.model.DebugEnvironmentDialogModel
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
+import ru.mercury.vpclient.shared.ui.components.SharedScaffold
+import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.system.ClientTopAppBar
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.icons.Copy24
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.ktx.rememberNavigateToAppSettings
 import ru.mercury.vpclient.shared.ui.ktx.rememberNavigateToDeveloperSettings
-import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.medium16
 import ru.mercury.vpclient.shared.ui.theme.regular14
@@ -71,9 +73,19 @@ fun DebugScreen(
 
     if (state.environmentDialog) {
         DebugEnvironmentDialog(
-            onDismissRequest = { viewModel.dispatch(DebugIntent.DismissEnvironmentDialog) },
-            selectedEnvironment = state.environment,
-            onSelectEnvironment = { viewModel.dispatch(DebugIntent.SelectEnvironment(it)) }
+            state = DebugEnvironmentDialogModel(
+                selectedEnvironment = state.environment
+            ),
+            dispatch = { intent ->
+                when (intent) {
+                    is DebugEnvironmentDialogIntent.DismissRequest -> {
+                        viewModel.dispatch(DebugIntent.DismissEnvironmentDialog)
+                    }
+                    is DebugEnvironmentDialogIntent.SelectEnvironment -> {
+                        viewModel.dispatch(DebugIntent.SelectEnvironment(intent.environment))
+                    }
+                }
+            }
         )
     }
 
@@ -100,9 +112,80 @@ private fun DebugActivityContent(
     val navigateToDeveloperSettings = rememberNavigateToDeveloperSettings()
     val clipboard = LocalClipboard.current
     val scope = rememberCoroutineScope()
+    val infoListItem: @Composable (
+        title: String,
+        value: String,
+        shape: Shape,
+        onCopy: () -> Unit
+    ) -> Unit = { title, value, shape, onCopy ->
+        ListItem(
+            headlineContent = {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.regular18
+                )
+            },
+            supportingContent = {
+                Text(
+                    text = value,
+                    style = MaterialTheme.typography.regular14
+                )
+            },
+            modifier = Modifier.clip(shape),
+            trailingContent = {
+                IconButton(onClick = onCopy) {
+                    Icon(
+                        imageVector = Copy24,
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp),
+                        tint = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+            },
+            colors = ListItemDefaults.colors().copy(
+                containerColor = MaterialTheme.colorScheme.surface,
+                headlineColor = MaterialTheme.colorScheme.onBackground,
+                supportingTextColor = MaterialTheme.colorScheme.secondary,
+                trailingIconColor = MaterialTheme.colorScheme.onBackground
+            )
+        )
+    }
+    val actionListItem: @Composable (
+        title: String,
+        shape: Shape,
+        onClick: () -> Unit,
+        subtitle: String?,
+        trailingContent: @Composable (() -> Unit)?
+    ) -> Unit = { title, shape, onClick, subtitle, trailingContent ->
+        ListItem(
+            headlineContent = {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.regular18
+                )
+            },
+            supportingContent = subtitle?.let { text ->
+                {
+                    Text(
+                        text = text,
+                        style = MaterialTheme.typography.regular14
+                    )
+                }
+            },
+            trailingContent = trailingContent,
+            modifier = Modifier
+                .clip(shape)
+                .clickable(onClick = onClick),
+            colors = ListItemDefaults.colors().copy(
+                containerColor = MaterialTheme.colorScheme.surface,
+                headlineColor = MaterialTheme.colorScheme.onBackground,
+                supportingTextColor = MaterialTheme.colorScheme.secondary,
+                trailingIconColor = MaterialTheme.colorScheme.onBackground
+            )
+        )
+    }
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
+    SharedScaffold(
         topBar = {
             ClientTopAppBar(
                 title = {
@@ -137,195 +220,120 @@ private fun DebugActivityContent(
             verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             item {
-                DebugInfoListItem(
-                    title = "UserToken",
-                    value = state.userToken.ifEmpty { "Отобразится после авторизации" },
-                    shape = RoundedCornerShape(
+                infoListItem(
+                    "UserToken",
+                    state.userToken.ifEmpty { "Отобразится после авторизации" },
+                    RoundedCornerShape(
                         topStart = 16.dp,
                         topEnd = 16.dp,
                         bottomStart = 4.dp,
                         bottomEnd = 4.dp
-                    ),
-                    onCopy = {
+                    )
+                ) {
                         scope.launch {
                             clipboard.setClipEntry(ClipEntry(ClipData.newPlainText(null, state.userToken)))
                         }
-                    }
-                )
+                }
             }
             item {
-                DebugInfoListItem(
-                    title = "VersionName",
-                    value = BuildConfig.VERSION_NAME,
-                    shape = RoundedCornerShape(4.dp),
-                    onCopy = {
+                infoListItem(
+                    "VersionName",
+                    BuildConfig.VERSION_NAME,
+                    RoundedCornerShape(4.dp)
+                ) {
                         scope.launch {
                             clipboard.setClipEntry(ClipEntry(ClipData.newPlainText(null, BuildConfig.VERSION_NAME)))
                         }
-                    }
-                )
+                }
             }
             item {
-                DebugInfoListItem(
-                    title = "VersionCode",
-                    value = BuildConfig.VERSION_CODE.toString(),
-                    shape = RoundedCornerShape(
+                infoListItem(
+                    "VersionCode",
+                    BuildConfig.VERSION_CODE.toString(),
+                    RoundedCornerShape(
                         topStart = 4.dp,
                         topEnd = 4.dp,
                         bottomStart = 16.dp,
                         bottomEnd = 16.dp
-                    ),
-                    onCopy = {
+                    )
+                ) {
                         scope.launch {
                             clipboard.setClipEntry(ClipEntry(ClipData.newPlainText(null, BuildConfig.VERSION_CODE.toString())))
                         }
-                    }
-                )
+                }
             }
             item { Spacer(modifier = Modifier.height(12.dp)) }
             item {
-                DebugActionListItem(
-                    title = "Настройки приложения",
-                    shape = RoundedCornerShape(
+                actionListItem(
+                    "Настройки приложения",
+                    RoundedCornerShape(
                         topStart = 16.dp,
                         topEnd = 16.dp,
                         bottomStart = 4.dp,
                         bottomEnd = 4.dp
                     ),
-                    onClick = navigateToAppSettings
+                    navigateToAppSettings,
+                    null,
+                    null
                 )
             }
             item {
-                DebugActionListItem(
-                    title = "Настройки разработчика",
-                    shape = RoundedCornerShape(4.dp),
-                    onClick = navigateToDeveloperSettings
+                actionListItem(
+                    "Настройки разработчика",
+                    RoundedCornerShape(4.dp),
+                    navigateToDeveloperSettings,
+                    null,
+                    null
                 )
             }
             item {
-                DebugActionListItem(
-                    title = "Задержка запросов",
-                    subtitle = "5 сек",
-                    shape = RoundedCornerShape(4.dp),
-                    trailingContent = {
+                actionListItem(
+                    "Задержка запросов",
+                    RoundedCornerShape(4.dp),
+                    { dispatch(DebugIntent.ToggleRequestDelay(!state.requestDelayEnabled)) },
+                    "5 сек"
+                ) {
                         Switch(
                             checked = state.requestDelayEnabled,
                             onCheckedChange = null
                         )
-                    },
-                    onClick = { dispatch(DebugIntent.ToggleRequestDelay(!state.requestDelayEnabled)) }
+                    }
+            }
+            item {
+                actionListItem(
+                    "Очистить локальную БД",
+                    RoundedCornerShape(4.dp),
+                    { dispatch(DebugIntent.DropLocalDbClick) },
+                    null,
+                    null
                 )
             }
             item {
-                DebugActionListItem(
-                    title = "Очистить локальную БД",
-                    shape = RoundedCornerShape(4.dp),
-                    onClick = { dispatch(DebugIntent.DropLocalDbClick) }
-                )
-            }
-            item {
-                DebugActionListItem(
-                    title = "Окружение",
-                    subtitle = "test/uat/prod",
-                    shape = RoundedCornerShape(
+                actionListItem(
+                    "Окружение",
+                    RoundedCornerShape(
                         topStart = 4.dp,
                         topEnd = 4.dp,
                         bottomStart = 16.dp,
                         bottomEnd = 16.dp
                     ),
-                    trailingContent = {
+                    { dispatch(DebugIntent.EnvironmentClick) },
+                    "test/uat/prod"
+                ) {
                         Text(
                             text = state.environment.name,
                             style = MaterialTheme.typography.medium16.copy(
                                 color = MaterialTheme.colorScheme.onBackground
                             )
                         )
-                    },
-                    onClick = { dispatch(DebugIntent.EnvironmentClick) }
-                )
+                    }
             }
         }
     }
 }
 
-@Composable
-private fun DebugInfoListItem(
-    title: String,
-    value: String,
-    shape: Shape,
-    onCopy: () -> Unit
-) {
-    ListItem(
-        headlineContent = {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.regular18
-            )
-        },
-        supportingContent = {
-            Text(
-                text = value,
-                style = MaterialTheme.typography.regular14
-            )
-        },
-        modifier = Modifier.clip(shape),
-        trailingContent = {
-            IconButton(onClick = onCopy) {
-                Icon(
-                    imageVector = Copy24,
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp),
-                    tint = MaterialTheme.colorScheme.onBackground
-                )
-            }
-        },
-        colors = ListItemDefaults.colors().copy(
-            containerColor = MaterialTheme.colorScheme.surface,
-            headlineColor = MaterialTheme.colorScheme.onBackground,
-            supportingTextColor = MaterialTheme.colorScheme.secondary,
-            trailingIconColor = MaterialTheme.colorScheme.onBackground
-        )
-    )
-}
-
-@Composable
-private fun DebugActionListItem(
-    title: String,
-    shape: Shape,
-    onClick: () -> Unit,
-    subtitle: String? = null,
-    trailingContent: @Composable (() -> Unit)? = null
-) {
-    ListItem(
-        headlineContent = {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.regular18
-            )
-        },
-        supportingContent = subtitle?.let { text ->
-            {
-                Text(
-                    text = text,
-                    style = MaterialTheme.typography.regular14
-                )
-            }
-        },
-        trailingContent = trailingContent,
-        modifier = Modifier
-            .clip(shape)
-            .clickable(onClick = onClick),
-        colors = ListItemDefaults.colors().copy(
-            containerColor = MaterialTheme.colorScheme.surface,
-            headlineColor = MaterialTheme.colorScheme.onBackground,
-            supportingTextColor = MaterialTheme.colorScheme.secondary,
-            trailingIconColor = MaterialTheme.colorScheme.onBackground
-        )
-    )
-}
-
 @PreviewWrapper(ThemeWrapper::class)
-@FontScalePreviews
+@Preview
 @Composable
 private fun DebugActivityContentPreview() {
     DebugActivityContent(

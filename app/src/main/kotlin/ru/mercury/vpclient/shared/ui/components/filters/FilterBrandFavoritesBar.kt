@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.ui.icons.Favorited40
 import ru.mercury.vpclient.shared.ui.icons.Unfavorited40
 import ru.mercury.vpclient.shared.ui.ktx.clickableWithoutRipple
-import ru.mercury.vpclient.shared.ui.preview.BooleanParameterProvider
+import ru.mercury.vpclient.shared.ui.preview.BooleanPreviewParameterProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 
@@ -46,7 +46,7 @@ fun FilterBrandFavoritesBar(
 @FontScalePreviews
 @Composable
 private fun FilterBrandFavoritesBarPreview(
-    @PreviewParameter(BooleanParameterProvider::class) isFavorited: Boolean
+    @PreviewParameter(BooleanPreviewParameterProvider::class) isFavorited: Boolean
 ) {
     FilterBrandFavoritesBar(
         isFavorited = isFavorited,

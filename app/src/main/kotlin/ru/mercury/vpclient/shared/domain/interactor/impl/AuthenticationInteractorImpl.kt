@@ -3,7 +3,7 @@ package ru.mercury.vpclient.shared.domain.interactor.impl
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import ru.mercury.vpclient.shared.data.CODE_LENGTH
-import ru.mercury.vpclient.shared.coroutines.ClientDispatchers
+import ru.mercury.vpclient.shared.coroutines.SharedDispatchers
 import ru.mercury.vpclient.shared.data.entity.CodeValidationError
 import ru.mercury.vpclient.shared.data.entity.NameValidationError
 import ru.mercury.vpclient.shared.data.entity.PhoneValidationError
@@ -16,7 +16,7 @@ import ru.mercury.vpclient.shared.domain.repository.AuthenticationRepository
 import javax.inject.Inject
 
 class AuthenticationInteractorImpl @Inject constructor(
-    private val dispatchers: ClientDispatchers,
+    private val dispatchers: SharedDispatchers,
     private val authenticationRepository: AuthenticationRepository
 ): AuthenticationInteractor {
 

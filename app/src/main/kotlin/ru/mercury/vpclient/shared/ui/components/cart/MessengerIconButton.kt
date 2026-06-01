@@ -19,7 +19,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.ui.icons.Chat24
-import ru.mercury.vpclient.shared.ui.preview.BooleanParameterProvider
+import ru.mercury.vpclient.shared.ui.preview.BooleanPreviewParameterProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 
@@ -71,7 +71,7 @@ fun MessengerIconButton(
 @FontScalePreviews
 @Composable
 private fun MessengerIconButtonPreview(
-    @PreviewParameter(BooleanParameterProvider::class) showBadge: Boolean
+    @PreviewParameter(BooleanPreviewParameterProvider::class) showBadge: Boolean
 ) {
     MessengerIconButton(
         showBadge = showBadge,

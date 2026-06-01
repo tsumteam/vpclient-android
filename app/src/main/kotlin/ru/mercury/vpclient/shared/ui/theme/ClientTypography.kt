@@ -28,6 +28,12 @@ val Typography.regular12: TextStyle
         fontSize = 12.sp
     )
 
+val Typography.regular13: TextStyle
+    get() = TextStyle(
+        fontWeight = FontWeight.W400,
+        fontSize = 14.sp
+    )
+
 val Typography.regular14: TextStyle
     get() = TextStyle(
         fontWeight = FontWeight.W400,

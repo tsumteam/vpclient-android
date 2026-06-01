@@ -29,5 +29,6 @@ data class CartProduct(
     val discountPercentage: Int = 0,
     val quantity: Int = 1,
     val sizeCount: Int = 1,
-    val priceValue: Double = .0
+    val priceValue: Double = .0,
+    val sizeId: String = ""
 )

@@ -54,3 +54,41 @@ fun cartProductsAfterDragRequest(
 private val cartProductDragJson = Json {
     explicitNulls = false
 }
+
+fun List<CartProduct>.moveProductAfterDrag(
+    productId: String,
+    targetProductId: String,
+    placeAfterTarget: Boolean
+): List<CartProduct> {
+    if (productId == targetProductId) {
+        return this
+    }
+
+    val fromIndex = indexOfFirst { it.id == productId }
+    val targetIndex = indexOfFirst { it.id == targetProductId }
+    if (fromIndex == -1 || targetIndex == -1) {
+        return this
+    }
+
+    val targetProduct = this[targetIndex]
+    val product = this[fromIndex].copy(
+        lookId = targetProduct.lookId,
+        lookName = targetProduct.lookName,
+        lookImageUrl = targetProduct.lookImageUrl
+    )
+    val products = toMutableList()
+    products.removeAt(fromIndex)
+
+    val actualTargetIndex = products.indexOfFirst { it.id == targetProductId }
+    if (actualTargetIndex == -1) {
+        return this
+    }
+
+    val insertIndex = when {
+        placeAfterTarget -> actualTargetIndex + 1
+        else -> actualTargetIndex
+    }.coerceIn(0, products.size)
+    products.add(insertIndex, product)
+
+    return products
+}

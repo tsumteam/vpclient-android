@@ -3,7 +3,7 @@ package ru.mercury.vpclient.shared.domain.interactor.impl
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
-import ru.mercury.vpclient.shared.coroutines.ClientDispatchers
+import ru.mercury.vpclient.shared.coroutines.SharedDispatchers
 import ru.mercury.vpclient.shared.data.entity.CatalogFilterProductsData
 import ru.mercury.vpclient.shared.data.entity.CatalogFilterRequestData2
 import ru.mercury.vpclient.shared.data.entity.FilterData
@@ -17,7 +17,7 @@ import ru.mercury.vpclient.shared.domain.repository.FilterRepository
 import javax.inject.Inject
 
 class FilterInteractorImpl @Inject constructor(
-    private val dispatchers: ClientDispatchers,
+    private val dispatchers: SharedDispatchers,
     private val filterRepository: FilterRepository
 ): FilterInteractor {
 

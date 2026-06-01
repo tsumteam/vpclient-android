@@ -12,21 +12,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,9 +29,9 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import ru.mercury.vpclient.features.fitting_success.intent.FittingSuccessIntent
 import ru.mercury.vpclient.features.fitting_success.navigation.FittingSuccessDeliveryLine
 import ru.mercury.vpclient.features.fitting_success.navigation.FittingSuccessRoute
-import ru.mercury.vpclient.shared.ui.components.system.ClientButton
+import ru.mercury.vpclient.shared.ui.components.SharedScaffold
+import ru.mercury.vpclient.shared.ui.components.fitting.FittingSuccessDeliveryText
 import ru.mercury.vpclient.shared.ui.icons.Logo117
-import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.medium15
@@ -59,17 +54,29 @@ private fun FittingSuccessScreenContent(
     route: FittingSuccessRoute,
     dispatch: (FittingSuccessIntent) -> Unit
 ) {
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
+    SharedScaffold(
         floatingActionButton = {
-            ClientButton(
+            Button(
                 onClick = { dispatch(FittingSuccessIntent.CatalogClick) },
-                text = stringResource(ClientStrings.FittingSuccessCatalog),
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
-            )
+                modifier = Modifier
+                    .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
+                    .fillMaxWidth()
+                    .height(52.dp),
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            ) {
+                Text(
+                    text = stringResource(ClientStrings.FittingSuccessCatalog),
+                    style = MaterialTheme.typography.medium15.copy(
+                        textAlign = TextAlign.Center,
+                        letterSpacing = .3.sp
+                    )
+                )
+            }
         },
-        floatingActionButtonPosition = FabPosition.Center,
-        containerColor = MaterialTheme.colorScheme.background,
         contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal)
     ) { innerPadding ->
         Column(
@@ -142,51 +149,8 @@ private fun FittingSuccessScreenContent(
     }
 }
 
-@Composable
-private fun FittingSuccessDeliveryText(
-    deliveryLines: List<FittingSuccessDeliveryLine>,
-    address: String,
-    modifier: Modifier = Modifier
-) {
-    val accentColor = MaterialTheme.colorScheme.error
-
-    Text(
-        text = buildAnnotatedString {
-            append(stringResource(ClientStrings.FittingSuccessDeliveryPrefix))
-            withStyle(SpanStyle(color = accentColor)) {
-                deliveryLines.forEachIndexed { index, line ->
-                    if (index > 0) append("\n")
-                    append(line.intervalSummary)
-                    append(" (")
-                    append(
-                        pluralStringResource(
-                            ClientStrings.FittingConfirmationDeliveryProductsCount,
-                            line.productsCount,
-                            line.productsCount
-                        )
-                    )
-                    append(")")
-                }
-            }
-            append("\n")
-            append(stringResource(ClientStrings.FittingSuccessDeliveryAddressPrefix).trimEnd())
-            append(" ")
-            withStyle(SpanStyle(color = accentColor)) {
-                append(address)
-            }
-        },
-        modifier = modifier.fillMaxWidth(),
-        style = MaterialTheme.typography.regular14.copy(
-            color = MaterialTheme.colorScheme.onBackground,
-            lineHeight = 19.sp,
-            textAlign = TextAlign.Center,
-            letterSpacing = .2.sp
-        )
-    )
-}
-
 @PreviewWrapper(ThemeWrapper::class)
-@FontScalePreviews
+@Preview
 @Composable
 private fun FittingSuccessScreenContentPreview() {
     FittingSuccessScreenContent(

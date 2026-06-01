@@ -30,7 +30,7 @@ import kotlin.math.abs
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.shared.ui.icons.Edit24
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.theme.cartSwipeEdit
+import ru.mercury.vpclient.shared.ui.theme.surface2
 
 private const val SWIPE_ACTION_RETURN_DURATION = 180
 
@@ -127,7 +127,7 @@ private fun CartProductSwipeableCardPreview() {
                 CartProductSwipeAction(
                     imageVector = Edit24,
                     text = "Изменить",
-                    backgroundColor = MaterialTheme.colorScheme.cartSwipeEdit,
+                    backgroundColor = MaterialTheme.colorScheme.surface2,
                     onClick = { onSwipeActionClick {} }
                 )
             }

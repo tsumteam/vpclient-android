@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import ru.mercury.vpclient.shared.ui.icons.Chat24
-import ru.mercury.vpclient.shared.ui.preview.BooleanParameterProvider
+import ru.mercury.vpclient.shared.ui.preview.BooleanPreviewParameterProvider
 import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 
@@ -33,7 +33,7 @@ fun IndicatorIconButton(
 @FontScalePreviews
 @Composable
 private fun IndicatorIconButtonPreview(
-    @PreviewParameter(BooleanParameterProvider::class) showIndicator: Boolean
+    @PreviewParameter(BooleanPreviewParameterProvider::class) showIndicator: Boolean
 ) {
     IndicatorIconButton(
         icon = Chat24,
