@@ -1,3 +1,0 @@
-package ru.mercury.vpclient.features.cart_select_size_dialog.model
-
-class CartSelectSizeDialogModel

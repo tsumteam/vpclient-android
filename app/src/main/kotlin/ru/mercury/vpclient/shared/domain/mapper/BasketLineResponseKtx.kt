@@ -3,6 +3,7 @@ package ru.mercury.vpclient.shared.domain.mapper
 import ru.mercury.vpclient.shared.data.FORMAT_RUB
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
+import ru.mercury.vpclient.shared.data.entity.CartProductSize
 import ru.mercury.vpclient.shared.data.network.entity.AlternativesPaletteStatusEnum
 import ru.mercury.vpclient.shared.data.network.entity.BasketAlternativeResponseDto
 import ru.mercury.vpclient.shared.data.network.entity.BasketAlternativeType
@@ -14,7 +15,8 @@ import java.util.Locale
 
 val BasketLineResponseDto.cartProduct: CartProduct?
     get() {
-        val basketProduct = products.orEmpty().firstOrNull()
+        val basketProducts = products.orEmpty()
+        val basketProduct = basketProducts.firstOrNull()
         val product = basketProduct?.product
         val id = lineId ?: basketProduct?.productId ?: product?.id ?: product?.itemId ?: product?.article ?: return null
         val detailId = basketProduct?.productId ?: product?.id ?: product?.itemId ?: id
@@ -31,6 +33,18 @@ val BasketLineResponseDto.cartProduct: CartProduct?
         val alternatives = this.alternatives.orEmpty()
             .mapNotNull { it.cartProductAlternative }
             .sortedBy { !it.isOriginal }
+        val sizeItems = basketProducts.flatMap { item ->
+            item.product?.sizes.orEmpty().mapNotNull { size ->
+                val sizeId = size.id ?: return@mapNotNull null
+                CartProductSize(
+                    id = sizeId,
+                    name = size.name.orEmpty().ifBlank { sizeId },
+                    productId = item.productId ?: item.product?.id.orEmpty(),
+                    catalogProductId = item.product?.id.orEmpty(),
+                    isLastInStock = size.isLastInStock == true || size.availableStockQuantity == 1.0
+                )
+            }
+        }.distinctBy { size -> "${size.productId}_${size.id}" }
 
         return CartProduct(
             id = id,
@@ -58,8 +72,10 @@ val BasketLineResponseDto.cartProduct: CartProduct?
             alternatives = alternatives,
             discountPercentage = product?.discountPercentage ?: 0,
             quantity = quantity ?: product?.quantity ?: 1,
-            sizeCount = sizes.size.coerceAtLeast(1),
-            priceValue = price
+            sizeCount = sizeItems.size.takeIf { it > 0 } ?: sizes.size.coerceAtLeast(1),
+            priceValue = price,
+            sizeId = sizeItems.firstOrNull()?.id ?: sizes.firstOrNull()?.id.orEmpty(),
+            sizeItems = sizeItems
         )
     }
 

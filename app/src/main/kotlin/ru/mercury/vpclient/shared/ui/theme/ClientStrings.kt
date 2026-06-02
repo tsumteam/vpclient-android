@@ -79,6 +79,7 @@ object ClientStrings {
     val CartEditAddSize = R.string.cart_edit_add_size
     val CartEditSelectSize = R.string.cart_edit_select_size
     val CartEditChangeQuantity = R.string.cart_edit_change_quantity
+    val CartEditChangeQuantityCaps = R.string.cart_edit_change_quantity_caps
     val CartEditChangeColor = R.string.cart_edit_change_color
     val CartEditCancel = R.string.cart_edit_cancel
     val CartSave = R.string.cart_save
@@ -161,6 +162,19 @@ object ClientStrings {
     val FittingSuccessInfo = R.string.fitting_success_info
     val FittingSuccessFitting = R.string.fitting_success_fitting
     val FittingSuccessCatalog = R.string.fitting_success_catalog
+    val FittingDeliveryDelivered = R.string.fitting_delivery_delivered
+    val FittingInfoTitle = R.string.fitting_info_title
+    val FittingInfoAddressLabel = R.string.fitting_info_address_label
+    val FittingInfoDeliveryTimeLabel = R.string.fitting_info_delivery_time_label
+    val FittingInfoAssemblyMethodLabel = R.string.fitting_info_assembly_method_label
+    val FittingInfoDeliveryMethodLabel = R.string.fitting_info_delivery_method_label
+    val FittingInfoSalesRepresentativeLabel = R.string.fitting_info_sales_representative_label
+    val FittingInfoPhoneLabel = R.string.fitting_info_phone_label
+    val FittingInfoVehicleNumberLabel = R.string.fitting_info_vehicle_number_label
+    val FittingInfoLogisticsService = R.string.fitting_info_logistics_service
+    val FittingInfoSalesRepresentative = R.string.fitting_info_sales_representative
+    val FittingInfoPhone = R.string.fitting_info_phone
+    val FittingInfoVehicleNumber = R.string.fitting_info_vehicle_number
 
     val FilterProductsQuantity = R.plurals.filter_products_quantity
     val FilterShowProductsQuantity = R.plurals.filter_show_products_quantity

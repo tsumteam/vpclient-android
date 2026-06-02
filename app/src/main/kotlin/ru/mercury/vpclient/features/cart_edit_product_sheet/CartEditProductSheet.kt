@@ -108,7 +108,7 @@ fun CartEditProductSheetContent(
                 onClick = { dispatch(CartEditProductSheetIntent.DismissRequest) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(58.dp),
+                    .height(52.dp),
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.background,

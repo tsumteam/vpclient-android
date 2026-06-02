@@ -1,8 +1,8 @@
-package ru.mercury.vpclient.features.cart_fitting_color_picker_sheet.model
+package ru.mercury.vpclient.features.cart_color_sheet.model
 
 import ru.mercury.vpclient.shared.data.entity.ProductAvailableColor
 
-data class CartFittingColorPickerSheetModel(
+data class CartColorModel(
     val colors: List<ProductAvailableColor>
 ) {
     val hasSelectedColor: Boolean

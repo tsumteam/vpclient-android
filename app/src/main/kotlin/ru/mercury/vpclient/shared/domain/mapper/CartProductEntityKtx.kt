@@ -34,7 +34,9 @@ fun CartProduct.entity(position: Int): CartProductEntity {
         discountPercentage = discountPercentage,
         quantity = quantity,
         sizeCount = sizeCount,
-        priceValue = priceValue
+        priceValue = priceValue,
+        sizeId = sizeId,
+        sizeItems = sizeItems
     )
 }
 
@@ -69,6 +71,8 @@ val CartProductEntity.cartProduct: CartProduct
             discountPercentage = discountPercentage,
             quantity = quantity,
             sizeCount = sizeCount,
-            priceValue = priceValue
+            priceValue = priceValue,
+            sizeId = sizeId,
+            sizeItems = sizeItems
         )
     }

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,10 +22,12 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
+import ru.mercury.vpclient.shared.data.entity.CartProductSize
 import ru.mercury.vpclient.shared.ui.icons.Delete24
 import ru.mercury.vpclient.shared.ui.icons.Disassemble24
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
+import ru.mercury.vpclient.shared.ui.theme.divider
 import ru.mercury.vpclient.shared.ui.theme.surface2
 
 @Composable
@@ -36,6 +39,7 @@ fun CartLookCard(
     onAddClick: () -> Unit,
     onProductClick: (CartProduct) -> Unit,
     onSelectSizeClick: (CartProduct) -> Unit,
+    onSizeClick: (CartProduct, CartProductSize) -> Unit = { _, _ -> },
     onBuySwitchChange: (CartProduct, Boolean) -> Unit,
     onAlternativeClick: (CartProductAlternative) -> Unit,
     onRemoveAlternativeClick: (CartProductAlternative) -> Unit,
@@ -115,6 +119,7 @@ fun CartLookCard(
                         modifier = productModifier(product),
                         onClick = { onProductClick(product) },
                         onSelectSizeClick = { onSelectSizeClick(product) },
+                        onSizeClick = { size -> onSizeClick(product, size) },
                         onBuySwitchChange = { paySwitch -> onBuySwitchChange(product, paySwitch) },
                         onAlternativeClick = onAlternativeClick,
                         onRemoveAlternativeClick = onRemoveAlternativeClick,
@@ -133,27 +138,33 @@ fun CartLookCard(
                     val isAlternativesVisible = product.isAlternativesPaletteOpen && product.alternatives.isNotEmpty()
 
                     CartProductCard(
-                        product = product,
+                        state = CartProductCardState(
+                            product = product,
+                            onClick = { onProductClick(product) },
+                            onSelectSizeClick = { onSelectSizeClick(product) },
+                            onSizeClick = { size -> onSizeClick(product, size) },
+                            onBuySwitchChange = { paySwitch -> onBuySwitchChange(product, paySwitch) },
+                            onAlternativeClick = onAlternativeClick,
+                            onRemoveAlternativeClick = onRemoveAlternativeClick,
+                            onHideAlternativesClick = { onHideAlternativesClick(product) },
+                            onEditSwipeClick = { onEditProductSwipeClick(product) },
+                            onDeleteSwipeClick = { onDeleteProductSwipeClick(product) },
+                            onDetachFromLookSwipeClick = { onDetachProductFromLookSwipeClick(product) },
+                            onReturnOriginalSwipeClick = { onReturnOriginalSwipeClick(product) },
+                            onShowAlternativesSwipeClick = { onShowAlternativesSwipeClick(product) },
+                            onHideAlternativesSwipeClick = { onHideAlternativesSwipeClick(product) },
+                            onReturnToBasketSwipeClick = { onReturnToBasketSwipeClick(product) },
+                            useFittingSwipeActions = useFittingProductSwipeActions,
+                            selectedAlternativeId = selectedAlternativeId
+                        ),
                         modifier = productModifier(product),
-                        onClick = { onProductClick(product) },
-                        onSelectSizeClick = { onSelectSizeClick(product) },
-                        onBuySwitchChange = { paySwitch -> onBuySwitchChange(product, paySwitch) },
-                        onAlternativeClick = onAlternativeClick,
-                        onRemoveAlternativeClick = onRemoveAlternativeClick,
-                        onHideAlternativesClick = { onHideAlternativesClick(product) },
-                        onEditSwipeClick = { onEditProductSwipeClick(product) },
-                        onDeleteSwipeClick = { onDeleteProductSwipeClick(product) },
-                        onDetachFromLookSwipeClick = { onDetachProductFromLookSwipeClick(product) },
-                        onReturnOriginalSwipeClick = { onReturnOriginalSwipeClick(product) },
-                        onShowAlternativesSwipeClick = { onShowAlternativesSwipeClick(product) },
-                        onHideAlternativesSwipeClick = { onHideAlternativesSwipeClick(product) },
-                        onReturnToBasketSwipeClick = { onReturnToBasketSwipeClick(product) },
-                        useFittingSwipeActions = useFittingProductSwipeActions,
-                        selectedAlternativeId = selectedAlternativeId
                     )
 
                     if (index < products.lastIndex && !isAlternativesVisible) {
-                        CartProductDivider()
+                        HorizontalDivider(
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            color = MaterialTheme.colorScheme.divider
+                        )
                     }
                 }
             }

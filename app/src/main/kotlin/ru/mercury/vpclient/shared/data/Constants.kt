@@ -11,6 +11,9 @@ const val DEFAULT_EMPLOYEE_APP = "true"
 const val FORMAT_RUB = "%s ₽"
 const val FORMAT_PLUS = "+%s"
 const val FORMAT_PHONE_NUMBER = "+%s"
+const val FORMAT_QUANTITY = "х %s"
+
+const val PREFIX_SPACE = " "
 
 const val CODE_LENGTH = 6
 const val CODE_RESEND_MAX_TIME = 30_000L

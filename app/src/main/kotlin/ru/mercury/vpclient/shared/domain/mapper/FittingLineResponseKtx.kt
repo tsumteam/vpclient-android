@@ -2,9 +2,10 @@ package ru.mercury.vpclient.shared.domain.mapper
 
 import ru.mercury.vpclient.shared.data.FORMAT_RUB
 import ru.mercury.vpclient.shared.data.entity.CartProduct
-import ru.mercury.vpclient.shared.data.entity.FittingDeliveryHeader
+import ru.mercury.vpclient.shared.data.entity.CartProductSize
 import ru.mercury.vpclient.shared.data.network.entity.FittingDeliveryResponseDto
 import ru.mercury.vpclient.shared.data.network.entity.FittingLineResponseDto
+import ru.mercury.vpclient.shared.ui.components.fitting.FittingDeliveryHeaderState
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
@@ -23,6 +24,17 @@ val FittingLineResponseDto.cartProduct: CartProduct?
         val imageUrl = when {
             rawImageUrl.isNotEmpty() -> rawImageUrl
             else -> imageUrls.firstOrNull().orEmpty()
+        }
+
+        val sizeItems = sizes.mapNotNull { size ->
+            val sizeId = size.id ?: return@mapNotNull null
+            CartProductSize(
+                id = sizeId,
+                name = size.name.orEmpty().ifBlank { sizeId },
+                productId = product.id ?: product.itemId.orEmpty(),
+                catalogProductId = product.id.orEmpty(),
+                isLastInStock = size.isLastInStock == true || size.availableStockQuantity == 1.0
+            )
         }
 
         return CartProduct(
@@ -46,18 +58,19 @@ val FittingLineResponseDto.cartProduct: CartProduct?
             hasActions = product.actions.orEmpty().isNotEmpty(),
             discountPercentage = product.discountPercentage ?: 0,
             quantity = 1,
-            sizeCount = sizes.size.coerceAtLeast(1),
+            sizeCount = sizeItems.size.takeIf { it > 0 } ?: sizes.size.coerceAtLeast(1),
             priceValue = price,
-            sizeId = sizes.firstOrNull()?.id.orEmpty()
+            sizeId = sizeItems.firstOrNull()?.id ?: sizes.firstOrNull()?.id.orEmpty(),
+            sizeItems = sizeItems
         )
     }
 
-val FittingDeliveryResponseDto.fittingDeliveryHeader: FittingDeliveryHeader
+val FittingDeliveryResponseDto.fittingDeliveryHeader: FittingDeliveryHeaderState
     get() {
-        return FittingDeliveryHeader(
+        return FittingDeliveryHeaderState(
             status = deliveryStatusAsString.orEmpty(),
-            date = deliveryDateAsString ?: "Время доставки не указано",
-            address = address ?: "Адрес доставки не указан",
+            date = deliveryDateAsString.orEmpty(),
+            address = address.orEmpty(),
             isDelivered = deliveryStatusAsString?.lowercase() == "доставлено"
         )
     }

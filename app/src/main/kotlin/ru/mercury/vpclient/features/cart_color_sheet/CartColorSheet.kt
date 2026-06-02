@@ -1,8 +1,10 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package ru.mercury.vpclient.features.cart_fitting_color_picker_sheet
+package ru.mercury.vpclient.features.cart_color_sheet
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,12 +32,14 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -47,31 +51,31 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.features.cart_fitting_color_picker_sheet.intent.CartFittingColorPickerSheetIntent
-import ru.mercury.vpclient.features.cart_fitting_color_picker_sheet.model.CartFittingColorPickerSheetModel
+import ru.mercury.vpclient.features.cart_color_sheet.intent.CartColorIntent
+import ru.mercury.vpclient.features.cart_color_sheet.model.CartColorModel
 import ru.mercury.vpclient.shared.data.entity.ProductAvailableColor
+import ru.mercury.vpclient.shared.domain.mapper.colorFromHex
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.disabled
+import ru.mercury.vpclient.shared.ui.theme.livretMedium18
 import ru.mercury.vpclient.shared.ui.theme.medium15
-import ru.mercury.vpclient.shared.ui.theme.medium18
-import ru.mercury.vpclient.shared.ui.theme.onDisabled
 import ru.mercury.vpclient.shared.ui.theme.regular18
+import kotlin.math.abs
 
 @Composable
-fun CartFittingColorPickerSheet(
-    state: CartFittingColorPickerSheetModel,
-    dispatch: (CartFittingColorPickerSheetIntent) -> Unit
+fun CartColorSheet(
+    state: CartColorModel,
+    dispatch: (CartColorIntent) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
-    val sheetDispatch: (CartFittingColorPickerSheetIntent) -> Unit = { intent ->
+    val sheetDispatch: (CartColorIntent) -> Unit = { intent ->
         when (intent) {
-            is CartFittingColorPickerSheetIntent.ColorClick -> dispatch(intent)
-            is CartFittingColorPickerSheetIntent.ConfirmClick,
-            is CartFittingColorPickerSheetIntent.DismissRequest -> {
+            is CartColorIntent.ColorClick -> dispatch(intent)
+            is CartColorIntent.ConfirmClick,
+            is CartColorIntent.DismissRequest -> {
                 scope.launch {
                     sheetState.hide()
                     dispatch(intent)
@@ -81,10 +85,10 @@ fun CartFittingColorPickerSheet(
     }
 
     SharedModalBottomSheet(
-        onDismissRequest = { dispatch(CartFittingColorPickerSheetIntent.DismissRequest) },
+        onDismissRequest = { dispatch(CartColorIntent.DismissRequest) },
         sheetState = sheetState
     ) {
-        CartFittingColorPickerSheetContent(
+        CartColorSheetContent(
             state = state,
             dispatch = sheetDispatch
         )
@@ -92,14 +96,16 @@ fun CartFittingColorPickerSheet(
 }
 
 @Composable
-private fun CartFittingColorPickerSheetContent(
-    state: CartFittingColorPickerSheetModel,
-    dispatch: (CartFittingColorPickerSheetIntent) -> Unit
+private fun CartColorSheetContent(
+    state: CartColorModel,
+    dispatch: (CartColorIntent) -> Unit
 ) {
     val selectedIndex = state.colors.indexOfFirst { it.selected }.coerceAtLeast(0)
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = selectedIndex)
     val scope = rememberCoroutineScope()
-    val rowHeightPx = with(LocalDensity.current) { 52.dp.roundToPx() }
+    val density = LocalDensity.current
+    val rowHeightPx = with(density) { 52.dp.roundToPx() }
+    val cameraDistance = with(density) { 12.dp.toPx() }
 
     LaunchedEffect(state.colors.size) {
         if (state.colors.isNotEmpty()) {
@@ -119,7 +125,7 @@ private fun CartFittingColorPickerSheetContent(
                         else -> listState.firstVisibleItemIndex
                     }.coerceIn(0, state.colors.lastIndex)
 
-                    dispatch(CartFittingColorPickerSheetIntent.ColorClick(centeredIndex))
+                    dispatch(CartColorIntent.ColorClick(centeredIndex))
                     listState.animateScrollToItem(centeredIndex)
                 }
             }
@@ -130,14 +136,16 @@ private fun CartFittingColorPickerSheetContent(
             title = {
                 Text(
                     text = stringResource(ClientStrings.CartFittingSelectColorCaps),
-                    style = MaterialTheme.typography.medium18.copy(
-                        color = MaterialTheme.colorScheme.onBackground
+                    style = MaterialTheme.typography.livretMedium18.copy(
+                        color = MaterialTheme.colorScheme.onBackground,
+                        lineHeight = 26.sp,
+                        letterSpacing = .2.sp
                     )
                 )
             },
             navigationIcon = {
                 IconButton(
-                    onClick = { dispatch(CartFittingColorPickerSheetIntent.DismissRequest) }
+                    onClick = { dispatch(CartColorIntent.DismissRequest) }
                 ) {
                     Icon(
                         imageVector = Close24,
@@ -179,32 +187,89 @@ private fun CartFittingColorPickerSheetContent(
                     items = state.colors,
                     key = { _, color -> color.id }
                 ) { index, color ->
-                    CartFittingColorRow(
-                        color = color,
-                        onClick = {
+                    val swatchColor = color.hex.colorFromHex(MaterialTheme.colorScheme.outlineVariant)
+                    val cleanHex = color.hex.removePrefix("#").uppercase()
+                    val isWhiteColor = cleanHex == "FFFFFF" || cleanHex == "FFFFFFFF"
+                    val textColor by animateColorAsState(
+                        targetValue = when {
+                            color.selected -> MaterialTheme.colorScheme.onBackground
+                            else -> MaterialTheme.colorScheme.outline
+                        },
+                        label = "CartColorTextColor"
+                    )
+
+                    Row(
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp)
+                            .fillMaxWidth()
+                            .height(52.dp)
+                            .graphicsLayer {
+                                val itemInfo = listState.layoutInfo.visibleItemsInfo.firstOrNull {
+                                    it.index == index
+                                }
+                                val viewportCenter = (
+                                    listState.layoutInfo.viewportStartOffset +
+                                        listState.layoutInfo.viewportEndOffset
+                                    ) / 2f
+                                val itemCenter = itemInfo?.let {
+                                    it.offset + it.size / 2f
+                                } ?: viewportCenter
+                                val distanceFromCenter = ((itemCenter - viewportCenter) / rowHeightPx)
+                                    .coerceIn(-1.5f, 1.5f)
+                                val depth = abs(distanceFromCenter)
+
+                                rotationX = -distanceFromCenter * 28f
+                                scaleX = 1f - depth * .04f
+                                scaleY = 1f - depth * .08f
+                                alpha = 1f - depth * .18f
+                                this.cameraDistance = cameraDistance
+                            }
+                            .clickable {
                             scope.launch {
-                                dispatch(CartFittingColorPickerSheetIntent.ColorClick(index))
+                                dispatch(CartColorIntent.ColorClick(index))
                                 listState.animateScrollToItem(index)
                             }
-                        }
-                    )
+                            },
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(16.dp)
+                                .clip(CircleShape)
+                                .background(swatchColor)
+                                .then(
+                                    when {
+                                        isWhiteColor -> Modifier.border(1.dp, Color.Black, CircleShape)
+                                        else -> Modifier
+                                    }
+                                )
+                        )
+
+                        Text(
+                            text = color.name,
+                            modifier = Modifier.padding(start = 8.dp),
+                            style = MaterialTheme.typography.regular18.copy(
+                                color = textColor,
+                                lineHeight = 24.sp
+                            )
+                        )
+                    }
                 }
             }
         }
 
         Button(
-            onClick = { dispatch(CartFittingColorPickerSheetIntent.ConfirmClick) },
+            onClick = { dispatch(CartColorIntent.ConfirmClick) },
             modifier = Modifier
-                .padding(start = 16.dp, top = 28.dp, end = 16.dp, bottom = 8.dp)
+                .padding(start = 16.dp, top = 20.dp, end = 16.dp, bottom = 8.dp)
                 .fillMaxWidth()
                 .height(52.dp),
             enabled = state.hasSelectedColor,
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-                disabledContainerColor = MaterialTheme.colorScheme.disabled,
-                disabledContentColor = MaterialTheme.colorScheme.onDisabled
+                contentColor = MaterialTheme.colorScheme.onPrimary
             )
         ) {
             Text(
@@ -218,65 +283,21 @@ private fun CartFittingColorPickerSheetContent(
     }
 }
 
-@Composable
-private fun CartFittingColorRow(
-    color: ProductAvailableColor,
-    onClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .padding(horizontal = 8.dp)
-            .fillMaxWidth()
-            .height(52.dp)
-            .clickable(onClick = onClick),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Box(
-            modifier = Modifier
-                .size(16.dp)
-                .clip(CircleShape)
-                .background(color.hex.colorFromHex(MaterialTheme.colorScheme.outlineVariant))
-        )
-
-        Text(
-            text = color.name,
-            modifier = Modifier.padding(start = 8.dp),
-            style = MaterialTheme.typography.regular18.copy(
-                color = when {
-                    color.selected -> MaterialTheme.colorScheme.onBackground
-                    else -> MaterialTheme.colorScheme.outline
-                },
-                lineHeight = 24.sp
-            )
-        )
-    }
-}
-
-private fun String.colorFromHex(fallback: Color): Color {
-    val cleanHex = removePrefix("#")
-    return when (cleanHex.length) {
-        6 -> runCatching { Color(("FF$cleanHex").toLong(16)) }.getOrDefault(fallback)
-        8 -> runCatching { Color(cleanHex.toLong(16)) }.getOrDefault(fallback)
-        else -> fallback
-    }
-}
-
 @PreviewWrapper(ThemeWrapper::class)
 @Preview(showBackground = true)
 @Composable
-private fun CartFittingColorPickerSheetContentPreview(
-    @PreviewParameter(CartFittingColorPickerSheetModelProvider::class) state: CartFittingColorPickerSheetModel
+private fun CartColorSheetContentPreview(
+    @PreviewParameter(CartFittingColorPickerSheetModelProvider::class) state: CartColorModel
 ) {
-    CartFittingColorPickerSheetContent(
+    CartColorSheetContent(
         state = state,
         dispatch = {}
     )
 }
 
-private class CartFittingColorPickerSheetModelProvider: PreviewParameterProvider<CartFittingColorPickerSheetModel> {
-    override val values: Sequence<CartFittingColorPickerSheetModel> = sequenceOf(
-        CartFittingColorPickerSheetModel(
+private class CartFittingColorPickerSheetModelProvider: PreviewParameterProvider<CartColorModel> {
+    override val values: Sequence<CartColorModel> = sequenceOf(
+        CartColorModel(
             colors = listOf(
                 ProductAvailableColor(id = "red", name = "Красный", hex = "#F1C8C8"),
                 ProductAvailableColor(id = "brown", name = "Коричневый", hex = "#783C00", selected = true),

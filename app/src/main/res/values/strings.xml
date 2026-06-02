@@ -73,6 +73,7 @@
     <string name="cart_edit_add_size">Добавить размер</string>
     <string name="cart_edit_select_size">Изменить размер</string>
     <string name="cart_edit_change_quantity">Изменить количество</string>
+    <string name="cart_edit_change_quantity_caps">ИЗМЕНИТЬ КОЛИЧЕСТВО</string>
     <string name="cart_edit_change_color">Изменить цвет</string>
     <string name="cart_edit_cancel">Отмена</string>
     <string name="cart_save">Сохранить</string>
@@ -152,6 +153,19 @@
     <string name="fitting_success_info">Подробную информацию вы можете \nпосмотреть в</string>
     <string name="fitting_success_fitting">Примерка</string>
     <string name="fitting_success_catalog">Перейти в каталог</string>
+    <string name="fitting_delivery_delivered">Доставлено</string>
+    <string name="fitting_info_title">Информация о примерке</string>
+    <string name="fitting_info_address_label">Примерка по адресу</string>
+    <string name="fitting_info_delivery_time_label">Время доставки</string>
+    <string name="fitting_info_assembly_method_label">Способ сборки</string>
+    <string name="fitting_info_delivery_method_label">Способ доставки</string>
+    <string name="fitting_info_sales_representative_label">Торговый представитель</string>
+    <string name="fitting_info_phone_label">Способ сборки</string>
+    <string name="fitting_info_vehicle_number_label">№ транспортного средства торгового представителя</string>
+    <string name="fitting_info_logistics_service">Служба логистики</string>
+    <string name="fitting_info_sales_representative">Песков Виталий Андреевич</string>
+    <string name="fitting_info_phone">7 985 111 11 11</string>
+    <string name="fitting_info_vehicle_number">Н 700 ЕЕ 790</string>
 
     <plurals name="cart_all_items">
         <item quantity="one">ВСЕ ТОВАРЫ (%1$d)</item>

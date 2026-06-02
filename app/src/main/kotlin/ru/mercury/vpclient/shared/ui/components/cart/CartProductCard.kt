@@ -1,20 +1,27 @@
 package ru.mercury.vpclient.shared.ui.components.cart
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
@@ -27,10 +34,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import ru.mercury.vpclient.shared.data.FORMAT_QUANTITY
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
+import ru.mercury.vpclient.shared.data.entity.CartProductSize
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
+import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.regular11
@@ -39,24 +49,10 @@ import ru.mercury.vpclient.shared.ui.theme.regular15
 
 @Composable
 fun CartProductCard(
-    product: CartProduct,
+    state: CartProductCardState,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit = {},
-    onSelectSizeClick: () -> Unit = {},
-    onBuySwitchChange: (Boolean) -> Unit = {},
-    onAlternativeClick: (CartProductAlternative) -> Unit = {},
-    onRemoveAlternativeClick: (CartProductAlternative) -> Unit = {},
-    onHideAlternativesClick: () -> Unit = {},
-    onEditSwipeClick: () -> Unit = {},
-    onDeleteSwipeClick: () -> Unit = {},
-    onDetachFromLookSwipeClick: () -> Unit = {},
-    onReturnOriginalSwipeClick: () -> Unit = {},
-    onShowAlternativesSwipeClick: () -> Unit = {},
-    onHideAlternativesSwipeClick: () -> Unit = {},
-    onReturnToBasketSwipeClick: () -> Unit = {},
-    useFittingSwipeActions: Boolean = false,
-    selectedAlternativeId: String? = null
 ) {
+    val product = state.product
     val articleText = product.article.takeIf { it.isNotEmpty() } ?: product.itemId
     val isPriceVisible = product.priceValue > .0 && product.price.isNotBlank()
     val hasSize = product.size.isNotBlank()
@@ -71,7 +67,7 @@ fun CartProductCard(
     val isEditSwipeActionVisible = hasSize && product.sizeCount in 1..2
     val isDetachFromLookSwipeActionVisible = !product.lookId.isNullOrEmpty()
     val leadingSwipeActionsCount = when {
-        useFittingSwipeActions -> 0
+        state.useFittingSwipeActions -> 0
         else -> {
             listOf(
                 isReturnOriginalSwipeActionVisible,
@@ -81,7 +77,7 @@ fun CartProductCard(
         }
     }
     val trailingSwipeActionsCount = when {
-        useFittingSwipeActions -> 2
+        state.useFittingSwipeActions -> 2
         else -> {
             listOf(
                 isEditSwipeActionVisible,
@@ -99,18 +95,18 @@ fun CartProductCard(
                 isReturnOriginalVisible = isReturnOriginalSwipeActionVisible,
                 isShowAlternativesVisible = isShowAlternativesSwipeActionVisible,
                 isHideAlternativesVisible = isHideAlternativesSwipeActionVisible,
-                onReturnOriginalClick = { onSwipeActionClick(onReturnOriginalSwipeClick) },
-                onShowAlternativesClick = { onSwipeActionClick(onShowAlternativesSwipeClick) },
-                onHideAlternativesClick = { onSwipeActionClick(onHideAlternativesSwipeClick) }
+                onReturnOriginalClick = { onSwipeActionClick(state.onReturnOriginalSwipeClick) },
+                onShowAlternativesClick = { onSwipeActionClick(state.onShowAlternativesSwipeClick) },
+                onHideAlternativesClick = { onSwipeActionClick(state.onHideAlternativesSwipeClick) }
             )
         },
         trailingActionsContent = { swipeProgress, onSwipeActionClick ->
             when {
-                useFittingSwipeActions -> {
+                state.useFittingSwipeActions -> {
                     CartProductFittingSwipeActions(
                         swipeProgress = swipeProgress,
-                        onEditClick = { onSwipeActionClick(onEditSwipeClick) },
-                        onReturnToBasketClick = { onSwipeActionClick(onReturnToBasketSwipeClick) }
+                        onEditClick = { onSwipeActionClick(state.onEditSwipeClick) },
+                        onReturnToBasketClick = { onSwipeActionClick(state.onReturnToBasketSwipeClick) }
                     )
                 }
                 else -> {
@@ -119,9 +115,9 @@ fun CartProductCard(
                         isEditVisible = isEditSwipeActionVisible,
                         isDetachFromLookVisible = isDetachFromLookSwipeActionVisible,
                         isDeleteVisible = true,
-                        onEditClick = { onSwipeActionClick(onEditSwipeClick) },
-                        onDetachFromLookClick = { onSwipeActionClick(onDetachFromLookSwipeClick) },
-                        onDeleteClick = { onSwipeActionClick(onDeleteSwipeClick) }
+                        onEditClick = { onSwipeActionClick(state.onEditSwipeClick) },
+                        onDetachFromLookClick = { onSwipeActionClick(state.onDetachFromLookSwipeClick) },
+                        onDeleteClick = { onSwipeActionClick(state.onDeleteSwipeClick) }
                     )
                 }
             }
@@ -132,7 +128,7 @@ fun CartProductCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable(onClick = onClick)
+                .clickable(onClick = state.onClick)
         ) {
             ConstraintLayout(
                 modifier = Modifier
@@ -152,6 +148,7 @@ fun CartProductCard(
                     availability,
                     quantity
                 ) = createRefs()
+                val priceTopBarrier = createBottomBarrier(article, size)
 
                 ClientAsyncImage(
                     imageUrl = product.imageUrl,
@@ -217,7 +214,7 @@ fun CartProductCard(
                     modifier = Modifier.constrainAs(article) {
                         start.linkTo(brand.start)
                         top.linkTo(color.bottom, 4.dp)
-                        end.linkTo(buySwitch.start, 8.dp)
+                        end.linkTo(size.start, 8.dp)
                         width = Dimension.fillToConstraints
                     },
                     maxLines = 2,
@@ -233,7 +230,7 @@ fun CartProductCard(
                     product = product,
                     modifier = Modifier.constrainAs(price) {
                         start.linkTo(brand.start)
-                        top.linkTo(article.bottom, 23.dp)
+                        top.linkTo(priceTopBarrier, 5.dp)
                         end.linkTo(quantity.start, 8.dp)
                         if (isPriceVisible) {
                             bottom.linkTo(parent.bottom, 27.dp)
@@ -250,7 +247,7 @@ fun CartProductCard(
                         end.linkTo(parent.end, 16.dp)
                     },
                     isVisible = !product.isSold,
-                    onCheckedChange = onBuySwitchChange
+                    onCheckedChange = state.onBuySwitchChange
                 )
 
                 if (product.isSold) {
@@ -285,7 +282,7 @@ fun CartProductCard(
                     }
                     !product.isSold && !hasSize -> {
                         OutlinedButton(
-                            onClick = onSelectSizeClick,
+                            onClick = state.onSelectSizeClick,
                             modifier = modifier.constrainAs(size) {
                                 width = Dimension.wrapContent
                                 height = Dimension.value(32.dp)
@@ -314,22 +311,86 @@ fun CartProductCard(
                         }
                     }
                     else -> {
-                        Text(
-                            text = product.size,
-                            modifier = Modifier.constrainAs(size) {
-                                top.linkTo(buySwitch.bottom, 21.dp)
-                                end.linkTo(buySwitch.end)
-                            },
-                            style = MaterialTheme.typography.regular14.copy(
-                                color = MaterialTheme.colorScheme.onBackground,
-                                lineHeight = 18.sp,
-                                letterSpacing = .2.sp
-                            )
-                        )
+                        when {
+                            product.sizeItems.size > 1 -> {
+                                Column(
+                                    modifier = Modifier.constrainAs(size) {
+                                        top.linkTo(buySwitch.bottom, 21.dp)
+                                        end.linkTo(buySwitch.end)
+                                    },
+                                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                                    horizontalAlignment = Alignment.End
+                                ) {
+                                    product.sizeItems.forEach { item ->
+                                        Column(
+                                            horizontalAlignment = Alignment.End
+                                        ) {
+                                            Row(
+                                                modifier = Modifier
+                                                    .height(24.dp)
+                                                    .border(
+                                                        width = 1.dp,
+                                                        color = MaterialTheme.colorScheme.outlineVariant,
+                                                        shape = RoundedCornerShape(6.dp)
+                                                    )
+                                                    .padding(start = 8.dp, end = 2.dp),
+                                                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Text(
+                                                    text = item.name,
+                                                    style = MaterialTheme.typography.regular11.copy(
+                                                        color = MaterialTheme.colorScheme.onBackground,
+                                                        lineHeight = 16.sp,
+                                                        letterSpacing = .2.sp
+                                                    )
+                                                )
+
+                                                IconButton(
+                                                    onClick = { state.onSizeClick(item) },
+                                                    modifier = Modifier.size(20.dp)
+                                                ) {
+                                                    Icon(
+                                                        imageVector = Close24,
+                                                        contentDescription = null,
+                                                        modifier = Modifier.size(12.dp),
+                                                        tint = MaterialTheme.colorScheme.onBackground
+                                                    )
+                                                }
+                                            }
+
+                                            if (item.isLastInStock) {
+                                                Text(
+                                                    text = stringResource(ClientStrings.CartInStock),
+                                                    modifier = Modifier.padding(top = 1.dp),
+                                                    style = MaterialTheme.typography.regular11.copy(
+                                                        color = MaterialTheme.colorScheme.error
+                                                    )
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            else -> {
+                                Text(
+                                    text = product.size,
+                                    modifier = Modifier.constrainAs(size) {
+                                        top.linkTo(buySwitch.bottom, 21.dp)
+                                        end.linkTo(buySwitch.end)
+                                    },
+                                    style = MaterialTheme.typography.regular14.copy(
+                                        color = MaterialTheme.colorScheme.onBackground,
+                                        lineHeight = 18.sp,
+                                        letterSpacing = .2.sp
+                                    )
+                                )
+                            }
+                        }
                     }
                 }
 
-                if (isAvailabilityVisible) {
+                if (isAvailabilityVisible && product.sizeItems.size <= 1) {
                     Text(
                         text = stringResource(ClientStrings.CartInStock),
                         modifier = Modifier.constrainAs(availability) {
@@ -343,9 +404,17 @@ fun CartProductCard(
                 }
 
                 Text(
-                    text = "х ${product.quantity}",
+                    text = FORMAT_QUANTITY.format(product.quantity),
                     modifier = Modifier.constrainAs(quantity) {
                         end.linkTo(parent.end, 16.dp)
+                        when {
+                            isAvailabilityVisible && product.sizeItems.size <= 1 -> {
+                                top.linkTo(availability.bottom, 8.dp)
+                            }
+                            else -> {
+                                top.linkTo(price.top)
+                            }
+                        }
                         bottom.linkTo(
                             anchor = when {
                                 isPriceVisible -> price.bottom
@@ -368,20 +437,40 @@ fun CartProductCard(
             if (isAlternativesVisible) {
                 CartAlternativesSection(
                     alternatives = product.alternatives,
-                    selectedAlternativeId = selectedAlternativeId,
-                    onAlternativeClick = onAlternativeClick,
-                    onRemoveClick = onRemoveAlternativeClick
+                    selectedAlternativeId = state.selectedAlternativeId,
+                    onAlternativeClick = state.onAlternativeClick,
+                    onRemoveClick = state.onRemoveAlternativeClick
                 )
             }
 
             if (isAlternativesEmptyVisible) {
                 CartAlternativesEmpty(
-                    onHideClick = onHideAlternativesClick
+                    onHideClick = state.onHideAlternativesClick
                 )
             }
         }
     }
 }
+
+data class CartProductCardState(
+    val product: CartProduct,
+    val onClick: () -> Unit = {},
+    val onSelectSizeClick: () -> Unit = {},
+    val onSizeClick: (CartProductSize) -> Unit = {},
+    val onBuySwitchChange: (Boolean) -> Unit = {},
+    val onAlternativeClick: (CartProductAlternative) -> Unit = {},
+    val onRemoveAlternativeClick: (CartProductAlternative) -> Unit = {},
+    val onHideAlternativesClick: () -> Unit = {},
+    val onEditSwipeClick: () -> Unit = {},
+    val onDeleteSwipeClick: () -> Unit = {},
+    val onDetachFromLookSwipeClick: () -> Unit = {},
+    val onReturnOriginalSwipeClick: () -> Unit = {},
+    val onShowAlternativesSwipeClick: () -> Unit = {},
+    val onHideAlternativesSwipeClick: () -> Unit = {},
+    val onReturnToBasketSwipeClick: () -> Unit = {},
+    val useFittingSwipeActions: Boolean = false,
+    val selectedAlternativeId: String? = null
+)
 
 @PreviewWrapper(ThemeWrapper::class)
 @Preview(showBackground = true)
@@ -390,16 +479,14 @@ private fun CartProductCardPreview(
     @PreviewParameter(CartProductCardCartProductProvider::class) product: CartProduct
 ) {
     CartProductCard(
-        product = product
+        state = CartProductCardState(
+            product = product
+        )
     )
 }
 
 private class CartProductCardCartProductProvider: PreviewParameterProvider<CartProduct> {
-    override val values: Sequence<CartProduct> = previewCartProducts()
-}
-
-private fun previewCartProducts(): Sequence<CartProduct> {
-    return sequenceOf(
+    override val values: Sequence<CartProduct> = sequenceOf(
         CartProduct(
             id = "1",
             detailId = "1",
@@ -493,6 +580,37 @@ private fun previewCartProducts(): Sequence<CartProduct> {
             imageUrl = "",
             isForPayment = false,
             priceValue = 920_000.0
+        ),
+        CartProduct(
+            id = "5",
+            detailId = "5",
+            itemId = "5",
+            colorId = "5",
+            brand = "PRADA",
+            urlBrandLogo = null,
+            name = "Хлопковая рубашка",
+            article = "PR112233",
+            color = "Молочный",
+            size = "IT 38, IT 40",
+            price = "210 000 ₽",
+            imageUrl = "",
+            isForPayment = true,
+            isLastInStock = true,
+            sizeCount = 2,
+            sizeItems = listOf(
+                CartProductSize(
+                    id = "38",
+                    name = "IT 38",
+                    productId = "5_38",
+                    isLastInStock = true
+                ),
+                CartProductSize(
+                    id = "40",
+                    name = "IT 40",
+                    productId = "5_40"
+                )
+            ),
+            priceValue = 210_000.0
         )
     )
 }

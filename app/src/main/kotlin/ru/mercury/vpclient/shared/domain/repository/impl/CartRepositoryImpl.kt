@@ -7,6 +7,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.encodeToJsonElement
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
+import ru.mercury.vpclient.shared.data.entity.CartProductSize
 import ru.mercury.vpclient.shared.data.entity.ClientDeliveryAddress
 import ru.mercury.vpclient.shared.data.entity.ClientDeliveryAddressSuggestion
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationData
@@ -17,6 +18,7 @@ import ru.mercury.vpclient.shared.data.entity.FittingConfirmationResultDeliveryL
 import ru.mercury.vpclient.shared.data.entity.FittingData
 import ru.mercury.vpclient.shared.data.entity.FittingDeliveryData
 import ru.mercury.vpclient.shared.data.entity.ProductAvailableColor
+import ru.mercury.vpclient.shared.data.error.AddProductSizeException
 import ru.mercury.vpclient.shared.data.error.AddProductToBasketException
 import ru.mercury.vpclient.shared.data.error.BasketHideAlternativesException
 import ru.mercury.vpclient.shared.data.error.BasketReturnOriginalException
@@ -32,6 +34,9 @@ import ru.mercury.vpclient.shared.data.error.DeleteProductException
 import ru.mercury.vpclient.shared.data.error.DisassembleLookException
 import ru.mercury.vpclient.shared.data.error.MoveProductsAfterDragException
 import ru.mercury.vpclient.shared.data.error.RemoveAlternativeException
+import ru.mercury.vpclient.shared.data.error.RemoveProductSizeException
+import ru.mercury.vpclient.shared.data.error.SetProductColorException
+import ru.mercury.vpclient.shared.data.error.SetProductQuantityException
 import ru.mercury.vpclient.shared.data.error.SetProductSizeException
 import ru.mercury.vpclient.shared.data.error.SwitchProductWithAlternativeException
 import ru.mercury.vpclient.shared.data.error.FittingReturnProductException
@@ -66,6 +71,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductAvaila
 import ru.mercury.vpclient.shared.data.persistence.datastore.PreferenceKey
 import ru.mercury.vpclient.shared.data.persistence.datastore.SettingsDataStore
 import ru.mercury.vpclient.shared.domain.mapper.addProductToBasketRequest
+import ru.mercury.vpclient.shared.domain.mapper.addProductSizeRequest
 import ru.mercury.vpclient.shared.domain.mapper.basketHideAlternativesRequest
 import ru.mercury.vpclient.shared.domain.mapper.basketReturnOriginalRequest
 import ru.mercury.vpclient.shared.domain.mapper.basketShowAlternativesRequest
@@ -73,6 +79,8 @@ import ru.mercury.vpclient.shared.domain.mapper.cartProduct
 import ru.mercury.vpclient.shared.domain.mapper.cartProductWithLook
 import ru.mercury.vpclient.shared.domain.mapper.cartProductsAfterDragRequest
 import ru.mercury.vpclient.shared.domain.mapper.catalogFilterProductsEntity
+import ru.mercury.vpclient.shared.domain.mapper.changeColorRequest
+import ru.mercury.vpclient.shared.domain.mapper.changeQuantityRequest
 import ru.mercury.vpclient.shared.domain.mapper.changeSizeRequest
 import ru.mercury.vpclient.shared.domain.mapper.deleteLookRequest
 import ru.mercury.vpclient.shared.domain.mapper.deleteProductRequest
@@ -92,6 +100,7 @@ import ru.mercury.vpclient.shared.domain.mapper.clientDeliveryAddressSuggestion
 import ru.mercury.vpclient.shared.domain.mapper.paySwitchRequest
 import ru.mercury.vpclient.shared.domain.mapper.coordinateDto
 import ru.mercury.vpclient.shared.domain.mapper.removeAlternativeRequest
+import ru.mercury.vpclient.shared.domain.mapper.removeProductSizeRequest
 import ru.mercury.vpclient.shared.domain.mapper.switchProductWithAlternativeRequest
 import ru.mercury.vpclient.shared.domain.repository.CartRepository
 import javax.inject.Inject
@@ -511,6 +520,66 @@ class CartRepositoryImpl @Inject constructor(
             onSuccess = { loadBasket() },
             onEmpty = { loadBasket() },
             onFailure = { error -> throw SetProductSizeException(error.message) }
+        )
+    }
+
+    override suspend fun addProductSize(product: CartProduct, sizeId: String) {
+        val pairedUserId = settingsDataStore.getValue(PreferenceKey.PairedUser).orEmpty()
+        if (pairedUserId.isEmpty()) return
+
+        handleResponse(
+            request = {
+                val request = product.addProductSizeRequest(pairedUserId, sizeId)
+                networkService.basket(request)
+            },
+            onSuccess = { loadBasket() },
+            onEmpty = { loadBasket() },
+            onFailure = { error -> throw AddProductSizeException(error.message) }
+        )
+    }
+
+    override suspend fun removeProductSize(product: CartProduct, size: CartProductSize) {
+        val pairedUserId = settingsDataStore.getValue(PreferenceKey.PairedUser).orEmpty()
+        if (pairedUserId.isEmpty()) return
+
+        handleResponse(
+            request = {
+                val request = product.removeProductSizeRequest(pairedUserId, size)
+                networkService.basket(request)
+            },
+            onSuccess = { loadBasket() },
+            onEmpty = { loadBasket() },
+            onFailure = { error -> throw RemoveProductSizeException(error.message) }
+        )
+    }
+
+    override suspend fun setProductColor(product: CartProduct, colorId: String) {
+        val pairedUserId = settingsDataStore.getValue(PreferenceKey.PairedUser).orEmpty()
+        if (pairedUserId.isEmpty()) return
+
+        handleResponse(
+            request = {
+                val request = product.changeColorRequest(pairedUserId, colorId)
+                networkService.basket(request)
+            },
+            onSuccess = { loadBasket() },
+            onEmpty = { loadBasket() },
+            onFailure = { error -> throw SetProductColorException(error.message) }
+        )
+    }
+
+    override suspend fun setProductQuantity(product: CartProduct, quantity: Int) {
+        val pairedUserId = settingsDataStore.getValue(PreferenceKey.PairedUser).orEmpty()
+        if (pairedUserId.isEmpty()) return
+
+        handleResponse(
+            request = {
+                val request = product.changeQuantityRequest(pairedUserId, quantity)
+                networkService.basket(request)
+            },
+            onSuccess = { loadBasket() },
+            onEmpty = { loadBasket() },
+            onFailure = { error -> throw SetProductQuantityException(error.message) }
         )
     }
 

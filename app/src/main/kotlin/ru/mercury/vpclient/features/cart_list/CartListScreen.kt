@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
@@ -61,11 +62,12 @@ import ru.mercury.vpclient.shared.ui.components.SharedTabRow
 import ru.mercury.vpclient.shared.ui.components.SharedTabRowState
 import ru.mercury.vpclient.shared.ui.components.cart.CartLookCard
 import ru.mercury.vpclient.shared.ui.components.cart.CartProductCard
-import ru.mercury.vpclient.shared.ui.components.cart.CartProductDivider
+import ru.mercury.vpclient.shared.ui.components.cart.CartProductCardState
 import ru.mercury.vpclient.shared.ui.components.cart.CartProductLargeCard
 import ru.mercury.vpclient.shared.ui.components.cart.CartSummary
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
+import ru.mercury.vpclient.shared.ui.theme.divider
 import ru.mercury.vpclient.shared.ui.theme.medium13
 import ru.mercury.vpclient.shared.ui.theme.medium15
 import ru.mercury.vpclient.shared.ui.theme.regular14
@@ -273,6 +275,7 @@ private fun CartListScreenContent(
                             onAddClick = {},
                             onProductClick = { product -> dispatch(CartIntent.ProductClick(product.detailId)) },
                             onSelectSizeClick = { product -> dispatch(CartIntent.ShowSizePicker(product)) },
+                            onSizeClick = { product, size -> dispatch(CartIntent.RemoveProductSizeClick(product, size)) },
                             onBuySwitchChange = { product, paySwitch ->
                                 dispatch(CartIntent.ChangePaySwitch(product, paySwitch))
                             },
@@ -302,41 +305,44 @@ private fun CartListScreenContent(
                         when (state.viewMode) {
                             CartViewMode.List -> {
                                 CartProductCard(
-                                    product = product,
+                                    state = CartProductCardState(
+                                        product = product,
+                                        onClick = { dispatch(CartIntent.ProductClick(product.detailId)) },
+                                        onSelectSizeClick = { dispatch(CartIntent.ShowSizePicker(product)) },
+                                        onSizeClick = { size -> dispatch(CartIntent.RemoveProductSizeClick(product, size)) },
+                                        onBuySwitchChange = { paySwitch ->
+                                            dispatch(CartIntent.ChangePaySwitch(product, paySwitch))
+                                        },
+                                        onAlternativeClick = { alternative ->
+                                            dispatch(CartIntent.AlternativeClick(alternative))
+                                        },
+                                        onRemoveAlternativeClick = { alternative ->
+                                            dispatch(CartIntent.RemoveAlternativeClick(alternative))
+                                        },
+                                        onHideAlternativesClick = {
+                                            dispatch(CartIntent.HideAlternativesClick(product))
+                                        },
+                                        onEditSwipeClick = {
+                                            dispatch(CartIntent.EditProductSwipeClick(product))
+                                        },
+                                        onDeleteSwipeClick = {
+                                            dispatch(CartIntent.DeleteProductSwipeClick(product))
+                                        },
+                                        onDetachFromLookSwipeClick = {
+                                            dispatch(CartIntent.DetachProductFromLookSwipeClick(product))
+                                        },
+                                        onReturnOriginalSwipeClick = {
+                                            dispatch(CartIntent.ReturnOriginalSwipeClick(product))
+                                        },
+                                        onShowAlternativesSwipeClick = {
+                                            dispatch(CartIntent.ShowAlternativesSwipeClick(product))
+                                        },
+                                        onHideAlternativesSwipeClick = {
+                                            dispatch(CartIntent.HideAlternativesSwipeClick(product))
+                                        },
+                                        selectedAlternativeId = state.selectedAlternativeId
+                                    ),
                                     modifier = productModifier(product),
-                                    onClick = { dispatch(CartIntent.ProductClick(product.detailId)) },
-                                    onSelectSizeClick = { dispatch(CartIntent.ShowSizePicker(product)) },
-                                    onBuySwitchChange = { paySwitch ->
-                                        dispatch(CartIntent.ChangePaySwitch(product, paySwitch))
-                                    },
-                                    onAlternativeClick = { alternative ->
-                                        dispatch(CartIntent.AlternativeClick(alternative))
-                                    },
-                                    onRemoveAlternativeClick = { alternative ->
-                                        dispatch(CartIntent.RemoveAlternativeClick(alternative))
-                                    },
-                                    onHideAlternativesClick = {
-                                        dispatch(CartIntent.HideAlternativesClick(product))
-                                    },
-                                    onEditSwipeClick = {
-                                        dispatch(CartIntent.EditProductSwipeClick(product))
-                                    },
-                                    onDeleteSwipeClick = {
-                                        dispatch(CartIntent.DeleteProductSwipeClick(product))
-                                    },
-                                    onDetachFromLookSwipeClick = {
-                                        dispatch(CartIntent.DetachProductFromLookSwipeClick(product))
-                                    },
-                                    onReturnOriginalSwipeClick = {
-                                        dispatch(CartIntent.ReturnOriginalSwipeClick(product))
-                                    },
-                                    onShowAlternativesSwipeClick = {
-                                        dispatch(CartIntent.ShowAlternativesSwipeClick(product))
-                                    },
-                                    onHideAlternativesSwipeClick = {
-                                        dispatch(CartIntent.HideAlternativesSwipeClick(product))
-                                    },
-                                    selectedAlternativeId = state.selectedAlternativeId
                                 )
                             }
                             CartViewMode.Cards -> {
@@ -345,6 +351,7 @@ private fun CartListScreenContent(
                                     modifier = productModifier(product),
                                     onClick = { dispatch(CartIntent.ProductClick(product.detailId)) },
                                     onSelectSizeClick = { dispatch(CartIntent.ShowSizePicker(product)) },
+                                    onSizeClick = { size -> dispatch(CartIntent.RemoveProductSizeClick(product, size)) },
                                     onBuySwitchChange = { paySwitch ->
                                         dispatch(CartIntent.ChangePaySwitch(product, paySwitch))
                                     },
@@ -392,7 +399,10 @@ private fun CartListScreenContent(
                 !isAlternativesVisible
 
             if (isDividerVisible) {
-                CartProductDivider()
+                HorizontalDivider(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    color = MaterialTheme.colorScheme.divider
+                )
             }
         }
 
@@ -459,7 +469,10 @@ private fun CartListScreenContent(
                             }
 
                             item {
-                                CartProductDivider()
+                                HorizontalDivider(
+                                    modifier = Modifier.padding(horizontal = 16.dp),
+                                    color = MaterialTheme.colorScheme.divider
+                                )
 
                                 CartSummary(
                                     state = state
@@ -492,7 +505,9 @@ private fun CartListScreenContent(
                         when (state.viewMode) {
                             CartViewMode.List -> {
                                 CartProductCard(
-                                    product = draggedProduct,
+                                    state = CartProductCardState(
+                                        product = draggedProduct
+                                    ),
                                     modifier = modifier
                                 )
                             }

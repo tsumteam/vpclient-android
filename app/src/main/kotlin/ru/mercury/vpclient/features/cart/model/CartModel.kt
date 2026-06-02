@@ -1,6 +1,7 @@
 package ru.mercury.vpclient.features.cart.model
 
 import kotlinx.coroutines.Job
+import ru.mercury.vpclient.features.cart_quantity_sheet.model.CartQuantityItem
 import ru.mercury.vpclient.shared.data.FORMAT_RUB
 import ru.mercury.vpclient.shared.data.entity.CartFittingDeliveryGroup
 import ru.mercury.vpclient.shared.data.entity.CartPayMode
@@ -39,9 +40,13 @@ data class CartModel(
     val sizePickerSizes: ProductAvailableSizesEntity? = null,
     val sizePickerSelectedId: String? = null,
     val sizePickerForFitting: Boolean = false,
+    val sizePickerAddSize: Boolean = false,
     val colorPickerProduct: CartProduct? = null,
     val colorPickerColors: List<ProductAvailableColor>? = null,
     val colorPickerSelectedId: String? = null,
+    val colorPickerForFitting: Boolean = false,
+    val quantityPickerProduct: CartProduct? = null,
+    val quantityPickerSelectedValue: Int? = null,
     val selectedAlternativeId: String? = null,
     val paySwitchJob: Job? = null,
     val sizePickerJob: Job? = null,
@@ -51,6 +56,7 @@ data class CartModel(
     val sizePickerState: SizeSelectorState
         get() {
             val sizes = sizePickerSizes ?: return SizeSelectorState.Empty
+            val product = sizePickerProduct ?: return SizeSelectorState.Empty
             return SizeSelectorState(
                 sizes = sizes.items.map { size ->
                     val displayText = size.sizeFullName.orEmpty().ifBlank { size.sizeId }
@@ -61,7 +67,7 @@ data class CartModel(
                             ?: displayParts.getOrNull(1)?.shortSizeText()
                             ?: "-",
                         selected = size.sizeId == sizePickerSelectedId,
-                        enabled = size.inStock
+                        enabled = size.inStock && !product.sizeItems.any { item -> item.id == size.sizeId }
                     )
                 },
                 topText = sizes.countryCode.orEmpty(),
@@ -75,6 +81,18 @@ data class CartModel(
             val colors = colorPickerColors ?: return emptyList()
             return colors.map { color ->
                 color.copy(selected = color.id == colorPickerSelectedId)
+            }
+        }
+
+    val quantityPickerValues: List<CartQuantityItem>
+        get() {
+            val product = quantityPickerProduct ?: return emptyList()
+            val selectedValue = quantityPickerSelectedValue ?: product.quantity
+            return (1..maxOf(10, product.quantity)).map { value ->
+                CartQuantityItem(
+                    value = value,
+                    selected = value == selectedValue
+                )
             }
         }
 

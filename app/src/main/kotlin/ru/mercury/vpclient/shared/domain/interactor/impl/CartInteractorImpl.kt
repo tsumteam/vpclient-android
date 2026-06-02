@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
+import ru.mercury.vpclient.shared.data.entity.CartProductSize
 import ru.mercury.vpclient.shared.data.entity.ClientDeliveryAddress
 import ru.mercury.vpclient.shared.data.entity.ClientDeliveryAddressSuggestion
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationData
@@ -42,6 +43,22 @@ class CartInteractorImpl @Inject constructor(
 
     override suspend fun setProductSize(product: CartProduct, sizeId: String) {
         withContext(dispatchers.io) { cartRepository.setProductSize(product, sizeId) }
+    }
+
+    override suspend fun addProductSize(product: CartProduct, sizeId: String) {
+        withContext(dispatchers.io) { cartRepository.addProductSize(product, sizeId) }
+    }
+
+    override suspend fun removeProductSize(product: CartProduct, size: CartProductSize) {
+        withContext(dispatchers.io) { cartRepository.removeProductSize(product, size) }
+    }
+
+    override suspend fun setProductColor(product: CartProduct, colorId: String) {
+        withContext(dispatchers.io) { cartRepository.setProductColor(product, colorId) }
+    }
+
+    override suspend fun setProductQuantity(product: CartProduct, quantity: Int) {
+        withContext(dispatchers.io) { cartRepository.setProductQuantity(product, quantity) }
     }
 
     override suspend fun fittingReturnProduct(product: CartProduct) {

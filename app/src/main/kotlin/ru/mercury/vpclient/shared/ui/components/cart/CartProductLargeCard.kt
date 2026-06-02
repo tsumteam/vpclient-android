@@ -4,6 +4,7 @@ package ru.mercury.vpclient.shared.ui.components.cart
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +23,8 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -42,13 +45,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import ru.mercury.vpclient.shared.data.FORMAT_QUANTITY
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
+import ru.mercury.vpclient.shared.data.entity.CartProductSize
 import ru.mercury.vpclient.shared.domain.mapper.imagePages
 import ru.mercury.vpclient.shared.ui.components.BrandBox
 import ru.mercury.vpclient.shared.ui.components.HorizontalPagerIndicator
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
+import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.divider
@@ -62,6 +68,7 @@ fun CartProductLargeCard(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
     onSelectSizeClick: () -> Unit = {},
+    onSizeClick: (CartProductSize) -> Unit = {},
     onBuySwitchChange: (Boolean) -> Unit = {},
     onAlternativeClick: (CartProductAlternative) -> Unit = {},
     onRemoveAlternativeClick: (CartProductAlternative) -> Unit = {},
@@ -313,7 +320,7 @@ fun CartProductLargeCard(
                 )
 
                 Text(
-                    text = "х ${product.quantity}",
+                    text = FORMAT_QUANTITY.format(product.quantity),
                     modifier = Modifier.constrainAs(quantity) {
                         width = Dimension.wrapContent
                         height = Dimension.wrapContent
@@ -401,27 +408,94 @@ fun CartProductLargeCard(
                         }
                     }
                     else -> {
-                        Text(
-                            text = product.size,
-                            modifier = Modifier.constrainAs(size) {
-                                width = Dimension.wrapContent
-                                height = Dimension.wrapContent
-                                top.linkTo(price.bottom, 5.dp)
-                                start.linkTo(parent.start)
-                                end.linkTo(parent.end)
-                            },
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            style = MaterialTheme.typography.regular14.copy(
-                                color = MaterialTheme.colorScheme.outline,
-                                letterSpacing = .2.sp,
-                                lineHeight = 18.sp
-                            )
-                        )
+                        when {
+                            product.sizeItems.size > 1 -> {
+                                Column(
+                                    modifier = Modifier.constrainAs(size) {
+                                        width = Dimension.wrapContent
+                                        height = Dimension.wrapContent
+                                        top.linkTo(price.bottom, 5.dp)
+                                        start.linkTo(parent.start)
+                                        end.linkTo(parent.end)
+                                    },
+                                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    product.sizeItems.forEach { item ->
+                                        Column(
+                                            horizontalAlignment = Alignment.CenterHorizontally
+                                        ) {
+                                            Row(
+                                                modifier = Modifier
+                                                    .height(24.dp)
+                                                    .border(
+                                                        width = 1.dp,
+                                                        color = MaterialTheme.colorScheme.outlineVariant,
+                                                        shape = RoundedCornerShape(6.dp)
+                                                    )
+                                                    .padding(start = 8.dp, end = 2.dp),
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Text(
+                                                    text = item.name,
+                                                    style = MaterialTheme.typography.regular11.copy(
+                                                        color = MaterialTheme.colorScheme.onBackground,
+                                                        lineHeight = 16.sp,
+                                                        letterSpacing = .2.sp
+                                                    )
+                                                )
+
+                                                IconButton(
+                                                    onClick = { onSizeClick(item) },
+                                                    modifier = Modifier.size(20.dp)
+                                                ) {
+                                                    Icon(
+                                                        imageVector = Close24,
+                                                        contentDescription = null,
+                                                        modifier = Modifier.size(12.dp),
+                                                        tint = MaterialTheme.colorScheme.onBackground
+                                                    )
+                                                }
+                                            }
+
+                                            if (item.isLastInStock) {
+                                                Text(
+                                                    text = stringResource(ClientStrings.CartInStock),
+                                                    modifier = Modifier.padding(top = 1.dp),
+                                                    style = MaterialTheme.typography.regular11.copy(
+                                                        color = MaterialTheme.colorScheme.error,
+                                                        lineHeight = 16.sp
+                                                    )
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            else -> {
+                                Text(
+                                    text = product.size,
+                                    modifier = Modifier.constrainAs(size) {
+                                        width = Dimension.wrapContent
+                                        height = Dimension.wrapContent
+                                        top.linkTo(price.bottom, 5.dp)
+                                        start.linkTo(parent.start)
+                                        end.linkTo(parent.end)
+                                    },
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    style = MaterialTheme.typography.regular14.copy(
+                                        color = MaterialTheme.colorScheme.outline,
+                                        letterSpacing = .2.sp,
+                                        lineHeight = 18.sp
+                                    )
+                                )
+                            }
+                        }
                     }
                 }
 
-                if (isAvailabilityVisible) {
+                if (isAvailabilityVisible && product.sizeItems.size <= 1) {
                     Text(
                         text = stringResource(ClientStrings.CartInStock),
                         style = MaterialTheme.typography.regular11.copy(

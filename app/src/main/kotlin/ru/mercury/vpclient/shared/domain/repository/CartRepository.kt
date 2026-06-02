@@ -3,6 +3,7 @@ package ru.mercury.vpclient.shared.domain.repository
 import kotlinx.coroutines.flow.Flow
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
+import ru.mercury.vpclient.shared.data.entity.CartProductSize
 import ru.mercury.vpclient.shared.data.entity.ClientDeliveryAddress
 import ru.mercury.vpclient.shared.data.entity.ClientDeliveryAddressSuggestion
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationData
@@ -27,6 +28,14 @@ interface CartRepository {
     suspend fun addProductToBasket(productId: String, sizeId: String?)
 
     suspend fun setProductSize(product: CartProduct, sizeId: String)
+
+    suspend fun addProductSize(product: CartProduct, sizeId: String)
+
+    suspend fun removeProductSize(product: CartProduct, size: CartProductSize)
+
+    suspend fun setProductColor(product: CartProduct, colorId: String)
+
+    suspend fun setProductQuantity(product: CartProduct, quantity: Int)
 
     suspend fun fittingReturnProduct(product: CartProduct)
 

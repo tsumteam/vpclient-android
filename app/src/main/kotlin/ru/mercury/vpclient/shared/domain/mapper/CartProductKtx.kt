@@ -3,13 +3,18 @@ package ru.mercury.vpclient.shared.domain.mapper
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.encodeToJsonElement
 import ru.mercury.vpclient.shared.data.entity.CartProduct
+import ru.mercury.vpclient.shared.data.entity.CartProductSize
 import ru.mercury.vpclient.shared.data.network.entity.BasketAlternativesPaletteState
+import ru.mercury.vpclient.shared.data.network.entity.BasketAddSameProductWithDifferentSizeToLineOperationRequestItemDto
 import ru.mercury.vpclient.shared.data.network.entity.BasketChangeAlternativePaletteStateOperationRequestItemDto
+import ru.mercury.vpclient.shared.data.network.entity.BasketChangeLineColorOperationRequestItemDto
 import ru.mercury.vpclient.shared.data.network.entity.BasketChangeLinePaySwitchOperationRequestItemDto
+import ru.mercury.vpclient.shared.data.network.entity.BasketChangeLineQuantityOperationRequestItemDto
 import ru.mercury.vpclient.shared.data.network.entity.BasketChangeLineSizeOperationRequestItemDto
 import ru.mercury.vpclient.shared.data.network.entity.BasketOperationRequestDto
 import ru.mercury.vpclient.shared.data.network.entity.BasketOperationRequestTypeEnum
 import ru.mercury.vpclient.shared.data.network.entity.BasketRemoveLineOperationRequestItemDto
+import ru.mercury.vpclient.shared.data.network.entity.BasketRemoveProductFromLineOperationRequestItemDto
 import ru.mercury.vpclient.shared.data.network.entity.BasketSwitchAlternativeBackToOriginalOperationRequestItemDto
 import ru.mercury.vpclient.shared.data.network.entity.FittingChangeLinePaySwitchOperationRequestItemDto
 import ru.mercury.vpclient.shared.data.network.entity.FittingOperationRequestDto
@@ -112,6 +117,86 @@ fun CartProduct.changeSizeRequest(
                     operationOrder = 1,
                     lineId = id,
                     paySwitch = true
+                )
+            )
+        )
+    )
+}
+
+fun CartProduct.changeColorRequest(
+    pairedUserId: String,
+    colorId: String
+): BasketOperationRequestDto {
+    return BasketOperationRequestDto(
+        pairedUserId = pairedUserId,
+        items = listOf(
+            cartProductJson.encodeToJsonElement(
+                BasketChangeLineColorOperationRequestItemDto(
+                    operationType = BasketOperationRequestTypeEnum.CHANGE_LINE_COLOR,
+                    operationOrder = 0,
+                    lineId = id,
+                    colorId = colorId
+                )
+            )
+        )
+    )
+}
+
+fun CartProduct.changeQuantityRequest(
+    pairedUserId: String,
+    quantity: Int
+): BasketOperationRequestDto {
+    return BasketOperationRequestDto(
+        pairedUserId = pairedUserId,
+        items = listOf(
+            cartProductJson.encodeToJsonElement(
+                BasketChangeLineQuantityOperationRequestItemDto(
+                    operationType = BasketOperationRequestTypeEnum.CHANGE_LINE_QUANTITY,
+                    operationOrder = 0,
+                    lineId = id,
+                    quantity = quantity
+                )
+            )
+        )
+    )
+}
+
+fun CartProduct.addProductSizeRequest(
+    pairedUserId: String,
+    sizeId: String
+): BasketOperationRequestDto {
+    return BasketOperationRequestDto(
+        pairedUserId = pairedUserId,
+        items = listOf(
+            cartProductJson.encodeToJsonElement(
+                BasketAddSameProductWithDifferentSizeToLineOperationRequestItemDto(
+                    operationType = BasketOperationRequestTypeEnum.ADD_SAME_PRODUCT_WITH_DIFFERENT_SIZE_TO_LINE,
+                    operationOrder = 0,
+                    lineId = id,
+                    productId = sizeItems.firstOrNull()
+                        ?.catalogProductId
+                        ?.takeIf { it.isNotEmpty() }
+                        ?: detailId,
+                    sizeId = sizeId
+                )
+            )
+        )
+    )
+}
+
+fun CartProduct.removeProductSizeRequest(
+    pairedUserId: String,
+    size: CartProductSize
+): BasketOperationRequestDto {
+    return BasketOperationRequestDto(
+        pairedUserId = pairedUserId,
+        items = listOf(
+            cartProductJson.encodeToJsonElement(
+                BasketRemoveProductFromLineOperationRequestItemDto(
+                    operationType = BasketOperationRequestTypeEnum.REMOVE_PRODUCT_FROM_LINE,
+                    operationOrder = 0,
+                    lineId = id,
+                    productId = size.productId
                 )
             )
         )

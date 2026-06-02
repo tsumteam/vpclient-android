@@ -40,13 +40,13 @@ import ru.mercury.vpclient.features.cart.event.CartEvent
 import ru.mercury.vpclient.features.cart.intent.CartIntent
 import ru.mercury.vpclient.features.cart.model.CartModel
 import ru.mercury.vpclient.features.cart.navigation.CartRoute
+import ru.mercury.vpclient.features.cart_color_sheet.CartColorSheet
+import ru.mercury.vpclient.features.cart_color_sheet.intent.CartColorIntent
+import ru.mercury.vpclient.features.cart_color_sheet.model.CartColorModel
 import ru.mercury.vpclient.features.cart_edit_product_sheet.CartEditProductSheet
 import ru.mercury.vpclient.features.cart_edit_product_sheet.intent.CartEditProductSheetIntent
 import ru.mercury.vpclient.features.cart_edit_product_sheet.model.CartEditProductSheetModel
 import ru.mercury.vpclient.features.cart_fitting.CartFittingScreen
-import ru.mercury.vpclient.features.cart_fitting_color_picker_sheet.CartFittingColorPickerSheet
-import ru.mercury.vpclient.features.cart_fitting_color_picker_sheet.intent.CartFittingColorPickerSheetIntent
-import ru.mercury.vpclient.features.cart_fitting_color_picker_sheet.model.CartFittingColorPickerSheetModel
 import ru.mercury.vpclient.features.cart_fitting_edit_product_sheet.CartFittingEditProductSheet
 import ru.mercury.vpclient.features.cart_fitting_edit_product_sheet.intent.CartFittingEditProductSheetIntent
 import ru.mercury.vpclient.features.cart_fitting_products_sheet.CartFittingProductsSheet
@@ -56,12 +56,14 @@ import ru.mercury.vpclient.features.cart_fitting_sheet.CartFittingSheet
 import ru.mercury.vpclient.features.cart_fitting_sheet.intent.CartFittingSheetIntent
 import ru.mercury.vpclient.features.cart_fitting_sheet.model.CartFittingSheetModel
 import ru.mercury.vpclient.features.cart_list.CartListScreen
-import ru.mercury.vpclient.features.cart_select_size_dialog.CartSelectSizeDialog
-import ru.mercury.vpclient.features.cart_select_size_dialog.intent.CartSelectSizeDialogIntent
-import ru.mercury.vpclient.features.cart_select_size_dialog.model.CartSelectSizeDialogModel
+import ru.mercury.vpclient.features.cart_quantity_sheet.CartQuantitySheet
+import ru.mercury.vpclient.features.cart_quantity_sheet.intent.CartQuantityIntent
+import ru.mercury.vpclient.features.cart_quantity_sheet.model.CartQuantityModel
 import ru.mercury.vpclient.features.cart_size_picker_sheet.CartSizePickerSheet
 import ru.mercury.vpclient.features.cart_size_picker_sheet.intent.CartSizePickerSheetIntent
 import ru.mercury.vpclient.features.cart_size_picker_sheet.model.CartSizePickerSheetModel
+import ru.mercury.vpclient.features.cart_size_require_dialog.CartSizeRequireDialog
+import ru.mercury.vpclient.features.cart_size_require_dialog.intent.CartSizeRequireIntent
 import ru.mercury.vpclient.shared.data.entity.CartFittingSheetOption
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
@@ -124,10 +126,13 @@ private fun CartScreenContent(
 
     state.editProduct?.let { product ->
         val editProductActions = listOf(
-            stringResource(ClientStrings.CartEditAddSize) to CartIntent.AddSizeClick(product),
+            stringResource(ClientStrings.CartEditAddSize) to CartIntent.AddSizeClick(product)
+        ).filter {
+            product.sizeItems.size < 2
+        } + listOf(
             stringResource(ClientStrings.CartEditSelectSize) to CartIntent.ShowSizePicker(product),
-            stringResource(ClientStrings.CartEditChangeQuantity) to CartIntent.ChangeQuantityClick(product),
-            stringResource(ClientStrings.CartEditChangeColor) to CartIntent.ChangeColorClick(product)
+            stringResource(ClientStrings.CartEditChangeQuantity) to CartIntent.ShowQuantityPicker(product),
+            stringResource(ClientStrings.CartEditChangeColor) to CartIntent.ShowColorPicker(product)
         )
 
         CartEditProductSheet(
@@ -153,7 +158,7 @@ private fun CartScreenContent(
             dispatch = { intent ->
                 when (intent) {
                     is CartFittingEditProductSheetIntent.ChangeColorClick -> {
-                        dispatch(CartIntent.ShowColorPicker(product))
+                        dispatch(CartIntent.ShowColorPicker(product, forFitting = true))
                     }
                     is CartFittingEditProductSheetIntent.ChangeSizeClick -> {
                         dispatch(CartIntent.ShowFittingSizePicker(product))
@@ -225,14 +230,13 @@ private fun CartScreenContent(
     }
 
     state.selectSizeProduct?.let { product ->
-        CartSelectSizeDialog(
-            state = CartSelectSizeDialogModel(),
+        CartSizeRequireDialog(
             dispatch = { intent ->
                 when (intent) {
-                    is CartSelectSizeDialogIntent.SelectSizeClick -> {
+                    is CartSizeRequireIntent.SelectSizeClick -> {
                         dispatch(CartIntent.SelectSizeClick(product))
                     }
-                    is CartSelectSizeDialogIntent.DismissRequest -> {
+                    is CartSizeRequireIntent.DismissRequest -> {
                         dispatch(CartIntent.HideSelectSizeDialog)
                     }
                 }
@@ -266,20 +270,41 @@ private fun CartScreenContent(
     }
 
     if (state.colorPickerProduct != null) {
-        CartFittingColorPickerSheet(
-            state = CartFittingColorPickerSheetModel(
+        CartColorSheet(
+            state = CartColorModel(
                 colors = state.colorPickerColorsState
             ),
             dispatch = { intent ->
                 when (intent) {
-                    is CartFittingColorPickerSheetIntent.ColorClick -> {
+                    is CartColorIntent.ColorClick -> {
                         dispatch(CartIntent.ToggleColorPickerItem(intent.index))
                     }
-                    is CartFittingColorPickerSheetIntent.ConfirmClick -> {
+                    is CartColorIntent.ConfirmClick -> {
                         dispatch(CartIntent.ConfirmColorPicker)
                     }
-                    is CartFittingColorPickerSheetIntent.DismissRequest -> {
+                    is CartColorIntent.DismissRequest -> {
                         dispatch(CartIntent.HideColorPicker)
+                    }
+                }
+            }
+        )
+    }
+
+    if (state.quantityPickerProduct != null) {
+        CartQuantitySheet(
+            state = CartQuantityModel(
+                quantities = state.quantityPickerValues
+            ),
+            dispatch = { intent ->
+                when (intent) {
+                    is CartQuantityIntent.QuantityClick -> {
+                        dispatch(CartIntent.ToggleQuantityPickerItem(intent.index))
+                    }
+                    is CartQuantityIntent.ConfirmClick -> {
+                        dispatch(CartIntent.ConfirmQuantityPicker)
+                    }
+                    is CartQuantityIntent.DismissRequest -> {
+                        dispatch(CartIntent.HideQuantityPicker)
                     }
                 }
             }
@@ -342,7 +367,7 @@ private fun CartScreenContent(
         snackbarHost = {
             SharedSnackbarHost(
                 hostState = snackbarHostStateError,
-                modifier = Modifier.padding(bottom = 52.dp),
+                modifier = Modifier.padding(bottom = 60.dp),
                 containerColor = MaterialTheme.colorScheme.error
             )
         },

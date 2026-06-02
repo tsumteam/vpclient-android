@@ -31,6 +31,8 @@ import ru.mercury.vpclient.features.fitting_address_selection.FittingAddressSele
 import ru.mercury.vpclient.features.fitting_address_selection.navigation.FittingAddressSelectionRoute
 import ru.mercury.vpclient.features.fitting_confirmation.FittingConfirmationScreen
 import ru.mercury.vpclient.features.fitting_confirmation.navigation.FittingConfirmationRoute
+import ru.mercury.vpclient.features.fitting_info.FittingInfoScreen
+import ru.mercury.vpclient.features.fitting_info.navigation.FittingInfoRoute
 import ru.mercury.vpclient.features.fitting_success.FittingSuccessScreen
 import ru.mercury.vpclient.features.fitting_success.navigation.FittingSuccessRoute
 import ru.mercury.vpclient.features.login.LoginScreen
@@ -75,6 +77,7 @@ fun MainActivityContent(
                 entry<CartRoute> { CartScreen(it) }
                 entry<DetailsRoute> { DetailsScreen(it) }
                 entry<FittingConfirmationRoute> { FittingConfirmationScreen(it) }
+                entry<FittingInfoRoute> { FittingInfoScreen(it) }
                 entry<FittingAddressSelectionRoute> { FittingAddressSelectionScreen(it) }
                 entry<FittingSuccessRoute> { FittingSuccessScreen(it) }
                 entry<ConsultantRoute> { ConsultantScreen(it) }

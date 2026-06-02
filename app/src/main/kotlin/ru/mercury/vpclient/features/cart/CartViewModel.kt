@@ -16,7 +16,9 @@ import ru.mercury.vpclient.features.cart.navigation.CartPage
 import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.features.fitting_confirmation.navigation.FittingConfirmationRoute
+import ru.mercury.vpclient.features.fitting_info.navigation.FittingInfoRoute
 import ru.mercury.vpclient.shared.data.entity.FittingData
+import ru.mercury.vpclient.shared.data.error.AddProductSizeException
 import ru.mercury.vpclient.shared.data.error.BasketHideAlternativesException
 import ru.mercury.vpclient.shared.data.error.BasketReturnOriginalException
 import ru.mercury.vpclient.shared.data.error.BasketShowAlternativesException
@@ -31,6 +33,9 @@ import ru.mercury.vpclient.shared.data.error.DisassembleLookException
 import ru.mercury.vpclient.shared.data.error.FittingReturnProductException
 import ru.mercury.vpclient.shared.data.error.MoveProductsAfterDragException
 import ru.mercury.vpclient.shared.data.error.RemoveAlternativeException
+import ru.mercury.vpclient.shared.data.error.RemoveProductSizeException
+import ru.mercury.vpclient.shared.data.error.SetProductColorException
+import ru.mercury.vpclient.shared.data.error.SetProductQuantityException
 import ru.mercury.vpclient.shared.data.error.SetProductSizeException
 import ru.mercury.vpclient.shared.data.error.SwitchProductWithAlternativeException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
@@ -141,13 +146,25 @@ class CartViewModel @AssistedInject constructor(
             is CartIntent.FittingTabClick -> return
             is CartIntent.FittingDeliveryClick -> {
                 launch {
-                    MainEventManager.send(
-                        FittingConfirmationRoute(
-                            productIds = intent.productIds,
-                            deliveryId = intent.deliveryId,
-                            fittingType = intent.fittingType
-                        )
-                    )
+                    when {
+                        intent.header.isDelivered -> {
+                            MainEventManager.send(
+                                FittingInfoRoute(
+                                    address = intent.header.address,
+                                    deliveryDate = intent.header.date
+                                )
+                            )
+                        }
+                        else -> {
+                            MainEventManager.send(
+                                FittingConfirmationRoute(
+                                    productIds = intent.productIds,
+                                    deliveryId = intent.deliveryId,
+                                    fittingType = intent.fittingType
+                                )
+                            )
+                        }
+                    }
                 }
             }
             is CartIntent.HideFittingSheet -> reduce { it.copy(isFittingSheetVisible = false) }
@@ -218,6 +235,7 @@ class CartViewModel @AssistedInject constructor(
                         sizePickerSizes = null,
                         sizePickerSelectedId = null,
                         sizePickerForFitting = false,
+                        sizePickerAddSize = intent.addSize,
                         sizePickerJob = null
                     )
                 }
@@ -247,6 +265,7 @@ class CartViewModel @AssistedInject constructor(
                         sizePickerSizes = null,
                         sizePickerSelectedId = null,
                         sizePickerForFitting = true,
+                        sizePickerAddSize = false,
                         sizePickerJob = null
                     )
                 }
@@ -269,6 +288,7 @@ class CartViewModel @AssistedInject constructor(
                         sizePickerSizes = null,
                         sizePickerSelectedId = null,
                         sizePickerForFitting = false,
+                        sizePickerAddSize = false,
                         sizePickerJob = null
                     )
                 }
@@ -281,6 +301,7 @@ class CartViewModel @AssistedInject constructor(
                 val product = stateFlow.value.sizePickerProduct ?: return
                 val sizeId = stateFlow.value.sizePickerSelectedId ?: return
                 val forFitting = stateFlow.value.sizePickerForFitting
+                val addSize = stateFlow.value.sizePickerAddSize
                 stateFlow.value.sizePickerJob?.cancel()
                 reduce {
                     it.copy(
@@ -288,12 +309,14 @@ class CartViewModel @AssistedInject constructor(
                         sizePickerSizes = null,
                         sizePickerSelectedId = null,
                         sizePickerForFitting = false,
+                        sizePickerAddSize = false,
                         sizePickerJob = null
                     )
                 }
                 launch {
                     withCenterLoading {
                         when {
+                            addSize -> cartInteractor.addProductSize(product, sizeId)
                             forFitting -> {
                                 cartInteractor.setFittingProductSize(product, sizeId)
                                 val fitting = runCatching { cartInteractor.loadFitting() }.getOrDefault(FittingData())
@@ -315,7 +338,8 @@ class CartViewModel @AssistedInject constructor(
                         fittingEditProduct = null,
                         colorPickerProduct = intent.product,
                         colorPickerColors = null,
-                        colorPickerSelectedId = null
+                        colorPickerSelectedId = null,
+                        colorPickerForFitting = intent.forFitting
                     )
                 }
                 launch {
@@ -338,7 +362,8 @@ class CartViewModel @AssistedInject constructor(
                     it.copy(
                         colorPickerProduct = null,
                         colorPickerColors = null,
-                        colorPickerSelectedId = null
+                        colorPickerSelectedId = null,
+                        colorPickerForFitting = false
                     )
                 }
             }
@@ -349,23 +374,73 @@ class CartViewModel @AssistedInject constructor(
             is CartIntent.ConfirmColorPicker -> {
                 val product = stateFlow.value.colorPickerProduct ?: return
                 val colorId = stateFlow.value.colorPickerSelectedId ?: return
+                val forFitting = stateFlow.value.colorPickerForFitting
+                if (colorId == product.colorId) {
+                    dispatch(CartIntent.HideColorPicker)
+                    return
+                }
                 reduce {
                     it.copy(
                         colorPickerProduct = null,
                         colorPickerColors = null,
-                        colorPickerSelectedId = null
+                        colorPickerSelectedId = null,
+                        colorPickerForFitting = false
                     )
                 }
                 launch {
                     withCenterLoading {
-                        cartInteractor.setFittingProductColor(product, colorId)
-                        val fitting = runCatching { cartInteractor.loadFitting() }.getOrDefault(FittingData())
-                        reduce {
-                            it.copy(
-                                apiFittingProducts = fitting.products,
-                                apiFittingDeliveries = fitting.deliveries
-                            )
+                        when {
+                            forFitting -> {
+                                cartInteractor.setFittingProductColor(product, colorId)
+                                val fitting = runCatching { cartInteractor.loadFitting() }.getOrDefault(FittingData())
+                                reduce {
+                                    it.copy(
+                                        apiFittingProducts = fitting.products,
+                                        apiFittingDeliveries = fitting.deliveries
+                                    )
+                                }
+                            }
+                            else -> cartInteractor.setProductColor(product, colorId)
                         }
+                    }
+                }
+            }
+            is CartIntent.ShowQuantityPicker -> {
+                reduce {
+                    it.copy(
+                        quantityPickerProduct = intent.product,
+                        quantityPickerSelectedValue = intent.product.quantity
+                    )
+                }
+            }
+            is CartIntent.HideQuantityPicker -> {
+                reduce {
+                    it.copy(
+                        quantityPickerProduct = null,
+                        quantityPickerSelectedValue = null
+                    )
+                }
+            }
+            is CartIntent.ToggleQuantityPickerItem -> {
+                val quantity = stateFlow.value.quantityPickerValues.getOrNull(intent.index)?.value
+                reduce { it.copy(quantityPickerSelectedValue = quantity) }
+            }
+            is CartIntent.ConfirmQuantityPicker -> {
+                val product = stateFlow.value.quantityPickerProduct ?: return
+                val quantity = stateFlow.value.quantityPickerSelectedValue ?: return
+                if (quantity == product.quantity) {
+                    dispatch(CartIntent.HideQuantityPicker)
+                    return
+                }
+                reduce {
+                    it.copy(
+                        quantityPickerProduct = null,
+                        quantityPickerSelectedValue = null
+                    )
+                }
+                launch {
+                    withCenterLoading {
+                        cartInteractor.setProductQuantity(product, quantity)
                     }
                 }
             }
@@ -422,6 +497,16 @@ class CartViewModel @AssistedInject constructor(
                     }
                 }
             }
+            is CartIntent.RemoveProductSizeClick -> {
+                if (intent.product.sizeItems.size <= 1) {
+                    return
+                }
+                launch {
+                    withCenterLoading {
+                        cartInteractor.removeProductSize(intent.product, intent.size)
+                    }
+                }
+            }
             is CartIntent.EditProductSwipeClick -> reduce { it.copy(editProduct = intent.product) }
             is CartIntent.HideEditProductSheet -> reduce { it.copy(editProduct = null) }
             is CartIntent.EditFittingProductSwipeClick -> reduce { it.copy(fittingEditProduct = intent.product) }
@@ -441,9 +526,9 @@ class CartViewModel @AssistedInject constructor(
                     }
                 }
             }
-            is CartIntent.AddSizeClick,
-            is CartIntent.ChangeQuantityClick,
+            is CartIntent.AddSizeClick -> dispatch(CartIntent.ShowSizePicker(intent.product, addSize = true))
             is CartIntent.ChangeColorClick -> return
+            is CartIntent.ChangeQuantityClick -> dispatch(CartIntent.ShowQuantityPicker(intent.product))
             is CartIntent.DetachProductFromLookSwipeClick -> return
             is CartIntent.MoveProductAfterDrag -> {
                 val movedProducts = stateFlow.value.products.moveProductAfterDrag(
@@ -501,6 +586,18 @@ class CartViewModel @AssistedInject constructor(
                 launch { send(CartEvent.SnackbarErrorMessage(throwable.message)) }
             }
             is ChangeFittingLineColorException -> {
+                launch { send(CartEvent.SnackbarErrorMessage(throwable.message)) }
+            }
+            is SetProductColorException -> {
+                launch { send(CartEvent.SnackbarErrorMessage(throwable.message)) }
+            }
+            is SetProductQuantityException -> {
+                launch { send(CartEvent.SnackbarErrorMessage(throwable.message)) }
+            }
+            is AddProductSizeException -> {
+                launch { send(CartEvent.SnackbarErrorMessage(throwable.message)) }
+            }
+            is RemoveProductSizeException -> {
                 launch { send(CartEvent.SnackbarErrorMessage(throwable.message)) }
             }
             is FittingReturnProductException -> {

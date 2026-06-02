@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package ru.mercury.vpclient.features.cart_select_size_dialog
+package ru.mercury.vpclient.features.cart_size_require_dialog
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,20 +20,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.mercury.vpclient.features.cart_select_size_dialog.intent.CartSelectSizeDialogIntent
-import ru.mercury.vpclient.features.cart_select_size_dialog.model.CartSelectSizeDialogModel
+import ru.mercury.vpclient.features.cart_size_require_dialog.intent.CartSizeRequireIntent
 import ru.mercury.vpclient.shared.ui.components.SharedBasicAlertDialog
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.medium15
 import ru.mercury.vpclient.shared.ui.theme.medium18
 
 @Composable
-fun CartSelectSizeDialog(
-    state: CartSelectSizeDialogModel,
-    dispatch: (CartSelectSizeDialogIntent) -> Unit
+fun CartSizeRequireDialog(
+    dispatch: (CartSizeRequireIntent) -> Unit
 ) {
     SharedBasicAlertDialog(
-        onDismissRequest = { dispatch(CartSelectSizeDialogIntent.DismissRequest) }
+        onDismissRequest = { dispatch(CartSizeRequireIntent.DismissRequest) }
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -51,7 +49,7 @@ fun CartSelectSizeDialog(
             )
 
             Button(
-                onClick = { dispatch(CartSelectSizeDialogIntent.SelectSizeClick) },
+                onClick = { dispatch(CartSizeRequireIntent.SelectSizeClick) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(52.dp),
