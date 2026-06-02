@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package ru.mercury.vpclient.features.consultant
 
 import androidx.compose.foundation.layout.PaddingValues
@@ -7,17 +9,21 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,7 +49,6 @@ import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.consultants.ConsultantActionsRow
 import ru.mercury.vpclient.shared.ui.components.consultants.ConsultantAvatarPlaceholder
-import ru.mercury.vpclient.shared.ui.components.system.ClientTopAppBar
 import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
@@ -85,7 +90,8 @@ private fun ConsultantScreenContent(
 ) {
     SharedScaffold(
         topBar = {
-            ClientTopAppBar(
+            TopAppBar(
+                title = {},
                 navigationIcon = {
                     IconButton(
                         onClick = { dispatch(ConsultantIntent.BackClick) }
@@ -97,7 +103,10 @@ private fun ConsultantScreenContent(
                             tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors().copy(
+                    containerColor = Color.Transparent
+                )
             )
         },
         snackbarHost = {

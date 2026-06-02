@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package ru.mercury.vpclient.features.profile
 
 import androidx.compose.foundation.BorderStroke
@@ -9,7 +11,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -27,12 +31,13 @@ import ru.mercury.vpclient.features.profile.intent.ProfileIntent
 import ru.mercury.vpclient.features.profile.model.ProfileModel
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
-import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
-import ru.mercury.vpclient.shared.ui.components.system.TopBarActionsState
-import ru.mercury.vpclient.shared.ui.components.system.TopBarState
+import ru.mercury.vpclient.shared.ui.components.cart.CartIconButton
+import ru.mercury.vpclient.shared.ui.components.cart.FittingIconButton
+import ru.mercury.vpclient.shared.ui.components.cart.MessengerIconButton
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.livretRegular15
+import ru.mercury.vpclient.shared.ui.theme.medium18
 
 @Composable
 fun ProfileScreen(
@@ -53,23 +58,36 @@ private fun ProfileScreenContent(
 ) {
     SharedScaffold(
         topBar = {
-            ClientCenterAlignedTopAppBar(
-                state = TopBarState.Title(
-                    title = stringResource(ClientStrings.ProfileTitle),
-                    actionsState = TopBarActionsState(
-                        showCartButton = true,
-                        cartText = state.cartText,
-                        showCartBadge = state.showCartBadge,
-                        cartClick = { dispatch(ProfileIntent.CartClick) },
-                        fittingText = state.fittingText,
-                        showFittingButton = state.showFittingButton,
-                        showFittingBadge = state.showFittingBadge,
-                        fittingClick = { dispatch(ProfileIntent.FittingClick) },
-                        showMessengerButton = true,
-                        showMessengerBadge = state.showMessengerBadge,
-                        messengerClick = { dispatch(ProfileIntent.MessengerClick) }
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(ClientStrings.ProfileTitle),
+                        style = MaterialTheme.typography.medium18.copy(
+                            color = MaterialTheme.colorScheme.onBackground,
+                            textAlign = TextAlign.Center
+                        )
                     )
-                )
+                },
+                actions = {
+                    if (state.showFittingButton) {
+                        FittingIconButton(
+                            text = state.fittingText,
+                            showBadge = state.showFittingBadge,
+                            onClick = { dispatch(ProfileIntent.FittingClick) }
+                        )
+                    }
+
+                    CartIconButton(
+                        text = state.cartText,
+                        showBadge = state.showCartBadge,
+                        onClick = { dispatch(ProfileIntent.CartClick) }
+                    )
+
+                    MessengerIconButton(
+                        showBadge = state.showMessengerBadge,
+                        onClick = { dispatch(ProfileIntent.MessengerClick) }
+                    )
+                }
             )
         },
         bottomBar = {

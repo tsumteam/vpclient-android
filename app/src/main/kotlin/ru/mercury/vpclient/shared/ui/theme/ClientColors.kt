@@ -28,6 +28,9 @@ val ColorScheme.divider: Color
 val ColorScheme.success: Color
     get() = Color(0xFF5DC590)
 
+val ColorScheme.blue: Color
+    get() = Color(0xFF2F80ED)
+
 val ColorScheme.disabled: Color
     get() = Color(0xFFCBC9C9)
 

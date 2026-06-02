@@ -1,22 +1,32 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package ru.mercury.vpclient.features.category
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.plus
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,12 +45,15 @@ import ru.mercury.vpclient.shared.data.persistence.database.pojo.SubcategoryPojo
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.catalog.CatalogCategorySection
-import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
-import ru.mercury.vpclient.shared.ui.components.system.TopBarActionsState
-import ru.mercury.vpclient.shared.ui.components.system.TopBarState
+import ru.mercury.vpclient.shared.ui.components.cart.CartIconButton
+import ru.mercury.vpclient.shared.ui.components.cart.FittingIconButton
+import ru.mercury.vpclient.shared.ui.components.cart.MessengerIconButton
+import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
+import ru.mercury.vpclient.shared.ui.icons.Search24
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.livretRegular15
+import ru.mercury.vpclient.shared.ui.theme.medium18
 
 @Composable
 fun CategoryScreen(
@@ -62,24 +75,65 @@ private fun CategoryScreenContent(
 ) {
     SharedScaffold(
         topBar = {
-            ClientCenterAlignedTopAppBar(
-                state = TopBarState.Category(
-                    title = state.entity.name,
-                    navigationClick = { dispatch(CategoryIntent.BackClick) },
-                    searchClick = {},
-                    actionsState = TopBarActionsState(
-                        showCartButton = true,
-                        cartText = state.cartText,
-                        showCartBadge = state.showCartBadge,
-                        cartClick = { dispatch(CategoryIntent.CartClick) },
-                        fittingText = state.fittingText,
-                        showFittingButton = state.showFittingButton,
-                        showFittingBadge = state.showFittingBadge,
-                        fittingClick = { dispatch(CategoryIntent.FittingClick) },
-                        showMessengerButton = true,
-                        showMessengerBadge = state.showMessengerBadge,
-                        messengerClick = { dispatch(CategoryIntent.MessengerClick) }
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = state.entity.name,
+                        style = MaterialTheme.typography.medium18.copy(
+                            color = MaterialTheme.colorScheme.onBackground,
+                            textAlign = TextAlign.Center
+                        )
                     )
+                },
+                navigationIcon = {
+                    Row {
+                        IconButton(
+                            onClick = { dispatch(CategoryIntent.BackClick) },
+                            modifier = Modifier.size(42.dp)
+                        ) {
+                            Icon(
+                                imageVector = ChevronStart24,
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp),
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+
+                        IconButton(
+                            onClick = {},
+                            modifier = Modifier.size(42.dp)
+                        ) {
+                            Icon(
+                                imageVector = Search24,
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp),
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+                    }
+                },
+                actions = {
+                    if (state.showFittingButton) {
+                        FittingIconButton(
+                            text = state.fittingText,
+                            showBadge = state.showFittingBadge,
+                            onClick = { dispatch(CategoryIntent.FittingClick) }
+                        )
+                    }
+
+                    CartIconButton(
+                        text = state.cartText,
+                        showBadge = state.showCartBadge,
+                        onClick = { dispatch(CategoryIntent.CartClick) }
+                    )
+
+                    MessengerIconButton(
+                        showBadge = state.showMessengerBadge,
+                        onClick = { dispatch(CategoryIntent.MessengerClick) }
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors().copy(
+                    containerColor = Color.White
                 )
             )
         }

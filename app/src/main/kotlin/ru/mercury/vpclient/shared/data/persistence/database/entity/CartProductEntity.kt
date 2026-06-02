@@ -38,5 +38,7 @@ data class CartProductEntity(
     val sizeCount: Int,
     val priceValue: Double,
     val sizeId: String,
-    val sizeItems: List<CartProductSize>
+    val sizeItems: List<CartProductSize>,
+    val dateReceipt: String? = null,
+    val isDateReceiptOverdue: Boolean = false
 )

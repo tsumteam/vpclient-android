@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package ru.mercury.vpclient.features.details
 
 import androidx.compose.foundation.BorderStroke
@@ -24,12 +26,17 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -39,6 +46,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
@@ -71,9 +79,14 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductButton
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductOtherColorEntity
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
+import ru.mercury.vpclient.shared.ui.components.BrandBox
+import ru.mercury.vpclient.shared.ui.components.SharedAnimatedVisibility
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
+import ru.mercury.vpclient.shared.ui.components.cart.CartIconButton
+import ru.mercury.vpclient.shared.ui.components.cart.FittingIconButton
+import ru.mercury.vpclient.shared.ui.components.cart.MessengerIconButton
 import ru.mercury.vpclient.shared.ui.components.details.DetailsColorImageSelector
 import ru.mercury.vpclient.shared.ui.components.details.DetailsCompleteSetSection
 import ru.mercury.vpclient.shared.ui.components.details.DetailsFieldRow
@@ -84,10 +97,9 @@ import ru.mercury.vpclient.shared.ui.components.details.DetailsSizeSelector
 import ru.mercury.vpclient.shared.ui.components.details.DetailsVideoPlayer
 import ru.mercury.vpclient.shared.ui.components.details.DetailsWearWithSection
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
-import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
-import ru.mercury.vpclient.shared.ui.components.system.TopBarActionsState
-import ru.mercury.vpclient.shared.ui.components.system.TopBarState
+import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
+import ru.mercury.vpclient.shared.ui.ktx.clickableWithoutRipple
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.annotation.HightPreview
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
@@ -165,54 +177,6 @@ private fun DetailsScreenContent(
         }
     }
 
-    val topBarState = when {
-        state.isLoading -> {
-            TopBarState.Details(
-                navigationClick = { dispatch(DetailsIntent.BackClick) },
-                onClick = {},
-                entity = BrandEntity.Empty,
-                showBrandBox = false,
-                actionsState = TopBarActionsState(
-                    showCartButton = true,
-                    cartText = state.cartText,
-                    showCartBadge = state.showCartBadge,
-                    cartClick = { dispatch(DetailsIntent.CartClick) },
-                    fittingText = state.fittingText,
-                    showFittingButton = state.showFittingButton,
-                    showFittingBadge = state.showFittingBadge,
-                    fittingClick = { dispatch(DetailsIntent.FittingClick) },
-                    showMessengerButton = true,
-                    showMessengerBadge = state.showMessengerBadge,
-                    messengerClick = { dispatch(DetailsIntent.MessengerClick) }
-                )
-            )
-        }
-        else -> {
-            TopBarState.Details(
-                navigationClick = { dispatch(DetailsIntent.BackClick) },
-                onClick = { scope.launch { lazyListState.animateScrollToItem(0) } },
-                entity = BrandEntity(
-                    brand = state.productEntity.brand.orEmpty(),
-                    urlBrandLogo = state.productEntity.urlBrandLogo
-                ),
-                showBrandBox = isToolbarBrandVisible,
-                actionsState = TopBarActionsState(
-                    showCartButton = true,
-                    cartText = state.cartText,
-                    showCartBadge = state.showCartBadge,
-                    cartClick = { dispatch(DetailsIntent.CartClick) },
-                    fittingText = state.fittingText,
-                    showFittingButton = state.showFittingButton,
-                    showFittingBadge = state.showFittingBadge,
-                    fittingClick = { dispatch(DetailsIntent.FittingClick) },
-                    showMessengerButton = true,
-                    showMessengerBadge = state.showMessengerBadge,
-                    messengerClick = { dispatch(DetailsIntent.MessengerClick) }
-                )
-            )
-        }
-    }
-
     if (state.isMessageSheetVisible) {
         DetailsMessageSheet(
             state = DetailsMessageSheetModel(
@@ -281,8 +245,61 @@ private fun DetailsScreenContent(
 
     SharedScaffold(
         topBar = {
-            ClientCenterAlignedTopAppBar(
-                state = topBarState
+            CenterAlignedTopAppBar(
+                title = {
+                    SharedAnimatedVisibility(
+                        visible = !state.isLoading && isToolbarBrandVisible
+                    ) {
+                        BrandBox(
+                            entity = BrandEntity(
+                                brand = state.productEntity.brand.orEmpty(),
+                                urlBrandLogo = state.productEntity.urlBrandLogo
+                            )
+                        )
+                    }
+                },
+                modifier = when {
+                    state.isLoading -> Modifier
+                    else -> Modifier.clickableWithoutRipple(
+                        onClick = { scope.launch { lazyListState.animateScrollToItem(0) } }
+                    )
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = { dispatch(DetailsIntent.BackClick) },
+                        modifier = Modifier.size(42.dp)
+                    ) {
+                        Icon(
+                            imageVector = ChevronStart24,
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp),
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+                },
+                actions = {
+                    if (state.showFittingButton) {
+                        FittingIconButton(
+                            text = state.fittingText,
+                            showBadge = state.showFittingBadge,
+                            onClick = { dispatch(DetailsIntent.FittingClick) }
+                        )
+                    }
+
+                    CartIconButton(
+                        text = state.cartText,
+                        showBadge = state.showCartBadge,
+                        onClick = { dispatch(DetailsIntent.CartClick) }
+                    )
+
+                    MessengerIconButton(
+                        showBadge = state.showMessengerBadge,
+                        onClick = { dispatch(DetailsIntent.MessengerClick) }
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors().copy(
+                    containerColor = Color.White
+                )
             )
         },
         floatingActionButton = {

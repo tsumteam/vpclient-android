@@ -1,44 +1,49 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package ru.mercury.vpclient.features.fitting
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import ru.mercury.vpclient.features.fitting.intent.FittingIntent
-import ru.mercury.vpclient.features.fitting.model.FittingModel
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
-import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
-import ru.mercury.vpclient.shared.ui.components.system.TopBarState
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
+import ru.mercury.vpclient.shared.ui.theme.medium18
 
 @Composable
 fun FittingScreen(
     viewModel: FittingViewModel = hiltViewModel()
 ) {
-    val state by viewModel.stateFlow.collectAsStateWithLifecycle()
+    viewModel.stateFlow.collectAsStateWithLifecycle()
 
-    FittingScreenContent(
-        state = state,
-        dispatch = viewModel::dispatch
-    )
+    FittingScreenContent()
 }
 
 @Composable
-private fun FittingScreenContent(
-    state: FittingModel,
-    dispatch: (FittingIntent) -> Unit
-) {
+private fun FittingScreenContent() {
     SharedScaffold(
         topBar = {
-            ClientCenterAlignedTopAppBar(
-                state = TopBarState.Title(stringResource(ClientStrings.MainTabFitting))
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(ClientStrings.MainTabFitting),
+                        style = MaterialTheme.typography.medium18.copy(
+                            color = MaterialTheme.colorScheme.onBackground,
+                            textAlign = TextAlign.Center
+                        )
+                    )
+                }
             )
         }
     ) { innerPadding ->
@@ -55,8 +60,5 @@ private fun FittingScreenContent(
 @Preview
 @Composable
 private fun FittingScreenContentPreview() {
-    FittingScreenContent(
-        state = FittingModel(),
-        dispatch = {}
-    )
+    FittingScreenContent()
 }

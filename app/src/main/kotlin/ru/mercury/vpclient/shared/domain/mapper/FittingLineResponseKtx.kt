@@ -3,6 +3,7 @@ package ru.mercury.vpclient.shared.domain.mapper
 import ru.mercury.vpclient.shared.data.FORMAT_RUB
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductSize
+import ru.mercury.vpclient.shared.data.network.entity.DateReceiptExpiredStatusDto
 import ru.mercury.vpclient.shared.data.network.entity.FittingDeliveryResponseDto
 import ru.mercury.vpclient.shared.data.network.entity.FittingLineResponseDto
 import ru.mercury.vpclient.shared.ui.components.fitting.FittingDeliveryHeaderState
@@ -61,7 +62,10 @@ val FittingLineResponseDto.cartProduct: CartProduct?
             sizeCount = sizeItems.size.takeIf { it > 0 } ?: sizes.size.coerceAtLeast(1),
             priceValue = price,
             sizeId = sizeItems.firstOrNull()?.id ?: sizes.firstOrNull()?.id.orEmpty(),
-            sizeItems = sizeItems
+            sizeItems = sizeItems,
+            dateReceipt = dateOfExpiration?.takeIf { it.isNotBlank() }
+                ?: dateReceiptAsString?.takeIf { it.isNotBlank() },
+            isDateReceiptOverdue = dateReceiptExpiredStatus == DateReceiptExpiredStatusDto.OVERDUE
         )
     }
 

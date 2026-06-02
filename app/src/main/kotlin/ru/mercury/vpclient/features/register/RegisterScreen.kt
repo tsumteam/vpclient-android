@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package ru.mercury.vpclient.features.register
 
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -15,7 +17,10 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -30,6 +35,7 @@ import androidx.compose.ui.autofill.ContentType
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -56,9 +62,8 @@ import ru.mercury.vpclient.shared.ui.components.AgreementText
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
-import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
 import ru.mercury.vpclient.shared.ui.components.system.ClientTextField
-import ru.mercury.vpclient.shared.ui.components.system.TopBarState
+import ru.mercury.vpclient.shared.ui.icons.Logo82
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
@@ -126,8 +131,15 @@ private fun RegisterScreenContent(
             detectTapGestures(onTap = { dispatch(RegisterIntent.HideKeyboard) })
         },
         topBar = {
-            ClientCenterAlignedTopAppBar(
-                state = TopBarState.Logo
+            CenterAlignedTopAppBar(
+                title = {
+                    Icon(
+                        imageVector = Logo82,
+                        contentDescription = null,
+                        modifier = Modifier.size(82.dp, 57.dp),
+                        tint = Color.Black
+                    )
+                }
             )
         },
         bottomBar = {

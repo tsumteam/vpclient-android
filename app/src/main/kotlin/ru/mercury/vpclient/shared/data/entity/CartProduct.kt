@@ -33,7 +33,9 @@ data class CartProduct(
     val sizeCount: Int = 1,
     val priceValue: Double = .0,
     val sizeId: String = "",
-    val sizeItems: List<CartProductSize> = emptyList()
+    val sizeItems: List<CartProductSize> = emptyList(),
+    val dateReceipt: String? = null,
+    val isDateReceiptOverdue: Boolean = false
 )
 
 @Serializable

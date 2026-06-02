@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package ru.mercury.vpclient.features.filter
 
 import androidx.compose.foundation.background
@@ -5,18 +7,25 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.plus
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
@@ -94,14 +103,18 @@ import ru.mercury.vpclient.shared.ui.components.PagingFailureBox
 import ru.mercury.vpclient.shared.ui.components.PagingLoadingBox
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
+import ru.mercury.vpclient.shared.ui.components.BrandBox
 import ru.mercury.vpclient.shared.ui.components.catalog.CatalogProductCard
+import ru.mercury.vpclient.shared.ui.components.cart.CartIconButton
+import ru.mercury.vpclient.shared.ui.components.cart.FittingIconButton
+import ru.mercury.vpclient.shared.ui.components.cart.MessengerIconButton
 import ru.mercury.vpclient.shared.ui.components.filters.FilterBrandFavoritesBar
 import ru.mercury.vpclient.shared.ui.components.filters.FilterProductsLoadingContent
+import ru.mercury.vpclient.shared.ui.components.filters.FilterScreenTitle
 import ru.mercury.vpclient.shared.ui.components.filters.FiltersRow
 import ru.mercury.vpclient.shared.ui.components.filters.FiltersRowState
-import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
-import ru.mercury.vpclient.shared.ui.components.system.TopBarActionsState
-import ru.mercury.vpclient.shared.ui.components.system.TopBarState
+import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
+import ru.mercury.vpclient.shared.ui.icons.Search24
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.ktx.isContentVisible
 import ru.mercury.vpclient.shared.ui.ktx.isPagingFailure
@@ -110,8 +123,12 @@ import ru.mercury.vpclient.shared.ui.ktx.isRefreshFailure
 import ru.mercury.vpclient.shared.ui.ktx.isRefreshLoading
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
+import ru.mercury.vpclient.shared.ui.theme.medium18
 import ru.mercury.vpclient.shared.ui.theme.regular15
 import kotlin.math.max
+
+private const val FILTER_NAVIGATION_ICONS_COUNT = 2
+private const val TOP_BAR_ICON_SIZE_DP = 42
 
 @Composable
 fun FilterScreen(
@@ -275,75 +292,93 @@ private fun FilterScreenContent(
 
     SharedScaffold(
         topBar = {
-            ClientCenterAlignedTopAppBar(
-                state = when {
-                    state.brandEntity != null -> {
-                        TopBarState.FilterBrand(
-                            entity = state.brandEntity,
-                            navigationClick = { dispatch(FilterIntent.BackClick) },
-                            searchClick = {},
-                            actionsState = TopBarActionsState(
-                                showCartButton = true,
-                                cartText = state.cartText,
-                                showCartBadge = state.showCartBadge,
-                                cartClick = { dispatch(FilterIntent.CartClick) },
-                                fittingText = state.fittingText,
-                                showFittingButton = state.showFittingButton,
-                                showFittingBadge = state.showFittingBadge,
-                                fittingClick = { dispatch(FilterIntent.FittingClick) },
-                                showMessengerButton = true,
-                                showMessengerBadge = state.showMessengerBadge,
-                                messengerClick = { dispatch(FilterIntent.MessengerClick) }
+            val navigationIconsWidth = FILTER_NAVIGATION_ICONS_COUNT * TOP_BAR_ICON_SIZE_DP
+            val actionsIconsWidth = (2 + if (state.showFittingButton) 1 else 0) * TOP_BAR_ICON_SIZE_DP
+
+            CenterAlignedTopAppBar(
+                title = {
+                    when {
+                        state.brandEntity != null -> {
+                            BrandBox(
+                                entity = state.brandEntity
                             )
+                        }
+                        state.isSingleLineTitle -> {
+                            Text(
+                                text = state.filterData.filterTitleEntity.titleCatalogCategoryEntity.name,
+                                style = MaterialTheme.typography.medium18.copy(
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    textAlign = TextAlign.Center
+                                )
+                            )
+                        }
+                        else -> {
+                            FilterScreenTitle(
+                                entity = state.filterData.filterTitleEntity,
+                                onClick = {
+                                    filtersRowOffsetPx = 0F
+                                    if (pagingItems.isContentVisible) {
+                                        scope.launch { gridState.animateScrollToItem(0) }
+                                    }
+                                },
+                                modifier = Modifier.padding(
+                                    start = (actionsIconsWidth - navigationIconsWidth).coerceAtLeast(0).dp,
+                                    end = (navigationIconsWidth - actionsIconsWidth).coerceAtLeast(0).dp
+                                )
+                            )
+                        }
+                    }
+                },
+                navigationIcon = {
+                    Row {
+                        IconButton(
+                            onClick = { dispatch(FilterIntent.BackClick) },
+                            modifier = Modifier.size(42.dp)
+                        ) {
+                            Icon(
+                                imageVector = ChevronStart24,
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp),
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+
+                        IconButton(
+                            onClick = {},
+                            modifier = Modifier.size(42.dp)
+                        ) {
+                            Icon(
+                                imageVector = Search24,
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp),
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+                    }
+                },
+                actions = {
+                    if (state.showFittingButton) {
+                        FittingIconButton(
+                            text = state.fittingText,
+                            showBadge = state.showFittingBadge,
+                            onClick = { dispatch(FilterIntent.FittingClick) }
                         )
                     }
-                    state.isSingleLineTitle -> {
-                        TopBarState.Category(
-                            title = state.filterData.filterTitleEntity.titleCatalogCategoryEntity.name,
-                            navigationClick = { dispatch(FilterIntent.BackClick) },
-                            searchClick = {},
-                            actionsState = TopBarActionsState(
-                                showCartButton = true,
-                                cartText = state.cartText,
-                                showCartBadge = state.showCartBadge,
-                                cartClick = { dispatch(FilterIntent.CartClick) },
-                                fittingText = state.fittingText,
-                                showFittingButton = state.showFittingButton,
-                                showFittingBadge = state.showFittingBadge,
-                                fittingClick = { dispatch(FilterIntent.FittingClick) },
-                                showMessengerButton = true,
-                                showMessengerBadge = state.showMessengerBadge,
-                                messengerClick = { dispatch(FilterIntent.MessengerClick) }
-                            )
-                        )
-                    }
-                    else -> {
-                        TopBarState.Filter(
-                            entity = state.filterData.filterTitleEntity,
-                            onClick = {
-                                filtersRowOffsetPx = 0F
-                                if (pagingItems.isContentVisible) {
-                                    scope.launch { gridState.animateScrollToItem(0) }
-                                }
-                            },
-                            navigationClick = { dispatch(FilterIntent.BackClick) },
-                            searchClick = {},
-                            actionsState = TopBarActionsState(
-                                showCartButton = true,
-                                cartText = state.cartText,
-                                showCartBadge = state.showCartBadge,
-                                cartClick = { dispatch(FilterIntent.CartClick) },
-                                fittingText = state.fittingText,
-                                showFittingButton = state.showFittingButton,
-                                showFittingBadge = state.showFittingBadge,
-                                fittingClick = { dispatch(FilterIntent.FittingClick) },
-                                showMessengerButton = true,
-                                showMessengerBadge = state.showMessengerBadge,
-                                messengerClick = { dispatch(FilterIntent.MessengerClick) }
-                            )
-                        )
-                    }
-                }
+
+                    CartIconButton(
+                        text = state.cartText,
+                        showBadge = state.showCartBadge,
+                        onClick = { dispatch(FilterIntent.CartClick) }
+                    )
+
+                    MessengerIconButton(
+                        showBadge = state.showMessengerBadge,
+                        onClick = { dispatch(FilterIntent.MessengerClick) }
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors().copy(
+                    containerColor = Color.White
+                )
             )
         },
         snackbarHost = {

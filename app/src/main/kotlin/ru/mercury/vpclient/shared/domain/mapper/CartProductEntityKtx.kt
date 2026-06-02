@@ -36,7 +36,9 @@ fun CartProduct.entity(position: Int): CartProductEntity {
         sizeCount = sizeCount,
         priceValue = priceValue,
         sizeId = sizeId,
-        sizeItems = sizeItems
+        sizeItems = sizeItems,
+        dateReceipt = dateReceipt,
+        isDateReceiptOverdue = isDateReceiptOverdue
     )
 }
 
@@ -73,6 +75,8 @@ val CartProductEntity.cartProduct: CartProduct
             sizeCount = sizeCount,
             priceValue = priceValue,
             sizeId = sizeId,
-            sizeItems = sizeItems
+            sizeItems = sizeItems,
+            dateReceipt = dateReceipt,
+            isDateReceiptOverdue = isDateReceiptOverdue
         )
     }

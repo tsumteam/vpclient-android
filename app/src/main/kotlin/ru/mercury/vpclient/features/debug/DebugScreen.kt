@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package ru.mercury.vpclient.features.debug
 
 import android.content.ClipData
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -19,12 +22,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
@@ -44,7 +50,6 @@ import ru.mercury.vpclient.features.debug_env_dialog.model.DebugEnvironmentDialo
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
-import ru.mercury.vpclient.shared.ui.components.system.ClientTopAppBar
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.icons.Copy24
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
@@ -187,7 +192,7 @@ private fun DebugActivityContent(
 
     SharedScaffold(
         topBar = {
-            ClientTopAppBar(
+            TopAppBar(
                 title = {
                     Text(
                         text = "Debug Settings"
@@ -205,7 +210,10 @@ private fun DebugActivityContent(
                             tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors().copy(
+                    containerColor = Color.Transparent
+                )
             )
         },
         snackbarHost = {

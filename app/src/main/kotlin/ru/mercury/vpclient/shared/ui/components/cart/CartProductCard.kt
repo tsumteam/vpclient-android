@@ -1,9 +1,11 @@
 package ru.mercury.vpclient.shared.ui.components.cart
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -23,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -43,6 +46,7 @@ import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
+import ru.mercury.vpclient.shared.ui.theme.blue
 import ru.mercury.vpclient.shared.ui.theme.regular11
 import ru.mercury.vpclient.shared.ui.theme.regular14
 import ru.mercury.vpclient.shared.ui.theme.regular15
@@ -55,6 +59,8 @@ fun CartProductCard(
     val product = state.product
     val articleText = product.article.takeIf { it.isNotEmpty() } ?: product.itemId
     val isPriceVisible = product.priceValue > .0 && product.price.isNotBlank()
+    val dateReceipt = product.dateReceipt?.takeIf { it.isNotBlank() }
+    val isDateReceiptBadgeVisible = dateReceipt != null
     val hasSize = product.size.isNotBlank()
     val isAvailabilityVisible = !product.isSold && hasSize && product.isLastInStock
     val isAlternativesVisible = product.isAlternativesPaletteOpen && product.alternatives.isNotEmpty()
@@ -146,7 +152,8 @@ fun CartProductCard(
                     buySwitch,
                     size,
                     availability,
-                    quantity
+                    quantity,
+                    dateReceiptBadge
                 ) = createRefs()
                 val priceTopBarrier = createBottomBarrier(article, size)
 
@@ -233,12 +240,46 @@ fun CartProductCard(
                         top.linkTo(priceTopBarrier, 5.dp)
                         end.linkTo(quantity.start, 8.dp)
                         if (isPriceVisible) {
-                            bottom.linkTo(parent.bottom, 27.dp)
+                            bottom.linkTo(parent.bottom, if (isDateReceiptBadgeVisible) 57.dp else 27.dp)
                             verticalBias = 0F
                         }
                         width = Dimension.fillToConstraints
                     }
                 )
+
+                if (dateReceipt != null) {
+                    Box(
+                        modifier = Modifier.constrainAs(dateReceiptBadge) {
+                            start.linkTo(brand.start)
+                            top.linkTo(price.bottom, 10.dp)
+                        }
+                            .height(20.dp)
+                            .shadow(
+                                elevation = 2.dp,
+                                shape = RoundedCornerShape(4.dp),
+                                clip = false
+                            )
+                            .background(
+                                color = when {
+                                    product.isDateReceiptOverdue -> MaterialTheme.colorScheme.error
+                                    else -> MaterialTheme.colorScheme.blue
+                                },
+                                shape = RoundedCornerShape(4.dp)
+                            )
+                            .padding(horizontal = 8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Выкупить до $dateReceipt",
+                            style = MaterialTheme.typography.regular11.copy(
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                fontSize = 9.sp,
+                                lineHeight = 12.sp,
+                                letterSpacing = 0.sp
+                            )
+                        )
+                    }
+                }
 
                 CartBuySwitch(
                     checked = product.isForPayment && !product.isSold,
@@ -504,7 +545,9 @@ private class CartProductCardCartProductProvider: PreviewParameterProvider<CartP
             lookImageUrl = "",
             imageUrl = "",
             isForPayment = true,
-            priceValue = 1_600_000.0
+            priceValue = 1_600_000.0,
+            dateReceipt = "23 июня",
+            isDateReceiptOverdue = false
         ),
         CartProduct(
             id = "2",
@@ -525,7 +568,9 @@ private class CartProductCardCartProductProvider: PreviewParameterProvider<CartP
             imageUrl = "",
             isForPayment = false,
             quantity = 2,
-            priceValue = 300_000.0
+            priceValue = 300_000.0,
+            dateReceipt = "23 июня",
+            isDateReceiptOverdue = true
         ),
         CartProduct(
             id = "3",

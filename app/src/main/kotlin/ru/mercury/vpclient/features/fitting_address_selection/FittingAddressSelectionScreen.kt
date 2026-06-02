@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -24,12 +25,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -68,8 +71,7 @@ import ru.mercury.vpclient.shared.data.entity.FittingConfirmationPlaceType
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
-import ru.mercury.vpclient.shared.ui.components.system.ClientCenterAlignedTopAppBar
-import ru.mercury.vpclient.shared.ui.components.system.TopBarState
+import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
 import ru.mercury.vpclient.shared.ui.icons.CirclePlus24
 import ru.mercury.vpclient.shared.ui.icons.DotsMenu24
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
@@ -203,9 +205,23 @@ fun FittingAddressSelectionScreen(
 ) {
     SharedScaffold(
         topBar = {
-            ClientCenterAlignedTopAppBar(
-                state = TopBarState.Back(
-                    navigationClick = { dispatch(FittingConfirmationIntent.AddressSelectionBackClick) }
+            CenterAlignedTopAppBar(
+                title = {},
+                navigationIcon = {
+                    IconButton(
+                        onClick = { dispatch(FittingConfirmationIntent.AddressSelectionBackClick) },
+                        modifier = Modifier.size(42.dp)
+                    ) {
+                        Icon(
+                            imageVector = ChevronStart24,
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp),
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors().copy(
+                    containerColor = Color.White
                 )
             )
         },
