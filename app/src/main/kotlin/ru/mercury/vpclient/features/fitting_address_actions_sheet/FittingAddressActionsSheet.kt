@@ -2,8 +2,10 @@
 
 package ru.mercury.vpclient.features.fitting_address_actions_sheet
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,7 +26,6 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.features.fitting_address_actions_sheet.intent.FittingAddressActionsSheetIntent
-import ru.mercury.vpclient.features.fitting_address_actions_sheet.model.FittingAddressActionsSheetModel
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
@@ -33,7 +34,6 @@ import ru.mercury.vpclient.shared.ui.theme.medium15
 
 @Composable
 fun FittingAddressActionsSheet(
-    state: FittingAddressActionsSheetModel,
     dispatch: (FittingAddressActionsSheetIntent) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -43,97 +43,86 @@ fun FittingAddressActionsSheet(
         sheetState = sheetState,
         containerColor = Color.Transparent
     ) {
-        FittingAddressActionsSheetContent(
-            state = state,
-            dispatch = dispatch
-        )
-    }
-}
-
-@Composable
-private fun FittingAddressActionsSheetContent(
-    state: FittingAddressActionsSheetModel,
-    dispatch: (FittingAddressActionsSheetIntent) -> Unit
-) {
-    SharedLazyColumn(
-        modifier = Modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(
-            start = 16.dp,
-            end = 16.dp,
-            bottom = 8.dp
-        )
-    ) {
-        item {
-            Button(
-                onClick = { dispatch(FittingAddressActionsSheetIntent.EditClick) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(58.dp),
-                shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    contentColor = MaterialTheme.colorScheme.onBackground
-                )
-            ) {
-                Text(
-                    text = stringResource(ClientStrings.FittingAddressEdit),
-                    style = MaterialTheme.typography.medium15.copy(
-                        textAlign = TextAlign.Center,
-                        letterSpacing = .3.sp
+        SharedLazyColumn(
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(
+                start = 16.dp,
+                end = 16.dp,
+                bottom = 8.dp
+            )
+        ) {
+            item {
+                Button(
+                    onClick = { dispatch(FittingAddressActionsSheetIntent.EditClick) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(58.dp),
+                    shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                        contentColor = MaterialTheme.colorScheme.onBackground
                     )
+                ) {
+                    Text(
+                        text = stringResource(ClientStrings.FittingAddressEdit),
+                        style = MaterialTheme.typography.medium15.copy(
+                            textAlign = TextAlign.Center,
+                            letterSpacing = .3.sp
+                        )
+                    )
+                }
+            }
+            item {
+                HorizontalDivider(
+                    color = MaterialTheme.colorScheme.outlineVariant
                 )
             }
-        }
-        item {
-            HorizontalDivider(
-                color = MaterialTheme.colorScheme.outlineVariant
-            )
-        }
-        item {
-            Button(
-                onClick = { dispatch(FittingAddressActionsSheetIntent.DeleteClick) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(58.dp),
-                shape = RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    contentColor = MaterialTheme.colorScheme.error
-                )
-            ) {
-                Text(
-                    text = stringResource(ClientStrings.FittingAddressDelete),
-                    style = MaterialTheme.typography.medium15.copy(
-                        textAlign = TextAlign.Center,
-                        letterSpacing = .3.sp
+            item {
+                Button(
+                    onClick = { dispatch(FittingAddressActionsSheetIntent.DeleteClick) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(58.dp),
+                    shape = RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                        contentColor = MaterialTheme.colorScheme.error
                     )
+                ) {
+                    Text(
+                        text = stringResource(ClientStrings.FittingAddressDelete),
+                        style = MaterialTheme.typography.medium15.copy(
+                            textAlign = TextAlign.Center,
+                            letterSpacing = .3.sp
+                        )
+                    )
+                }
+            }
+            item {
+                Spacer(
+                    modifier = Modifier.height(18.dp)
                 )
             }
-        }
-        item {
-            Spacer(
-                modifier = Modifier.height(18.dp)
-            )
-        }
-        item {
-            Button(
-                onClick = { dispatch(FittingAddressActionsSheetIntent.DismissRequest) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(52.dp),
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    contentColor = MaterialTheme.colorScheme.onBackground
-                )
-            ) {
-                Text(
-                    text = stringResource(ClientStrings.FittingAddressSave),
-                    style = MaterialTheme.typography.medium15.copy(
-                        textAlign = TextAlign.Center,
-                        letterSpacing = .3.sp
+            item {
+                Button(
+                    onClick = { dispatch(FittingAddressActionsSheetIntent.DismissRequest) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                        contentColor = MaterialTheme.colorScheme.onBackground
                     )
-                )
+                ) {
+                    Text(
+                        text = stringResource(ClientStrings.FittingAddressSave),
+                        style = MaterialTheme.typography.medium15.copy(
+                            textAlign = TextAlign.Center,
+                            letterSpacing = .3.sp
+                        )
+                    )
+                }
             }
         }
     }
@@ -143,8 +132,11 @@ private fun FittingAddressActionsSheetContent(
 @Preview
 @Composable
 private fun FittingAddressActionsSheetPreview() {
-    FittingAddressActionsSheetContent(
-        state = FittingAddressActionsSheetModel(),
-        dispatch = {}
-    )
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        FittingAddressActionsSheet(
+            dispatch = {}
+        )
+    }
 }

@@ -232,4 +232,7 @@ object ClientStrings {
 
     val ProfileTitle get() = R.string.profile_title
     val ProfileLogout get() = R.string.profile_logout
+    val ProfileLogoutTitle get() = R.string.profile_logout_title
+    val ProfileLogoutMessage get() = R.string.profile_logout_message
+    val ProfileLogoutCancel get() = R.string.profile_logout_cancel
 }

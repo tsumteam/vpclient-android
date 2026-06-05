@@ -39,7 +39,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.fitting_address_actions_sheet.FittingAddressActionsSheet
 import ru.mercury.vpclient.features.fitting_address_actions_sheet.intent.FittingAddressActionsSheetIntent
-import ru.mercury.vpclient.features.fitting_address_actions_sheet.model.FittingAddressActionsSheetModel
 import ru.mercury.vpclient.features.fitting_address_delete_dialog.FittingAddressDeleteDialog
 import ru.mercury.vpclient.features.fitting_address_delete_dialog.intent.FittingAddressDeleteDialogIntent
 import ru.mercury.vpclient.features.fitting_address_delete_dialog.model.FittingAddressDeleteDialogModel
@@ -104,7 +103,6 @@ fun FittingConfirmationScreen(
 
     if (state.addressActionAddress != null) {
         FittingAddressActionsSheet(
-            state = FittingAddressActionsSheetModel(),
             dispatch = { intent ->
                 when (intent) {
                     is FittingAddressActionsSheetIntent.EditClick -> {
@@ -202,7 +200,7 @@ fun FittingConfirmationScreen(
 }
 
 @Composable
-fun FittingConfirmationMainContent(
+private fun FittingConfirmationMainContent(
     state: FittingConfirmationModel,
     dispatch: (FittingConfirmationIntent) -> Unit,
     snackbarHostStateError: SnackbarHostState
@@ -342,7 +340,7 @@ fun FittingConfirmationMainContent(
 @Preview
 @Composable
 private fun FittingConfirmationMainContentPreview(
-    @PreviewParameter(FittingConfirmationScreenFittingConfirmationModelProvider::class) state: FittingConfirmationModel
+    @PreviewParameter(FittingConfirmationModelPreviewParameterProvider::class) state: FittingConfirmationModel
 ) {
     FittingConfirmationMainContent(
         state = state,
@@ -351,7 +349,7 @@ private fun FittingConfirmationMainContentPreview(
     )
 }
 
-private class FittingConfirmationScreenFittingConfirmationModelProvider: PreviewParameterProvider<FittingConfirmationModel> {
+private class FittingConfirmationModelPreviewParameterProvider: PreviewParameterProvider<FittingConfirmationModel> {
     private val products = sequenceOf(
         CartProduct(
             id = "1",

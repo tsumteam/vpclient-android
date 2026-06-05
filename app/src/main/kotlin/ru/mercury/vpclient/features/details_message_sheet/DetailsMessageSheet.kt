@@ -36,6 +36,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,7 +48,6 @@ import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.details.DetailsMessageProductCard
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.icons.Message24
-import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.livretMedium19
@@ -61,7 +61,6 @@ fun DetailsMessageSheet(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
     var commentText by rememberSaveable { mutableStateOf("") }
-
     val sheetDispatch: (DetailsMessageSheetIntent) -> Unit = { intent ->
         when (intent) {
             is DetailsMessageSheetIntent.CommentChange -> commentText = intent.comment
@@ -79,133 +78,128 @@ fun DetailsMessageSheet(
         onDismissRequest = { dispatch(DetailsMessageSheetIntent.DismissRequest) },
         sheetState = sheetState
     ) {
-        DetailsMessageSheetContent(
-            state = state.copy(commentText = commentText),
-            dispatch = sheetDispatch
-        )
-    }
-}
+        val inlinedState = state.copy(commentText = commentText)
 
-@Composable
-private fun DetailsMessageSheetContent(
-    state: DetailsMessageSheetModel,
-    dispatch: (DetailsMessageSheetIntent) -> Unit
-) {
-    Column(
-        modifier = Modifier.imePadding()
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
+        Column(
+            modifier = Modifier.imePadding()
         ) {
-            IconButton(
-                onClick = { dispatch(DetailsMessageSheetIntent.DismissRequest) },
-                modifier = Modifier.align(Alignment.CenterStart)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
             ) {
-                Icon(
-                    imageVector = Close24,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onBackground
+                IconButton(
+                    onClick = { sheetDispatch(DetailsMessageSheetIntent.DismissRequest) },
+                    modifier = Modifier.align(Alignment.CenterStart)
+                ) {
+                    Icon(
+                        imageVector = Close24,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+
+                Text(
+                    text = stringResource(ClientStrings.DetailsMessageSheetTitle),
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(horizontal = 56.dp),
+                    style = MaterialTheme.typography.livretMedium19.copy(
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
                 )
             }
 
-            Text(
-                text = stringResource(ClientStrings.DetailsMessageSheetTitle),
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .padding(horizontal = 56.dp),
-                style = MaterialTheme.typography.livretMedium19.copy(
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            )
-        }
-
-        DetailsMessageProductCard(
-            entity = state.productEntity
-        )
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, top = 8.dp, bottom = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            val commentTextStyle = MaterialTheme.typography.regular15.copy(
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                lineHeight = 19.sp,
-                letterSpacing = .2.sp
+            DetailsMessageProductCard(
+                entity = inlinedState.productEntity
             )
 
-            BasicTextField(
-                value = state.commentText,
-                onValueChange = { comment -> dispatch(DetailsMessageSheetIntent.CommentChange(comment)) },
+            Row(
                 modifier = Modifier
-                    .weight(1f)
-                    .height(48.dp)
-                    .border(
-                        width = 1.dp,
-                        color = MaterialTheme.colorScheme.outline,
-                        shape = RoundedCornerShape(50.dp)
-                    )
-                    .padding(start = 20.dp, end = 20.dp),
-                singleLine = true,
-                textStyle = commentTextStyle,
-                cursorBrush = SolidColor(MaterialTheme.colorScheme.onBackground),
-                decorationBox = { innerTextField ->
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.CenterStart
-                    ) {
-                        if (state.commentText.isEmpty()) {
-                            Text(
-                                text = stringResource(ClientStrings.DetailsMessageCommentPlaceholder),
-                                style = commentTextStyle
-                            )
-                        }
-                        innerTextField()
-                    }
-                }
-            )
-
-            Box(
-                modifier = Modifier
-                    .padding(end = 16.dp)
-                    .size(48.dp)
-                    .clip(CircleShape)
-                    .background(Color(0xFF1F1F1F))
-                    .clickable { dispatch(DetailsMessageSheetIntent.SendClick(state.commentText)) },
-                contentAlignment = Alignment.Center
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, top = 8.dp, bottom = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Icon(
-                    imageVector = Message24,
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.size(24.dp)
+                val commentTextStyle = MaterialTheme.typography.regular15.copy(
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    lineHeight = 19.sp,
+                    letterSpacing = .2.sp
                 )
+
+                BasicTextField(
+                    value = inlinedState.commentText,
+                    onValueChange = { comment -> sheetDispatch(DetailsMessageSheetIntent.CommentChange(comment)) },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(48.dp)
+                        .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.outline,
+                            shape = RoundedCornerShape(50.dp)
+                        )
+                        .padding(start = 20.dp, end = 20.dp),
+                    singleLine = true,
+                    textStyle = commentTextStyle,
+                    cursorBrush = SolidColor(MaterialTheme.colorScheme.onBackground),
+                    decorationBox = { innerTextField ->
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+                            if (inlinedState.commentText.isEmpty()) {
+                                Text(
+                                    text = stringResource(ClientStrings.DetailsMessageCommentPlaceholder),
+                                    style = commentTextStyle
+                                )
+                            }
+                            innerTextField()
+                        }
+                    }
+                )
+
+                Box(
+                    modifier = Modifier
+                        .padding(end = 16.dp)
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFF1F1F1F))
+                        .clickable { sheetDispatch(DetailsMessageSheetIntent.SendClick(inlinedState.commentText)) },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Message24,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
             }
         }
     }
 }
 
 @PreviewWrapper(ThemeWrapper::class)
-@FontScalePreviews
+@Preview
 @Composable
-private fun DetailsMessageSheetContentPreview() {
-    DetailsMessageSheetContent(
-        state = DetailsMessageSheetModel(
-            productEntity = ProductEntity.Empty.copy(
-                id = "preview",
-                name = "Платье миди с поясом",
-                itemId = "123456",
-                brand = "BRUNELLO CUCINELLI",
-                colorName = "Молочный",
-                shortDescription = "Платье миди с поясом",
-                price = 189_900.0,
-                priceWithoutDiscount = 234_900.0
-            )
-        ),
-        dispatch = {}
-    )
+private fun DetailsMessageSheetPreview() {
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        DetailsMessageSheet(
+            state = DetailsMessageSheetModel(
+                productEntity = ProductEntity.Empty.copy(
+                    id = "preview",
+                    name = "Платье миди с поясом",
+                    itemId = "123456",
+                    brand = "BRUNELLO CUCINELLI",
+                    colorName = "Молочный",
+                    shortDescription = "Платье миди с поясом",
+                    price = 189_900.0,
+                    priceWithoutDiscount = 234_900.0
+                )
+            ),
+            dispatch = {}
+        )
+    }
 }

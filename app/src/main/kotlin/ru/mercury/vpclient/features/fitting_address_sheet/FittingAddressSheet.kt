@@ -5,6 +5,7 @@ package ru.mercury.vpclient.features.fitting_address_sheet
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -83,217 +84,342 @@ fun FittingAddressSheet(
         onDismissRequest = { dispatch(FittingAddressSheetIntent.DismissRequest) },
         sheetState = sheetState
     ) {
-        FittingAddressSheetContent(
-            state = state,
-            dispatch = dispatch,
-            snackbarHostStateError = snackbarHostStateError
-        )
-    }
-}
+        val focusManager = LocalFocusManager.current
+        val flatFocusRequester = remember { FocusRequester() }
+        val entranceFocusRequester = remember { FocusRequester() }
+        val intercomFocusRequester = remember { FocusRequester() }
+        val floorFocusRequester = remember { FocusRequester() }
+        val commentFocusRequester = remember { FocusRequester() }
 
-@Composable
-private fun FittingAddressSheetContent(
-    state: FittingAddressModel,
-    dispatch: (FittingAddressSheetIntent) -> Unit,
-    snackbarHostStateError: SnackbarHostState
-) {
-    val focusManager = LocalFocusManager.current
-    val flatFocusRequester = remember { FocusRequester() }
-    val entranceFocusRequester = remember { FocusRequester() }
-    val intercomFocusRequester = remember { FocusRequester() }
-    val floorFocusRequester = remember { FocusRequester() }
-    val commentFocusRequester = remember { FocusRequester() }
-
-    SharedScaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(ClientStrings.FittingAddressFormTitle),
-                        style = MaterialTheme.typography.medium14.copy(
-                            color = MaterialTheme.colorScheme.onBackground
+        SharedScaffold(
+            topBar = {
+                CenterAlignedTopAppBar(
+                    title = {
+                        Text(
+                            text = stringResource(ClientStrings.FittingAddressFormTitle),
+                            style = MaterialTheme.typography.medium14.copy(
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
                         )
-                    )
-                },
-                navigationIcon = {
-                    IconButton(
-                        onClick = { dispatch(FittingAddressSheetIntent.DismissRequest) },
-                        modifier = Modifier.size(42.dp)
-                    ) {
-                        Icon(
-                            imageVector = Close24,
-                            contentDescription = null,
-                            modifier = Modifier.size(24.dp),
-                            tint = MaterialTheme.colorScheme.onBackground
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
-                )
-            )
-        },
-        floatingActionButton = {
-            Button(
-                onClick = { dispatch(FittingAddressSheetIntent.SaveAddressClick) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(52.dp),
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                )
-            ) {
-                Text(
-                    text = when {
-                        state.isEdit -> stringResource(ClientStrings.FittingAddressSave)
-                        else -> stringResource(ClientStrings.FittingConfirmationAddAddress)
                     },
-                    style = MaterialTheme.typography.medium15.copy(
-                        textAlign = TextAlign.Center,
-                        letterSpacing = .3.sp
+                    navigationIcon = {
+                        IconButton(
+                            onClick = { dispatch(FittingAddressSheetIntent.DismissRequest) },
+                            modifier = Modifier.size(42.dp)
+                        ) {
+                            Icon(
+                                imageVector = Close24,
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp),
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background
                     )
+                )
+            },
+            floatingActionButton = {
+                Button(
+                    onClick = { dispatch(FittingAddressSheetIntent.SaveAddressClick) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    )
+                ) {
+                    Text(
+                        text = when {
+                            state.isEdit -> stringResource(ClientStrings.FittingAddressSave)
+                            else -> stringResource(ClientStrings.FittingConfirmationAddAddress)
+                        },
+                        style = MaterialTheme.typography.medium15.copy(
+                            textAlign = TextAlign.Center,
+                            letterSpacing = .3.sp
+                        )
+                    )
+                }
+            },
+            snackbarHost = {
+                SharedSnackbarHost(
+                    hostState = snackbarHostStateError,
+                    modifier = Modifier.padding(bottom = 16.dp),
+                    containerColor = MaterialTheme.colorScheme.error
                 )
             }
-        },
-        snackbarHost = {
-            SharedSnackbarHost(
-                hostState = snackbarHostStateError,
-                modifier = Modifier.padding(bottom = 16.dp),
-                containerColor = MaterialTheme.colorScheme.error
-            )
-        }
-    ) { innerPadding ->
-        SharedLazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .imePadding(),
-            contentPadding = innerPadding + PaddingValues(
-                start = 16.dp,
-                end = 16.dp,
-                bottom = 96.dp
-            ),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            item {
-                when {
-                    state.address.isNotBlank() -> {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(52.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                                .clickable { dispatch(FittingAddressSheetIntent.OpenAddressSearch) }
-                                .padding(horizontal = 16.dp),
-                            verticalArrangement = Arrangement.Center
-                        ) {
+        ) { innerPadding ->
+            SharedLazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .imePadding(),
+                contentPadding = innerPadding + PaddingValues(
+                    start = 16.dp,
+                    end = 16.dp,
+                    bottom = 96.dp
+                ),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                item {
+                    when {
+                        state.address.isNotBlank() -> {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(52.dp)
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                                    .clickable { dispatch(FittingAddressSheetIntent.OpenAddressSearch) }
+                                    .padding(horizontal = 16.dp),
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Text(
+                                    text = stringResource(ClientStrings.FittingAddressCityStreetHousePlaceholder),
+                                    style = MaterialTheme.typography.regular12.copy(
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        lineHeight = 16.sp,
+                                        letterSpacing = .2.sp
+                                    )
+                                )
+
+                                Text(
+                                    text = state.address,
+                                    overflow = TextOverflow.Ellipsis,
+                                    maxLines = 1,
+                                    style = MaterialTheme.typography.regular15.copy(
+                                        color = MaterialTheme.colorScheme.onBackground,
+                                        lineHeight = 19.sp,
+                                        letterSpacing = .2.sp
+                                    )
+                                )
+                            }
+                        }
+                        else -> {
                             Text(
                                 text = stringResource(ClientStrings.FittingAddressCityStreetHousePlaceholder),
-                                style = MaterialTheme.typography.regular12.copy(
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    lineHeight = 16.sp,
-                                    letterSpacing = .2.sp
-                                )
-                            )
-
-                            Text(
-                                text = state.address,
-                                overflow = TextOverflow.Ellipsis,
-                                maxLines = 1,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(52.dp)
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                                    .clickable { dispatch(FittingAddressSheetIntent.OpenAddressSearch) }
+                                    .padding(horizontal = 16.dp)
+                                    .wrapContentHeight(Alignment.CenterVertically),
                                 style = MaterialTheme.typography.regular15.copy(
-                                    color = MaterialTheme.colorScheme.onBackground,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     lineHeight = 19.sp,
                                     letterSpacing = .2.sp
                                 )
                             )
                         }
                     }
-                    else -> {
-                        Text(
-                            text = stringResource(ClientStrings.FittingAddressCityStreetHousePlaceholder),
+                }
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        TextField(
+                            value = state.flat,
+                            onValueChange = {
+                                dispatch(
+                                    FittingAddressSheetIntent.AddressFormValueChange(FittingAddressFormField.Flat, it)
+                                )
+                            },
                             modifier = Modifier
+                                .weight(1F)
                                 .fillMaxWidth()
                                 .height(52.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                                .clickable { dispatch(FittingAddressSheetIntent.OpenAddressSearch) }
-                                .padding(horizontal = 16.dp)
-                                .wrapContentHeight(Alignment.CenterVertically),
-                            style = MaterialTheme.typography.regular15.copy(
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                .focusRequester(flatFocusRequester),
+                            singleLine = true,
+                            textStyle = MaterialTheme.typography.regular15.copy(
+                                color = MaterialTheme.colorScheme.onBackground,
                                 lineHeight = 19.sp,
                                 letterSpacing = .2.sp
+                            ),
+                            label = {
+                                Text(
+                                    text = stringResource(ClientStrings.FittingAddressFlatOfficeLabel)
+                                )
+                            },
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                imeAction = ImeAction.Next
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onNext = { entranceFocusRequester.requestFocus() }
+                            ),
+                            shape = RoundedCornerShape(8.dp),
+                            colors = TextFieldDefaults.colors(
+                                focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                                unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                                cursorColor = MaterialTheme.colorScheme.onBackground,
+                                focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+                                focusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        )
+
+                        TextField(
+                            value = state.entrance,
+                            onValueChange = {
+                                dispatch(
+                                    FittingAddressSheetIntent.AddressFormValueChange(
+                                        FittingAddressFormField.Entrance,
+                                        it
+                                    )
+                                )
+                            },
+                            modifier = Modifier
+                                .weight(1F)
+                                .fillMaxWidth()
+                                .height(52.dp)
+                                .focusRequester(entranceFocusRequester),
+                            singleLine = true,
+                            textStyle = MaterialTheme.typography.regular15.copy(
+                                color = MaterialTheme.colorScheme.onBackground,
+                                lineHeight = 19.sp,
+                                letterSpacing = .2.sp
+                            ),
+                            label = {
+                                Text(
+                                    text = stringResource(ClientStrings.FittingAddressEntranceLabel)
+                                )
+                            },
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                imeAction = ImeAction.Next
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onNext = { intercomFocusRequester.requestFocus() }
+                            ),
+                            shape = RoundedCornerShape(8.dp),
+                            colors = TextFieldDefaults.colors(
+                                focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                                unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                                cursorColor = MaterialTheme.colorScheme.onBackground,
+                                focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+                                focusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         )
                     }
                 }
-            }
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    TextField(
-                        value = state.flat,
-                        onValueChange = {
-                            dispatch(
-                                FittingAddressSheetIntent.AddressFormValueChange(FittingAddressFormField.Flat, it)
-                            )
-                        },
-                        modifier = Modifier
-                            .weight(1F)
-                            .fillMaxWidth()
-                            .height(52.dp)
-                            .focusRequester(flatFocusRequester),
-                        singleLine = true,
-                        textStyle = MaterialTheme.typography.regular15.copy(
-                            color = MaterialTheme.colorScheme.onBackground,
-                            lineHeight = 19.sp,
-                            letterSpacing = .2.sp
-                        ),
-                        label = {
-                            Text(
-                                text = stringResource(ClientStrings.FittingAddressFlatOfficeLabel)
-                            )
-                        },
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            imeAction = ImeAction.Next
-                        ),
-                        keyboardActions = KeyboardActions(
-                            onNext = { entranceFocusRequester.requestFocus() }
-                        ),
-                        shape = RoundedCornerShape(8.dp),
-                        colors = TextFieldDefaults.colors(
-                            focusedTextColor = MaterialTheme.colorScheme.onBackground,
-                            unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
-                            cursorColor = MaterialTheme.colorScheme.onBackground,
-                            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            focusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    )
-
-                    TextField(
-                        value = state.entrance,
-                        onValueChange = {
-                            dispatch(
-                                FittingAddressSheetIntent.AddressFormValueChange(
-                                    FittingAddressFormField.Entrance,
-                                    it
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        TextField(
+                            value = state.intercom,
+                            onValueChange = {
+                                dispatch(
+                                    FittingAddressSheetIntent.AddressFormValueChange(
+                                        FittingAddressFormField.Intercom,
+                                        it
+                                    )
                                 )
+                            },
+                            modifier = Modifier
+                                .weight(1F)
+                                .fillMaxWidth()
+                                .height(52.dp)
+                                .focusRequester(intercomFocusRequester),
+                            singleLine = true,
+                            textStyle = MaterialTheme.typography.regular15.copy(
+                                color = MaterialTheme.colorScheme.onBackground,
+                                lineHeight = 19.sp,
+                                letterSpacing = .2.sp
+                            ),
+                            label = {
+                                Text(
+                                    text = stringResource(ClientStrings.FittingAddressIntercomLabel)
+                                )
+                            },
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                imeAction = ImeAction.Next
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onNext = { floorFocusRequester.requestFocus() }
+                            ),
+                            shape = RoundedCornerShape(8.dp),
+                            colors = TextFieldDefaults.colors(
+                                focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                                unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                                cursorColor = MaterialTheme.colorScheme.onBackground,
+                                focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+                                focusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
                             )
+                        )
+
+                        TextField(
+                            value = state.floor,
+                            onValueChange = {
+                                dispatch(
+                                    FittingAddressSheetIntent.AddressFormValueChange(
+                                        FittingAddressFormField.Floor,
+                                        it
+                                    )
+                                )
+                            },
+                            modifier = Modifier
+                                .weight(1F)
+                                .fillMaxWidth()
+                                .height(52.dp)
+                                .focusRequester(floorFocusRequester),
+                            singleLine = true,
+                            textStyle = MaterialTheme.typography.regular15.copy(
+                                color = MaterialTheme.colorScheme.onBackground,
+                                lineHeight = 19.sp,
+                                letterSpacing = .2.sp
+                            ),
+                            label = {
+                                Text(
+                                    text = stringResource(ClientStrings.FittingAddressFloorLabel)
+                                )
+                            },
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                imeAction = ImeAction.Next
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onNext = { commentFocusRequester.requestFocus() }
+                            ),
+                            shape = RoundedCornerShape(8.dp),
+                            colors = TextFieldDefaults.colors(
+                                focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                                unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                                cursorColor = MaterialTheme.colorScheme.onBackground,
+                                focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+                                focusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        )
+                    }
+                }
+                item {
+                    TextField(
+                        value = state.comment,
+                        onValueChange = {
+                            dispatch(FittingAddressSheetIntent.AddressFormValueChange(FittingAddressFormField.Comment, it))
                         },
                         modifier = Modifier
-                            .weight(1F)
                             .fillMaxWidth()
-                            .height(52.dp)
-                            .focusRequester(entranceFocusRequester),
-                        singleLine = true,
+                            .height(102.dp)
+                            .focusRequester(commentFocusRequester),
                         textStyle = MaterialTheme.typography.regular15.copy(
                             color = MaterialTheme.colorScheme.onBackground,
                             lineHeight = 19.sp,
@@ -301,15 +427,9 @@ private fun FittingAddressSheetContent(
                         ),
                         label = {
                             Text(
-                                text = stringResource(ClientStrings.FittingAddressEntranceLabel)
+                                text = stringResource(ClientStrings.FittingAddressCommentPlaceholder)
                             )
                         },
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            imeAction = ImeAction.Next
-                        ),
-                        keyboardActions = KeyboardActions(
-                            onNext = { intercomFocusRequester.requestFocus() }
-                        ),
                         shape = RoundedCornerShape(8.dp),
                         colors = TextFieldDefaults.colors(
                             focusedTextColor = MaterialTheme.colorScheme.onBackground,
@@ -321,151 +441,19 @@ private fun FittingAddressSheetContent(
                             unfocusedIndicatorColor = Color.Transparent,
                             focusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
                             unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                        ),
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                focusManager.clearFocus()
+                                dispatch(FittingAddressSheetIntent.SaveAddressClick)
+                            }
+                        ),
+                        maxLines = 3
                     )
                 }
-            }
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    TextField(
-                        value = state.intercom,
-                        onValueChange = {
-                            dispatch(
-                                FittingAddressSheetIntent.AddressFormValueChange(
-                                    FittingAddressFormField.Intercom,
-                                    it
-                                )
-                            )
-                        },
-                        modifier = Modifier
-                            .weight(1F)
-                            .fillMaxWidth()
-                            .height(52.dp)
-                            .focusRequester(intercomFocusRequester),
-                        singleLine = true,
-                        textStyle = MaterialTheme.typography.regular15.copy(
-                            color = MaterialTheme.colorScheme.onBackground,
-                            lineHeight = 19.sp,
-                            letterSpacing = .2.sp
-                        ),
-                        label = {
-                            Text(
-                                text = stringResource(ClientStrings.FittingAddressIntercomLabel)
-                            )
-                        },
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            imeAction = ImeAction.Next
-                        ),
-                        keyboardActions = KeyboardActions(
-                            onNext = { floorFocusRequester.requestFocus() }
-                        ),
-                        shape = RoundedCornerShape(8.dp),
-                        colors = TextFieldDefaults.colors(
-                            focusedTextColor = MaterialTheme.colorScheme.onBackground,
-                            unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
-                            cursorColor = MaterialTheme.colorScheme.onBackground,
-                            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            focusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    )
-
-                    TextField(
-                        value = state.floor,
-                        onValueChange = {
-                            dispatch(
-                                FittingAddressSheetIntent.AddressFormValueChange(
-                                    FittingAddressFormField.Floor,
-                                    it
-                                )
-                            )
-                        },
-                        modifier = Modifier
-                            .weight(1F)
-                            .fillMaxWidth()
-                            .height(52.dp)
-                            .focusRequester(floorFocusRequester),
-                        singleLine = true,
-                        textStyle = MaterialTheme.typography.regular15.copy(
-                            color = MaterialTheme.colorScheme.onBackground,
-                            lineHeight = 19.sp,
-                            letterSpacing = .2.sp
-                        ),
-                        label = {
-                            Text(
-                                text = stringResource(ClientStrings.FittingAddressFloorLabel)
-                            )
-                        },
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            imeAction = ImeAction.Next
-                        ),
-                        keyboardActions = KeyboardActions(
-                            onNext = { commentFocusRequester.requestFocus() }
-                        ),
-                        shape = RoundedCornerShape(8.dp),
-                        colors = TextFieldDefaults.colors(
-                            focusedTextColor = MaterialTheme.colorScheme.onBackground,
-                            unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
-                            cursorColor = MaterialTheme.colorScheme.onBackground,
-                            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            focusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    )
-                }
-            }
-            item {
-                TextField(
-                    value = state.comment,
-                    onValueChange = {
-                        dispatch(FittingAddressSheetIntent.AddressFormValueChange(FittingAddressFormField.Comment, it))
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(102.dp)
-                        .focusRequester(commentFocusRequester),
-                    textStyle = MaterialTheme.typography.regular15.copy(
-                        color = MaterialTheme.colorScheme.onBackground,
-                        lineHeight = 19.sp,
-                        letterSpacing = .2.sp
-                    ),
-                    label = {
-                        Text(
-                            text = stringResource(ClientStrings.FittingAddressCommentPlaceholder)
-                        )
-                    },
-                    shape = RoundedCornerShape(8.dp),
-                    colors = TextFieldDefaults.colors(
-                        focusedTextColor = MaterialTheme.colorScheme.onBackground,
-                        unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
-                        cursorColor = MaterialTheme.colorScheme.onBackground,
-                        focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        focusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
-                    ),
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        imeAction = ImeAction.Done
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                            focusManager.clearFocus()
-                            dispatch(FittingAddressSheetIntent.SaveAddressClick)
-                        }
-                    ),
-                    maxLines = 3
-                )
             }
         }
     }
@@ -477,11 +465,15 @@ private fun FittingAddressSheetContent(
 private fun FittingAddressSheetPreview(
     @PreviewParameter(FittingAddressModelProvider::class) form: FittingAddressModel
 ) {
-    FittingAddressSheetContent(
-        state = form,
-        snackbarHostStateError = remember { SnackbarHostState() },
-        dispatch = {}
-    )
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        FittingAddressSheet(
+            state = form,
+            snackbarHostStateError = remember { SnackbarHostState() },
+            dispatch = {}
+        )
+    }
 }
 
 private class FittingAddressModelProvider: PreviewParameterProvider<FittingAddressModel> {

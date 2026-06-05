@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -26,7 +27,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -41,7 +41,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.filter_tree_sheet.intent.FilterTreeIntent
 import ru.mercury.vpclient.features.filter_tree_sheet.model.FilterTreeModel
 import ru.mercury.vpclient.shared.data.entity.FilterTreeValue
@@ -68,203 +67,191 @@ fun FilterTreeSheet(
     dispatch: (FilterTreeIntent) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val scope = rememberCoroutineScope()
 
     SharedModalBottomSheet(
         onDismissRequest = { dispatch(FilterTreeIntent.HideFilterTreeDialog) },
         sheetState = sheetState
     ) {
-        FilterTreeSheetContent(
-            state = state,
-            dispatch = dispatch
-        )
-    }
-}
-
-@Composable
-private fun FilterTreeSheetContent(
-    state: FilterTreeModel,
-    dispatch: (FilterTreeIntent) -> Unit
-) {
-    Column {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 16.dp)
-        ) {
-            IconButton(
-                onClick = { dispatch(FilterTreeIntent.HideFilterTreeDialog) },
-                modifier = Modifier.align(Alignment.CenterStart)
+        Column {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 16.dp)
             ) {
-                Icon(
-                    imageVector = Close24,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onBackground
+                IconButton(
+                    onClick = { dispatch(FilterTreeIntent.HideFilterTreeDialog) },
+                    modifier = Modifier.align(Alignment.CenterStart)
+                ) {
+                    Icon(
+                        imageVector = Close24,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+
+                Text(
+                    text = state.title.uppercase(),
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(horizontal = 56.dp),
+                    style = MaterialTheme.typography.livretMedium19.copy(
+                        color = MaterialTheme.colorScheme.onBackground,
+                        textAlign = TextAlign.Center
+                    )
                 )
+
+                SharedAnimatedVisibility(
+                    visible = state.selectedIds.isNotEmpty(),
+                    modifier = Modifier.align(Alignment.CenterEnd)
+                ) {
+                    TextButton(
+                        onClick = { dispatch(FilterTreeIntent.ResetFilterValues) },
+                        contentPadding = PaddingValues(horizontal = 8.dp)
+                    ) {
+                        Text(
+                            text = stringResource(ClientStrings.CommonReset),
+                            style = MaterialTheme.typography.medium16.copy(
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        )
+                    }
+                }
             }
 
-            Text(
-                text = state.title.uppercase(),
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .padding(horizontal = 56.dp),
-                style = MaterialTheme.typography.livretMedium19.copy(
-                    color = MaterialTheme.colorScheme.onBackground,
-                    textAlign = TextAlign.Center
-                )
-            )
-
             SharedAnimatedVisibility(
-                visible = state.selectedIds.isNotEmpty(),
-                modifier = Modifier.align(Alignment.CenterEnd)
+                visible = state.currentParentId != null
             ) {
-                TextButton(
-                    onClick = { dispatch(FilterTreeIntent.ResetFilterValues) },
-                    contentPadding = PaddingValues(horizontal = 8.dp)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp)
+                        .clickable { dispatch(FilterTreeIntent.NavigateBackInFilterTree) }
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
+                    Icon(
+                        imageVector = ChevronStart24,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onBackground
+                    )
+
                     Text(
-                        text = stringResource(ClientStrings.CommonReset),
-                        style = MaterialTheme.typography.medium16.copy(
-                            color = MaterialTheme.colorScheme.error
+                        text = state.currentParentLabel.orEmpty(),
+                        modifier = Modifier.padding(start = 12.dp),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = MaterialTheme.typography.regular15.copy(
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                     )
                 }
             }
-        }
 
-        SharedAnimatedVisibility(
-            visible = state.currentParentId != null
-        ) {
-            Row(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(48.dp)
-                    .clickable { dispatch(FilterTreeIntent.NavigateBackInFilterTree) }
-                    .padding(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .weight(1F, fill = false)
             ) {
-                Icon(
-                    imageVector = ChevronStart24,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onBackground
-                )
-
-                Text(
-                    text = state.currentParentLabel.orEmpty(),
-                    modifier = Modifier.padding(start = 12.dp),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.regular15.copy(
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                )
-            }
-        }
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1F, fill = false)
-        ) {
-            SharedLazyColumn(
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(bottom = 72.dp)
-            ) {
-                itemsIndexed(
-                    items = state.values,
-                    key = { _, item -> item.id }
-                ) { index, item ->
-                    when {
-                        item.hasChildren -> {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(48.dp)
-                                    .clickable { dispatch(FilterTreeIntent.NavigateInFilterTree(item.id)) }
-                                    .padding(horizontal = 16.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    imageVector = Check24,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(24.dp),
-                                    tint = Color.Transparent
-                                )
-
-                                Text(
-                                    text = item.label,
+                SharedLazyColumn(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(bottom = 72.dp)
+                ) {
+                    itemsIndexed(
+                        items = state.values,
+                        key = { _, item -> item.id }
+                    ) { index, item ->
+                        when {
+                            item.hasChildren -> {
+                                Row(
                                     modifier = Modifier
-                                        .weight(1F)
-                                        .padding(start = 24.dp, end = 12.dp),
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    style = MaterialTheme.typography.regular15.copy(
-                                        color = MaterialTheme.colorScheme.onBackground
+                                        .fillMaxWidth()
+                                        .height(48.dp)
+                                        .clickable { dispatch(FilterTreeIntent.NavigateInFilterTree(item.id)) }
+                                        .padding(horizontal = 16.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        imageVector = Check24,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(24.dp),
+                                        tint = Color.Transparent
                                     )
-                                )
 
-                                Icon(
-                                    imageVector = ChevronStart24,
-                                    contentDescription = null,
-                                    modifier = Modifier.rotate(180F),
-                                    tint = MaterialTheme.colorScheme.onBackground
+                                    Text(
+                                        text = item.label,
+                                        modifier = Modifier
+                                            .weight(1F)
+                                            .padding(start = 24.dp, end = 12.dp),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        style = MaterialTheme.typography.regular15.copy(
+                                            color = MaterialTheme.colorScheme.onBackground
+                                        )
+                                    )
+
+                                    Icon(
+                                        imageVector = ChevronStart24,
+                                        contentDescription = null,
+                                        modifier = Modifier.rotate(180F),
+                                        tint = MaterialTheme.colorScheme.onBackground
+                                    )
+                                }
+                            }
+                            else -> {
+                                FilterSelectableRow(
+                                    text = item.label,
+                                    selected = item.id in state.selectedIds,
+                                    onClick = { dispatch(FilterTreeIntent.ToggleFilterValue(item.id)) }
                                 )
                             }
                         }
-                        else -> {
-                            FilterSelectableRow(
-                                text = item.label,
-                                selected = item.id in state.selectedIds,
-                                onClick = { dispatch(FilterTreeIntent.ToggleFilterValue(item.id)) }
+
+                        if (index != state.values.lastIndex) {
+                            HorizontalDivider(
+                                modifier = Modifier.padding(start = 48.dp),
+                                color = MaterialTheme.colorScheme.secondary
                             )
                         }
                     }
-
-                    if (index != state.values.lastIndex) {
-                        HorizontalDivider(
-                            modifier = Modifier.padding(start = 48.dp),
-                            color = MaterialTheme.colorScheme.secondary
-                        )
-                    }
                 }
-            }
 
-            Button(
-                onClick = { dispatch(FilterTreeIntent.ConfirmFilterValues) },
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(horizontal = 16.dp)
-                    .fillMaxWidth()
-                    .height(52.dp),
-                enabled = !state.isProductsQuantityLoading,
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                    disabledContainerColor = MaterialTheme.colorScheme.primary,
-                    disabledContentColor = MaterialTheme.colorScheme.onPrimary
-                )
-            ) {
-                when {
-                    state.isProductsQuantityLoading -> {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(24.dp),
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            strokeWidth = 2.dp
-                        )
-                    }
-                    else -> {
-                        Text(
-                            text = pluralStringResource(
-                                ClientStrings.FilterShowProductsQuantity,
-                                state.quantityEntity.requireQuantity,
-                                state.quantityEntity.quantityWithThousandsSeparator
-                            ),
-                            style = MaterialTheme.typography.medium15.copy(
-                                textAlign = TextAlign.Center,
-                                letterSpacing = .3.sp
+                Button(
+                    onClick = { dispatch(FilterTreeIntent.ConfirmFilterValues) },
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(horizontal = 16.dp)
+                        .fillMaxWidth()
+                        .height(52.dp),
+                    enabled = !state.isProductsQuantityLoading,
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                        disabledContainerColor = MaterialTheme.colorScheme.primary,
+                        disabledContentColor = MaterialTheme.colorScheme.onPrimary
+                    )
+                ) {
+                    when {
+                        state.isProductsQuantityLoading -> {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                strokeWidth = 2.dp
                             )
-                        )
+                        }
+                        else -> {
+                            Text(
+                                text = pluralStringResource(
+                                    ClientStrings.FilterShowProductsQuantity,
+                                    state.quantityEntity.requireQuantity,
+                                    state.quantityEntity.quantityWithThousandsSeparator
+                                ),
+                                style = MaterialTheme.typography.medium15.copy(
+                                    textAlign = TextAlign.Center,
+                                    letterSpacing = .3.sp
+                                )
+                            )
+                        }
                     }
                 }
             }
@@ -279,9 +266,11 @@ private fun FilterTreeSheetPreview(
     @PreviewParameter(FilterTreeModelProvider::class) state: FilterTreeModel
 ) {
     Box(
-        modifier = Modifier.background(Color.Gray)
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Gray)
     ) {
-        FilterTreeSheetContent(
+        FilterTreeSheet(
             state = state,
             dispatch = {}
         )

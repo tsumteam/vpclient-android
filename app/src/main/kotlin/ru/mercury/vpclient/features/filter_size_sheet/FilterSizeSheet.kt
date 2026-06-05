@@ -81,91 +81,109 @@ fun FilterSizeSheet(
         onDismissRequest = { dispatch(FilterSizeIntent.HideFilterSizeDialog) },
         sheetState = sheetState
     ) {
-        FilterSizeSheetContent(
-            state = state,
-            dispatch = dispatch
-        )
-    }
-}
+        var selectedCountry by remember { mutableStateOf<SizeCountry>(SizeCountry.Russia) }
 
-@Composable
-private fun FilterSizeSheetContent(
-    state: FilterSizeModel,
-    dispatch: (FilterSizeIntent) -> Unit
-) {
-    var selectedCountry by remember { mutableStateOf<SizeCountry>(SizeCountry.Russia) }
-
-    Column {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 16.dp)
-        ) {
-            IconButton(
-                onClick = { dispatch(FilterSizeIntent.HideFilterSizeDialog) },
-                modifier = Modifier.align(Alignment.CenterStart)
-            ) {
-                Icon(
-                    imageVector = Close24,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onBackground
-                )
-            }
-
-            Text(
-                text = stringResource(ClientStrings.FilterSizeTitle),
+        Column {
+            Box(
                 modifier = Modifier
-                    .align(Alignment.Center)
-                    .padding(horizontal = 56.dp, vertical = 0.dp),
-                style = MaterialTheme.typography.livretMedium19.copy(
-                    color = MaterialTheme.colorScheme.onBackground,
-                    textAlign = TextAlign.Center
-                )
-            )
-
-            SharedAnimatedVisibility(
-                visible = state.selectedIds.isNotEmpty(),
-                modifier = Modifier.align(Alignment.CenterEnd)
+                    .fillMaxWidth()
+                    .padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 16.dp)
             ) {
-                TextButton(
-                    onClick = { dispatch(FilterSizeIntent.ResetFilterSizeValues) },
-                    contentPadding = PaddingValues(horizontal = 8.dp)
+                IconButton(
+                    onClick = { dispatch(FilterSizeIntent.HideFilterSizeDialog) },
+                    modifier = Modifier.align(Alignment.CenterStart)
                 ) {
-                    Text(
-                        text = stringResource(ClientStrings.CommonReset),
-                        style = MaterialTheme.typography.medium16.copy(
-                            color = MaterialTheme.colorScheme.error
-                        )
+                    Icon(
+                        imageVector = Close24,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onBackground
                     )
                 }
-            }
-        }
 
-        when {
-            state.isLoading -> {
-                Column(
+                Text(
+                    text = stringResource(ClientStrings.FilterSizeTitle),
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(max = 420.dp)
+                        .align(Alignment.Center)
+                        .padding(horizontal = 56.dp, vertical = 0.dp),
+                    style = MaterialTheme.typography.livretMedium19.copy(
+                        color = MaterialTheme.colorScheme.onBackground,
+                        textAlign = TextAlign.Center
+                    )
+                )
+
+                SharedAnimatedVisibility(
+                    visible = state.selectedIds.isNotEmpty(),
+                    modifier = Modifier.align(Alignment.CenterEnd)
                 ) {
-                    Row(
+                    TextButton(
+                        onClick = { dispatch(FilterSizeIntent.ResetFilterSizeValues) },
+                        contentPadding = PaddingValues(horizontal = 8.dp)
+                    ) {
+                        Text(
+                            text = stringResource(ClientStrings.CommonReset),
+                            style = MaterialTheme.typography.medium16.copy(
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        )
+                    }
+                }
+            }
+
+            when {
+                state.isLoading -> {
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 4.dp),
-                        horizontalArrangement = Arrangement.spacedBy(
-                            space = 16.dp,
-                            alignment = Alignment.CenterHorizontally
-                        )
+                            .heightIn(max = 420.dp)
                     ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 4.dp),
+                            horizontalArrangement = Arrangement.spacedBy(
+                                space = 16.dp,
+                                alignment = Alignment.CenterHorizontally
+                            )
+                        ) {
+                            repeat(4) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .placeholder(
+                                            visible = true,
+                                            highlight = PlaceholderHighlight.shimmer(),
+                                            color = MaterialTheme.colorScheme.surfaceVariant,
+                                            shape = CircleShape
+                                        )
+                                )
+                            }
+                        }
+
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .padding(vertical = 16.dp)
+                                .width(120.dp)
+                                .height(19.dp)
+                                .placeholder(
+                                    visible = true,
+                                    highlight = PlaceholderHighlight.shimmer(),
+                                    color = MaterialTheme.colorScheme.surfaceVariant,
+                                    shape = RoundedCornerShape(6.dp)
+                                )
+                        )
+
                         repeat(4) {
                             Box(
                                 modifier = Modifier
-                                    .size(40.dp)
+                                    .fillMaxWidth()
+                                    .padding(start = 16.dp, top = 0.dp, end = 16.dp, bottom = 4.dp)
+                                    .height(48.dp)
                                     .placeholder(
                                         visible = true,
                                         highlight = PlaceholderHighlight.shimmer(),
                                         color = MaterialTheme.colorScheme.surfaceVariant,
-                                        shape = CircleShape
+                                        shape = RoundedCornerShape(4.dp)
                                     )
                             )
                         }
@@ -173,125 +191,96 @@ private fun FilterSizeSheetContent(
 
                     Box(
                         modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .padding(vertical = 16.dp)
-                            .width(120.dp)
-                            .height(19.dp)
+                            .padding(start = 16.dp, top = 28.dp, end = 16.dp, bottom = 8.dp)
+                            .fillMaxWidth()
+                            .height(56.dp)
                             .placeholder(
                                 visible = true,
                                 highlight = PlaceholderHighlight.shimmer(),
                                 color = MaterialTheme.colorScheme.surfaceVariant,
-                                shape = RoundedCornerShape(6.dp)
+                                shape = RoundedCornerShape(8.dp)
                             )
                     )
-
-                    repeat(4) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 16.dp, top = 0.dp, end = 16.dp, bottom = 4.dp)
-                                .height(48.dp)
-                                .placeholder(
-                                    visible = true,
-                                    highlight = PlaceholderHighlight.shimmer(),
-                                    color = MaterialTheme.colorScheme.surfaceVariant,
-                                    shape = RoundedCornerShape(4.dp)
-                                )
-                        )
+                }
+                else -> {
+                    val visibleSizeValues = state.entity.sizeValues.filter { item ->
+                        selectedCountry.label(item) != null
                     }
-                }
-
-                Box(
-                    modifier = Modifier
-                        .padding(start = 16.dp, top = 28.dp, end = 16.dp, bottom = 8.dp)
-                        .fillMaxWidth()
-                        .height(56.dp)
-                        .placeholder(
-                            visible = true,
-                            highlight = PlaceholderHighlight.shimmer(),
-                            color = MaterialTheme.colorScheme.surfaceVariant,
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                )
-            }
-            else -> {
-                val visibleSizeValues = state.entity.sizeValues.filter { item ->
-                    selectedCountry.label(item) != null
-                }
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1F, fill = false)
-                ) {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1F, fill = false)
                     ) {
-                        FilterSizeCountrySelector(
-                            selectedCountry = selectedCountry,
-                            onCountryClick = { selectedCountry = it }
-                        )
-
-                        SharedLazyColumn(
+                        Column(
                             modifier = Modifier.fillMaxWidth(),
-                            contentPadding = PaddingValues(bottom = 72.dp)
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
-                            itemsIndexed(
-                                items = visibleSizeValues,
-                                key = { _, item -> item.id }
-                            ) { index, item ->
-                                FilterSelectableRow(
-                                    text = requireNotNull(selectedCountry.label(item)),
-                                    selected = state.selectedIds.contains(item.id),
-                                    onClick = { dispatch(FilterSizeIntent.ToggleFilterSizeValue(item.id)) }
-                                )
+                            FilterSizeCountrySelector(
+                                selectedCountry = selectedCountry,
+                                onCountryClick = { selectedCountry = it }
+                            )
 
-                                if (index != visibleSizeValues.lastIndex) {
-                                    HorizontalDivider(
-                                        modifier = Modifier.padding(start = 48.dp),
-                                        color = MaterialTheme.colorScheme.surfaceVariant
+                            SharedLazyColumn(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentPadding = PaddingValues(bottom = 72.dp)
+                            ) {
+                                itemsIndexed(
+                                    items = visibleSizeValues,
+                                    key = { _, item -> item.id }
+                                ) { index, item ->
+                                    FilterSelectableRow(
+                                        text = requireNotNull(selectedCountry.label(item)),
+                                        selected = state.selectedIds.contains(item.id),
+                                        onClick = { dispatch(FilterSizeIntent.ToggleFilterSizeValue(item.id)) }
                                     )
+
+                                    if (index != visibleSizeValues.lastIndex) {
+                                        HorizontalDivider(
+                                            modifier = Modifier.padding(start = 48.dp),
+                                            color = MaterialTheme.colorScheme.surfaceVariant
+                                        )
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    Button(
-                        onClick = { dispatch(FilterSizeIntent.ConfirmFilterSizeValues) },
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .padding(horizontal = 16.dp)
-                            .fillMaxWidth()
-                            .height(52.dp),
-                        enabled = !state.isProductsQuantityLoading,
-                        shape = RoundedCornerShape(8.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary,
-                            disabledContainerColor = MaterialTheme.colorScheme.primary,
-                            disabledContentColor = MaterialTheme.colorScheme.onPrimary
-                        )
-                    ) {
-                        when {
-                            state.isProductsQuantityLoading -> {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(24.dp),
-                                    color = MaterialTheme.colorScheme.onPrimary,
-                                    strokeWidth = 2.dp
-                                )
-                            }
-                            else -> {
-                                Text(
-                                    text = pluralStringResource(
-                                        ClientStrings.FilterShowProductsQuantity,
-                                        state.quantityEntity.requireQuantity,
-                                        state.quantityEntity.quantityWithThousandsSeparator
-                                    ),
-                                    style = MaterialTheme.typography.medium15.copy(
-                                        textAlign = TextAlign.Center,
-                                        letterSpacing = .3.sp
+                        Button(
+                            onClick = { dispatch(FilterSizeIntent.ConfirmFilterSizeValues) },
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .padding(horizontal = 16.dp)
+                                .fillMaxWidth()
+                                .height(52.dp),
+                            enabled = !state.isProductsQuantityLoading,
+                            shape = RoundedCornerShape(8.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary,
+                                disabledContainerColor = MaterialTheme.colorScheme.primary,
+                                disabledContentColor = MaterialTheme.colorScheme.onPrimary
+                            )
+                        ) {
+                            when {
+                                state.isProductsQuantityLoading -> {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(24.dp),
+                                        color = MaterialTheme.colorScheme.onPrimary,
+                                        strokeWidth = 2.dp
                                     )
-                                )
+                                }
+                                else -> {
+                                    Text(
+                                        text = pluralStringResource(
+                                            ClientStrings.FilterShowProductsQuantity,
+                                            state.quantityEntity.requireQuantity,
+                                            state.quantityEntity.quantityWithThousandsSeparator
+                                        ),
+                                        style = MaterialTheme.typography.medium15.copy(
+                                            textAlign = TextAlign.Center,
+                                            letterSpacing = .3.sp
+                                        )
+                                    )
+                                }
                             }
                         }
                     }
@@ -302,7 +291,7 @@ private fun FilterSizeSheetContent(
 }
 
 @PreviewWrapper(ThemeWrapper::class)
-@Preview(showBackground = true)
+@Preview
 @Composable
 private fun FilterSizeSheetPreview(
     @PreviewParameter(FilterSizeSheetStateProvider::class) state: FilterSizeModel
@@ -312,7 +301,7 @@ private fun FilterSizeSheetPreview(
             .fillMaxSize()
             .background(Color.Gray)
     ) {
-        FilterSizeSheetContent(
+        FilterSizeSheet(
             state = state,
             dispatch = {}
         )

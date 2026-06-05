@@ -1,20 +1,20 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package ru.mercury.vpclient.features.fitting_address_delete_dialog
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.features.fitting_address_delete_dialog.intent.FittingAddressDeleteDialogIntent
 import ru.mercury.vpclient.features.fitting_address_delete_dialog.model.FittingAddressDeleteDialogModel
-import ru.mercury.vpclient.shared.ui.components.SharedBasicAlertDialog3
+import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.medium14
 import ru.mercury.vpclient.shared.ui.theme.medium19
@@ -25,9 +25,21 @@ fun FittingAddressDeleteDialog(
     state: FittingAddressDeleteDialogModel,
     dispatch: (FittingAddressDeleteDialogIntent) -> Unit
 ) {
-    SharedBasicAlertDialog3(
+    AlertDialog(
         onDismissRequest = { dispatch(FittingAddressDeleteDialogIntent.DismissRequest) },
-        negativeButton = {
+        confirmButton = {
+            TextButton(
+                onClick = { dispatch(FittingAddressDeleteDialogIntent.ConfirmClick) }
+            ) {
+                Text(
+                    text = stringResource(ClientStrings.FittingAddressDelete),
+                    style = MaterialTheme.typography.medium14.copy(
+                        color = MaterialTheme.colorScheme.error
+                    )
+                )
+            }
+        },
+        dismissButton = {
             TextButton(
                 onClick = { dispatch(FittingAddressDeleteDialogIntent.DismissRequest) }
             ) {
@@ -39,22 +51,7 @@ fun FittingAddressDeleteDialog(
                 )
             }
         },
-        positiveButton = {
-            TextButton(
-                onClick = { dispatch(FittingAddressDeleteDialogIntent.ConfirmClick) }
-            ) {
-                Text(
-                    text = stringResource(ClientStrings.FittingAddressDelete),
-                    style = MaterialTheme.typography.medium14.copy(
-                        color = MaterialTheme.colorScheme.error
-                    )
-                )
-            }
-        }
-    ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
+        title = {
             Text(
                 text = stringResource(ClientStrings.FittingAddressDeleteTitle),
                 style = MaterialTheme.typography.medium19.copy(
@@ -62,7 +59,8 @@ fun FittingAddressDeleteDialog(
                     lineHeight = 24.sp
                 )
             )
-
+        },
+        text = {
             Text(
                 text = stringResource(ClientStrings.FittingAddressDeleteMessage, state.address),
                 style = MaterialTheme.typography.regular15.copy(
@@ -72,5 +70,21 @@ fun FittingAddressDeleteDialog(
                 )
             )
         }
+    )
+}
+
+@PreviewWrapper(ThemeWrapper::class)
+@Preview
+@Composable
+private fun FittingAddressDeleteDialogPreview() {
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        FittingAddressDeleteDialog(
+            state = FittingAddressDeleteDialogModel(
+                address = "Москва, Тверская улица, 1"
+            ),
+            dispatch = {}
+        )
     }
 }

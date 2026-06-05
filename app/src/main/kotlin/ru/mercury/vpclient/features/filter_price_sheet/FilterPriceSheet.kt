@@ -27,7 +27,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -64,162 +63,150 @@ fun FilterPriceSheet(
     dispatch: (FilterPriceIntent) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val scope = rememberCoroutineScope()
 
     SharedModalBottomSheet(
         onDismissRequest = { dispatch(FilterPriceIntent.HideFilterPriceDialog) },
         sheetState = sheetState
     ) {
-        FilterPriceSheetContent(
-            state = state,
-            dispatch = dispatch
-        )
-    }
-}
+        val isResetVisible = state.priceFrom.isNotEmpty() || state.priceTo.isNotEmpty() || state.selectedPresetId != null
 
-@Composable
-private fun FilterPriceSheetContent(
-    state: FilterPriceModel,
-    dispatch: (FilterPriceIntent) -> Unit
-) {
-    val isResetVisible = state.priceFrom.isNotEmpty() || state.priceTo.isNotEmpty() || state.selectedPresetId != null
-
-    Column {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 16.dp)
-        ) {
-            IconButton(
-                onClick = { dispatch(FilterPriceIntent.HideFilterPriceDialog) },
-                modifier = Modifier.align(Alignment.CenterStart)
-            ) {
-                Icon(
-                    imageVector = Close24,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onBackground
-                )
-            }
-
-            Text(
-                text = state.title.uppercase(),
+        Column {
+            Box(
                 modifier = Modifier
-                    .align(Alignment.Center)
-                    .padding(horizontal = 56.dp),
-                style = MaterialTheme.typography.livretMedium19.copy(
-                    color = MaterialTheme.colorScheme.onBackground,
-                    textAlign = TextAlign.Center
-                )
-            )
-
-            SharedAnimatedVisibility(
-                visible = isResetVisible,
-                modifier = Modifier.align(Alignment.CenterEnd)
-            ) {
-                TextButton(
-                    onClick = { dispatch(FilterPriceIntent.ResetPrice) },
-                    contentPadding = PaddingValues(horizontal = 8.dp)
-                ) {
-                    Text(
-                        text = stringResource(ClientStrings.CommonReset),
-                        style = MaterialTheme.typography.medium16.copy(
-                            color = MaterialTheme.colorScheme.error
-                        )
-                    )
-                }
-            }
-        }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, top = 0.dp, end = 16.dp, bottom = 16.dp)
-        ) {
-            ClientTextField(
-                value = state.priceFrom,
-                accepted = true,
-                onValueChange = { value -> dispatch(FilterPriceIntent.ChangeMinPrice(value)) },
-                placeholder = "From",
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.weight(1F)
-            )
-
-            ClientTextField(
-                value = state.priceTo,
-                accepted = true,
-                onValueChange = { value -> dispatch(FilterPriceIntent.ChangeMaxPrice(value)) },
-                placeholder = "To",
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier
-                    .weight(1F)
-                    .padding(start = 8.dp, top = 0.dp, end = 0.dp, bottom = 0.dp)
-            )
-        }
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1F, fill = false)
-        ) {
-            SharedLazyColumn(
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(bottom = 72.dp)
-            ) {
-                itemsIndexed(
-                    items = state.presets,
-                    key = { _, item -> item.id }
-                ) { index, item ->
-                    FilterSelectableRow(
-                        text = item.label,
-                        selected = item.id == state.selectedPresetId,
-                        onClick = { dispatch(FilterPriceIntent.SelectPricePreset(item.id)) }
-                    )
-
-                    if (index != state.presets.lastIndex) {
-                        HorizontalDivider(
-                            modifier = Modifier.padding(start = 48.dp),
-                            color = MaterialTheme.colorScheme.secondary
-                        )
-                    }
-                }
-            }
-
-            Button(
-                onClick = { dispatch(FilterPriceIntent.ConfirmPrice) },
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(horizontal = 16.dp)
                     .fillMaxWidth()
-                    .height(52.dp),
-                enabled = !state.isProductsQuantityLoading,
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                    disabledContainerColor = MaterialTheme.colorScheme.primary,
-                    disabledContentColor = MaterialTheme.colorScheme.onPrimary
-                )
+                    .padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 16.dp)
             ) {
-                when {
-                    state.isProductsQuantityLoading -> {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(24.dp),
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            strokeWidth = 2.dp
-                        )
-                    }
-                    else -> {
+                IconButton(
+                    onClick = { dispatch(FilterPriceIntent.HideFilterPriceDialog) },
+                    modifier = Modifier.align(Alignment.CenterStart)
+                ) {
+                    Icon(
+                        imageVector = Close24,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+
+                Text(
+                    text = state.title.uppercase(),
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(horizontal = 56.dp),
+                    style = MaterialTheme.typography.livretMedium19.copy(
+                        color = MaterialTheme.colorScheme.onBackground,
+                        textAlign = TextAlign.Center
+                    )
+                )
+
+                SharedAnimatedVisibility(
+                    visible = isResetVisible,
+                    modifier = Modifier.align(Alignment.CenterEnd)
+                ) {
+                    TextButton(
+                        onClick = { dispatch(FilterPriceIntent.ResetPrice) },
+                        contentPadding = PaddingValues(horizontal = 8.dp)
+                    ) {
                         Text(
-                            text = pluralStringResource(
-                                ClientStrings.FilterShowProductsQuantity,
-                                state.quantityEntity.requireQuantity,
-                                state.quantityEntity.quantityWithThousandsSeparator
-                            ),
-                            style = MaterialTheme.typography.medium15.copy(
-                                textAlign = TextAlign.Center,
-                                letterSpacing = .3.sp
+                            text = stringResource(ClientStrings.CommonReset),
+                            style = MaterialTheme.typography.medium16.copy(
+                                color = MaterialTheme.colorScheme.error
                             )
                         )
+                    }
+                }
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, top = 0.dp, end = 16.dp, bottom = 16.dp)
+            ) {
+                ClientTextField(
+                    value = state.priceFrom,
+                    accepted = true,
+                    onValueChange = { value -> dispatch(FilterPriceIntent.ChangeMinPrice(value)) },
+                    placeholder = "From",
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.weight(1F)
+                )
+
+                ClientTextField(
+                    value = state.priceTo,
+                    accepted = true,
+                    onValueChange = { value -> dispatch(FilterPriceIntent.ChangeMaxPrice(value)) },
+                    placeholder = "To",
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier
+                        .weight(1F)
+                        .padding(start = 8.dp, top = 0.dp, end = 0.dp, bottom = 0.dp)
+                )
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1F, fill = false)
+            ) {
+                SharedLazyColumn(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(bottom = 72.dp)
+                ) {
+                    itemsIndexed(
+                        items = state.presets,
+                        key = { _, item -> item.id }
+                    ) { index, item ->
+                        FilterSelectableRow(
+                            text = item.label,
+                            selected = item.id == state.selectedPresetId,
+                            onClick = { dispatch(FilterPriceIntent.SelectPricePreset(item.id)) }
+                        )
+
+                        if (index != state.presets.lastIndex) {
+                            HorizontalDivider(
+                                modifier = Modifier.padding(start = 48.dp),
+                                color = MaterialTheme.colorScheme.secondary
+                            )
+                        }
+                    }
+                }
+
+                Button(
+                    onClick = { dispatch(FilterPriceIntent.ConfirmPrice) },
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(horizontal = 16.dp)
+                        .fillMaxWidth()
+                        .height(52.dp),
+                    enabled = !state.isProductsQuantityLoading,
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                        disabledContainerColor = MaterialTheme.colorScheme.primary,
+                        disabledContentColor = MaterialTheme.colorScheme.onPrimary
+                    )
+                ) {
+                    when {
+                        state.isProductsQuantityLoading -> {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                strokeWidth = 2.dp
+                            )
+                        }
+                        else -> {
+                            Text(
+                                text = pluralStringResource(
+                                    ClientStrings.FilterShowProductsQuantity,
+                                    state.quantityEntity.requireQuantity,
+                                    state.quantityEntity.quantityWithThousandsSeparator
+                                ),
+                                style = MaterialTheme.typography.medium15.copy(
+                                    textAlign = TextAlign.Center,
+                                    letterSpacing = .3.sp
+                                )
+                            )
+                        }
                     }
                 }
             }
@@ -228,7 +215,7 @@ private fun FilterPriceSheetContent(
 }
 
 @PreviewWrapper(ThemeWrapper::class)
-@Preview(showBackground = true)
+@Preview
 @Composable
 private fun FilterPriceSheetPreview(
     @PreviewParameter(FilterPriceModelProvider::class) state: FilterPriceModel
@@ -238,7 +225,7 @@ private fun FilterPriceSheetPreview(
             .fillMaxSize()
             .background(Color.Gray)
     ) {
-        FilterPriceSheetContent(
+        FilterPriceSheet(
             state = state,
             dispatch = {}
         )
@@ -251,18 +238,18 @@ private class FilterPriceModelProvider: PreviewParameterProvider<FilterPriceMode
             title = "Price",
             presets = emptyList(),
             selectedPresetId = null,
-            priceFrom = "10000",
-            priceTo = "50000",
-            quantityEntity = FilterValuesQuantityEntity("price", 12),
+            priceFrom = "",
+            priceTo = "",
+            quantityEntity = FilterValuesQuantityEntity("price", 0),
             isProductsQuantityLoading = false
         ),
         FilterPriceModel(
             title = "Price",
             presets = emptyList(),
             selectedPresetId = null,
-            priceFrom = "",
-            priceTo = "",
-            quantityEntity = FilterValuesQuantityEntity("price", 0),
+            priceFrom = "10000",
+            priceTo = "50000",
+            quantityEntity = FilterValuesQuantityEntity("price", 12),
             isProductsQuantityLoading = true
         )
     )

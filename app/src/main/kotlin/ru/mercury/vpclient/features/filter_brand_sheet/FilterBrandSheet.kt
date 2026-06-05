@@ -105,408 +105,396 @@ fun FilterBrandSheet(
     dispatch: (FilterBrandIntent) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val scope = rememberCoroutineScope()
 
     SharedModalBottomSheet(
         onDismissRequest = { dispatch(FilterBrandIntent.HideFilterBrandDialog) },
         sheetState = sheetState
     ) {
-        FilterBrandSheetContent(
-            state = state,
-            dispatch = dispatch
-        )
-    }
-}
+        val scope = rememberCoroutineScope()
+        val focusManager = LocalFocusManager.current
+        val hapticFeedback = LocalHapticFeedback.current
+        var searchText by remember { mutableStateOf("") }
+        val isKeyboardOpen = WindowInsets.isImeVisible
+        val animatingIds = remember { mutableStateMapOf<String, Boolean>() }
 
-@Composable
-private fun FilterBrandSheetContent(
-    state: FilterBrandModel,
-    dispatch: (FilterBrandIntent) -> Unit
-) {
-    val scope = rememberCoroutineScope()
-    val focusManager = LocalFocusManager.current
-    val hapticFeedback = LocalHapticFeedback.current
-    var searchText by remember { mutableStateOf("") }
-    val isKeyboardOpen = WindowInsets.isImeVisible
-    val animatingIds = remember { mutableStateMapOf<String, Boolean>() }
-
-    LaunchedEffect(state.selectedIds) {
-        val currentIds = state.selectedIds
-        currentIds.forEach { id -> animatingIds[id] = true }
-        val toRemove = animatingIds.keys.filter { it !in currentIds }
-        toRemove.forEach { id -> animatingIds[id] = false }
-        if (toRemove.isNotEmpty()) {
-            delay(250.milliseconds)
-            toRemove.forEach { animatingIds.remove(it) }
-        }
-    }
-
-    Column(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 16.dp)
-        ) {
-            IconButton(
-                onClick = { dispatch(FilterBrandIntent.HideFilterBrandDialog) },
-                modifier = Modifier.align(Alignment.CenterStart)
-            ) {
-                Icon(
-                    imageVector = Close24,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onBackground
-                )
+        LaunchedEffect(state.selectedIds) {
+            val currentIds = state.selectedIds
+            currentIds.forEach { id -> animatingIds[id] = true }
+            val toRemove = animatingIds.keys.filter { it !in currentIds }
+            toRemove.forEach { id -> animatingIds[id] = false }
+            if (toRemove.isNotEmpty()) {
+                delay(250.milliseconds)
+                toRemove.forEach { animatingIds.remove(it) }
             }
+        }
 
-            Text(
-                text = stringResource(ClientStrings.FilterBrandTitle),
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Box(
                 modifier = Modifier
-                    .align(Alignment.Center)
-                    .padding(horizontal = 56.dp),
-                style = MaterialTheme.typography.livretMedium19.copy(
-                    color = MaterialTheme.colorScheme.onBackground,
-                    textAlign = TextAlign.Center
-                )
-            )
-
-            SharedAnimatedVisibility(
-                visible = state.selectedIds.isNotEmpty(),
-                modifier = Modifier.align(Alignment.CenterEnd)
+                    .fillMaxWidth()
+                    .padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 16.dp)
             ) {
-                TextButton(
-                    onClick = {
-                        focusManager.clearFocus()
-                        dispatch(FilterBrandIntent.ResetFilterBrandValues)
-                    },
-                    contentPadding = PaddingValues(horizontal = 8.dp)
+                IconButton(
+                    onClick = { dispatch(FilterBrandIntent.HideFilterBrandDialog) },
+                    modifier = Modifier.align(Alignment.CenterStart)
                 ) {
-                    Text(
-                        text = stringResource(ClientStrings.CommonReset),
-                        style = MaterialTheme.typography.medium16.copy(
-                            color = MaterialTheme.colorScheme.error
-                        )
+                    Icon(
+                        imageVector = Close24,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onBackground
                     )
                 }
-            }
-        }
 
-        when {
-            state.isLoading -> {
-                BrandLoadingContent(
-                    showButton = !isKeyboardOpen,
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
-            else -> {
-                BrandSearchField(
-                    value = searchText,
-                    onValueChange = { searchText = it },
-                    onClear = { searchText = "" },
-                    onSearch = { focusManager.clearFocus() },
+                Text(
+                    text = stringResource(ClientStrings.FilterBrandTitle),
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
+                        .align(Alignment.Center)
+                        .padding(horizontal = 56.dp),
+                    style = MaterialTheme.typography.livretMedium19.copy(
+                        color = MaterialTheme.colorScheme.onBackground,
+                        textAlign = TextAlign.Center
+                    )
                 )
 
-                if (animatingIds.isNotEmpty()) {
-                    val displayedBrands = state.brands.filter { it.id in animatingIds }
+                SharedAnimatedVisibility(
+                    visible = state.selectedIds.isNotEmpty(),
+                    modifier = Modifier.align(Alignment.CenterEnd)
+                ) {
+                    TextButton(
+                        onClick = {
+                            focusManager.clearFocus()
+                            dispatch(FilterBrandIntent.ResetFilterBrandValues)
+                        },
+                        contentPadding = PaddingValues(horizontal = 8.dp)
+                    ) {
+                        Text(
+                            text = stringResource(ClientStrings.CommonReset),
+                            style = MaterialTheme.typography.medium16.copy(
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        )
+                    }
+                }
+            }
+
+            when {
+                state.isLoading -> {
+                    BrandLoadingContent(
+                        showButton = !isKeyboardOpen,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+                else -> {
+                    BrandSearchField(
+                        value = searchText,
+                        onValueChange = { searchText = it },
+                        onClear = { searchText = "" },
+                        onSearch = { focusManager.clearFocus() },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                    )
+
+                    if (animatingIds.isNotEmpty()) {
+                        val displayedBrands = state.brands.filter { it.id in animatingIds }
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(max = 157.dp)
+                                .padding(top = 16.dp)
+                        ) {
+                            FlowRow(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .verticalScroll(rememberScrollState())
+                                    .padding(horizontal = 16.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                displayedBrands.forEach { brand ->
+                                    key(brand.id) {
+                                        AnimatedVisibility(
+                                            visible = animatingIds[brand.id] == true,
+                                            enter = fadeIn(tween(200)) + expandHorizontally(tween(200)),
+                                            exit = fadeOut(tween(200)) + shrinkHorizontally(tween(200))
+                                        ) {
+                                            FilterChip(
+                                                text = brand.label,
+                                                selected = true,
+                                                enabled = true,
+                                                onClick = {
+                                                    focusManager.clearFocus()
+                                                    dispatch(FilterBrandIntent.ToggleFilterBrandValue(brand.id))
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .heightIn(max = 157.dp)
-                            .padding(top = 16.dp)
+                            .weight(1F)
                     ) {
-                        FlowRow(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .verticalScroll(rememberScrollState())
-                                .padding(horizontal = 16.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        val favoriteBrands = state.brands.filter { it.isFavorite }
+                        val topBrands = state.brands.filter { it.isTopBrand && !it.isFavorite }
+                        val filteredBrands = when {
+                            searchText.isBlank() -> state.brands
+                            else -> state.brands.filter { it.label.contains(searchText, ignoreCase = true) }
+                        }
+                        val brandsByLetter = filteredBrands.groupBy { brand ->
+                            val firstChar = brand.label.firstOrNull()?.lowercaseChar() ?: '#'
+                            when {
+                                firstChar in 'a'..'z' -> firstChar.uppercaseChar().toString()
+                                else -> "#"
+                            }
+                        }.entries.sortedWith(
+                            Comparator { a, b ->
+                                when {
+                                    a.key == "#" && b.key != "#" -> 1
+                                    a.key != "#" && b.key == "#" -> -1
+                                    else -> a.key.compareTo(b.key)
+                                }
+                            }
+                        )
+
+                        val lazyListState = rememberLazyListState()
+
+                        val letterIndices = remember(brandsByLetter, favoriteBrands, topBrands, searchText) {
+                            val map = mutableMapOf<String, Int>()
+                            var index = 0
+                            if (searchText.isBlank()) {
+                                if (favoriteBrands.isNotEmpty()) index += 2
+                                if (topBrands.isNotEmpty()) index += 2
+                                index += 1
+                            }
+                            brandsByLetter.forEach { (letter, brands) ->
+                                map[letter] = index
+                                index += 1 + brands.size
+                            }
+                            map
+                        }
+
+                        val allBrandsHeaderIndex = remember(favoriteBrands, topBrands) {
+                            var index = 0
+                            if (favoriteBrands.isNotEmpty()) index += 2
+                            if (topBrands.isNotEmpty()) index += 2
+                            index
+                        }
+
+                        LazyColumn(
+                            state = lazyListState,
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
                         ) {
-                            displayedBrands.forEach { brand ->
-                                key(brand.id) {
-                                    AnimatedVisibility(
-                                        visible = animatingIds[brand.id] == true,
-                                        enter = fadeIn(tween(200)) + expandHorizontally(tween(200)),
-                                        exit = fadeOut(tween(200)) + shrinkHorizontally(tween(200))
+                            if (searchText.isBlank()) {
+                                if (favoriteBrands.isNotEmpty()) {
+                                    item {
+                                        FilterBrandSectionHeader(
+                                            title = stringResource(ClientStrings.FilterBrandFavoritesHeader),
+                                            showSelectAll = !favoriteBrands.all { it.id in state.selectedIds },
+                                            onSelectAll = {
+                                                focusManager.clearFocus()
+                                                dispatch(FilterBrandIntent.SelectAllBrands(favoriteBrands.map { it.id }.toSet()))
+                                            }
+                                        )
+                                    }
+                                    item {
+                                        BrandChipsGrid(
+                                            brands = favoriteBrands,
+                                            onToggle = {
+                                                focusManager.clearFocus()
+                                                dispatch(FilterBrandIntent.ToggleFilterBrandValue(it))
+                                            },
+                                            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+                                        )
+                                    }
+                                }
+
+                                if (topBrands.isNotEmpty()) {
+                                    item {
+                                        FilterBrandSectionHeader(
+                                            title = stringResource(ClientStrings.FilterBrandTopHeader),
+                                            showSelectAll = !topBrands.all { it.id in state.selectedIds },
+                                            onSelectAll = {
+                                                focusManager.clearFocus()
+                                                dispatch(FilterBrandIntent.SelectAllBrands(topBrands.map { it.id }.toSet()))
+                                            }
+                                        )
+                                    }
+                                    item {
+                                        BrandChipsGrid(
+                                            brands = topBrands,
+                                            onToggle = {
+                                                focusManager.clearFocus()
+                                                dispatch(FilterBrandIntent.ToggleFilterBrandValue(it))
+                                            },
+                                            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+                                        )
+                                    }
+                                }
+
+                                item {
+                                    FilterBrandSectionHeader(
+                                        title = stringResource(ClientStrings.FilterBrandAllHeader),
+                                        showSelectAll = false,
+                                        onSelectAll = {}
+                                    )
+                                }
+                            }
+
+                            if (filteredBrands.isEmpty() && searchText.isNotBlank()) {
+                                item {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 16.dp, vertical = 32.dp),
+                                        contentAlignment = Alignment.Center
                                     ) {
-                                        FilterChip(
+                                        Text(
+                                            text = stringResource(ClientStrings.FilterBrandEmptySearch),
+                                            style = MaterialTheme.typography.regular15.copy(
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                lineHeight = 19.sp,
+                                                letterSpacing = .2.sp,
+                                                textAlign = TextAlign.Center
+                                            )
+                                        )
+                                    }
+                                }
+                            } else {
+                                brandsByLetter.forEach { (letter, brands) ->
+                                    stickyHeader(
+                                        key = "header_$letter"
+                                    ) {
+                                        BrandLetterHeader(letter = letter)
+                                    }
+                                    itemsIndexed(
+                                        items = brands,
+                                        key = { _, brand -> brand.id }
+                                    ) { index, brand ->
+                                        FilterSelectableRow(
                                             text = brand.label,
-                                            selected = true,
-                                            enabled = true,
+                                            selected = brand.id in state.selectedIds,
                                             onClick = {
                                                 focusManager.clearFocus()
                                                 dispatch(FilterBrandIntent.ToggleFilterBrandValue(brand.id))
                                             }
                                         )
+                                        if (index != brands.lastIndex) {
+                                            HorizontalDivider(
+                                                modifier = Modifier.padding(start = 48.dp),
+                                                color = MaterialTheme.colorScheme.outlineVariant
+                                            )
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
-                }
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1F)
-                ) {
-                    val favoriteBrands = state.brands.filter { it.isFavorite }
-                    val topBrands = state.brands.filter { it.isTopBrand && !it.isFavorite }
-                    val filteredBrands = when {
-                        searchText.isBlank() -> state.brands
-                        else -> state.brands.filter { it.label.contains(searchText, ignoreCase = true) }
-                    }
-                    val brandsByLetter = filteredBrands.groupBy { brand ->
-                        val firstChar = brand.label.firstOrNull()?.lowercaseChar() ?: '#'
-                        when {
-                            firstChar in 'a'..'z' -> firstChar.uppercaseChar().toString()
-                            else -> "#"
-                        }
-                    }.entries.sortedWith(
-                        Comparator { a, b ->
-                            when {
-                                a.key == "#" && b.key != "#" -> 1
-                                a.key != "#" && b.key == "#" -> -1
-                                else -> a.key.compareTo(b.key)
-                            }
-                        }
-                    )
-
-                    val lazyListState = rememberLazyListState()
-
-                    val letterIndices = remember(brandsByLetter, favoriteBrands, topBrands, searchText) {
-                        val map = mutableMapOf<String, Int>()
-                        var index = 0
-                        if (searchText.isBlank()) {
-                            if (favoriteBrands.isNotEmpty()) index += 2
-                            if (topBrands.isNotEmpty()) index += 2
-                            index += 1
-                        }
-                        brandsByLetter.forEach { (letter, brands) ->
-                            map[letter] = index
-                            index += 1 + brands.size
-                        }
-                        map
-                    }
-
-                    val allBrandsHeaderIndex = remember(favoriteBrands, topBrands) {
-                        var index = 0
-                        if (favoriteBrands.isNotEmpty()) index += 2
-                        if (topBrands.isNotEmpty()) index += 2
-                        index
-                    }
-
-                    LazyColumn(
-                        state = lazyListState,
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(top = 16.dp, bottom = 72.dp)
-                    ) {
-                        if (searchText.isBlank()) {
-                            if (favoriteBrands.isNotEmpty()) {
-                                item {
-                                    FilterBrandSectionHeader(
-                                        title = stringResource(ClientStrings.FilterBrandFavoritesHeader),
-                                        showSelectAll = !favoriteBrands.all { it.id in state.selectedIds },
-                                        onSelectAll = {
-                                            focusManager.clearFocus()
-                                            dispatch(FilterBrandIntent.SelectAllBrands(favoriteBrands.map { it.id }.toSet()))
-                                        }
-                                    )
-                                }
-                                item {
-                                    BrandChipsGrid(
-                                        brands = favoriteBrands,
-                                        onToggle = {
-                                            focusManager.clearFocus()
-                                            dispatch(FilterBrandIntent.ToggleFilterBrandValue(it))
-                                        },
-                                        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
-                                    )
-                                }
-                            }
-
-                            if (topBrands.isNotEmpty()) {
-                                item {
-                                    FilterBrandSectionHeader(
-                                        title = stringResource(ClientStrings.FilterBrandTopHeader),
-                                        showSelectAll = !topBrands.all { it.id in state.selectedIds },
-                                        onSelectAll = {
-                                            focusManager.clearFocus()
-                                            dispatch(FilterBrandIntent.SelectAllBrands(topBrands.map { it.id }.toSet()))
-                                        }
-                                    )
-                                }
-                                item {
-                                    BrandChipsGrid(
-                                        brands = topBrands,
-                                        onToggle = {
-                                            focusManager.clearFocus()
-                                            dispatch(FilterBrandIntent.ToggleFilterBrandValue(it))
-                                        },
-                                        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
-                                    )
-                                }
-                            }
-
-                            item {
-                                FilterBrandSectionHeader(
-                                    title = stringResource(ClientStrings.FilterBrandAllHeader),
-                                    showSelectAll = false,
-                                    onSelectAll = {}
-                                )
+                        val showScrubber by remember(searchText, brandsByLetter, allBrandsHeaderIndex) {
+                            derivedStateOf {
+                                searchText.isBlank() &&
+                                    brandsByLetter.isNotEmpty() &&
+                                    lazyListState.firstVisibleItemIndex >= allBrandsHeaderIndex
                             }
                         }
 
-                        if (filteredBrands.isEmpty() && searchText.isNotBlank()) {
-                            item {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 16.dp, vertical = 32.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        text = stringResource(ClientStrings.FilterBrandEmptySearch),
-                                        style = MaterialTheme.typography.regular15.copy(
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                            lineHeight = 19.sp,
-                                            letterSpacing = .2.sp,
-                                            textAlign = TextAlign.Center
-                                        )
-                                    )
-                                }
-                            }
-                        } else {
-                            brandsByLetter.forEach { (letter, brands) ->
-                                stickyHeader(
-                                    key = "header_$letter"
-                                ) {
-                                    BrandLetterHeader(letter = letter)
-                                }
-                                itemsIndexed(
-                                    items = brands,
-                                    key = { _, brand -> brand.id }
-                                ) { index, brand ->
-                                    FilterSelectableRow(
-                                        text = brand.label,
-                                        selected = brand.id in state.selectedIds,
-                                        onClick = {
-                                            focusManager.clearFocus()
-                                            dispatch(FilterBrandIntent.ToggleFilterBrandValue(brand.id))
-                                        }
-                                    )
-                                    if (index != brands.lastIndex) {
-                                        HorizontalDivider(
-                                            modifier = Modifier.padding(start = 48.dp),
-                                            color = MaterialTheme.colorScheme.outlineVariant
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
+                        val letters = brandsByLetter.map { it.key }
+                        var scrubberHeight by remember { mutableFloatStateOf(0f) }
 
-                    val showScrubber by remember(searchText, brandsByLetter, allBrandsHeaderIndex) {
-                        derivedStateOf {
-                            searchText.isBlank() &&
-                                brandsByLetter.isNotEmpty() &&
-                                lazyListState.firstVisibleItemIndex >= allBrandsHeaderIndex
-                        }
-                    }
-
-                    val letters = brandsByLetter.map { it.key }
-                    var scrubberHeight by remember { mutableFloatStateOf(0f) }
-
-                    Box(modifier = Modifier.align(Alignment.CenterEnd)) {
-                        SharedAnimatedVisibility(
-                            visible = showScrubber,
-                            enter = fadeIn(tween(200)) + slideInHorizontally(tween(200)) { it },
-                            exit = fadeOut(tween(200)) + slideOutHorizontally(tween(200)) { it }
-                        ) {
-                            Column(
-                                modifier = Modifier
-                                    .width(18.dp)
-                                    .onSizeChanged { scrubberHeight = it.height.toFloat() }
-                                    .pointerInput(letters, letterIndices) {
-                                        awaitEachGesture {
-                                            var currentLetter: String? = null
-                                            fun scrollToY(y: Float) {
-                                                if (scrubberHeight == 0F || letters.isEmpty()) return
-                                                val idx = (y / scrubberHeight * letters.size)
-                                                    .toInt()
-                                                    .coerceIn(0, letters.lastIndex)
-                                                val newLetter = letters[idx]
-                                                val itemIndex = letterIndices[newLetter] ?: return
-                                                if (newLetter != currentLetter) {
-                                                    currentLetter = newLetter
-                                                    hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                                }
-                                                scope.launch { lazyListState.scrollToItem(itemIndex, scrollOffset = 1) }
-                                            }
-                                            val down = awaitFirstDown(requireUnconsumed = false)
-                                            scrollToY(down.position.y)
-                                            drag(down.id) { change ->
-                                                scrollToY(change.position.y)
-                                                change.consume()
-                                            }
-                                        }
-                                    },
-                                horizontalAlignment = Alignment.CenterHorizontally
+                        Box(modifier = Modifier.align(Alignment.CenterEnd)) {
+                            SharedAnimatedVisibility(
+                                visible = showScrubber,
+                                enter = fadeIn(tween(200)) + slideInHorizontally(tween(200)) { it },
+                                exit = fadeOut(tween(200)) + slideOutHorizontally(tween(200)) { it }
                             ) {
-                                letters.forEach { letter ->
-                                    Text(
-                                        text = letter,
-                                        style = MaterialTheme.typography.regular12.copy(
-                                            color = MaterialTheme.colorScheme.error,
-                                            textAlign = TextAlign.Center
+                                Column(
+                                    modifier = Modifier
+                                        .width(18.dp)
+                                        .onSizeChanged { scrubberHeight = it.height.toFloat() }
+                                        .pointerInput(letters, letterIndices) {
+                                            awaitEachGesture {
+                                                var currentLetter: String? = null
+                                                fun scrollToY(y: Float) {
+                                                    if (scrubberHeight == 0F || letters.isEmpty()) return
+                                                    val idx = (y / scrubberHeight * letters.size)
+                                                        .toInt()
+                                                        .coerceIn(0, letters.lastIndex)
+                                                    val newLetter = letters[idx]
+                                                    val itemIndex = letterIndices[newLetter] ?: return
+                                                    if (newLetter != currentLetter) {
+                                                        currentLetter = newLetter
+                                                        hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                                    }
+                                                    scope.launch { lazyListState.scrollToItem(itemIndex, scrollOffset = 1) }
+                                                }
+                                                val down = awaitFirstDown(requireUnconsumed = false)
+                                                scrollToY(down.position.y)
+                                                drag(down.id) { change ->
+                                                    scrollToY(change.position.y)
+                                                    change.consume()
+                                                }
+                                            }
+                                        },
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    letters.forEach { letter ->
+                                        Text(
+                                            text = letter,
+                                            style = MaterialTheme.typography.regular12.copy(
+                                                color = MaterialTheme.colorScheme.error,
+                                                textAlign = TextAlign.Center
+                                            )
                                         )
-                                    )
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    if (!isKeyboardOpen) {
-                        Button(
-                            onClick = { dispatch(FilterBrandIntent.ConfirmFilterBrandValues) },
-                            modifier = Modifier
-                                .align(Alignment.BottomCenter)
-                                .padding(horizontal = 16.dp)
-                                .fillMaxWidth()
-                                .height(52.dp),
-                            enabled = !state.isProductsQuantityLoading,
-                            shape = RoundedCornerShape(8.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                contentColor = MaterialTheme.colorScheme.onPrimary,
-                                disabledContainerColor = MaterialTheme.colorScheme.primary,
-                                disabledContentColor = MaterialTheme.colorScheme.onPrimary
-                            )
-                        ) {
-                            when {
-                                state.isProductsQuantityLoading -> {
-                                    CircularProgressIndicator(
-                                        modifier = Modifier.size(24.dp),
-                                        color = MaterialTheme.colorScheme.onPrimary,
-                                        strokeWidth = 2.dp
-                                    )
-                                }
-                                else -> {
-                                    Text(
-                                        text = pluralStringResource(
-                                            ClientStrings.FilterShowProductsQuantity,
-                                            state.quantityEntity.requireQuantity,
-                                            state.quantityEntity.quantityWithThousandsSeparator
-                                        ),
-                                        style = MaterialTheme.typography.medium15.copy(
-                                            textAlign = TextAlign.Center,
-                                            letterSpacing = .3.sp
+                        if (!isKeyboardOpen) {
+                            Button(
+                                onClick = { dispatch(FilterBrandIntent.ConfirmFilterBrandValues) },
+                                modifier = Modifier
+                                    .align(Alignment.BottomCenter)
+                                    .padding(horizontal = 16.dp)
+                                    .fillMaxWidth()
+                                    .height(52.dp),
+                                enabled = !state.isProductsQuantityLoading,
+                                shape = RoundedCornerShape(8.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                                    disabledContainerColor = MaterialTheme.colorScheme.primary,
+                                    disabledContentColor = MaterialTheme.colorScheme.onPrimary
+                                )
+                            ) {
+                                when {
+                                    state.isProductsQuantityLoading -> {
+                                        CircularProgressIndicator(
+                                            modifier = Modifier.size(24.dp),
+                                            color = MaterialTheme.colorScheme.onPrimary,
+                                            strokeWidth = 2.dp
                                         )
-                                    )
+                                    }
+                                    else -> {
+                                        Text(
+                                            text = pluralStringResource(
+                                                ClientStrings.FilterShowProductsQuantity,
+                                                state.quantityEntity.requireQuantity,
+                                                state.quantityEntity.quantityWithThousandsSeparator
+                                            ),
+                                            style = MaterialTheme.typography.medium15.copy(
+                                                textAlign = TextAlign.Center,
+                                                letterSpacing = .3.sp
+                                            )
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -518,15 +506,19 @@ private fun FilterBrandSheetContent(
 }
 
 @PreviewWrapper(ThemeWrapper::class)
-@Preview(showBackground = true)
+@Preview
 @Composable
-private fun FilterBrandSheetContentPreview(
+private fun FilterBrandSheetPreview(
     @PreviewParameter(FilterBrandModelProvider::class) state: FilterBrandModel
 ) {
-    FilterBrandSheetContent(
-        state = state,
-        dispatch = {}
-    )
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        FilterBrandSheet(
+            state = state,
+            dispatch = {}
+        )
+    }
 }
 
 private class FilterBrandModelProvider: PreviewParameterProvider<FilterBrandModel> {

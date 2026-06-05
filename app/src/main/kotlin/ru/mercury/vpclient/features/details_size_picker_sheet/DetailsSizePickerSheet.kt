@@ -4,6 +4,7 @@ package ru.mercury.vpclient.features.details_size_picker_sheet
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
@@ -35,7 +37,6 @@ import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.details.DetailsSizeSelector
 import ru.mercury.vpclient.shared.ui.components.details.SizeState
 import ru.mercury.vpclient.shared.ui.icons.Close24
-import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.livretMedium19
@@ -48,7 +49,6 @@ fun DetailsSizePickerSheet(
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
-
     val sheetDispatch: (DetailsSizePickerSheetIntent) -> Unit = { intent ->
         when (intent) {
             is DetailsSizePickerSheetIntent.AddToBasketClick,
@@ -67,86 +67,79 @@ fun DetailsSizePickerSheet(
         onDismissRequest = { dispatch(DetailsSizePickerSheetIntent.DismissRequest) },
         sheetState = sheetState
     ) {
-        DetailsSizePickerSheetContent(
-            state = state,
-            dispatch = sheetDispatch
-        )
-    }
-}
-
-@Composable
-private fun DetailsSizePickerSheetContent(
-    state: DetailsSizePickerSheetModel,
-    dispatch: (DetailsSizePickerSheetIntent) -> Unit
-) {
-    Column {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
-        ) {
-            IconButton(
-                onClick = { dispatch(DetailsSizePickerSheetIntent.DismissRequest) },
-                modifier = Modifier.align(Alignment.CenterStart)
+        Column {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
             ) {
-                Icon(
-                    imageVector = Close24,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onBackground
+                IconButton(
+                    onClick = { sheetDispatch(DetailsSizePickerSheetIntent.DismissRequest) },
+                    modifier = Modifier.align(Alignment.CenterStart)
+                ) {
+                    Icon(
+                        imageVector = Close24,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+
+                Text(
+                    text = stringResource(ClientStrings.DetailsSizeSelectCaps),
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(horizontal = 56.dp),
+                    style = MaterialTheme.typography.livretMedium19.copy(
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
                 )
             }
 
-            Text(
-                text = stringResource(ClientStrings.DetailsSizeSelectCaps),
+            DetailsSizeSelector(
+                state = state.sizeSelectorState,
+                onSizeClick = { index -> sheetDispatch(DetailsSizePickerSheetIntent.SizeClick(index)) },
+                onSizeTableClick = { sheetDispatch(DetailsSizePickerSheetIntent.SizeTableClick) },
+                modifier = Modifier.padding(top = 8.dp)
+            )
+
+            Button(
+                onClick = { sheetDispatch(DetailsSizePickerSheetIntent.AddToBasketClick) },
                 modifier = Modifier
-                    .align(Alignment.Center)
-                    .padding(horizontal = 56.dp),
-                style = MaterialTheme.typography.livretMedium19.copy(
-                    color = MaterialTheme.colorScheme.onBackground
+                    .padding(start = 16.dp, top = 28.dp, end = 16.dp, bottom = 8.dp)
+                    .fillMaxWidth()
+                    .height(52.dp),
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 )
-            )
-        }
-
-        DetailsSizeSelector(
-            state = state.sizeSelectorState,
-            onSizeClick = { index -> dispatch(DetailsSizePickerSheetIntent.SizeClick(index)) },
-            onSizeTableClick = { dispatch(DetailsSizePickerSheetIntent.SizeTableClick) },
-            modifier = Modifier.padding(top = 8.dp)
-        )
-
-        Button(
-            onClick = { dispatch(DetailsSizePickerSheetIntent.AddToBasketClick) },
-            modifier = Modifier
-                .padding(start = 16.dp, top = 28.dp, end = 16.dp, bottom = 8.dp)
-                .fillMaxWidth()
-                .height(52.dp),
-            shape = RoundedCornerShape(8.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
-            )
-        ) {
-            Text(
-                text = stringResource(ClientStrings.DetailsAddToBasket),
-                style = MaterialTheme.typography.medium15.copy(
-                    textAlign = TextAlign.Center,
-                    letterSpacing = .3.sp
+            ) {
+                Text(
+                    text = stringResource(ClientStrings.DetailsAddToBasket),
+                    style = MaterialTheme.typography.medium15.copy(
+                        textAlign = TextAlign.Center,
+                        letterSpacing = .3.sp
+                    )
                 )
-            )
+            }
         }
     }
 }
 
 @PreviewWrapper(ThemeWrapper::class)
-@FontScalePreviews
+@Preview
 @Composable
-private fun DetailsSizePickerSheetContentPreview(
+private fun DetailsSizePickerSheetPreview(
     @PreviewParameter(DetailsSizePickerSheetSizeSelectorStateProvider::class) state: SizeSelectorState
 ) {
-    DetailsSizePickerSheetContent(
-        state = DetailsSizePickerSheetModel(sizeSelectorState = state),
-        dispatch = {}
-    )
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        DetailsSizePickerSheet(
+            state = DetailsSizePickerSheetModel(sizeSelectorState = state),
+            dispatch = {}
+        )
+    }
 }
 
 private class DetailsSizePickerSheetSizeSelectorStateProvider: PreviewParameterProvider<SizeSelectorState> {
@@ -161,7 +154,6 @@ private class DetailsSizePickerSheetSizeSelectorStateProvider: PreviewParameterP
     )
 
     override val values: Sequence<SizeSelectorState> = sequenceOf(
-        SizeSelectorState.Empty,
         SizeSelectorState(
             sizes = sizes,
             topText = "IT",

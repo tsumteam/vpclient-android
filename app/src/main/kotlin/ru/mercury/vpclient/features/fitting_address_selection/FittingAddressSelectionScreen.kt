@@ -47,7 +47,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.fitting_address_actions_sheet.FittingAddressActionsSheet
 import ru.mercury.vpclient.features.fitting_address_actions_sheet.intent.FittingAddressActionsSheetIntent
-import ru.mercury.vpclient.features.fitting_address_actions_sheet.model.FittingAddressActionsSheetModel
 import ru.mercury.vpclient.features.fitting_address_delete_dialog.FittingAddressDeleteDialog
 import ru.mercury.vpclient.features.fitting_address_delete_dialog.intent.FittingAddressDeleteDialogIntent
 import ru.mercury.vpclient.features.fitting_address_delete_dialog.model.FittingAddressDeleteDialogModel
@@ -92,7 +91,7 @@ fun FittingAddressSelectionScreen(
     val scope = rememberCoroutineScope()
     val snackbarHostStateError = remember { SnackbarHostState() }
 
-    FittingAddressSelectionScreen(
+    FittingAddressSelectionScreenContent(
         state = state,
         dispatch = viewModel::dispatch,
         snackbarHostStateError = snackbarHostStateError
@@ -111,7 +110,6 @@ fun FittingAddressSelectionScreen(
 
     if (state.addressActionAddress != null) {
         FittingAddressActionsSheet(
-            state = FittingAddressActionsSheetModel(),
             dispatch = { intent ->
                 when (intent) {
                     is FittingAddressActionsSheetIntent.EditClick -> {
@@ -198,7 +196,7 @@ fun FittingAddressSelectionScreen(
 }
 
 @Composable
-fun FittingAddressSelectionScreen(
+private fun FittingAddressSelectionScreenContent(
     state: FittingConfirmationModel,
     dispatch: (FittingConfirmationIntent) -> Unit,
     snackbarHostStateError: SnackbarHostState
@@ -366,7 +364,7 @@ fun FittingAddressSelectionScreen(
 private fun FittingAddressSelectionScreenPreview(
     @PreviewParameter(FittingConfirmationModelPreviewParameterProvider::class) state: FittingConfirmationModel
 ) {
-    FittingAddressSelectionScreen(
+    FittingAddressSelectionScreenContent(
         state = state,
         dispatch = {},
         snackbarHostStateError = remember { SnackbarHostState() }

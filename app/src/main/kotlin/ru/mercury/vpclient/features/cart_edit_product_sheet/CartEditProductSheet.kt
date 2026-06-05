@@ -2,8 +2,10 @@
 
 package ru.mercury.vpclient.features.cart_edit_product_sheet
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -44,84 +46,69 @@ fun CartEditProductSheet(
         sheetState = sheetState,
         containerColor = Color.Transparent
     ) {
-        CartEditProductSheetContent(
-            state = state,
-            dispatch = dispatch
-        )
-    }
-}
-
-@Composable
-fun CartEditProductSheetContent(
-    state: CartEditProductSheetModel,
-    dispatch: (CartEditProductSheetIntent) -> Unit
-) {
-    SharedLazyColumn(
-        contentPadding = PaddingValues(
-            start = 16.dp,
-            end = 16.dp,
-            bottom = 8.dp
-        )
-    ) {
-        state.actions.forEachIndexed { index, action ->
+        SharedLazyColumn(
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 8.dp)
+        ) {
+            state.actions.forEachIndexed { index, action ->
+                item {
+                    Button(
+                        onClick = { dispatch(CartEditProductSheetIntent.ActionClick(index)) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(58.dp),
+                        shape = when {
+                            state.actions.size == 1 -> RoundedCornerShape(8.dp)
+                            index == 0 -> RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)
+                            index == state.actions.lastIndex -> RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp)
+                            else -> RoundedCornerShape(0.dp)
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.background,
+                            contentColor = MaterialTheme.colorScheme.onBackground
+                        )
+                    ) {
+                        Text(
+                            text = action,
+                            style = MaterialTheme.typography.medium15.copy(
+                                color = MaterialTheme.colorScheme.onBackground,
+                                textAlign = TextAlign.Center
+                            )
+                        )
+                    }
+                }
+                if (index < state.actions.lastIndex) {
+                    item {
+                        HorizontalDivider(
+                            color = MaterialTheme.colorScheme.outlineVariant
+                        )
+                    }
+                }
+            }
+            item {
+                Spacer(
+                    modifier = Modifier.height(18.dp)
+                )
+            }
             item {
                 Button(
-                    onClick = { dispatch(CartEditProductSheetIntent.ActionClick(index)) },
+                    onClick = { dispatch(CartEditProductSheetIntent.DismissRequest) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(58.dp),
-                    shape = when {
-                        state.actions.size == 1 -> RoundedCornerShape(8.dp)
-                        index == 0 -> RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)
-                        index == state.actions.lastIndex -> RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp)
-                        else -> RoundedCornerShape(0.dp)
-                    },
+                        .height(52.dp),
+                    shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.background,
                         contentColor = MaterialTheme.colorScheme.onBackground
                     )
                 ) {
                     Text(
-                        text = action,
+                        text = stringResource(ClientStrings.CartEditCancel),
                         style = MaterialTheme.typography.medium15.copy(
                             color = MaterialTheme.colorScheme.onBackground,
                             textAlign = TextAlign.Center
                         )
                     )
                 }
-            }
-            if (index < state.actions.lastIndex) {
-                item {
-                    HorizontalDivider(
-                        color = MaterialTheme.colorScheme.outlineVariant
-                    )
-                }
-            }
-        }
-        item {
-            Spacer(
-                modifier = Modifier.height(18.dp)
-            )
-        }
-        item {
-            Button(
-                onClick = { dispatch(CartEditProductSheetIntent.DismissRequest) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(52.dp),
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    contentColor = MaterialTheme.colorScheme.onBackground
-                )
-            ) {
-                Text(
-                    text = stringResource(ClientStrings.CartEditCancel),
-                    style = MaterialTheme.typography.medium15.copy(
-                        color = MaterialTheme.colorScheme.onBackground,
-                        textAlign = TextAlign.Center
-                    )
-                )
             }
         }
     }
@@ -130,13 +117,17 @@ fun CartEditProductSheetContent(
 @PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Composable
-private fun CartEditProductSheetContentPreview(
+private fun CartEditProductSheetPreview(
     @PreviewParameter(CartEditProductSheetModelProvider::class) state: CartEditProductSheetModel
 ) {
-    CartEditProductSheetContent(
-        state = state,
-        dispatch = {}
-    )
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        CartEditProductSheet(
+            state = state,
+            dispatch = {}
+        )
+    }
 }
 
 private class CartEditProductSheetModelProvider: PreviewParameterProvider<CartEditProductSheetModel> {

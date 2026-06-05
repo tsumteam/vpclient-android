@@ -3,6 +3,7 @@
 package ru.mercury.vpclient.features.fitting_address_search_sheet
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -68,116 +69,105 @@ fun FittingAddressSearchSheet(
         onDismissRequest = { dispatch(FittingAddressSearchSheetIntent.DismissRequest) },
         sheetState = sheetState
     ) {
-        FittingAddressSearchSheetContent(
-            state = state,
-            dispatch = dispatch
-        )
-    }
-}
-
-@Composable
-private fun FittingAddressSearchSheetContent(
-    state: FittingAddressSearchModel,
-    dispatch: (FittingAddressSearchSheetIntent) -> Unit
-) {
-    SharedScaffold(
-        topBar = {
-            Column {
-                CenterAlignedTopAppBar(
-                    title = {
-                        Text(
-                            text = stringResource(ClientStrings.FittingAddressNewDeliveryTitle),
-                            style = MaterialTheme.typography.medium14.copy(
-                                color = MaterialTheme.colorScheme.onBackground
-                            )
-                        )
-                    },
-                    navigationIcon = {
-                        IconButton(
-                            onClick = { dispatch(FittingAddressSearchSheetIntent.DismissRequest) },
-                            modifier = Modifier.size(42.dp)
-                        ) {
-                            Icon(
-                                imageVector = Close24,
-                                contentDescription = null,
-                                modifier = Modifier.size(24.dp),
-                                tint = MaterialTheme.colorScheme.onBackground
-                            )
-                        }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.background
-                    )
-                )
-
-                ClientTextField(
-                    value = state.query,
-                    onValueChange = { value ->
-                        dispatch(FittingAddressSearchSheetIntent.QueryChange(value))
-                    },
-                    label = stringResource(ClientStrings.FittingAddressCityStreetHousePlaceholder),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(52.dp)
-                        .padding(horizontal = 16.dp)
-                )
-            }
-        }
-    ) { innerPadding ->
-        SharedLazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .imePadding(),
-            contentPadding = innerPadding + PaddingValues(vertical = 16.dp)
-        ) {
-            when {
-                state.isSuggestionsLoading -> {
-                    items(3) {
-                        Spacer(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(48.dp)
-                                .padding(horizontal = 16.dp)
-                                .wrapContentHeight(Alignment.CenterVertically)
-                                .height(44.dp)
-                                .placeholder(
-                                    visible = true,
-                                    highlight = PlaceholderHighlight.shimmer(),
-                                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                                    shape = RoundedCornerShape(8.dp)
+        SharedScaffold(
+            topBar = {
+                Column {
+                    CenterAlignedTopAppBar(
+                        title = {
+                            Text(
+                                text = stringResource(ClientStrings.FittingAddressNewDeliveryTitle),
+                                style = MaterialTheme.typography.medium14.copy(
+                                    color = MaterialTheme.colorScheme.onBackground
                                 )
-                        )
-                    }
-                }
-                else -> {
-                    items(
-                        items = state.suggestions,
-                        key = { suggestion ->
-                            "${suggestion.title}_${suggestion.latitude}_${suggestion.longitude}"
-                        }
-                    ) { suggestion ->
-                        Text(
-                            text = suggestion.title,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(48.dp)
-                                .clickable {
-                                    dispatch(FittingAddressSearchSheetIntent.SelectAddressSuggestion(suggestion))
-                                }
-                                .padding(horizontal = 16.dp)
-                                .wrapContentHeight(Alignment.CenterVertically),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            style = MaterialTheme.typography.medium15.copy(
-                                color = MaterialTheme.colorScheme.onBackground,
-                                letterSpacing = .3.sp
                             )
+                        },
+                        navigationIcon = {
+                            IconButton(
+                                onClick = { dispatch(FittingAddressSearchSheetIntent.DismissRequest) },
+                                modifier = Modifier.size(42.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Close24,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp),
+                                    tint = MaterialTheme.colorScheme.onBackground
+                                )
+                            }
+                        },
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = MaterialTheme.colorScheme.background
                         )
+                    )
 
-                        HorizontalDivider(
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            color = MaterialTheme.colorScheme.outlineVariant
-                        )
+                    ClientTextField(
+                        value = state.query,
+                        onValueChange = { value ->
+                            dispatch(FittingAddressSearchSheetIntent.QueryChange(value))
+                        },
+                        label = stringResource(ClientStrings.FittingAddressCityStreetHousePlaceholder),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp)
+                            .padding(horizontal = 16.dp)
+                    )
+                }
+            }
+        ) { innerPadding ->
+            SharedLazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .imePadding(),
+                contentPadding = innerPadding + PaddingValues(vertical = 16.dp)
+            ) {
+                when {
+                    state.isSuggestionsLoading -> {
+                        items(3) {
+                            Spacer(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(48.dp)
+                                    .padding(horizontal = 16.dp)
+                                    .wrapContentHeight(Alignment.CenterVertically)
+                                    .height(44.dp)
+                                    .placeholder(
+                                        visible = true,
+                                        highlight = PlaceholderHighlight.shimmer(),
+                                        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                        shape = RoundedCornerShape(8.dp)
+                                    )
+                            )
+                        }
+                    }
+                    else -> {
+                        items(
+                            items = state.suggestions,
+                            key = { suggestion ->
+                                "${suggestion.title}_${suggestion.latitude}_${suggestion.longitude}"
+                            }
+                        ) { suggestion ->
+                            Text(
+                                text = suggestion.title,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(48.dp)
+                                    .clickable {
+                                        dispatch(FittingAddressSearchSheetIntent.SelectAddressSuggestion(suggestion))
+                                    }
+                                    .padding(horizontal = 16.dp)
+                                    .wrapContentHeight(Alignment.CenterVertically),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                style = MaterialTheme.typography.medium15.copy(
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    letterSpacing = .3.sp
+                                )
+                            )
+
+                            HorizontalDivider(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                color = MaterialTheme.colorScheme.outlineVariant
+                            )
+                        }
                     }
                 }
             }
@@ -191,10 +181,14 @@ private fun FittingAddressSearchSheetContent(
 private fun FittingAddressSearchSheetPreview(
     @PreviewParameter(FittingAddressSearchModelProvider::class) state: FittingAddressSearchModel
 ) {
-    FittingAddressSearchSheetContent(
-        state = state,
-        dispatch = {}
-    )
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        FittingAddressSearchSheet(
+            state = state,
+            dispatch = {}
+        )
+    }
 }
 
 private class FittingAddressSearchModelProvider: PreviewParameterProvider<FittingAddressSearchModel> {

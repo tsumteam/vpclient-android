@@ -28,7 +28,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -68,201 +67,189 @@ fun FilterColorSheet(
     dispatch: (FilterColorIntent) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val scope = rememberCoroutineScope()
 
     SharedModalBottomSheet(
         onDismissRequest = { dispatch(FilterColorIntent.HideFilterColorDialog) },
         sheetState = sheetState
     ) {
-        FilterColorSheetContent(
-            state = state,
-            dispatch = dispatch
-        )
-    }
-}
-
-@Composable
-private fun FilterColorSheetContent(
-    state: FilterColorModel,
-    dispatch: (FilterColorIntent) -> Unit
-) {
-    Column {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 16.dp)
-        ) {
-            IconButton(
-                onClick = { dispatch(FilterColorIntent.HideFilterColorDialog) },
-                modifier = Modifier.align(Alignment.CenterStart)
-            ) {
-                Icon(
-                    imageVector = Close24,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onBackground
-                )
-            }
-
-            Text(
-                text = state.entity.title.uppercase(),
+        Column {
+            Box(
                 modifier = Modifier
-                    .align(Alignment.Center)
-                    .padding(horizontal = 56.dp),
-                style = MaterialTheme.typography.livretMedium19.copy(
-                    color = MaterialTheme.colorScheme.onBackground,
-                    textAlign = TextAlign.Center
-                )
-            )
-
-            SharedAnimatedVisibility(
-                visible = state.selectedIds.isNotEmpty(),
-                modifier = Modifier.align(Alignment.CenterEnd)
+                    .fillMaxWidth()
+                    .padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 16.dp)
             ) {
-                TextButton(
-                    onClick = { dispatch(FilterColorIntent.ResetFilterColorValues) },
-                    contentPadding = PaddingValues(horizontal = 8.dp)
+                IconButton(
+                    onClick = { dispatch(FilterColorIntent.HideFilterColorDialog) },
+                    modifier = Modifier.align(Alignment.CenterStart)
                 ) {
-                    Text(
-                        text = stringResource(ClientStrings.CommonReset),
-                        style = MaterialTheme.typography.medium16.copy(
-                            color = MaterialTheme.colorScheme.error
-                        )
+                    Icon(
+                        imageVector = Close24,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onBackground
                     )
                 }
-            }
-        }
 
-        when {
-            state.isLoading -> {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(3),
+                Text(
+                    text = state.entity.title.uppercase(),
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(360.dp),
-                    contentPadding = PaddingValues(
-                        start = 16.dp,
-                        top = 0.dp,
-                        end = 16.dp,
-                        bottom = 16.dp
-                    ),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    userScrollEnabled = false
-                ) {
-                    items(9) {
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .width(67.dp)
-                                    .height(67.dp)
-                                    .placeholder(
-                                        visible = true,
-                                        highlight = PlaceholderHighlight.shimmer(),
-                                        color = MaterialTheme.colorScheme.surfaceVariant,
-                                        shape = RoundedCornerShape(12.dp)
-                                    )
-                            )
+                        .align(Alignment.Center)
+                        .padding(horizontal = 56.dp),
+                    style = MaterialTheme.typography.livretMedium19.copy(
+                        color = MaterialTheme.colorScheme.onBackground,
+                        textAlign = TextAlign.Center
+                    )
+                )
 
-                            Box(
-                                modifier = Modifier
-                                    .padding(top = 8.dp)
-                                    .width(67.dp)
-                                    .height(12.dp)
-                                    .placeholder(
-                                        visible = true,
-                                        highlight = PlaceholderHighlight.shimmer(),
-                                        color = MaterialTheme.colorScheme.surfaceVariant,
-                                        shape = RoundedCornerShape(4.dp)
-                                    )
+                SharedAnimatedVisibility(
+                    visible = state.selectedIds.isNotEmpty(),
+                    modifier = Modifier.align(Alignment.CenterEnd)
+                ) {
+                    TextButton(
+                        onClick = { dispatch(FilterColorIntent.ResetFilterColorValues) },
+                        contentPadding = PaddingValues(horizontal = 8.dp)
+                    ) {
+                        Text(
+                            text = stringResource(ClientStrings.CommonReset),
+                            style = MaterialTheme.typography.medium16.copy(
+                                color = MaterialTheme.colorScheme.error
                             )
-                        }
+                        )
                     }
                 }
-
-                Box(
-                    modifier = Modifier
-                        .padding(start = 16.dp, top = 0.dp, end = 16.dp, bottom = 8.dp)
-                        .fillMaxWidth()
-                        .height(56.dp)
-                        .placeholder(
-                            visible = true,
-                            highlight = PlaceholderHighlight.shimmer(),
-                            color = MaterialTheme.colorScheme.surfaceVariant,
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                )
             }
-            else -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1F, fill = false)
-                ) {
+
+            when {
+                state.isLoading -> {
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(3),
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(360.dp),
                         contentPadding = PaddingValues(
                             start = 16.dp,
                             top = 0.dp,
                             end = 16.dp,
-                            bottom = 88.dp
+                            bottom = 16.dp
                         ),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        userScrollEnabled = false
                     ) {
-                        items(
-                            items = state.entity.colorValues,
-                            key = { item -> item.id }
-                        ) { item ->
-                            FilterColorBox(
-                                text = item.label,
-                                imageUrl = item.imageUrl,
-                                selected = item.id in state.selectedIds,
-                                onClick = { dispatch(FilterColorIntent.ToggleFilterColorValue(item.id)) },
-                                modifier = Modifier.fillMaxWidth()
-                            )
+                        items(9) {
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .width(67.dp)
+                                        .height(67.dp)
+                                        .placeholder(
+                                            visible = true,
+                                            highlight = PlaceholderHighlight.shimmer(),
+                                            color = MaterialTheme.colorScheme.surfaceVariant,
+                                            shape = RoundedCornerShape(12.dp)
+                                        )
+                                )
+
+                                Box(
+                                    modifier = Modifier
+                                        .padding(top = 8.dp)
+                                        .width(67.dp)
+                                        .height(12.dp)
+                                        .placeholder(
+                                            visible = true,
+                                            highlight = PlaceholderHighlight.shimmer(),
+                                            color = MaterialTheme.colorScheme.surfaceVariant,
+                                            shape = RoundedCornerShape(4.dp)
+                                        )
+                                )
+                            }
                         }
                     }
 
-                    Button(
-                        onClick = { dispatch(FilterColorIntent.ConfirmFilterColorValues) },
+                    Box(
                         modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .padding(horizontal = 16.dp, vertical = 0.dp)
+                            .padding(start = 16.dp, top = 0.dp, end = 16.dp, bottom = 8.dp)
                             .fillMaxWidth()
-                            .height(52.dp),
-                        enabled = !state.isProductsQuantityLoading,
-                        shape = RoundedCornerShape(8.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary,
-                            disabledContainerColor = MaterialTheme.colorScheme.primary,
-                            disabledContentColor = MaterialTheme.colorScheme.onPrimary
-                        )
+                            .height(56.dp)
+                            .placeholder(
+                                visible = true,
+                                highlight = PlaceholderHighlight.shimmer(),
+                                color = MaterialTheme.colorScheme.surfaceVariant,
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                    )
+                }
+                else -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1F, fill = false)
                     ) {
-                        when {
-                            state.isProductsQuantityLoading -> {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(24.dp),
-                                    color = MaterialTheme.colorScheme.onPrimary,
-                                    strokeWidth = 2.dp
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(3),
+                            modifier = Modifier.fillMaxWidth(),
+                            contentPadding = PaddingValues(
+                                start = 16.dp,
+                                top = 0.dp,
+                                end = 16.dp,
+                                bottom = 88.dp
+                            ),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            items(
+                                items = state.entity.colorValues,
+                                key = { item -> item.id }
+                            ) { item ->
+                                FilterColorBox(
+                                    text = item.label,
+                                    imageUrl = item.imageUrl,
+                                    selected = item.id in state.selectedIds,
+                                    onClick = { dispatch(FilterColorIntent.ToggleFilterColorValue(item.id)) },
+                                    modifier = Modifier.fillMaxWidth()
                                 )
                             }
-                            else -> {
-                                Text(
-                                    text = pluralStringResource(
-                                        ClientStrings.FilterShowProductsQuantity,
-                                        state.quantityEntity.requireQuantity,
-                                        state.quantityEntity.quantityWithThousandsSeparator
-                                    ),
-                                    style = MaterialTheme.typography.medium15.copy(
-                                        textAlign = TextAlign.Center,
-                                        letterSpacing = .3.sp
+                        }
+
+                        Button(
+                            onClick = { dispatch(FilterColorIntent.ConfirmFilterColorValues) },
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .padding(horizontal = 16.dp, vertical = 0.dp)
+                                .fillMaxWidth()
+                                .height(52.dp),
+                            enabled = !state.isProductsQuantityLoading,
+                            shape = RoundedCornerShape(8.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary,
+                                disabledContainerColor = MaterialTheme.colorScheme.primary,
+                                disabledContentColor = MaterialTheme.colorScheme.onPrimary
+                            )
+                        ) {
+                            when {
+                                state.isProductsQuantityLoading -> {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(24.dp),
+                                        color = MaterialTheme.colorScheme.onPrimary,
+                                        strokeWidth = 2.dp
                                     )
-                                )
+                                }
+                                else -> {
+                                    Text(
+                                        text = pluralStringResource(
+                                            ClientStrings.FilterShowProductsQuantity,
+                                            state.quantityEntity.requireQuantity,
+                                            state.quantityEntity.quantityWithThousandsSeparator
+                                        ),
+                                        style = MaterialTheme.typography.medium15.copy(
+                                            textAlign = TextAlign.Center,
+                                            letterSpacing = .3.sp
+                                        )
+                                    )
+                                }
                             }
                         }
                     }
@@ -273,7 +260,7 @@ private fun FilterColorSheetContent(
 }
 
 @PreviewWrapper(ThemeWrapper::class)
-@Preview(showBackground = true)
+@Preview
 @Composable
 private fun FilterColorSheetPreview(
     @PreviewParameter(FilterColorSheetStateProvider::class) state: FilterColorModel
@@ -283,7 +270,7 @@ private fun FilterColorSheetPreview(
             .fillMaxSize()
             .background(Color.Gray)
     ) {
-        FilterColorSheetContent(
+        FilterColorSheet(
             state = state,
             dispatch = {}
         )
@@ -297,12 +284,36 @@ private class FilterColorSheetStateProvider: PreviewParameterProvider<FilterColo
                 chipId = "color",
                 title = "Цвет",
                 items = listOf(
-                    FilterValueItemEntity(id = "color_7", label = "Бордовый", labelPhotoUrl = "https://st.vip-platinum.ru/catalog/color/62.png"),
-                    FilterValueItemEntity(id = "color_13", label = "Белый", labelPhotoUrl = "https://st.vip-platinum.ru/catalog/color/68.png"),
-                    FilterValueItemEntity(id = "color_9", label = "Черный", labelPhotoUrl = "https://st.vip-platinum.ru/catalog/color/64.png"),
-                    FilterValueItemEntity(id = "color_3", label = "Голубой", labelPhotoUrl = "https://st.vip-platinum.ru/catalog/color/58.png"),
-                    FilterValueItemEntity(id = "color_20", label = "Желтый", labelPhotoUrl = "https://st.vip-platinum.ru/catalog/color/75.png"),
-                    FilterValueItemEntity(id = "color_10", label = "Зеленый", labelPhotoUrl = "https://st.vip-platinum.ru/catalog/color/65.png")
+                    FilterValueItemEntity(
+                        id = "color_7",
+                        label = "Бордовый",
+                        labelPhotoUrl = "https://st.vip-platinum.ru/catalog/color/62.png"
+                    ),
+                    FilterValueItemEntity(
+                        id = "color_13",
+                        label = "Белый",
+                        labelPhotoUrl = "https://st.vip-platinum.ru/catalog/color/68.png"
+                    ),
+                    FilterValueItemEntity(
+                        id = "color_9",
+                        label = "Черный",
+                        labelPhotoUrl = "https://st.vip-platinum.ru/catalog/color/64.png"
+                    ),
+                    FilterValueItemEntity(
+                        id = "color_3",
+                        label = "Голубой",
+                        labelPhotoUrl = "https://st.vip-platinum.ru/catalog/color/58.png"
+                    ),
+                    FilterValueItemEntity(
+                        id = "color_20",
+                        label = "Желтый",
+                        labelPhotoUrl = "https://st.vip-platinum.ru/catalog/color/75.png"
+                    ),
+                    FilterValueItemEntity(
+                        id = "color_10",
+                        label = "Зеленый",
+                        labelPhotoUrl = "https://st.vip-platinum.ru/catalog/color/65.png"
+                    )
                 )
             ),
             selectedIds = setOf("color_7", "color_9"),

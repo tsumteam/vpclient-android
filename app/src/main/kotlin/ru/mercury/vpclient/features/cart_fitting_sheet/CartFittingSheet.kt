@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -86,268 +87,227 @@ fun CartFittingSheet(
         onDismissRequest = { sheetDispatch(CartFittingSheetIntent.DismissRequest) },
         sheetState = sheetState
     ) {
-        CartFittingSheetContent(
-            state = state,
-            dispatch = sheetDispatch
-        )
-    }
-}
+        var selectedOption by remember { mutableStateOf(CartFittingSheetOption.AllProducts) }
 
-@Composable
-private fun CartFittingSheetContent(
-    state: CartFittingSheetModel,
-    dispatch: (CartFittingSheetIntent) -> Unit
-) {
-    var selectedOption by remember { mutableStateOf(CartFittingSheetOption.AllProducts) }
+        SharedLazyColumn(
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(bottom = 8.dp)
+        ) {
+            item {
+                CenterAlignedTopAppBar(
+                    title = {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(64.dp)
+                                .padding(end = 48.dp),
+                            contentAlignment = Alignment.BottomCenter
+                        ) {
+                            Text(
+                                text = stringResource(
+                                    when {
+                                        state.clientFeminine -> ClientStrings.CartFittingSheetGreetingFemale
+                                        else -> ClientStrings.CartFittingSheetGreetingMale
+                                    },
+                                    state.clientName
+                                ),
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                style = MaterialTheme.typography.livretMedium18.copy(
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    textAlign = TextAlign.Center
+                                )
+                            )
+                        }
+                    },
+                    navigationIcon = {
+                        IconButton(
+                            onClick = { sheetDispatch(CartFittingSheetIntent.DismissRequest) }
+                        ) {
+                            Icon(
+                                imageVector = Close24,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background
+                    )
+                )
+            }
+            item {
+                Text(
+                    text = stringResource(ClientStrings.CartFittingSheetDescription),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, top = 6.dp, end = 16.dp),
+                    style = MaterialTheme.typography.regular14.copy(
+                        color = MaterialTheme.colorScheme.onBackground,
+                        textAlign = TextAlign.Center,
+                        letterSpacing = .2.sp
+                    )
+                )
+            }
+            item {
+                Row(
+                    modifier = Modifier
+                        .padding(top = 16.dp)
+                        .fillMaxWidth()
+                        .height(64.dp)
+                        .clickable(
+                            enabled = state.allProductsCount > 0,
+                            onClick = { selectedOption = CartFittingSheetOption.AllProducts }
+                        )
+                        .padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = selectedOption == CartFittingSheetOption.AllProducts,
+                        enabled = state.allProductsCount > 0,
+                        onClick = null
+                    )
 
-    SharedLazyColumn(
-        modifier = Modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(bottom = 8.dp)
-    ) {
-        item {
-            CenterAlignedTopAppBar(
-                title = {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(64.dp)
-                            .padding(end = 48.dp),
-                        contentAlignment = Alignment.BottomCenter
+                    Column(
+                        modifier = Modifier.weight(1F),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         Text(
-                            text = stringResource(
-                                when {
-                                    state.clientFeminine -> ClientStrings.CartFittingSheetGreetingFemale
-                                    else -> ClientStrings.CartFittingSheetGreetingMale
+                            text = stringResource(ClientStrings.CartFittingSheetAllProducts),
+                            style = MaterialTheme.typography.regular14.copy(
+                                color = when {
+                                    state.allProductsCount > 0 -> MaterialTheme.colorScheme.onBackground
+                                    else -> MaterialTheme.colorScheme.outline
                                 },
-                                state.clientName
-                            ),
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            style = MaterialTheme.typography.livretMedium18.copy(
-                                color = MaterialTheme.colorScheme.onBackground,
-                                textAlign = TextAlign.Center
+                                letterSpacing = .2.sp
+                            )
+                        )
+
+                        Text(
+                            text = state.allProductsSummary,
+                            style = MaterialTheme.typography.regular14.copy(
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                letterSpacing = .2.sp
                             )
                         )
                     }
-                },
-                navigationIcon = {
-                    IconButton(
-                        onClick = { dispatch(CartFittingSheetIntent.DismissRequest) }
+                }
+            }
+            item {
+                HorizontalDivider(
+                    modifier = Modifier.padding(start = 52.dp),
+                    color = MaterialTheme.colorScheme.outlineVariant
+                )
+            }
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(64.dp)
+                        .clickable { selectedOption = CartFittingSheetOption.PaymentProducts }
+                        .padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = selectedOption == CartFittingSheetOption.PaymentProducts,
+                        enabled = true,
+                        onClick = null
+                    )
+
+                    Column(
+                        modifier = Modifier.weight(1F),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        Icon(
-                            imageVector = Close24,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onBackground
+                        Text(
+                            text = stringResource(ClientStrings.CartFittingSheetPaymentProducts),
+                            style = MaterialTheme.typography.regular14.copy(
+                                color = MaterialTheme.colorScheme.onBackground,
+                                letterSpacing = .2.sp
+                            )
+                        )
+
+                        Text(
+                            text = state.paymentProductsSummary,
+                            style = MaterialTheme.typography.regular14.copy(
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                letterSpacing = .2.sp
+                            )
                         )
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
+                }
+            }
+            item {
+                HorizontalDivider(
+                    modifier = Modifier.padding(start = 52.dp),
+                    color = MaterialTheme.colorScheme.outlineVariant
                 )
-            )
-        }
-        item {
-            Text(
-                text = stringResource(ClientStrings.CartFittingSheetDescription),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, top = 6.dp, end = 16.dp),
-                style = MaterialTheme.typography.regular14.copy(
-                    color = MaterialTheme.colorScheme.onBackground,
-                    textAlign = TextAlign.Center,
-                    letterSpacing = .2.sp
-                )
-            )
-        }
-        item {
-            Row(
-                modifier = Modifier
-                    .padding(top = 16.dp)
-                    .fillMaxWidth()
-                    .height(64.dp)
-                    .clickable(
+            }
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(64.dp)
+                        .clickable(
+                            enabled = state.allProductsCount > 0,
+                            onClick = { selectedOption = CartFittingSheetOption.Manual }
+                        )
+                        .padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = selectedOption == CartFittingSheetOption.Manual,
                         enabled = state.allProductsCount > 0,
-                        onClick = { selectedOption = CartFittingSheetOption.AllProducts }
-                    )
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                RadioButton(
-                    selected = selectedOption == CartFittingSheetOption.AllProducts,
-                    enabled = state.allProductsCount > 0,
-                    onClick = null
-                )
-
-                Column(
-                    modifier = Modifier.weight(1F),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Text(
-                        text = stringResource(ClientStrings.CartFittingSheetAllProducts),
-                        style = MaterialTheme.typography.regular14.copy(
-                            color = when {
-                                state.allProductsCount > 0 -> MaterialTheme.colorScheme.onBackground
-                                else -> MaterialTheme.colorScheme.outline
-                            },
-                            letterSpacing = .2.sp
-                        )
+                        onClick = null
                     )
 
-                    Text(
-                        text = state.allProductsSummary,
-                        style = MaterialTheme.typography.regular14.copy(
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            letterSpacing = .2.sp
-                        )
-                    )
-                }
-            }
-        }
-        item {
-            HorizontalDivider(
-                modifier = Modifier.padding(start = 52.dp),
-                color = MaterialTheme.colorScheme.outlineVariant
-            )
-        }
-        item {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(64.dp)
-                    .clickable { selectedOption = CartFittingSheetOption.PaymentProducts }
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                RadioButton(
-                    selected = selectedOption == CartFittingSheetOption.PaymentProducts,
-                    enabled = true,
-                    onClick = null
-                )
-
-                Column(
-                    modifier = Modifier.weight(1F),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Text(
-                        text = stringResource(ClientStrings.CartFittingSheetPaymentProducts),
-                        style = MaterialTheme.typography.regular14.copy(
-                            color = MaterialTheme.colorScheme.onBackground,
-                            letterSpacing = .2.sp
-                        )
-                    )
-
-                    Text(
-                        text = state.paymentProductsSummary,
-                        style = MaterialTheme.typography.regular14.copy(
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            letterSpacing = .2.sp
-                        )
-                    )
-                }
-            }
-        }
-        item {
-            HorizontalDivider(
-                modifier = Modifier.padding(start = 52.dp),
-                color = MaterialTheme.colorScheme.outlineVariant
-            )
-        }
-        item {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(64.dp)
-                    .clickable(
-                        enabled = state.allProductsCount > 0,
-                        onClick = { selectedOption = CartFittingSheetOption.Manual }
-                    )
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                RadioButton(
-                    selected = selectedOption == CartFittingSheetOption.Manual,
-                    enabled = state.allProductsCount > 0,
-                    onClick = null
-                )
-
-                Column(
-                    modifier = Modifier.weight(1F),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Text(
-                        text = stringResource(ClientStrings.CartFittingSheetManual),
-                        style = MaterialTheme.typography.regular14.copy(
-                            color = when {
-                                state.allProductsCount > 0 -> MaterialTheme.colorScheme.onBackground
-                                else -> MaterialTheme.colorScheme.outline
-                            },
-                            letterSpacing = .2.sp
-                        )
-                    )
-                }
-            }
-        }
-        item {
-            HorizontalDivider(
-                modifier = Modifier.padding(start = 52.dp),
-                color = MaterialTheme.colorScheme.outlineVariant
-            )
-        }
-        item {
-            val textColor = MaterialTheme.colorScheme.onBackground
-            val accentColor = MaterialTheme.colorScheme.error
-            val prefix = stringResource(ClientStrings.CartFittingSheetFittingTabHintPrefix)
-            val accent = stringResource(ClientStrings.CartFittingSheetFittingTabHintAccent)
-            val suffix = stringResource(ClientStrings.CartFittingSheetFittingTabHintSuffix)
-
-            Text(
-                text = buildAnnotatedString {
-                    append(prefix)
-                    append(" ")
-                    withStyle(
-                        style = SpanStyle(
-                            color = accentColor
-                        )
+                    Column(
+                        modifier = Modifier.weight(1F),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        append(accent)
+                        Text(
+                            text = stringResource(ClientStrings.CartFittingSheetManual),
+                            style = MaterialTheme.typography.regular14.copy(
+                                color = when {
+                                    state.allProductsCount > 0 -> MaterialTheme.colorScheme.onBackground
+                                    else -> MaterialTheme.colorScheme.outline
+                                },
+                                letterSpacing = .2.sp
+                            )
+                        )
                     }
-                    append(suffix)
-                },
-                modifier = Modifier
-                    .padding(start = 16.dp, top = 24.dp, end = 16.dp)
-                    .fillMaxWidth(),
-                style = MaterialTheme.typography.regular14.copy(
-                    color = textColor,
-                    lineHeight = 18.sp,
-                    textAlign = TextAlign.Center,
-                    letterSpacing = .2.sp
+                }
+            }
+            item {
+                HorizontalDivider(
+                    modifier = Modifier.padding(start = 52.dp),
+                    color = MaterialTheme.colorScheme.outlineVariant
                 )
-            )
-        }
-        if (state.hasProductsWithoutSize) {
+            }
             item {
                 val textColor = MaterialTheme.colorScheme.onBackground
                 val accentColor = MaterialTheme.colorScheme.error
-                val hint = stringResource(ClientStrings.CartFittingSheetNoSizeHint)
+                val prefix = stringResource(ClientStrings.CartFittingSheetFittingTabHintPrefix)
+                val accent = stringResource(ClientStrings.CartFittingSheetFittingTabHintAccent)
+                val suffix = stringResource(ClientStrings.CartFittingSheetFittingTabHintSuffix)
 
                 Text(
                     text = buildAnnotatedString {
+                        append(prefix)
+                        append(" ")
                         withStyle(
                             style = SpanStyle(
                                 color = accentColor
                             )
                         ) {
-                            append("*")
+                            append(accent)
                         }
-                        append(" ")
-                        append(hint)
+                        append(suffix)
                     },
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 16.dp, top = 16.dp, end = 16.dp),
+                        .padding(start = 16.dp, top = 24.dp, end = 16.dp)
+                        .fillMaxWidth(),
                     style = MaterialTheme.typography.regular14.copy(
                         color = textColor,
                         lineHeight = 18.sp,
@@ -356,55 +316,89 @@ private fun CartFittingSheetContent(
                     )
                 )
             }
-        }
-        item {
-            Button(
-                onClick = { dispatch(CartFittingSheetIntent.ConfirmClick(selectedOption)) },
-                modifier = Modifier
-                    .padding(start = 16.dp, top = 16.dp, end = 16.dp)
-                    .fillMaxWidth()
-                    .height(52.dp),
-                enabled = when (selectedOption) {
-                    CartFittingSheetOption.AllProducts -> state.allProductsCount > 0
-                    CartFittingSheetOption.PaymentProducts -> state.paymentProductsCount > 0
-                    CartFittingSheetOption.Manual -> state.allProductsCount > 0
-                },
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                    disabledContainerColor = MaterialTheme.colorScheme.disabled,
-                    disabledContentColor = MaterialTheme.colorScheme.onDisabled
-                )
-            ) {
-                Text(
-                    text = when (selectedOption) {
-                        CartFittingSheetOption.AllProducts,
-                        CartFittingSheetOption.PaymentProducts -> {
-                            stringResource(ClientStrings.CartFittingSheetConfirm)
-                        }
-                        CartFittingSheetOption.Manual -> stringResource(ClientStrings.CartFittingSheetContinue)
-                    },
-                    style = MaterialTheme.typography.medium15.copy(
-                        textAlign = TextAlign.Center,
-                        letterSpacing = .3.sp
+            if (state.hasProductsWithoutSize) {
+                item {
+                    val textColor = MaterialTheme.colorScheme.onBackground
+                    val accentColor = MaterialTheme.colorScheme.error
+                    val hint = stringResource(ClientStrings.CartFittingSheetNoSizeHint)
+
+                    Text(
+                        text = buildAnnotatedString {
+                            withStyle(
+                                style = SpanStyle(
+                                    color = accentColor
+                                )
+                            ) {
+                                append("*")
+                            }
+                            append(" ")
+                            append(hint)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 16.dp, top = 16.dp, end = 16.dp),
+                        style = MaterialTheme.typography.regular14.copy(
+                            color = textColor,
+                            lineHeight = 18.sp,
+                            textAlign = TextAlign.Center,
+                            letterSpacing = .2.sp
+                        )
                     )
-                )
+                }
+            }
+            item {
+                Button(
+                    onClick = { sheetDispatch(CartFittingSheetIntent.ConfirmClick(selectedOption)) },
+                    modifier = Modifier
+                        .padding(start = 16.dp, top = 16.dp, end = 16.dp)
+                        .fillMaxWidth()
+                        .height(52.dp),
+                    enabled = when (selectedOption) {
+                        CartFittingSheetOption.AllProducts -> state.allProductsCount > 0
+                        CartFittingSheetOption.PaymentProducts -> state.paymentProductsCount > 0
+                        CartFittingSheetOption.Manual -> state.allProductsCount > 0
+                    },
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                        disabledContainerColor = MaterialTheme.colorScheme.disabled,
+                        disabledContentColor = MaterialTheme.colorScheme.onDisabled
+                    )
+                ) {
+                    Text(
+                        text = when (selectedOption) {
+                            CartFittingSheetOption.AllProducts,
+                            CartFittingSheetOption.PaymentProducts -> {
+                                stringResource(ClientStrings.CartFittingSheetConfirm)
+                            }
+                            CartFittingSheetOption.Manual -> stringResource(ClientStrings.CartFittingSheetContinue)
+                        },
+                        style = MaterialTheme.typography.medium15.copy(
+                            textAlign = TextAlign.Center,
+                            letterSpacing = .3.sp
+                        )
+                    )
+                }
             }
         }
     }
 }
 
 @PreviewWrapper(ThemeWrapper::class)
-@Preview(showBackground = true)
+@Preview
 @Composable
-private fun CartFittingSheetContentPreview(
+private fun CartFittingSheetPreview(
     @PreviewParameter(CartFittingSheetModelProvider::class) state: CartFittingSheetModel
 ) {
-    CartFittingSheetContent(
-        state = state,
-        dispatch = {}
-    )
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        CartFittingSheet(
+            state = state,
+            dispatch = {}
+        )
+    }
 }
 
 private class CartFittingSheetModelProvider: PreviewParameterProvider<CartFittingSheetModel> {

@@ -2,7 +2,9 @@
 
 package ru.mercury.vpclient.features.cart_size_picker_sheet
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -86,99 +88,92 @@ fun CartSizePickerSheet(
         onDismissRequest = { dispatch(CartSizePickerSheetIntent.DismissRequest) },
         sheetState = sheetState
     ) {
-        CartSizePickerSheetContent(
-            state = state,
-            dispatch = sheetDispatch
-        )
-    }
-}
-
-@Composable
-fun CartSizePickerSheetContent(
-    state: CartSizePickerSheetModel,
-    dispatch: (CartSizePickerSheetIntent) -> Unit
-) {
-    Column {
-        CenterAlignedTopAppBar(
-            title = {
-                Text(
-                    text = stringResource(ClientStrings.CartSelectSizeCaps),
-                    style = MaterialTheme.typography.medium15.copy(
-                        color = MaterialTheme.colorScheme.onBackground
+        Column {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(ClientStrings.CartSelectSizeCaps),
+                        style = MaterialTheme.typography.medium15.copy(
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
                     )
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = { sheetDispatch(CartSizePickerSheetIntent.DismissRequest) }
+                    ) {
+                        Icon(
+                            imageVector = Close24,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
                 )
-            },
-            navigationIcon = {
-                IconButton(
-                    onClick = { dispatch(CartSizePickerSheetIntent.DismissRequest) }
-                ) {
-                    Icon(
-                        imageVector = Close24,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onBackground
+            )
+            when (state.sizeSelectorState) {
+                SizeSelectorState.Empty -> CartSizePickerLoading()
+                else -> {
+                    DetailsSizeSelector(
+                        state = state.sizeSelectorState,
+                        onSizeClick = { index -> sheetDispatch(CartSizePickerSheetIntent.SizeClick(index)) },
+                        onSizeTableClick = {}
                     )
                 }
-            },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = MaterialTheme.colorScheme.background
-            )
-        )
-        when (state.sizeSelectorState) {
-            SizeSelectorState.Empty -> CartSizePickerLoading()
-            else -> {
-                DetailsSizeSelector(
-                    state = state.sizeSelectorState,
-                    onSizeClick = { index -> dispatch(CartSizePickerSheetIntent.SizeClick(index)) },
-                    onSizeTableClick = {}
+            }
+
+            Button(
+                onClick = { sheetDispatch(CartSizePickerSheetIntent.ConfirmClick) },
+                modifier = Modifier
+                    .padding(start = 16.dp, top = 28.dp, end = 16.dp, bottom = 8.dp)
+                    .fillMaxWidth()
+                    .height(52.dp)
+                    .placeholder(
+                        visible = state.sizeSelectorState == SizeSelectorState.Empty,
+                        highlight = PlaceholderHighlight.shimmer(),
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        shape = RoundedCornerShape(8.dp)
+                    ),
+                enabled = state.sizeSelectorState.sizes.any { it.selected },
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    disabledContainerColor = MaterialTheme.colorScheme.disabled,
+                    disabledContentColor = MaterialTheme.colorScheme.onDisabled
+                )
+            ) {
+                Text(
+                    text = state.buttonText,
+                    style = MaterialTheme.typography.medium15.copy(
+                        textAlign = TextAlign.Center,
+                        letterSpacing = .3.sp
+                    )
                 )
             }
-        }
-
-        Button(
-            onClick = { dispatch(CartSizePickerSheetIntent.ConfirmClick) },
-            modifier = Modifier
-                .padding(start = 16.dp, top = 28.dp, end = 16.dp, bottom = 8.dp)
-                .fillMaxWidth()
-                .height(52.dp)
-                .placeholder(
-                    visible = state.sizeSelectorState == SizeSelectorState.Empty,
-                    highlight = PlaceholderHighlight.shimmer(),
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    shape = RoundedCornerShape(8.dp)
-                ),
-            enabled = state.sizeSelectorState.sizes.any { it.selected },
-            shape = RoundedCornerShape(8.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-                disabledContainerColor = MaterialTheme.colorScheme.disabled,
-                disabledContentColor = MaterialTheme.colorScheme.onDisabled
-            )
-        ) {
-            Text(
-                text = state.buttonText,
-                style = MaterialTheme.typography.medium15.copy(
-                    textAlign = TextAlign.Center,
-                    letterSpacing = .3.sp
-                )
-            )
         }
     }
 }
 
 @PreviewWrapper(ThemeWrapper::class)
-@Preview(showBackground = true)
+@Preview
 @Composable
-private fun CartSizePickerSheetContentPreview(
+private fun CartSizePickerSheetPreview(
     @PreviewParameter(CartSizePickerSheetSizeSelectorStateProvider::class) state: SizeSelectorState
 ) {
-    CartSizePickerSheetContent(
-        state = CartSizePickerSheetModel(
-            sizeSelectorState = state,
-            buttonText = stringResource(ClientStrings.CartSelectSizeForPaymentButton)
-        ),
-        dispatch = {}
-    )
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        CartSizePickerSheet(
+            state = CartSizePickerSheetModel(
+                sizeSelectorState = state,
+                buttonText = stringResource(ClientStrings.CartSelectSizeForPaymentButton)
+            ),
+            dispatch = {}
+        )
+    }
 }
 
 private class CartSizePickerSheetSizeSelectorStateProvider: PreviewParameterProvider<SizeSelectorState> {
