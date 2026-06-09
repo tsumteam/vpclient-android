@@ -232,7 +232,26 @@ object ClientStrings {
 
     val ProfileTitle get() = R.string.profile_title
     val ProfileLogout get() = R.string.profile_logout
+    val ProfileAddLoyaltyCard get() = R.string.profile_add_loyalty_card
+    val ProfileMyData get() = R.string.profile_my_data
+    val ProfilePurchases get() = R.string.profile_purchases
+    val ProfileInformation get() = R.string.profile_information
+    val ProfileQrCode get() = R.string.profile_qr_code
+    val ProfileRecentlyViewedCaps get() = R.string.profile_recently_viewed_caps
+    val ProfileWatchMore get() = R.string.profile_watch_more
     val ProfileLogoutTitle get() = R.string.profile_logout_title
     val ProfileLogoutMessage get() = R.string.profile_logout_message
     val ProfileLogoutCancel get() = R.string.profile_logout_cancel
+
+    val MyDataTitle get() = R.string.my_data_title
+    val MyDataSurname get() = R.string.my_data_surname
+    val MyDataName get() = R.string.my_data_name
+    val MyDataPhone get() = R.string.my_data_phone
+    val MyDataEmail get() = R.string.my_data_email
+    val MyDataNotSpecified get() = R.string.my_data_not_specified
+    val MyDataDeleteProfile get() = R.string.my_data_delete_profile
+    val MyDataDeleteDialogTitle get() = R.string.my_data_delete_dialog_title
+    val MyDataDeleteDialogMessage get() = R.string.my_data_delete_dialog_message
+    val MyDataDeleteCancel get() = R.string.my_data_delete_cancel
+    val MyDataDeleteConfirm get() = R.string.my_data_delete_confirm
 }

@@ -13,19 +13,13 @@ import ru.mercury.vpclient.shared.data.network.request.FiltersRequest
 import ru.mercury.vpclient.shared.data.network.response.AggregatedActivityCounterResponse
 import ru.mercury.vpclient.shared.data.network.response.CatalogCategoriesBasicResponse
 import ru.mercury.vpclient.shared.data.network.response.CatalogProductDetailCardV2Response
+import ru.mercury.vpclient.shared.data.network.response.CatalogProductSearchCardDtoItemsResponse
+import ru.mercury.vpclient.shared.data.network.response.CatalogProductSearchCardResponse
 import ru.mercury.vpclient.shared.data.network.response.CurrentUserResponse
 import ru.mercury.vpclient.shared.data.network.response.FilterValuesResponse
 import ru.mercury.vpclient.shared.data.network.response.FilteredProductsQuantityResponse
 import ru.mercury.vpclient.shared.data.network.response.FilteredProductsResponse
 import ru.mercury.vpclient.shared.data.network.response.FiltersResponse
-
-// fixme
-
-@Serializable
-data class ActionInProductSearchDto(
-    val name: String? = null,
-    val isCashDesk: Boolean? = null
-)
 
 @Serializable
 data class ActionItemDto(
@@ -490,7 +484,7 @@ data class BasketAddSameProductWithDifferentSizeToLineOperationRequestItemDto(
 
 @Serializable
 data class BasketAlternativeResponseDto(
-    val product: CatalogProductSearchCardDto? = null,
+    val product: CatalogProductSearchCardResponse? = null,
     val alternativeId: String? = null,
     val alternativeType: BasketAlternativeType? = null
 )
@@ -587,7 +581,7 @@ data class BasketChangeLookImageOperationRequestItemDto(
 
 @Serializable
 data class BasketCheckoutOrderItemDto(
-    val product: CatalogProductSearchCardDto? = null,
+    val product: CatalogProductSearchCardResponse? = null,
     val productId: String? = null
 )
 
@@ -776,7 +770,7 @@ enum class BasketOperationRequestTypeEnum {
 
 @Serializable
 data class BasketProductResponseDto(
-    val product: CatalogProductSearchCardDto? = null,
+    val product: CatalogProductSearchCardResponse? = null,
     val productId: String? = null
 )
 
@@ -994,7 +988,7 @@ enum class CatalogCategoryTypeEnumDto {
 data class CatalogFashionImageCardDto(
     val id: String? = null,
     val imageUrl: String? = null,
-    val items: List<CatalogProductSearchCardDto>? = null
+    val items: List<CatalogProductSearchCardResponse>? = null
 )
 
 @Serializable
@@ -1303,45 +1297,6 @@ data class CatalogProductScanHistoryCard(
     val price: Double? = null,
     val sizeId: String? = null,
     val sizeName: String? = null
-)
-
-@Serializable
-data class CatalogProductSearchCardDto(
-    val oneSize: Boolean? = null,
-    val article: String? = null,
-    val brand: String? = null,
-    val urlBrandLogo: String? = null,
-    val colorId: String? = null,
-    val colorName: String? = null,
-    val eKttId: String? = null,
-    val id: String? = null,
-    val imageUrl: String? = null,
-    val imageUrls: List<String>? = null,
-    val isCharity: Boolean? = null,
-    val isSeasonDisplay: Boolean? = null,
-    val itemId: String? = null,
-    val lookId: String? = null,
-    val name: String? = null,
-    val order: Int? = null,
-    val paySwitch: Boolean? = null,
-    val price: Double? = null,
-    val priceWithoutDiscount: Double? = null,
-    val currentRetailPrice: Double? = null,
-    val quantity: Int? = null,
-    val season: String? = null,
-    val sizes: List<SizeInProductSearchDto>? = null,
-    val actions: List<ActionInProductSearchDto>? = null,
-    val onlyInTransit: Boolean? = null,
-    val onlyInVipSite: Boolean? = null,
-    val breadcrumbs: List<String>? = null,
-    val compilationLookProductId: Int? = null,
-    val isGiftCard: Boolean? = null,
-    val discountPercentage: Int? = null
-)
-
-@Serializable
-data class CatalogProductSearchCardDtoItemsResponse(
-    val items: List<CatalogProductSearchCardDto>? = null
 )
 
 @Serializable
@@ -2740,7 +2695,7 @@ data class FittingDeliveryTimeDeliveryDto(
 
 @Serializable
 data class FittingDeliveryTimeProductDto(
-    val product: CatalogProductSearchCardDto? = null,
+    val product: CatalogProductSearchCardResponse? = null,
     val productId: String? = null
 )
 
@@ -2876,7 +2831,7 @@ data class FittingHistoryResponseDtoResponseDto(
 @Serializable
 data class FittingHistoryResponseItemDto(
     val operationInfo: FittingHistoryOperationInfoDto? = null,
-    val product: CatalogProductSearchCardDto? = null
+    val product: CatalogProductSearchCardResponse? = null
 )
 
 @Serializable
@@ -2911,7 +2866,7 @@ data class FittingLineResponseDto(
     val locationId: String? = null,
     val locationAsString: String? = null,
     val tag: String? = null,
-    val product: CatalogProductSearchCardDto? = null,
+    val product: CatalogProductSearchCardResponse? = null,
     val controls: FittingLineControlsResponseDto? = null
 )
 
@@ -3035,7 +2990,7 @@ data class FittingReturnProductToFittingOperationRequestItemDto(
 @Serializable
 data class FittingReturningProductResponseDto(
     val order: Int? = null,
-    val product: CatalogProductSearchCardDto? = null,
+    val product: CatalogProductSearchCardResponse? = null,
     val productId: String? = null,
     val quantity: Int? = null
 )
@@ -3271,7 +3226,7 @@ data class ImageSearchRequestDto(
 
 @Serializable
 data class ImageSearchResponseDto(
-    val items: List<CatalogProductSearchCardDto>? = null
+    val items: List<CatalogProductSearchCardResponse>? = null
 )
 
 @Serializable
@@ -3359,7 +3314,7 @@ data class LookByClientsResponseItemDto(
 
 @Serializable
 data class LookByProductsResponseItemDto(
-    val searchCard: CatalogProductSearchCardDto? = null,
+    val searchCard: CatalogProductSearchCardResponse? = null,
     val statistics: StatisticsResponseBaseDto? = null
 )
 
@@ -3375,7 +3330,7 @@ data class LookItemDto(
 @Serializable
 data class LookProductsResponseDto(
     val lookInfo: LooksResponseItemDto? = null,
-    val products: List<CatalogProductSearchCardDto>? = null
+    val products: List<CatalogProductSearchCardResponse>? = null
 )
 
 @Serializable
@@ -3386,7 +3341,7 @@ data class LookProductsResponseDtoResponseDto(
 
 @Serializable
 data class LookProductsResponseItemDto(
-    val searchCard: CatalogProductSearchCardDto? = null,
+    val searchCard: CatalogProductSearchCardResponse? = null,
     val lastStatus: ProductAction? = null
 )
 
@@ -4089,7 +4044,7 @@ data class OrderProductResponseDto(
     val logisticStatusAsStringForClient: String? = null,
     val logisticStatusAsStringForEmployee: String? = null,
     val price: Double? = null,
-    val product: CatalogProductSearchCardDto? = null,
+    val product: CatalogProductSearchCardResponse? = null,
     val dateReceiptAsString: String? = null,
     val dateReceiptExpiredStatus: DateReceiptExpiredStatusDto? = null,
     val giftCardTemplateId: Int? = null,
@@ -4209,7 +4164,7 @@ data class PaletteProductRequestItemDto(
 
 @Serializable
 data class PaletteProductsResponseDto(
-    val items: List<CatalogProductSearchCardDto>? = null
+    val items: List<CatalogProductSearchCardResponse>? = null
 )
 
 @Serializable
@@ -4553,21 +4508,6 @@ data class SaveProductMessageRequestDto(
 )
 
 @Serializable
-data class SizeInProductSearchDto(
-    val availableStockQuantity: Double? = null,
-    val id: String? = null,
-    val inOrder: Boolean? = null,
-    val inStock: Boolean? = null,
-    val inStockShops: List<String>? = null,
-    val isFavorite: Boolean? = null,
-    val isLastInStock: Boolean? = null,
-    val name: String? = null,
-    val sizeForFilter: String? = null,
-    val onlyInVipSite: Boolean? = null,
-    val onlyInTransit: Boolean? = null
-)
-
-@Serializable
 data class SizeInProductSearchVNDto(
     val availableStockQuantity: Double? = null,
     val id: String? = null,
@@ -4788,7 +4728,7 @@ data class ViewHistoryDtoResponseDto(
 
 @Serializable
 data class ViewHistoryItemDto(
-    val product: CatalogProductSearchCardDto? = null,
+    val product: CatalogProductSearchCardResponse? = null,
     val timestamp: String? = null,
     val timestampAsAString: String? = null,
     val type: ViewHistoryItemTypeDtoEnum? = null

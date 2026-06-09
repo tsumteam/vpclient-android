@@ -14,10 +14,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
+import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.features.profile_logout_dialog.intent.ProfileLogoutDialogIntent
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.medium14
+import ru.mercury.vpclient.shared.ui.theme.medium15
+import ru.mercury.vpclient.shared.ui.theme.medium19
+import ru.mercury.vpclient.shared.ui.theme.regular15
 
 @Composable
 fun ProfileLogoutDialog(
@@ -31,8 +34,9 @@ fun ProfileLogoutDialog(
             ) {
                 Text(
                     text = stringResource(ClientStrings.ProfileLogout),
-                    style = MaterialTheme.typography.medium14.copy(
-                        color = MaterialTheme.colorScheme.error
+                    style = MaterialTheme.typography.medium15.copy(
+                        color = MaterialTheme.colorScheme.error,
+                        letterSpacing = .3.sp
                     )
                 )
             }
@@ -43,8 +47,9 @@ fun ProfileLogoutDialog(
             ) {
                 Text(
                     text = stringResource(ClientStrings.ProfileLogoutCancel),
-                    style = MaterialTheme.typography.medium14.copy(
-                        color = MaterialTheme.colorScheme.onBackground
+                    style = MaterialTheme.typography.medium15.copy(
+                        color = MaterialTheme.colorScheme.onBackground,
+                        letterSpacing = .3.sp
                     )
                 )
             }
@@ -52,16 +57,19 @@ fun ProfileLogoutDialog(
         title = {
             Text(
                 text = stringResource(ClientStrings.ProfileLogoutTitle),
-                style = MaterialTheme.typography.titleLarge.copy(
-                    color = MaterialTheme.colorScheme.onBackground
+                style = MaterialTheme.typography.medium19.copy(
+                    color = MaterialTheme.colorScheme.onBackground,
+                    lineHeight = 24.sp
                 )
             )
         },
         text = {
             Text(
                 text = stringResource(ClientStrings.ProfileLogoutMessage),
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    color = MaterialTheme.colorScheme.onBackground
+                style = MaterialTheme.typography.regular15.copy(
+                    color = MaterialTheme.colorScheme.onBackground,
+                    lineHeight = 19.sp,
+                    letterSpacing = .2.sp
                 )
             )
         }

@@ -13,6 +13,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductButton
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductOtherColorEntity
 import ru.mercury.vpclient.shared.domain.mapper.handleResponse
+import ru.mercury.vpclient.shared.domain.mapper.toCatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.domain.mapper.toRelatedItemEntity
 import ru.mercury.vpclient.shared.domain.repository.ProductRepository
 import javax.inject.Inject
@@ -25,6 +26,13 @@ class ProductRepositoryImpl @Inject constructor(
 
     override fun productFlow(id: String): Flow<ProductEntity> {
         return productDao.selectFlow(id).map { it ?: ProductEntity.Empty }
+    }
+
+    override fun viewHistoryProductsFlow(): Flow<List<CatalogFilterProductsEntity>> {
+        return catalogFilterProductsDao.selectFlow(
+            categoryId = -1,
+            titleCategoryId = -1
+        )
     }
 
     override suspend fun loadProduct(id: String) {
@@ -133,6 +141,33 @@ class ProductRepositoryImpl @Inject constructor(
                 if (relatedEntities.isNotEmpty()) {
                     catalogFilterProductsDao.upsert(relatedEntities)
                 }
+            }
+        )
+    }
+
+    override suspend fun loadViewHistoryProducts(limit: Int) {
+        handleResponse(
+            request = {
+                networkService.catalogViewHistory(limit = limit)
+            },
+            onSuccess = { response ->
+                val items = response.items.orEmpty()
+                if (items.isEmpty()) {
+                    return@handleResponse
+                }
+
+                val entities = items.mapIndexed { index, item ->
+                    item.toCatalogFilterProductsEntity(
+                        position = index,
+                        categoryId = -1,
+                        titleCategoryId = -1
+                    )
+                }
+                catalogFilterProductsDao.remove(
+                    categoryId = -1,
+                    titleCategoryId = -1
+                )
+                catalogFilterProductsDao.upsert(entities)
             }
         )
     }

@@ -257,7 +257,26 @@
 
     <string name="profile_title">Профиль</string>
     <string name="profile_logout">Выйти</string>
+    <string name="profile_add_loyalty_card">Добавить карту лояльности</string>
+    <string name="profile_my_data">Мои данные</string>
+    <string name="profile_purchases">Покупки</string>
+    <string name="profile_information">Информация</string>
+    <string name="profile_qr_code">Ваш QR-код</string>
+    <string name="profile_recently_viewed_caps">ВЫ НЕДАВНО СМОТРЕЛИ</string>
+    <string name="profile_watch_more">Смотреть еще</string>
     <string name="profile_logout_title">Выход</string>
     <string name="profile_logout_message">Вы уверены, что хотите выйти из Вашего аккаунта?</string>
     <string name="profile_logout_cancel">Отмена</string>
+
+    <string name="my_data_title">Мои данные</string>
+    <string name="my_data_surname">Фамилия</string>
+    <string name="my_data_name">Имя</string>
+    <string name="my_data_phone">Номер телефона</string>
+    <string name="my_data_email">Email</string>
+    <string name="my_data_not_specified">Не указано</string>
+    <string name="my_data_delete_profile">Удалить профиль</string>
+    <string name="my_data_delete_dialog_title">Удалить Ваш профиль?</string>
+    <string name="my_data_delete_dialog_message">После удаления профиля Вам будет недоступна история покупок, подборок и чат с продавцом.</string>
+    <string name="my_data_delete_cancel">Отмена</string>
+    <string name="my_data_delete_confirm">Удалить</string>
 </resources>

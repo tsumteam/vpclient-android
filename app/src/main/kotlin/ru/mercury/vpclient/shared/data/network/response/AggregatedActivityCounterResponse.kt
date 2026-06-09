@@ -5,5 +5,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class AggregatedActivityCounterResponse(
-    @SerialName("items") val items: List<AggregatedActivityCounterResponseItem>? = null
+    @SerialName("items") val items: List<AggregatedActivityCounterItemResponse>? = null
 )

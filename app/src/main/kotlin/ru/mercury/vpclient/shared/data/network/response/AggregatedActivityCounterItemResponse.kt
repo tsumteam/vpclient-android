@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 import ru.mercury.vpclient.shared.data.network.entity.ActivityCounterTypeRequestEnum
 
 @Serializable
-data class AggregatedActivityCounterResponseItem(
+data class AggregatedActivityCounterItemResponse(
     @SerialName("type") val type: ActivityCounterTypeRequestEnum? = null,
     @SerialName("value") val value: Int? = null
 )

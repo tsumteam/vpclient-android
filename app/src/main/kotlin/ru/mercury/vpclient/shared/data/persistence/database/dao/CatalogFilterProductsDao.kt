@@ -15,6 +15,9 @@ interface CatalogFilterProductsDao {
     @Query("SELECT * FROM CatalogFilterProducts WHERE categoryId = :categoryId AND titleCategoryId = :titleCategoryId ORDER BY position ASC")
     fun pagingSource(categoryId: Int, titleCategoryId: Int): PagingSource<Int, CatalogFilterProductsEntity>
 
+    @Query("SELECT * FROM CatalogFilterProducts WHERE categoryId = :categoryId AND titleCategoryId = :titleCategoryId ORDER BY position ASC")
+    fun selectFlow(categoryId: Int, titleCategoryId: Int): Flow<List<CatalogFilterProductsEntity>>
+
     @Query("SELECT * FROM CatalogFilterProducts WHERE id = :id LIMIT 1")
     fun selectFlow(id: String): Flow<CatalogFilterProductsEntity>
 

@@ -50,8 +50,9 @@ import ru.mercury.vpclient.features.main.event.MainTabsEventManager
 import ru.mercury.vpclient.features.main.intent.MainIntent
 import ru.mercury.vpclient.features.main.model.MainModel
 import ru.mercury.vpclient.features.main.navigation.MainRoute
-import ru.mercury.vpclient.features.profile.ProfileScreen
 import ru.mercury.vpclient.features.profile.navigation.ProfileRoute
+import ru.mercury.vpclient.features.profile_stack.ProfileStackScreen
+import ru.mercury.vpclient.features.profile_stack.navigation.ProfileStackRoute
 import ru.mercury.vpclient.shared.ui.components.system.ClientNavDisplay
 import ru.mercury.vpclient.shared.ui.icons.Brands24
 import ru.mercury.vpclient.shared.ui.icons.Catalog24
@@ -70,6 +71,7 @@ fun MainScreen(
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
     val mainBackStack: NavBackStack<NavKey> = rememberNavBackStack(state.selectedRoute)
     val catalogBackStack: NavBackStack<NavKey> = rememberNavBackStack(CatalogRoute)
+    val profileBackStack: NavBackStack<NavKey> = rememberNavBackStack(ProfileRoute)
 
     LaunchedEffect(state.selectedRoute) {
         mainBackStack.clear()
@@ -87,7 +89,8 @@ fun MainScreen(
         state = state,
         dispatch = viewModel::dispatch,
         navBackStack = mainBackStack,
-        catalogNavBackStack = catalogBackStack
+        catalogNavBackStack = catalogBackStack,
+        profileNavBackStack = profileBackStack
     )
 
     ObserveAsEvents(
@@ -104,7 +107,8 @@ private fun MainScreenContent(
     state: MainModel,
     dispatch: (MainIntent) -> Unit,
     navBackStack: NavBackStack<NavKey>,
-    catalogNavBackStack: NavBackStack<NavKey>
+    catalogNavBackStack: NavBackStack<NavKey>,
+    profileNavBackStack: NavBackStack<NavKey>
 ) {
     val dividerColor = MaterialTheme.colorScheme.outlineVariant
     val navigationSuiteScaffoldState = rememberNavigationSuiteScaffoldState()
@@ -144,7 +148,9 @@ private fun MainScreenContent(
                     selected = state.selectedRoute == HomeRoute,
                     onClick = {
                         when {
-                            state.selectedRoute != HomeRoute -> dispatch(MainIntent.SelectTab(HomeRoute))
+                            state.selectedRoute != HomeRoute -> {
+                                dispatch(MainIntent.SelectTab(HomeRoute))
+                            }
                             else -> {
                                 navBackStack.clear()
                                 navBackStack.add(state.selectedRoute)
@@ -182,7 +188,9 @@ private fun MainScreenContent(
                     selected = state.selectedRoute == BrandsRoute,
                     onClick = {
                         when {
-                            state.selectedRoute != BrandsRoute -> dispatch(MainIntent.SelectTab(BrandsRoute))
+                            state.selectedRoute != BrandsRoute -> {
+                                dispatch(MainIntent.SelectTab(BrandsRoute))
+                            }
                             else -> {
                                 navBackStack.clear()
                                 navBackStack.add(state.selectedRoute)
@@ -220,7 +228,9 @@ private fun MainScreenContent(
                     selected = state.selectedRoute == CatalogStackRoute,
                     onClick = {
                         when {
-                            state.selectedRoute != CatalogStackRoute -> dispatch(MainIntent.SelectTab(CatalogStackRoute))
+                            state.selectedRoute != CatalogStackRoute -> {
+                                dispatch(MainIntent.SelectTab(CatalogStackRoute))
+                            }
                             else -> {
                                 navBackStack.clear()
                                 navBackStack.add(state.selectedRoute)
@@ -260,7 +270,9 @@ private fun MainScreenContent(
                     selected = state.selectedRoute == FittingRoute,
                     onClick = {
                         when {
-                            state.selectedRoute != FittingRoute -> dispatch(MainIntent.SelectTab(FittingRoute))
+                            state.selectedRoute != FittingRoute -> {
+                                dispatch(MainIntent.SelectTab(FittingRoute))
+                            }
                             else -> {
                                 navBackStack.clear()
                                 navBackStack.add(state.selectedRoute)
@@ -298,7 +310,9 @@ private fun MainScreenContent(
                     selected = state.selectedRoute == ConsultantsRoute,
                     onClick = {
                         when {
-                            state.selectedRoute != ConsultantsRoute -> dispatch(MainIntent.SelectTab(ConsultantsRoute))
+                            state.selectedRoute != ConsultantsRoute -> {
+                                dispatch(MainIntent.SelectTab(ConsultantsRoute))
+                            }
                             else -> {
                                 navBackStack.clear()
                                 navBackStack.add(state.selectedRoute)
@@ -334,13 +348,17 @@ private fun MainScreenContent(
                 )
 
                 NavigationBarItem(
-                    selected = state.selectedRoute == ProfileRoute,
+                    selected = state.selectedRoute == ProfileStackRoute,
                     onClick = {
                         when {
-                            state.selectedRoute != ProfileRoute -> dispatch(MainIntent.SelectTab(ProfileRoute))
+                            state.selectedRoute != ProfileStackRoute -> {
+                                dispatch(MainIntent.SelectTab(ProfileStackRoute))
+                            }
                             else -> {
                                 navBackStack.clear()
                                 navBackStack.add(state.selectedRoute)
+                                profileNavBackStack.clear()
+                                profileNavBackStack.add(ProfileRoute)
                             }
                         }
                     },
@@ -392,7 +410,7 @@ private fun MainScreenContent(
                 entry<CatalogStackRoute> { CatalogStackScreen(navBackStack = catalogNavBackStack) }
                 entry<FittingRoute> { FittingScreen() }
                 entry<ConsultantsRoute> { ConsultantsScreen() }
-                entry<ProfileRoute> { ProfileScreen() }
+                entry<ProfileStackRoute> { ProfileStackScreen(navBackStack = profileNavBackStack) }
             }
         )
     }

@@ -1,8 +1,10 @@
 package ru.mercury.vpclient.features.cart_list
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -124,29 +127,33 @@ private fun CartListScreenContent(
                     )
                 }
                 else -> {
-                    SharedTabRow(
-                        state = SharedTabRowState(
-                            selectedIndex = when (state.payMode) {
-                                CartPayMode.All -> 0
-                                CartPayMode.Payment -> 1
-                            },
-                            firstTabText = pluralStringResource(
-                                ClientStrings.CartAllItems,
-                                state.allItemsCount,
-                                state.allItemsCount
+                    Box(
+                        modifier = Modifier.background(MaterialTheme.colorScheme.background)
+                    ) {
+                        SharedTabRow(
+                            state = SharedTabRowState(
+                                selectedIndex = when (state.payMode) {
+                                    CartPayMode.All -> 0
+                                    CartPayMode.Payment -> 1
+                                },
+                                firstTabText = pluralStringResource(
+                                    ClientStrings.CartAllItems,
+                                    state.allItemsCount,
+                                    state.allItemsCount
+                                ),
+                                secondTabText = pluralStringResource(
+                                    ClientStrings.CartPaymentItems,
+                                    state.paymentItemsCount,
+                                    state.paymentItemsCount
+                                ),
+                                onFirstTabClick = { dispatch(CartIntent.SelectPayMode(CartPayMode.All)) },
+                                onSecondTabClick = { dispatch(CartIntent.SelectPayMode(CartPayMode.Payment)) },
+                                isLoading = false
                             ),
-                            secondTabText = pluralStringResource(
-                                ClientStrings.CartPaymentItems,
-                                state.paymentItemsCount,
-                                state.paymentItemsCount
-                            ),
-                            onFirstTabClick = { dispatch(CartIntent.SelectPayMode(CartPayMode.All)) },
-                            onSecondTabClick = { dispatch(CartIntent.SelectPayMode(CartPayMode.Payment)) },
-                            isLoading = false
-                        ),
-                        textStyle = MaterialTheme.typography.medium13,
-                        modifier = Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 8.dp)
-                    )
+                            textStyle = MaterialTheme.typography.medium13,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                        )
+                    }
                 }
             }
         },
@@ -449,7 +456,7 @@ private fun CartListScreenContent(
                     ) {
                         SharedLazyColumn(
                             modifier = Modifier.fillMaxSize(),
-                            contentPadding = innerPadding,
+                            contentPadding = innerPadding + PaddingValues(bottom = 76.dp),
                             verticalArrangement = Arrangement.spacedBy(
                                 when (state.viewMode) {
                                     CartViewMode.List -> 0.dp

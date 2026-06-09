@@ -5,10 +5,22 @@ import ru.mercury.vpclient.shared.mvi.Intent
 sealed interface ProfileIntent: Intent {
     data object CollectCartSize: ProfileIntent
     data object CollectActiveEmployee: ProfileIntent
+    data object CollectViewHistoryProducts: ProfileIntent
     data object LoadEmployees: ProfileIntent
     data object LoadCartData: ProfileIntent
+    data object LoadViewHistoryProducts: ProfileIntent
+    data object NotificationClick: ProfileIntent
+    data object AddLoyaltyCardClick: ProfileIntent
+    data object MyDataClick: ProfileIntent
+    data object PurchasesClick: ProfileIntent
+    data object InformationClick: ProfileIntent
+    data object QrCodeClick: ProfileIntent
+    data object ViewHistoryViewMoreClick: ProfileIntent
+    data object ShowLogoutDialog: ProfileIntent
+    data object DismissLogoutDialog: ProfileIntent
     data object Logout: ProfileIntent
     data object CartClick: ProfileIntent
     data object FittingClick: ProfileIntent
     data object MessengerClick: ProfileIntent
+    data class ViewHistoryProductClick(val productId: String): ProfileIntent
 }

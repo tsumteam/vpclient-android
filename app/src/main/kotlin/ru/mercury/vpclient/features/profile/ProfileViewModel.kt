@@ -8,8 +8,11 @@ import kotlinx.coroutines.launch
 import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.features.cart.navigation.CartPage
 import ru.mercury.vpclient.features.cart.navigation.CartRoute
+import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.features.profile.intent.ProfileIntent
 import ru.mercury.vpclient.features.profile.model.ProfileModel
+import ru.mercury.vpclient.features.profile_my_data.navigation.MyDataRoute
+import ru.mercury.vpclient.features.profile_stack.event.ProfileStackEventManager
 import ru.mercury.vpclient.features.welcome.navigation.WelcomeRoute
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.domain.interactor.Interactor
@@ -25,8 +28,10 @@ class ProfileViewModel @Inject constructor(
     init {
         dispatch(ProfileIntent.CollectCartSize)
         dispatch(ProfileIntent.CollectActiveEmployee)
+        dispatch(ProfileIntent.CollectViewHistoryProducts)
         dispatch(ProfileIntent.LoadEmployees)
         dispatch(ProfileIntent.LoadCartData)
+        dispatch(ProfileIntent.LoadViewHistoryProducts)
     }
 
     override fun dispatch(intent: ProfileIntent) {
@@ -53,6 +58,15 @@ class ProfileViewModel @Inject constructor(
                         }
                 }
             }
+            is ProfileIntent.CollectViewHistoryProducts -> {
+                launch {
+                    interactor.viewHistoryProductsFlow()
+                        .distinctUntilChanged()
+                        .collectLatest { products ->
+                            reduce { it.copy(viewHistoryProducts = products) }
+                        }
+                }
+            }
             is ProfileIntent.LoadEmployees -> launch { runCatching { interactor.syncEmployees() } }
             is ProfileIntent.LoadCartData -> {
                 launch {
@@ -62,8 +76,30 @@ class ProfileViewModel @Inject constructor(
                     reduce { it.copy(cartBadge = badge) }
                 }
             }
+            is ProfileIntent.LoadViewHistoryProducts -> {
+                launch {
+                    reduce { it.copy(isViewHistoryLoading = true) }
+                    runCatching {
+                        interactor.loadViewHistoryProducts(VIEW_HISTORY_PRODUCTS_LIMIT)
+                    }
+                    reduce { it.copy(isViewHistoryLoading = false) }
+                }
+            }
+            is ProfileIntent.NotificationClick -> return
+            is ProfileIntent.AddLoyaltyCardClick -> return
+            is ProfileIntent.MyDataClick -> launch { ProfileStackEventManager.send(MyDataRoute) }
+            is ProfileIntent.PurchasesClick -> return
+            is ProfileIntent.InformationClick -> return
+            is ProfileIntent.QrCodeClick -> return
+            is ProfileIntent.ViewHistoryViewMoreClick -> return
+            is ProfileIntent.ViewHistoryProductClick -> {
+                launch { MainEventManager.send(DetailsRoute(intent.productId, openedFromCart = true)) }
+            }
+            is ProfileIntent.ShowLogoutDialog -> reduce { it.copy(isLogoutDialogVisible = true) }
+            is ProfileIntent.DismissLogoutDialog -> reduce { it.copy(isLogoutDialogVisible = false) }
             is ProfileIntent.Logout -> {
                 val job = launch {
+                    reduce { it.copy(isLogoutDialogVisible = false) }
                     interactor.logout()
                     MainEventManager.send(WelcomeRoute)
                 }.also { launchedJob ->
@@ -75,5 +111,9 @@ class ProfileViewModel @Inject constructor(
             is ProfileIntent.FittingClick -> launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
             is ProfileIntent.MessengerClick -> return
         }
+    }
+
+    private companion object {
+        private const val VIEW_HISTORY_PRODUCTS_LIMIT = 11
     }
 }

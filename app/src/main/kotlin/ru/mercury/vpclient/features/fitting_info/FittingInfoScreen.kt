@@ -29,8 +29,8 @@ import ru.mercury.vpclient.features.fitting_info.model.FittingInfoModel
 import ru.mercury.vpclient.features.fitting_info.navigation.FittingInfoRoute
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
-import ru.mercury.vpclient.shared.ui.components.fitting.FittingInfoItem
-import ru.mercury.vpclient.shared.ui.components.fitting.FittingInfoItemState
+import ru.mercury.vpclient.shared.ui.components.InfoItem
+import ru.mercury.vpclient.shared.ui.components.InfoItemState
 import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
@@ -92,56 +92,56 @@ private fun FittingInfoScreenContent(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             item {
-                FittingInfoItem(
-                    state = FittingInfoItemState(
+                InfoItem(
+                    state = InfoItemState(
                         label = stringResource(ClientStrings.FittingInfoAddressLabel),
                         value = state.address
                     )
                 )
             }
             item {
-                FittingInfoItem(
-                    state = FittingInfoItemState(
+                InfoItem(
+                    state = InfoItemState(
                         label = stringResource(ClientStrings.FittingInfoDeliveryTimeLabel),
                         value = state.deliveryDate
                     )
                 )
             }
             item {
-                FittingInfoItem(
-                    state = FittingInfoItemState(
+                InfoItem(
+                    state = InfoItemState(
                         label = stringResource(ClientStrings.FittingInfoAssemblyMethodLabel),
                         value = stringResource(ClientStrings.FittingInfoLogisticsService)
                     )
                 )
             }
             item {
-                FittingInfoItem(
-                    state = FittingInfoItemState(
+                InfoItem(
+                    state = InfoItemState(
                         label = stringResource(ClientStrings.FittingInfoDeliveryMethodLabel),
                         value = stringResource(ClientStrings.FittingInfoLogisticsService)
                     )
                 )
             }
             item {
-                FittingInfoItem(
-                    state = FittingInfoItemState(
+                InfoItem(
+                    state = InfoItemState(
                         label = stringResource(ClientStrings.FittingInfoSalesRepresentativeLabel),
                         value = stringResource(ClientStrings.FittingInfoSalesRepresentative)
                     )
                 )
             }
             item {
-                FittingInfoItem(
-                    state = FittingInfoItemState(
+                InfoItem(
+                    state = InfoItemState(
                         label = stringResource(ClientStrings.FittingInfoPhoneLabel),
                         value = stringResource(ClientStrings.FittingInfoPhone)
                     )
                 )
             }
             item {
-                FittingInfoItem(
-                    state = FittingInfoItemState(
+                InfoItem(
+                    state = InfoItemState(
                         label = stringResource(ClientStrings.FittingInfoVehicleNumberLabel),
                         value = stringResource(ClientStrings.FittingInfoVehicleNumber)
                     )

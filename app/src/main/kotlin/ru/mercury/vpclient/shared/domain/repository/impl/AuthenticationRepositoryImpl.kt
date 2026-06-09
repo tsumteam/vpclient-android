@@ -100,6 +100,14 @@ class AuthenticationRepositoryImpl @Inject constructor(
         return currentUser
     }
 
+    override suspend fun deleteProfile() {
+        handleResponse(
+            request = { networkService.userProfileDelete() },
+            onSuccess = { logout() },
+            onEmpty = { logout() }
+        )
+    }
+
     override suspend fun logout() {
         clientDao.remove()
         settingsDataStore.removeValues(

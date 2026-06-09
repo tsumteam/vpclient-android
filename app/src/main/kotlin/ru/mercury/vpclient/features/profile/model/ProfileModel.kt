@@ -1,6 +1,7 @@
 package ru.mercury.vpclient.features.profile.model
 
 import kotlinx.coroutines.Job
+import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.domain.mapper.fittingText
 import ru.mercury.vpclient.shared.domain.mapper.hasFittingBadge
@@ -12,6 +13,9 @@ data class ProfileModel(
     val logoutJob: Job? = null,
     val cartSize: Int = 0,
     val cartBadge: Int = 0,
+    val viewHistoryProducts: List<CatalogFilterProductsEntity> = emptyList(),
+    val isViewHistoryLoading: Boolean = true,
+    val isLogoutDialogVisible: Boolean = false,
     val activeEmployee: EmployeeEntity = EmployeeEntity.Empty
 ): Model {
 

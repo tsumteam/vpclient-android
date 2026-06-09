@@ -1,13 +1,16 @@
 package ru.mercury.vpclient.features.cart_fitting
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -89,29 +92,33 @@ private fun CartFittingScreenContent(
                     )
                 }
                 else -> {
-                    SharedTabRow(
-                        state = SharedTabRowState(
-                            selectedIndex = when (state.payMode) {
-                                CartPayMode.All -> 0
-                                CartPayMode.Payment -> 1
-                            },
-                            firstTabText = pluralStringResource(
-                                ClientStrings.CartAllItems,
-                                state.apiFittingProductsCount,
-                                state.apiFittingProductsCount
+                    Box(
+                        modifier = Modifier.background(MaterialTheme.colorScheme.background)
+                    ) {
+                        SharedTabRow(
+                            state = SharedTabRowState(
+                                selectedIndex = when (state.payMode) {
+                                    CartPayMode.All -> 0
+                                    CartPayMode.Payment -> 1
+                                },
+                                firstTabText = pluralStringResource(
+                                    ClientStrings.CartAllItems,
+                                    state.apiFittingProductsCount,
+                                    state.apiFittingProductsCount
+                                ),
+                                secondTabText = pluralStringResource(
+                                    ClientStrings.CartPaymentItems,
+                                    state.apiFittingPaymentProductsCount,
+                                    state.apiFittingPaymentProductsCount
+                                ),
+                                onFirstTabClick = { dispatch(CartIntent.SelectPayMode(CartPayMode.All)) },
+                                onSecondTabClick = { dispatch(CartIntent.SelectPayMode(CartPayMode.Payment)) },
+                                isLoading = false
                             ),
-                            secondTabText = pluralStringResource(
-                                ClientStrings.CartPaymentItems,
-                                state.apiFittingPaymentProductsCount,
-                                state.apiFittingPaymentProductsCount
-                            ),
-                            onFirstTabClick = { dispatch(CartIntent.SelectPayMode(CartPayMode.All)) },
-                            onSecondTabClick = { dispatch(CartIntent.SelectPayMode(CartPayMode.Payment)) },
-                            isLoading = false
-                        ),
-                        textStyle = MaterialTheme.typography.medium13,
-                        modifier = Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 8.dp)
-                    )
+                            textStyle = MaterialTheme.typography.medium13,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                        )
+                    }
                 }
             }
         },
@@ -174,7 +181,7 @@ private fun CartFittingScreenContent(
                 ) {
                     SharedLazyColumn(
                         modifier = Modifier.fillMaxSize(),
-                        contentPadding = innerPadding,
+                        contentPadding = innerPadding + PaddingValues(bottom = 76.dp),
                         verticalArrangement = Arrangement.spacedBy(
                             when (state.viewMode) {
                                 CartViewMode.List -> 0.dp

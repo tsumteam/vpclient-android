@@ -1,4 +1,4 @@
-package ru.mercury.vpclient.shared.ui.components.fitting
+package ru.mercury.vpclient.shared.ui.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,14 +17,14 @@ import ru.mercury.vpclient.shared.ui.theme.divider
 import ru.mercury.vpclient.shared.ui.theme.medium14
 import ru.mercury.vpclient.shared.ui.theme.regular13
 
-data class FittingInfoItemState(
+data class InfoItemState(
     val label: String,
     val value: String
 )
 
 @Composable
-fun FittingInfoItem(
-    state: FittingInfoItemState,
+fun InfoItem(
+    state: InfoItemState,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -62,9 +62,9 @@ fun FittingInfoItem(
 @PreviewWrapper(ThemeWrapper::class)
 @Preview(showBackground = true)
 @Composable
-private fun FittingInfoItemPreview() {
-    FittingInfoItem(
-        state = FittingInfoItemState(
+private fun InfoItemPreview() {
+    InfoItem(
+        state = InfoItemState(
             label = "Способ доставки",
             value = "Служба логистики"
         )

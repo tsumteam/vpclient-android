@@ -16,6 +16,8 @@ interface AuthenticationRepository {
 
     suspend fun currentUser(): CurrentUserResponse
 
+    suspend fun deleteProfile()
+
     suspend fun logout()
 
     suspend fun resendCode()

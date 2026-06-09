@@ -15,7 +15,6 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import kotlinx.serialization.SerialName
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import ru.mercury.vpclient.shared.data.network.entity.ActionItemDto
@@ -66,7 +65,6 @@ import ru.mercury.vpclient.shared.data.network.entity.CardTypeDtoItemsDto
 import ru.mercury.vpclient.shared.data.network.entity.CatalogBrandsResponseDto
 import ru.mercury.vpclient.shared.data.network.entity.CatalogFashionImageCardDtoItemsDto
 import ru.mercury.vpclient.shared.data.network.entity.CatalogItemTypeEnum
-import ru.mercury.vpclient.shared.data.network.entity.CatalogProductSearchCardDtoItemsResponse
 import ru.mercury.vpclient.shared.data.network.entity.CatalogScanHistoryDto
 import ru.mercury.vpclient.shared.data.network.entity.ChangeActionRequestDto
 import ru.mercury.vpclient.shared.data.network.entity.CheckOutAddressesDto
@@ -250,6 +248,7 @@ import ru.mercury.vpclient.shared.data.network.response.AggregatedActivityCounte
 import ru.mercury.vpclient.shared.data.network.response.BaseResponse
 import ru.mercury.vpclient.shared.data.network.response.CatalogCategoriesBasicResponse
 import ru.mercury.vpclient.shared.data.network.response.CatalogProductDetailCardV2Response
+import ru.mercury.vpclient.shared.data.network.response.CatalogProductSearchCardDtoItemsResponse
 import ru.mercury.vpclient.shared.data.network.response.CurrentUserResponse
 import ru.mercury.vpclient.shared.data.network.response.EmployeeBadgesResponse
 import ru.mercury.vpclient.shared.data.network.response.EmployeeResponse
@@ -389,6 +388,20 @@ class NetworkService @Inject constructor(
         return ktorHttpClient.get("activity/counters/$pairedUserId").body()
     }
 
+    suspend fun catalogViewHistory(
+        limit: Int? = null,
+        paginationToken: String? = null
+    ): BaseResponse<CatalogProductSearchCardDtoItemsResponse> {
+        return ktorHttpClient.post("catalog/view-history") {
+            appendQueryParameter("limit", limit)
+            appendQueryParameter("paginationToken", paginationToken)
+            setBody(emptyMap<String, String>())
+        }.body()
+    }
+
+    suspend fun userProfileDelete(): BaseResponse<JsonElement> {
+        return ktorHttpClient.post("user/profile/delete").body()
+    }
 
     // fixme
 
@@ -2161,10 +2174,6 @@ class NetworkService @Inject constructor(
         phone: String
     ): BaseResponse<CheckUserResponseDto> {
         return ktorHttpClient.get("user/check-by-phone/$phone").body()
-    }
-
-    suspend fun userProfileDelete(): BaseResponse<JsonElement> {
-        return ktorHttpClient.post("user/profile/delete").body()
     }
 
     suspend fun userProfileUploadPhoto(
