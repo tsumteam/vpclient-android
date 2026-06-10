@@ -3,6 +3,13 @@ package ru.mercury.vpclient.shared.data
 const val PERSONAL_DATA_URL = "https://vip-platinum.ru/personal-data.pdf"
 const val TERMS_OF_USE_URL = "https://vip-platinum.ru/terms-of-sale-of-llc-mercury-moda.pdf"
 const val PRIVACY_POLICY_URL = "https://vip-platinum.ru/mercury-moda-privacy-policy.pdf"
+const val PROFILE_PAYMENT_URL = "https://st.vip-platinum.ru/docs/payments.html"
+const val PROFILE_DELIVERY_URL = "https://st.vip-platinum.ru/docs/delivery.html"
+const val PROFILE_RETURN_URL = "https://st.vip-platinum.ru/docs/purchase-returns.html"
+const val PROFILE_POLICY_URL = "https://st.vip-platinum.ru/docs/privacy-policy.html"
+const val PROFILE_GIFT_URL = "https://st.vip-platinum.ru/docs/media/pdf/reglaments/digitalgiftcards_boutiques.pdf"
+const val CLIENT_SERVICE_PHONE = "+7 495 225 8889"
+const val CLIENT_SERVICE_EMAIL = "customerservice@vip-platinum.ru"
 
 const val APP_VERSION = "1.59"
 const val APP_FULL_VERSION = "1.59.0"

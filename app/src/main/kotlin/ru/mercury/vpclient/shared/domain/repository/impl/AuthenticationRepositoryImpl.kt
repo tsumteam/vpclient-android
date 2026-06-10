@@ -100,6 +100,10 @@ class AuthenticationRepositoryImpl @Inject constructor(
         return currentUser
     }
 
+    override suspend fun userId(): String {
+        return settingsDataStore.getValue(PreferenceKey.UserId).orEmpty()
+    }
+
     override suspend fun deleteProfile() {
         handleResponse(
             request = { networkService.userProfileDelete() },

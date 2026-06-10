@@ -23,6 +23,7 @@ kotlin {
 android {
     namespace = "ru.mercury.vpclient"
     compileSdk = libs.versions.compile.sdk.get().toInt()
+    compileSdkExtension = libs.versions.sdk.extension.get().toInt()
     flavorDimensions += "env"
 
     defaultConfig {
@@ -174,6 +175,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.navigation3)
     implementation(libs.androidx.paging.compose)
     implementation(libs.androidx.paging.runtime)
+    implementation(libs.androidx.pdf.compose)
+    implementation(libs.androidx.pdf.document.service)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.paging)
     implementation(libs.androidx.room.runtime)

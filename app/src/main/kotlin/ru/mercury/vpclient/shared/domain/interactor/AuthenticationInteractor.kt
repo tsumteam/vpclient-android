@@ -25,6 +25,8 @@ interface AuthenticationInteractor {
 
     suspend fun currentUser(): CurrentUserResponse
 
+    suspend fun userId(): String
+
     suspend fun deleteProfile()
 
     suspend fun logout()

@@ -243,6 +243,18 @@ object ClientStrings {
     val ProfileLogoutMessage get() = R.string.profile_logout_message
     val ProfileLogoutCancel get() = R.string.profile_logout_cancel
 
+    val ProfileInfoPayment get() = R.string.profile_info_payment
+    val ProfileInfoDelivery get() = R.string.profile_info_delivery
+    val ProfileInfoReturn get() = R.string.profile_info_return
+    val ProfileInfoPrivacyPolicy get() = R.string.profile_info_privacy_policy
+    val ProfileInfoGiftCard get() = R.string.profile_info_gift_card
+    val ProfileInfoContacts get() = R.string.profile_info_contacts
+    val ProfileContactsConsultantTitle get() = R.string.profile_contacts_consultant_title
+    val ProfileContactsCustomerServiceTitle get() = R.string.profile_contacts_customer_service_title
+
+    val ProfileQrTitle get() = R.string.profile_qr_title
+    val ProfileQrDescription get() = R.string.profile_qr_description
+
     val MyDataTitle get() = R.string.my_data_title
     val MyDataSurname get() = R.string.my_data_surname
     val MyDataName get() = R.string.my_data_name

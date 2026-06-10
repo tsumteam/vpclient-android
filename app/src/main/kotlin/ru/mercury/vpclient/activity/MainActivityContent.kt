@@ -41,6 +41,8 @@ import ru.mercury.vpclient.features.main.MainScreen
 import ru.mercury.vpclient.features.main.navigation.MainRoute
 import ru.mercury.vpclient.features.mediaviewer.MediaViewerScreen
 import ru.mercury.vpclient.features.mediaviewer.navigation.MediaViewerRoute
+import ru.mercury.vpclient.features.profile_qr.ProfileQrScreen
+import ru.mercury.vpclient.features.profile_qr.navigation.ProfileQrRoute
 import ru.mercury.vpclient.features.register.RegisterScreen
 import ru.mercury.vpclient.features.register.navigation.RegisterRoute
 import ru.mercury.vpclient.features.welcome.WelcomeScreen
@@ -74,6 +76,7 @@ fun MainActivityContent(
                 entry<LoginRoute> { LoginScreen() }
                 entry<CodeRoute> { CodeScreen() }
                 entry<MainRoute> { MainScreen(it) }
+                entry<ProfileQrRoute> { ProfileQrScreen() }
                 entry<CartRoute> { CartScreen(it) }
                 entry<DetailsRoute> { DetailsScreen(it) }
                 entry<FittingConfirmationRoute> { FittingConfirmationScreen(it) }

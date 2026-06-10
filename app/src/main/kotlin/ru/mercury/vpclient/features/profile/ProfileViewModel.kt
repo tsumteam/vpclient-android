@@ -11,7 +11,9 @@ import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.features.profile.intent.ProfileIntent
 import ru.mercury.vpclient.features.profile.model.ProfileModel
+import ru.mercury.vpclient.features.profile_info.navigation.ProfileInfoRoute
 import ru.mercury.vpclient.features.profile_my_data.navigation.MyDataRoute
+import ru.mercury.vpclient.features.profile_qr.navigation.ProfileQrRoute
 import ru.mercury.vpclient.features.profile_stack.event.ProfileStackEventManager
 import ru.mercury.vpclient.features.welcome.navigation.WelcomeRoute
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
@@ -89,8 +91,8 @@ class ProfileViewModel @Inject constructor(
             is ProfileIntent.AddLoyaltyCardClick -> return
             is ProfileIntent.MyDataClick -> launch { ProfileStackEventManager.send(MyDataRoute) }
             is ProfileIntent.PurchasesClick -> return
-            is ProfileIntent.InformationClick -> return
-            is ProfileIntent.QrCodeClick -> return
+            is ProfileIntent.InformationClick -> launch { ProfileStackEventManager.send(ProfileInfoRoute) }
+            is ProfileIntent.QrCodeClick -> launch { MainEventManager.send(ProfileQrRoute) }
             is ProfileIntent.ViewHistoryViewMoreClick -> return
             is ProfileIntent.ViewHistoryProductClick -> {
                 launch { MainEventManager.send(DetailsRoute(intent.productId, openedFromCart = true)) }

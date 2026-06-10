@@ -61,6 +61,10 @@ class AuthenticationInteractorImpl @Inject constructor(
         return withContext(dispatchers.io) { authenticationRepository.currentUser() }
     }
 
+    override suspend fun userId(): String {
+        return withContext(dispatchers.io) { authenticationRepository.userId() }
+    }
+
     override suspend fun deleteProfile() {
         withContext(dispatchers.io) { authenticationRepository.deleteProfile() }
     }
