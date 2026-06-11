@@ -203,6 +203,18 @@
         <item quantity="many">Показать %1$s товаров</item>
         <item quantity="other">Показать %1$s товара</item>
     </plurals>
+    <plurals name="profile_order_payment_alert_hours">
+        <item quantity="one">%1$d час</item>
+        <item quantity="few">%1$d часа</item>
+        <item quantity="many">%1$d часов</item>
+        <item quantity="other">%1$d часа</item>
+    </plurals>
+    <plurals name="profile_order_payment_alert_minutes">
+        <item quantity="one">%1$d минуту</item>
+        <item quantity="few">%1$d минуты</item>
+        <item quantity="many">%1$d минут</item>
+        <item quantity="other">%1$d минуты</item>
+    </plurals>
     <string name="filter_size_title">РАЗМЕР</string>
     <string name="filter_brand_title">БРЕНДЫ</string>
     <string name="filter_brand_search_placeholder">Найти бренд</string>
@@ -267,6 +279,33 @@
     <string name="profile_logout_title">Выход</string>
     <string name="profile_logout_message">Вы уверены, что хотите выйти из Вашего аккаунта?</string>
     <string name="profile_logout_cancel">Отмена</string>
+    <string name="profile_orders_number">Заказ № %1$s</string>
+    <string name="profile_orders_receipt_number">Чек № %1$s</string>
+    <string name="profile_orders_amount">Сумма заказа %1$s</string>
+    <string name="profile_orders_awaiting_payment">Ожидает оплаты</string>
+    <string name="profile_orders_more_products">Еще %1$d</string>
+    <string name="profile_loyalty_add_card_title_caps">ДОБАВИТЬ КАРТУ ЛОЯЛЬНОСТИ</string>
+    <string name="profile_loyalty_add_card_phone_mode_caps">ПО НОМЕРУ ТЕЛЕФОНА</string>
+    <string name="profile_loyalty_add_card_card_mode_caps">ПО НОМЕРУ КАРТЫ</string>
+    <string name="profile_loyalty_add_card_phone_label">Телефон</string>
+    <string name="profile_loyalty_add_card_card_placeholder">Номер карты</string>
+    <string name="profile_loyalty_add_card_wrong_phone_error">Неверный телефон. Попробуйте ввести другой номер</string>
+    <string name="profile_loyalty_add_card_generic_error">Не удалось привязать карту</string>
+    <string name="profile_loyalty_code_title_caps">КОД ПОДТВЕРЖДЕНИЯ</string>
+    <string name="profile_loyalty_code_placeholder">Введите код из SMS-сообщения</string>
+    <string name="profile_loyalty_code_sent_phone">Код подтверждения отправлен на номер\n%1$s</string>
+    <string name="profile_loyalty_code_sent_card">Код подтверждения отправлен на номер,\nпривязанный к карте лояльности</string>
+    <string name="profile_loyalty_code_resend_countdown">Не получили SMS?  Отправить код повторно\nможно будет через %1$s</string>
+    <string name="profile_loyalty_code_resend_question">Не получили SMS?\u0020</string>
+    <string name="profile_loyalty_code_resend_button">Отправить код повторно</string>
+    <string name="profile_loyalty_confirm">Подтвердить</string>
+    <string name="profile_order_subtitle">от %1$s на сумму %2$s</string>
+    <string name="profile_order_subtitle_without_date">на сумму %1$s</string>
+    <string name="profile_order_payment_method">Способ оплаты</string>
+    <string name="profile_order_payment_on_receipt">Оплатить при получении</string>
+    <string name="profile_order_payment_alert">Заказ ожидает оплаты\nи будет отменен через %1$s</string>
+    <string name="profile_order_info_title">Информация о заказе</string>
+    <string name="profile_order_product_quantity">x %1$d</string>
 
     <string name="profile_info_payment">Оплата</string>
     <string name="profile_info_delivery">Доставка</string>

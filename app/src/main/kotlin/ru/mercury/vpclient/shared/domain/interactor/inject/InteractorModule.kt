@@ -9,12 +9,16 @@ import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
 import ru.mercury.vpclient.shared.domain.interactor.CatalogInteractor
 import ru.mercury.vpclient.shared.domain.interactor.EmployeeInteractor
 import ru.mercury.vpclient.shared.domain.interactor.FilterInteractor
+import ru.mercury.vpclient.shared.domain.interactor.LoyaltyInteractor
+import ru.mercury.vpclient.shared.domain.interactor.OrderInteractor
 import ru.mercury.vpclient.shared.domain.interactor.ProductInteractor
 import ru.mercury.vpclient.shared.domain.interactor.impl.AuthenticationInteractorImpl
 import ru.mercury.vpclient.shared.domain.interactor.impl.CartInteractorImpl
 import ru.mercury.vpclient.shared.domain.interactor.impl.CatalogInteractorImpl
 import ru.mercury.vpclient.shared.domain.interactor.impl.EmployeeInteractorImpl
 import ru.mercury.vpclient.shared.domain.interactor.impl.FilterInteractorImpl
+import ru.mercury.vpclient.shared.domain.interactor.impl.LoyaltyInteractorImpl
+import ru.mercury.vpclient.shared.domain.interactor.impl.OrderInteractorImpl
 import ru.mercury.vpclient.shared.domain.interactor.impl.ProductInteractorImpl
 import javax.inject.Singleton
 
@@ -41,6 +45,14 @@ interface InteractorModule {
     @Binds
     @Singleton
     fun employeeInteractor(impl: EmployeeInteractorImpl): EmployeeInteractor
+
+    @Binds
+    @Singleton
+    fun loyaltyInteractor(impl: LoyaltyInteractorImpl): LoyaltyInteractor
+
+    @Binds
+    @Singleton
+    fun orderInteractor(impl: OrderInteractorImpl): OrderInteractor
 
     @Binds
     @Singleton

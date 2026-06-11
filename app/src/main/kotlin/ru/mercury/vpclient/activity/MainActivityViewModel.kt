@@ -7,7 +7,7 @@ import ru.mercury.vpclient.shared.mvi.Event
 import ru.mercury.vpclient.shared.data.persistence.datastore.PreferenceKey
 import ru.mercury.vpclient.shared.data.persistence.datastore.SettingsDataStore
 import ru.mercury.vpclient.features.main.navigation.MainRoute
-import ru.mercury.vpclient.features.welcome.navigation.WelcomeRoute
+import ru.mercury.vpclient.features.auth_welcome.navigation.WelcomeRoute
 import ru.mercury.vpclient.activity.intent.MainActivityIntent
 import ru.mercury.vpclient.activity.model.MainActivityModel
 import javax.inject.Inject

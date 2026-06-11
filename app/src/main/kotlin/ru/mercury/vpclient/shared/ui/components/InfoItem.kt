@@ -1,5 +1,6 @@
 package ru.mercury.vpclient.shared.ui.components
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -30,7 +31,8 @@ fun InfoItem(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(start = 16.dp, top = 10.dp)
+            .padding(start = 16.dp, top = 10.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
             text = state.label,
@@ -45,7 +47,7 @@ fun InfoItem(
             text = state.value,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 21.dp),
+                .padding(top = 5.dp),
             style = MaterialTheme.typography.medium14.copy(
                 color = MaterialTheme.colorScheme.onBackground,
                 lineHeight = 16.sp
@@ -53,7 +55,6 @@ fun InfoItem(
         )
 
         HorizontalDivider(
-            modifier = Modifier.padding(top = 16.dp),
             color = MaterialTheme.colorScheme.divider
         )
     }

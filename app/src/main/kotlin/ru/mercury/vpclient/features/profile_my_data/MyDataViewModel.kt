@@ -11,7 +11,7 @@ import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.features.profile_my_data.intent.MyDataIntent
 import ru.mercury.vpclient.features.profile_my_data.model.MyDataModel
 import ru.mercury.vpclient.features.profile_stack.event.ProfileStackEventManager
-import ru.mercury.vpclient.features.welcome.navigation.WelcomeRoute
+import ru.mercury.vpclient.features.auth_welcome.navigation.WelcomeRoute
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.domain.interactor.Interactor
 import ru.mercury.vpclient.shared.domain.mapper.formatPhoneForDisplay

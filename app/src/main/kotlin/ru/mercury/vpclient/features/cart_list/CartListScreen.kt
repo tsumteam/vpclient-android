@@ -23,7 +23,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
@@ -60,6 +59,7 @@ import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductGroup
 import ru.mercury.vpclient.shared.data.entity.CartViewMode
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
+import ru.mercury.vpclient.shared.ui.components.SharedPullToRefreshBox
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.SharedTabRow
 import ru.mercury.vpclient.shared.ui.components.SharedTabRowState
@@ -439,11 +439,11 @@ private fun CartListScreenContent(
                             contentBounds = coordinates.boundsInWindow()
                         }
                 ) {
-                    PullToRefreshBox(
+                    SharedPullToRefreshBox(
                         isRefreshing = state.isRefreshing,
                         onRefresh = { dispatch(CartIntent.PullToRefresh) },
-                        state = pullToRefreshState,
                         modifier = Modifier.fillMaxSize(),
+                        state = pullToRefreshState,
                         indicator = {
                             PullToRefreshDefaults.Indicator(
                                 state = pullToRefreshState,

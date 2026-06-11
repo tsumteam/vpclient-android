@@ -26,7 +26,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
@@ -99,15 +98,16 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesE
 import ru.mercury.vpclient.shared.domain.mapper.isSortChipSelected
 import ru.mercury.vpclient.shared.domain.mapper.productsQuantityWithThousandsSeparator
 import ru.mercury.vpclient.shared.domain.mapper.requireProductsQuantity
+import ru.mercury.vpclient.shared.ui.components.BrandBox
 import ru.mercury.vpclient.shared.ui.components.PagingFailureBox
 import ru.mercury.vpclient.shared.ui.components.PagingLoadingBox
+import ru.mercury.vpclient.shared.ui.components.SharedPullToRefreshBox
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
-import ru.mercury.vpclient.shared.ui.components.BrandBox
-import ru.mercury.vpclient.shared.ui.components.catalog.CatalogProductCard
 import ru.mercury.vpclient.shared.ui.components.cart.CartIconButton
 import ru.mercury.vpclient.shared.ui.components.cart.FittingIconButton
 import ru.mercury.vpclient.shared.ui.components.cart.MessengerIconButton
+import ru.mercury.vpclient.shared.ui.components.catalog.CatalogProductCard
 import ru.mercury.vpclient.shared.ui.components.filters.FilterBrandFavoritesBar
 import ru.mercury.vpclient.shared.ui.components.filters.FilterProductsLoadingContent
 import ru.mercury.vpclient.shared.ui.components.filters.FilterScreenTitle
@@ -376,8 +376,8 @@ private fun FilterScreenContent(
                         onClick = { dispatch(FilterIntent.MessengerClick) }
                     )
                 },
-                colors = TopAppBarDefaults.topAppBarColors().copy(
-                    containerColor = Color.White
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
                 )
             )
         },
@@ -414,11 +414,11 @@ private fun FilterScreenContent(
                     )
                 }
                 else -> {
-                    PullToRefreshBox(
+                    SharedPullToRefreshBox(
                         isRefreshing = state.isRefreshing,
                         onRefresh = { dispatch(FilterIntent.PullToRefresh) },
-                        state = pullToRefreshState,
                         modifier = Modifier.fillMaxSize(),
+                        state = pullToRefreshState,
                         indicator = {
                             PullToRefreshDefaults.Indicator(
                                 state = pullToRefreshState,

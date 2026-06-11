@@ -8,10 +8,14 @@ class Interactor @Inject constructor(
     catalogInteractor: CatalogInteractor,
     employeeInteractor: EmployeeInteractor,
     filterInteractor: FilterInteractor,
+    loyaltyInteractor: LoyaltyInteractor,
+    orderInteractor: OrderInteractor,
     productInteractor: ProductInteractor
 ): AuthenticationInteractor by authenticationInteractor,
     CartInteractor by cartInteractor,
     CatalogInteractor by catalogInteractor,
     FilterInteractor by filterInteractor,
     EmployeeInteractor by employeeInteractor,
+    LoyaltyInteractor by loyaltyInteractor,
+    OrderInteractor by orderInteractor,
     ProductInteractor by productInteractor

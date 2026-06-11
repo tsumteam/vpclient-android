@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -30,10 +31,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,16 +51,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.launch
+import ru.mercury.vpclient.features.profile.event.ProfileEvent
 import ru.mercury.vpclient.features.profile.intent.ProfileIntent
 import ru.mercury.vpclient.features.profile.model.ProfileModel
 import ru.mercury.vpclient.features.profile_logout_dialog.ProfileLogoutDialog
 import ru.mercury.vpclient.features.profile_logout_dialog.intent.ProfileLogoutDialogIntent
+import ru.mercury.vpclient.features.profile_loyalty_add_card_sheet.ProfileLoyaltyAddCardSheet
+import ru.mercury.vpclient.features.profile_loyalty_code_sheet.ProfileLoyaltyCodeSheet
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.BrandBox
 import ru.mercury.vpclient.shared.ui.components.IndicatorIcon
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
+import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.cart.CartIconButton
 import ru.mercury.vpclient.shared.ui.components.cart.FittingIconButton
 import ru.mercury.vpclient.shared.ui.components.cart.MessengerIconButton
@@ -70,6 +79,7 @@ import ru.mercury.vpclient.shared.ui.icons.Man24
 import ru.mercury.vpclient.shared.ui.icons.Notification24
 import ru.mercury.vpclient.shared.ui.icons.Qr24
 import ru.mercury.vpclient.shared.ui.icons.VipBadge24
+import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
@@ -86,25 +96,65 @@ fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
+    val snackbarHostStateError = remember { SnackbarHostState() }
 
-    ProfileScreenContent(
-        state = state,
-        dispatch = viewModel::dispatch
-    )
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        ProfileScreenContent(
+            state = state,
+            dispatch = viewModel::dispatch
+        )
 
-    if (state.isLogoutDialogVisible) {
-        ProfileLogoutDialog(
-            dispatch = { intent ->
-                when (intent) {
-                    is ProfileLogoutDialogIntent.ConfirmRequest -> {
-                        viewModel.dispatch(ProfileIntent.Logout)
-                    }
-                    is ProfileLogoutDialogIntent.DismissRequest -> {
-                        viewModel.dispatch(ProfileIntent.DismissLogoutDialog)
+        if (state.isLogoutDialogVisible) {
+            ProfileLogoutDialog(
+                dispatch = { intent ->
+                    when (intent) {
+                        is ProfileLogoutDialogIntent.ConfirmRequest -> {
+                            viewModel.dispatch(ProfileIntent.Logout)
+                        }
+                        is ProfileLogoutDialogIntent.DismissRequest -> {
+                            viewModel.dispatch(ProfileIntent.DismissLogoutDialog)
+                        }
                     }
                 }
-            }
+            )
+        }
+
+        state.loyaltyAddCardSheet?.let { sheetState ->
+            ProfileLoyaltyAddCardSheet(
+                state = sheetState,
+                dispatch = { intent -> viewModel.dispatch(ProfileIntent.LoyaltyAddCardSheetIntent(intent)) }
+            )
+        }
+
+        state.loyaltyCodeSheet?.let { sheetState ->
+            ProfileLoyaltyCodeSheet(
+                state = sheetState,
+                dispatch = { intent -> viewModel.dispatch(ProfileIntent.LoyaltyCodeSheetIntent(intent)) }
+            )
+        }
+
+        SharedSnackbarHost(
+            hostState = snackbarHostStateError,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .statusBarsPadding()
+                .padding(top = 8.dp),
+            containerColor = MaterialTheme.colorScheme.error
         )
+    }
+
+    ObserveAsEvents(
+        flow = viewModel.eventFlow
+    ) { event ->
+        when (event) {
+            is ProfileEvent.SnackbarMessage -> {
+                snackbarHostStateError.currentSnackbarData?.dismiss()
+                scope.launch { snackbarHostStateError.showSnackbar(event.message) }
+            }
+        }
     }
 }
 

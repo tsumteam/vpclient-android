@@ -1,7 +1,10 @@
 package ru.mercury.vpclient.features.profile.model
 
 import kotlinx.coroutines.Job
+import ru.mercury.vpclient.features.profile_loyalty_add_card_sheet.model.ProfileLoyaltyAddCardModel
+import ru.mercury.vpclient.features.profile_loyalty_code_sheet.model.ProfileLoyaltyCodeModel
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.ClientEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.domain.mapper.fittingText
 import ru.mercury.vpclient.shared.domain.mapper.hasFittingBadge
@@ -16,7 +19,10 @@ data class ProfileModel(
     val viewHistoryProducts: List<CatalogFilterProductsEntity> = emptyList(),
     val isViewHistoryLoading: Boolean = true,
     val isLogoutDialogVisible: Boolean = false,
-    val activeEmployee: EmployeeEntity = EmployeeEntity.Empty
+    val activeEmployee: EmployeeEntity = EmployeeEntity.Empty,
+    val clientEntity: ClientEntity = ClientEntity.Empty,
+    val loyaltyAddCardSheet: ProfileLoyaltyAddCardModel? = null,
+    val loyaltyCodeSheet: ProfileLoyaltyCodeModel? = null
 ): Model {
 
     val isLogoutLoading: Boolean

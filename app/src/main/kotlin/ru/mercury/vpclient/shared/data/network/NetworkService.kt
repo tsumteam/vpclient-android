@@ -244,6 +244,9 @@ import ru.mercury.vpclient.shared.data.network.request.FilterValuesRequest
 import ru.mercury.vpclient.shared.data.network.request.FilteredProductsQuantityRequest
 import ru.mercury.vpclient.shared.data.network.request.FilteredProductsRequest
 import ru.mercury.vpclient.shared.data.network.request.FiltersRequest
+import ru.mercury.vpclient.shared.data.network.request.LoyaltyLinkByPhoneRequest
+import ru.mercury.vpclient.shared.data.network.request.LoyaltyVerifyByPhoneRequest
+import ru.mercury.vpclient.shared.data.network.request.ProfileOrdersSalesRequest
 import ru.mercury.vpclient.shared.data.network.response.AggregatedActivityCounterResponse
 import ru.mercury.vpclient.shared.data.network.response.BaseResponse
 import ru.mercury.vpclient.shared.data.network.response.CatalogCategoriesBasicResponse
@@ -257,7 +260,10 @@ import ru.mercury.vpclient.shared.data.network.response.FilterValuesResponse
 import ru.mercury.vpclient.shared.data.network.response.FilteredProductsQuantityResponse
 import ru.mercury.vpclient.shared.data.network.response.FilteredProductsResponse
 import ru.mercury.vpclient.shared.data.network.response.FiltersResponse
+import ru.mercury.vpclient.shared.data.network.response.LoyaltyLinkByPhoneResponse
+import ru.mercury.vpclient.shared.data.network.response.LoyaltyOperationResponse
 import ru.mercury.vpclient.shared.data.network.response.MyEmployeesResponse
+import ru.mercury.vpclient.shared.data.network.response.ProfileOrdersSalesResponse
 import ru.mercury.vpclient.shared.data.network.response.TokenResponse
 import javax.inject.Inject
 
@@ -1799,7 +1805,7 @@ class NetworkService @Inject constructor(
 
     suspend fun loyaltyLink(
         request: LinkCardRequestDto
-    ): BaseResponse<JsonElement> {
+    ): BaseResponse<LoyaltyOperationResponse> {
         return ktorHttpClient.post("loyalty/link") {
             setBody(request)
         }.body()
@@ -1807,8 +1813,24 @@ class NetworkService @Inject constructor(
 
     suspend fun loyaltyVerifyLink(
         request: VerifyLinkCardRequestDto
-    ): BaseResponse<JsonElement> {
+    ): BaseResponse<LoyaltyOperationResponse> {
         return ktorHttpClient.post("loyalty/verify-link") {
+            setBody(request)
+        }.body()
+    }
+
+    suspend fun loyaltyLinkByPhone(
+        request: LoyaltyLinkByPhoneRequest
+    ): BaseResponse<LoyaltyLinkByPhoneResponse> {
+        return ktorHttpClient.post("loyalty/link-by-phone") {
+            setBody(request)
+        }.body()
+    }
+
+    suspend fun loyaltyVerifyByPhone(
+        request: LoyaltyVerifyByPhoneRequest
+    ): BaseResponse<LoyaltyOperationResponse> {
+        return ktorHttpClient.post("loyalty/link-by-phone-continue") {
             setBody(request)
         }.body()
     }
@@ -1905,6 +1927,18 @@ class NetworkService @Inject constructor(
             appendQueryParameter("clientId", clientId)
             appendQueryParameter("limit", limit)
             appendQueryParameter("offset", offset)
+        }.body()
+    }
+
+    suspend fun sales(
+        request: ProfileOrdersSalesRequest,
+        limit: Int? = null,
+        offset: Int? = null
+    ): BaseResponse<ProfileOrdersSalesResponse> {
+        return ktorHttpClient.post("sales") {
+            appendQueryParameter("limit", limit)
+            appendQueryParameter("offset", offset)
+            setBody(request)
         }.body()
     }
 
