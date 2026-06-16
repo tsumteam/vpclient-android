@@ -43,6 +43,12 @@ import ru.mercury.vpclient.features.mediaviewer.MediaViewerScreen
 import ru.mercury.vpclient.features.mediaviewer.navigation.MediaViewerRoute
 import ru.mercury.vpclient.features.profile_qr.ProfileQrScreen
 import ru.mercury.vpclient.features.profile_qr.navigation.ProfileQrRoute
+import ru.mercury.vpclient.features.profile_loyalty_info.ProfileLoyaltyInfoScreen
+import ru.mercury.vpclient.features.profile_loyalty_info.navigation.ProfileLoyaltyInfoRoute
+import ru.mercury.vpclient.features.profile_loyalty_qr.ProfileLoyaltyQrScreen
+import ru.mercury.vpclient.features.profile_loyalty_qr.navigation.ProfileLoyaltyQrRoute
+import ru.mercury.vpclient.features.profile_loyalty_terms.ProfileLoyaltyTermsScreen
+import ru.mercury.vpclient.features.profile_loyalty_terms.navigation.ProfileLoyaltyTermsRoute
 import ru.mercury.vpclient.features.auth_register.RegisterScreen
 import ru.mercury.vpclient.features.auth_register.navigation.RegisterRoute
 import ru.mercury.vpclient.features.auth_welcome.WelcomeScreen
@@ -77,6 +83,9 @@ fun MainActivityContent(
                 entry<CodeRoute> { CodeScreen() }
                 entry<MainRoute> { MainScreen(it) }
                 entry<ProfileQrRoute> { ProfileQrScreen() }
+                entry<ProfileLoyaltyInfoRoute> { ProfileLoyaltyInfoScreen() }
+                entry<ProfileLoyaltyQrRoute> { ProfileLoyaltyQrScreen(it) }
+                entry<ProfileLoyaltyTermsRoute> { ProfileLoyaltyTermsScreen(it) }
                 entry<CartRoute> { CartScreen(it) }
                 entry<DetailsRoute> { DetailsScreen(it) }
                 entry<FittingConfirmationRoute> { FittingConfirmationScreen(it) }

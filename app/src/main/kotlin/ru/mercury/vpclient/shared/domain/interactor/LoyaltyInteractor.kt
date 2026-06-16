@@ -1,5 +1,8 @@
 package ru.mercury.vpclient.shared.domain.interactor
 
+import ru.mercury.vpclient.shared.data.entity.LoyaltyCardDescription
+import ru.mercury.vpclient.shared.data.entity.LoyaltyCardInfo
+
 interface LoyaltyInteractor {
 
     suspend fun linkLoyaltyCard(cardNumber: String)
@@ -9,4 +12,10 @@ interface LoyaltyInteractor {
     suspend fun linkLoyaltyCardByPhone(phone: String): Boolean
 
     suspend fun verifyLoyaltyCardByPhone(phone: String, code: String)
+
+    suspend fun loyaltyCardInfo(): LoyaltyCardInfo
+
+    suspend fun loyaltyCardTypes(): List<LoyaltyCardDescription>
+
+    suspend fun deleteLoyaltyCard(cardNumber: String)
 }

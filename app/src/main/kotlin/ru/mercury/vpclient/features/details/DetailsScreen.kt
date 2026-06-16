@@ -613,12 +613,14 @@ private fun DetailsScreenContent(
                             OutlinedButton(
                                 onClick = { dispatch(DetailsIntent.ButtonClick(index)) },
                                 modifier = Modifier
-                                    .fillMaxWidth()
                                     .padding(start = 16.dp, top = 16.dp, end = 16.dp)
-                                .fillMaxWidth()
-                                .height(52.dp),
+                                    .fillMaxWidth()
+                                    .height(52.dp),
                                 shape = RoundedCornerShape(8.dp),
-                                border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.onBackground),
+                                border = BorderStroke(
+                                    width = 1.dp,
+                                    color = MaterialTheme.colorScheme.onBackground
+                                ),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = MaterialTheme.colorScheme.background,
                                     contentColor = MaterialTheme.colorScheme.onBackground,

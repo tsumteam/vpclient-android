@@ -13,7 +13,7 @@ import ru.mercury.vpclient.features.profile_order.model.ProfileOrderModel
 import ru.mercury.vpclient.features.profile_order.navigation.ProfileOrderRoute
 import ru.mercury.vpclient.features.profile_stack.event.ProfileStackEventManager
 import ru.mercury.vpclient.shared.data.event.ProfileOrderDeliveryGroupState
-import ru.mercury.vpclient.shared.domain.interactor.Interactor
+import ru.mercury.vpclient.shared.domain.interactor.OrderInteractor
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.mvi.Event
 import ru.mercury.vpclient.shared.navigation.BackRoute
@@ -22,7 +22,7 @@ import ru.mercury.vpclient.shared.ui.components.profile.ProfileOrderProductItemS
 @HiltViewModel(assistedFactory = ProfileOrderViewModel.Factory::class)
 class ProfileOrderViewModel @AssistedInject constructor(
     @Assisted private val route: ProfileOrderRoute,
-    private val interactor: Interactor
+    private val orderInteractor: OrderInteractor
 ): ClientViewModel<ProfileOrderIntent, ProfileOrderModel, Event>(
     ProfileOrderModel(
         orderNumber = route.orderNumber,
@@ -39,7 +39,7 @@ class ProfileOrderViewModel @AssistedInject constructor(
             is ProfileOrderIntent.LoadData -> {
                 launch {
                     val details = runCatching {
-                        interactor.profileOrder(route.orderNumber)
+                        orderInteractor.profileOrder(route.orderNumber)
                     }.getOrNull()
 
                     reduce {

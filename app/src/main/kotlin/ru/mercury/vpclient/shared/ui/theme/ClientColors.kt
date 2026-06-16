@@ -39,3 +39,27 @@ val ColorScheme.onDisabled: Color
 
 val ColorScheme.surface2: Color
     get() = Color(0xFFC7C9CD)
+
+val ColorScheme.grey: Color
+    get() = Color(0xFF97A0AE)
+
+val ColorScheme.gold: Color
+    get() = Color(0xFFDAA740)
+
+val ColorScheme.gold2: Color
+    get() = Color(0xFFD39C2C)
+
+val ColorScheme.gold3: Color
+    get() = Color(0xFFF9DBA0)
+
+val ColorScheme.gold4: Color
+    get() = Color(0xFFD89B23)
+
+val ColorScheme.silver: Color
+    get() = Color(0xFFB3B2B2)
+
+val ColorScheme.silver2: Color
+    get() = Color(0xFFF0F0F0)
+
+val ColorScheme.silver3: Color
+    get() = Color(0xFFB0B8C4)

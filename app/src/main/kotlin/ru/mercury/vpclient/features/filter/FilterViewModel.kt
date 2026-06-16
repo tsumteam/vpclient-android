@@ -34,7 +34,9 @@ import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesQuantityEntity
-import ru.mercury.vpclient.shared.domain.interactor.Interactor
+import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
+import ru.mercury.vpclient.shared.domain.interactor.EmployeeInteractor
+import ru.mercury.vpclient.shared.domain.interactor.FilterInteractor
 import ru.mercury.vpclient.shared.domain.mapper.includeDefaultCategory
 import ru.mercury.vpclient.shared.domain.mapper.isEmpty
 import ru.mercury.vpclient.shared.domain.mapper.isRequestAffectingCatalogFilterValueChipId
@@ -52,7 +54,9 @@ import ru.mercury.vpclient.shared.navigation.BackRoute
 @HiltViewModel(assistedFactory = FilterViewModel.Factory::class)
 class FilterViewModel @AssistedInject constructor(
     @Assisted private val route: FilterRoute,
-    private val interactor: Interactor
+    private val cartInteractor: CartInteractor,
+    private val employeeInteractor: EmployeeInteractor,
+    private val filterInteractor: FilterInteractor
 ): ClientViewModel<FilterIntent, FilterModel, FilterEvent>(FilterModel()) {
 
     val productsPagingFlow = stateFlow
@@ -67,7 +71,7 @@ class FilterViewModel @AssistedInject constructor(
             )
         }
         .distinctUntilChanged()
-        .flatMapLatest { entity -> interactor.filterProductsPagingData(entity) }
+        .flatMapLatest { entity -> filterInteractor.filterProductsPagingData(entity) }
         .cachedIn(this)
 
     init {
@@ -93,7 +97,7 @@ class FilterViewModel @AssistedInject constructor(
             }
             is FilterIntent.CollectFilterData -> {
                 launch {
-                    interactor.filterDataFlow(
+                    filterInteractor.filterDataFlow(
                         FilterRequestData(
                             categoryId = route.categoryId,
                             titleCategoryId = route.titleCategoryId,
@@ -108,14 +112,14 @@ class FilterViewModel @AssistedInject constructor(
             }
             is FilterIntent.CollectCartSize -> {
                 launch {
-                    interactor.cartSize
+                    cartInteractor.cartSize
                         .distinctUntilChanged()
                         .collectLatest { size ->
                             reduce { it.copy(cartSize = size) }
                         }
                 }
                 launch {
-                    interactor.cartProductsFlow.collectLatest { products ->
+                    cartInteractor.cartProductsFlow.collectLatest { products ->
                         reduce {
                             it.copy(
                                 basketProductIds = products.map { product -> product.detailId }
@@ -132,7 +136,7 @@ class FilterViewModel @AssistedInject constructor(
             }
             is FilterIntent.CollectActiveEmployee -> {
                 launch {
-                    interactor.employeeEntitiesFlow
+                    employeeInteractor.employeeEntitiesFlow
                         .map { employees -> employees.firstOrNull { it.isActive } }
                         .distinctUntilChanged()
                         .collectLatest { employee ->
@@ -143,18 +147,18 @@ class FilterViewModel @AssistedInject constructor(
                         }
                 }
             }
-            is FilterIntent.LoadEmployees -> launch { runCatching { interactor.syncEmployees() } }
+            is FilterIntent.LoadEmployees -> launch { runCatching { employeeInteractor.syncEmployees() } }
             is FilterIntent.LoadCartData -> {
                 launch {
-                    runCatching { interactor.loadBasket() }
+                    runCatching { cartInteractor.loadBasket() }
 
-                    val badge = runCatching { interactor.cartBadge() }.getOrDefault(0)
+                    val badge = runCatching { cartInteractor.cartBadge() }.getOrDefault(0)
                     reduce { it.copy(cartBadge = badge) }
                 }
             }
             is FilterIntent.LoadCatalogFilters -> {
                 launch {
-                    interactor.loadCatalogFilters(
+                    filterInteractor.loadCatalogFilters(
                         CatalogFilterRequestData2(
                             categoryId = route.categoryId,
                             titleCategoryId = route.titleCategoryId,
@@ -168,7 +172,7 @@ class FilterViewModel @AssistedInject constructor(
             is FilterIntent.LoadProductsQuantity -> {
                 stateFlow.value.loadProductsQuantityJob?.cancel()
                 val job = launch {
-                    interactor.loadCatalogFiltersProductsQuantity(
+                    filterInteractor.loadCatalogFiltersProductsQuantity(
                         CatalogFilterRequestData2(
                             categoryId = route.categoryId,
                             titleCategoryId = route.titleCategoryId,
@@ -194,7 +198,7 @@ class FilterViewModel @AssistedInject constructor(
             is FilterIntent.MessengerClick -> return
             is FilterIntent.ProductClick -> launch { CatalogStackEventManager.send(DetailsRoute(intent.id)) }
             is FilterIntent.ProductBasketClick -> launch {
-                interactor.addProductToBasket(intent.id, null)
+                cartInteractor.addProductToBasket(intent.id, null)
                 dispatch(FilterIntent.LoadCartData)
             }
             is FilterIntent.ShowSortDialog -> reduce { it.copy(isSortDialogVisible = true) }
@@ -228,7 +232,7 @@ class FilterViewModel @AssistedInject constructor(
                     )
                 }
                 val pickerCollectionJob = launch {
-                    interactor.filterValuesEntityFlow(chip.id).collectLatest { entity ->
+                    filterInteractor.filterValuesEntityFlow(chip.id).collectLatest { entity ->
                         reduce {
                             val productsQuantity = when {
                                 it.filterValuesDialogProductsQuantity.chipId == entity.chipId &&
@@ -247,7 +251,7 @@ class FilterViewModel @AssistedInject constructor(
                     }
                 }
                 val quantityCollectionJob = launch {
-                    interactor.filterValuesQuantityEntityFlow(chip.id).collectLatest { entity: FilterValuesQuantityEntity ->
+                    filterInteractor.filterValuesQuantityEntityFlow(chip.id).collectLatest { entity: FilterValuesQuantityEntity ->
                         entity.quantity?.let {
                             reduce { model ->
                                 model.copy(
@@ -265,7 +269,7 @@ class FilterViewModel @AssistedInject constructor(
                     )
                 }
                 launch {
-                    interactor.loadCatalogFilterValues(
+                    filterInteractor.loadCatalogFilterValues(
                         FilterValuesRequestData(
                             categoryId = route.categoryId,
                             titleCategoryId = route.titleCategoryId,
@@ -299,7 +303,7 @@ class FilterViewModel @AssistedInject constructor(
                     )
                 }
                 if (chipId.isNotEmpty()) {
-                    launch { interactor.resetFilterValuesQuantity(chipId) }
+                    launch { filterInteractor.resetFilterValuesQuantity(chipId) }
                 }
             }
             is FilterIntent.ResetFilters -> {
@@ -436,7 +440,7 @@ class FilterViewModel @AssistedInject constructor(
                 }
                 val chipId = picker.chipId
                 val productsQuantityJob = launch {
-                    interactor.loadCatalogFiltersProductsQuantity(
+                    filterInteractor.loadCatalogFiltersProductsQuantity(
                         chipId = chipId,
                         data = CatalogFilterRequestData2(
                             categoryId = route.categoryId,
@@ -555,7 +559,7 @@ class FilterViewModel @AssistedInject constructor(
             }
             is FilterIntent.LoadBrandFavoriteStatus -> {
                 launch {
-                    val isFavorite = interactor.loadBrandFavoriteStatus(
+                    val isFavorite = filterInteractor.loadBrandFavoriteStatus(
                         brandId = intent.brandId,
                         categoryId = intent.categoryId
                     )
@@ -573,7 +577,7 @@ class FilterViewModel @AssistedInject constructor(
                 launch {
                     val currentIsFavorite = stateFlow.value.isBrandFavorited
                     val nextIsFavorite = !currentIsFavorite
-                    interactor.toggleBrandFavorite(
+                    filterInteractor.toggleBrandFavorite(
                         chipId = chipId,
                         brandId = brandId,
                         categoryId = route.categoryId,

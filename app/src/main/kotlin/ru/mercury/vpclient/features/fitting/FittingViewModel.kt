@@ -14,14 +14,16 @@ import ru.mercury.vpclient.features.fitting.intent.FittingIntent
 import ru.mercury.vpclient.features.fitting.model.FittingModel
 import ru.mercury.vpclient.shared.data.entity.FittingData
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
-import ru.mercury.vpclient.shared.domain.interactor.Interactor
+import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
+import ru.mercury.vpclient.shared.domain.interactor.EmployeeInteractor
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.mvi.Event
 import javax.inject.Inject
 
 @HiltViewModel
 class FittingViewModel @Inject constructor(
-    private val interactor: Interactor
+    private val cartInteractor: CartInteractor,
+    private val employeeInteractor: EmployeeInteractor
 ): ClientViewModel<FittingIntent, FittingModel, Event>(FittingModel()) {
 
     init {
@@ -37,7 +39,7 @@ class FittingViewModel @Inject constructor(
         when (intent) {
             is FittingIntent.CollectCartSize -> {
                 launch {
-                    interactor.cartSize
+                    cartInteractor.cartSize
                         .distinctUntilChanged()
                         .collectLatest { size ->
                             reduce { it.copy(cartSize = size) }
@@ -46,14 +48,14 @@ class FittingViewModel @Inject constructor(
             }
             is FittingIntent.CollectCartProducts -> {
                 launch {
-                    interactor.cartProductsFlow.collectLatest { products ->
+                    cartInteractor.cartProductsFlow.collectLatest { products ->
                         reduce { it.copy(products = products) }
                     }
                 }
             }
             is FittingIntent.CollectActiveEmployee -> {
                 launch {
-                    interactor.employeeEntitiesFlow
+                    employeeInteractor.employeeEntitiesFlow
                         .map { employees -> employees.firstOrNull { it.isActive } }
                         .distinctUntilChanged()
                         .collectLatest { employee ->
@@ -65,18 +67,18 @@ class FittingViewModel @Inject constructor(
                         }
                 }
             }
-            is FittingIntent.LoadEmployees -> launch { runCatching { interactor.syncEmployees() } }
+            is FittingIntent.LoadEmployees -> launch { runCatching { employeeInteractor.syncEmployees() } }
             is FittingIntent.LoadCartData -> {
                 launch {
-                    runCatching { interactor.loadBasket() }
+                    runCatching { cartInteractor.loadBasket() }
 
-                    val badge = runCatching { interactor.cartBadge() }.getOrDefault(0)
+                    val badge = runCatching { cartInteractor.cartBadge() }.getOrDefault(0)
                     reduce { it.copy(cartBadge = badge) }
                 }
             }
             is FittingIntent.LoadFitting -> {
                 launch {
-                    val fitting = runCatching { interactor.loadFitting() }.getOrDefault(FittingData())
+                    val fitting = runCatching { cartInteractor.loadFitting() }.getOrDefault(FittingData())
                     reduce {
                         it.copy(
                             apiFittingProducts = fitting.products,
@@ -98,8 +100,8 @@ class FittingViewModel @Inject constructor(
             }
             is FittingIntent.ChangePaySwitch -> {
                 launch {
-                    interactor.changeFittingPaySwitch(intent.product, intent.paySwitch)
-                    val fitting = runCatching { interactor.loadFitting() }.getOrDefault(FittingData())
+                    cartInteractor.changeFittingPaySwitch(intent.product, intent.paySwitch)
+                    val fitting = runCatching { cartInteractor.loadFitting() }.getOrDefault(FittingData())
                     reduce {
                         it.copy(
                             apiFittingProducts = fitting.products,

@@ -17,13 +17,17 @@ import ru.mercury.vpclient.shared.data.error.ClientException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
-import ru.mercury.vpclient.shared.domain.interactor.Interactor
+import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
+import ru.mercury.vpclient.shared.domain.interactor.CatalogInteractor
+import ru.mercury.vpclient.shared.domain.interactor.EmployeeInteractor
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class CatalogViewModel @Inject constructor(
-    private val interactor: Interactor
+    private val catalogInteractor: CatalogInteractor,
+    private val cartInteractor: CartInteractor,
+    private val employeeInteractor: EmployeeInteractor
 ): ClientViewModel<CatalogIntent, CatalogModel, CatalogEvent>(CatalogModel()) {
 
     init {
@@ -39,17 +43,17 @@ class CatalogViewModel @Inject constructor(
         when (intent) {
             is CatalogIntent.CollectCatalogScreenData -> {
                 launch {
-                    interactor.catalogDataFlow.collectLatest { data ->
+                    catalogInteractor.catalogDataFlow.collectLatest { data ->
                         reduce { it.copy(catalogData = data) }
                     }
                 }
             }
             is CatalogIntent.LoadCatalogCategoriesTop -> {
-                launch { interactor.loadCatalogCategoriesTop() }
+                launch { catalogInteractor.loadCatalogCategoriesTop() }
             }
             is CatalogIntent.CollectCartSize -> {
                 launch {
-                    interactor.cartSize
+                    cartInteractor.cartSize
                         .distinctUntilChanged()
                         .collectLatest { size ->
                             reduce { it.copy(cartSize = size) }
@@ -58,7 +62,7 @@ class CatalogViewModel @Inject constructor(
             }
             is CatalogIntent.CollectActiveEmployee -> {
                 launch {
-                    interactor.employeeEntitiesFlow
+                    employeeInteractor.employeeEntitiesFlow
                         .map { employees -> employees.firstOrNull { it.isActive } }
                         .distinctUntilChanged()
                         .collectLatest { employee ->
@@ -69,19 +73,19 @@ class CatalogViewModel @Inject constructor(
                         }
                 }
             }
-            is CatalogIntent.LoadEmployees -> launch { runCatching { interactor.syncEmployees() } }
+            is CatalogIntent.LoadEmployees -> launch { runCatching { employeeInteractor.syncEmployees() } }
             is CatalogIntent.LoadCartData -> {
                 launch {
-                    runCatching { interactor.loadBasket() }
+                    runCatching { cartInteractor.loadBasket() }
 
-                    val badge = runCatching { interactor.cartBadge() }.getOrDefault(0)
+                    val badge = runCatching { cartInteractor.cartBadge() }.getOrDefault(0)
                     reduce { it.copy(cartBadge = badge) }
                 }
             }
             is CatalogIntent.SelectTab -> {
                 val rootId = stateFlow.value.catalogData.tabs.getOrNull(intent.tabIndex)?.rootId
                 if (rootId != null) {
-                    launch { interactor.setLastCatalogRootId(rootId) }
+                    launch { catalogInteractor.setLastCatalogRootId(rootId) }
                 }
             }
             is CatalogIntent.CategoryClick -> {

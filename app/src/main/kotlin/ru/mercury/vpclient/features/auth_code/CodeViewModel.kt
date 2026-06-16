@@ -15,7 +15,7 @@ import ru.mercury.vpclient.shared.data.entity.CodeValidationError
 import ru.mercury.vpclient.shared.data.error.ContinueLoginException
 import ru.mercury.vpclient.shared.data.error.LoginException
 import ru.mercury.vpclient.shared.data.error.RegisterException
-import ru.mercury.vpclient.shared.domain.interactor.Interactor
+import ru.mercury.vpclient.shared.domain.interactor.AuthenticationInteractor
 import ru.mercury.vpclient.shared.domain.mapper.resendCodeTimerSec
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import javax.inject.Inject
@@ -23,7 +23,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 class CodeViewModel @Inject constructor(
-    private val interactor: Interactor
+    private val authenticationInteractor: AuthenticationInteractor
 ): ClientViewModel<CodeIntent, CodeModel, CodeEvents>(CodeModel()) {
 
     init {
@@ -35,7 +35,7 @@ class CodeViewModel @Inject constructor(
         when (intent) {
             is CodeIntent.CollectClientEntity -> {
                 launch {
-                    interactor.clientEntityFlow.collectLatest { entity ->
+                    authenticationInteractor.clientEntityFlow.collectLatest { entity ->
                         reduce { it.copy(
                             clientEntity = entity,
                             resendSecondsLeft = entity.resendCodeTimerSec()
@@ -60,7 +60,7 @@ class CodeViewModel @Inject constructor(
                 reduce { it.copy(resendTimerJob = job) }
             }
             is CodeIntent.ConfirmClick -> {
-                val codeValidationError = interactor.validateRequiredCode(stateFlow.value.code)
+                val codeValidationError = authenticationInteractor.validateRequiredCode(stateFlow.value.code)
                 when {
                     codeValidationError == CodeValidationError.Empty -> {
                         reduce { it.copy(codeValidationError = codeValidationError) }
@@ -69,7 +69,7 @@ class CodeViewModel @Inject constructor(
                         launch {
                             reduce { it.copy(codeValidationError = null, isLoading = true) }
                             try {
-                                interactor.continueLogin(stateFlow.value.code)
+                                authenticationInteractor.continueLogin(stateFlow.value.code)
                                 MainEventManager.send(MainRoute())
                             } finally {
                                 reduce { it.copy(isLoading = false) }
@@ -84,7 +84,7 @@ class CodeViewModel @Inject constructor(
                 if (state.resendSecondsLeft > 0 || state.isResendLoading) return
                 val job = launch {
                     try {
-                        interactor.resendCode()
+                        authenticationInteractor.resendCode()
                     } finally {
                         reduce { it.copy(resendCodeJob = null) }
                     }

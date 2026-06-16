@@ -2,6 +2,7 @@
 
 package ru.mercury.vpclient.features.auth_code
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.Button
@@ -23,6 +25,7 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -35,6 +38,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.autofill.ContentType
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
@@ -69,7 +74,6 @@ import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.SmsCodeInput
 import ru.mercury.vpclient.shared.ui.components.SmsCodeInputState
-import ru.mercury.vpclient.shared.ui.components.system.ClientInlineTextButton
 import ru.mercury.vpclient.shared.ui.icons.Logo82
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
@@ -306,11 +310,35 @@ private fun CodeScreenContent(
                                 )
                             )
 
-                            ClientInlineTextButton(
-                                onClick = { dispatch(CodeIntent.ResendCodeClick) },
-                                text = stringResource(ClientStrings.CodeResendButton),
-                                isLoading = state.isResendLoading
-                            )
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(4.dp))
+                                    .clickable(
+                                        enabled = !state.isResendLoading,
+                                        onClick = { dispatch(CodeIntent.ResendCodeClick) }
+                                    )
+                                    .padding(2.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = stringResource(ClientStrings.CodeResendButton),
+                                    modifier = Modifier.alpha(if (state.isResendLoading) 0F else 1F),
+                                    style = MaterialTheme.typography.medium15.copy(
+                                        textAlign = TextAlign.Center,
+                                        letterSpacing = .3.sp
+                                    )
+                                )
+
+                                if (state.isResendLoading) {
+                                    LinearProgressIndicator(
+                                        modifier = Modifier.width(120.dp),
+                                        color = MaterialTheme.colorScheme.onBackground,
+                                        trackColor = MaterialTheme.colorScheme.onBackground.copy(
+                                            alpha = .2F
+                                        )
+                                    )
+                                }
+                            }
                         }
                     }
                 }

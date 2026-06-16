@@ -13,7 +13,9 @@ import ru.mercury.vpclient.features.profile_my_data.model.MyDataModel
 import ru.mercury.vpclient.features.profile_stack.event.ProfileStackEventManager
 import ru.mercury.vpclient.features.auth_welcome.navigation.WelcomeRoute
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
-import ru.mercury.vpclient.shared.domain.interactor.Interactor
+import ru.mercury.vpclient.shared.domain.interactor.AuthenticationInteractor
+import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
+import ru.mercury.vpclient.shared.domain.interactor.EmployeeInteractor
 import ru.mercury.vpclient.shared.domain.mapper.formatPhoneForDisplay
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.mvi.Event
@@ -22,7 +24,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MyDataViewModel @Inject constructor(
-    private val interactor: Interactor
+    private val authenticationInteractor: AuthenticationInteractor,
+    private val cartInteractor: CartInteractor,
+    private val employeeInteractor: EmployeeInteractor
 ): ClientViewModel<MyDataIntent, MyDataModel, Event>(MyDataModel()) {
 
     init {
@@ -36,7 +40,7 @@ class MyDataViewModel @Inject constructor(
         when (intent) {
             is MyDataIntent.CollectCartSize -> {
                 launch {
-                    interactor.cartSize
+                    cartInteractor.cartSize
                         .distinctUntilChanged()
                         .collectLatest { size ->
                             reduce { it.copy(cartSize = size) }
@@ -45,7 +49,7 @@ class MyDataViewModel @Inject constructor(
             }
             is MyDataIntent.CollectActiveEmployee -> {
                 launch {
-                    interactor.employeeEntitiesFlow
+                    employeeInteractor.employeeEntitiesFlow
                         .map { employees -> employees.firstOrNull { it.isActive } }
                         .distinctUntilChanged()
                         .collectLatest { employee ->
@@ -58,15 +62,15 @@ class MyDataViewModel @Inject constructor(
             }
             is MyDataIntent.LoadCartData -> {
                 launch {
-                    runCatching { interactor.loadBasket() }
+                    runCatching { cartInteractor.loadBasket() }
 
-                    val badge = runCatching { interactor.cartBadge() }.getOrDefault(0)
+                    val badge = runCatching { cartInteractor.cartBadge() }.getOrDefault(0)
                     reduce { it.copy(cartBadge = badge) }
                 }
             }
             is MyDataIntent.LoadCurrentUser -> {
                 launch {
-                    runCatching { interactor.currentUser() }
+                    runCatching { authenticationInteractor.currentUser() }
                         .onSuccess { user ->
                             reduce {
                                 it.copy(
@@ -88,7 +92,7 @@ class MyDataViewModel @Inject constructor(
             is MyDataIntent.DeleteProfile -> {
                 val job = launch {
                     reduce { it.copy(isDeleteProfileDialogVisible = false) }
-                    interactor.deleteProfile()
+                    authenticationInteractor.deleteProfile()
                     MainEventManager.send(WelcomeRoute)
                 }.also { launchedJob ->
                     launchedJob.invokeOnCompletion { reduce { it.copy(deleteProfileJob = null) } }

@@ -20,7 +20,10 @@ import ru.mercury.vpclient.features.mediaviewer.navigation.MediaViewerRoute
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.error.AddProductToBasketException
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
-import ru.mercury.vpclient.shared.domain.interactor.Interactor
+import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
+import ru.mercury.vpclient.shared.domain.interactor.CatalogInteractor
+import ru.mercury.vpclient.shared.domain.interactor.EmployeeInteractor
+import ru.mercury.vpclient.shared.domain.interactor.ProductInteractor
 import ru.mercury.vpclient.shared.domain.mapper.BRAND_VIEW_TYPE
 import ru.mercury.vpclient.shared.domain.mapper.toCatalogLinkData
 import ru.mercury.vpclient.shared.domain.mapper.toFilterRoute
@@ -31,7 +34,10 @@ import ru.mercury.vpclient.shared.navigation.BackRoute
 @HiltViewModel(assistedFactory = DetailsViewModel.Factory::class)
 class DetailsViewModel @AssistedInject constructor(
     @Assisted private val route: DetailsRoute,
-    private val interactor: Interactor
+    private val cartInteractor: CartInteractor,
+    private val catalogInteractor: CatalogInteractor,
+    private val employeeInteractor: EmployeeInteractor,
+    private val productInteractor: ProductInteractor
 ): ClientViewModel<DetailsIntent, DetailsModel, DetailsEvent>(DetailsModel()) {
 
     init {
@@ -47,12 +53,12 @@ class DetailsViewModel @AssistedInject constructor(
     override fun dispatch(intent: DetailsIntent) {
         when (intent) {
             is DetailsIntent.CollectProduct -> launch {
-                interactor.productFlow(route.id).collectLatest { productEntity ->
+                productInteractor.productFlow(route.id).collectLatest { productEntity ->
                     reduce { it.copy(productEntity = productEntity) }
                 }
             }
             is DetailsIntent.CollectCartProducts -> launch {
-                interactor.cartProductsFlow.collectLatest { products ->
+                cartInteractor.cartProductsFlow.collectLatest { products ->
                     reduce {
                         it.copy(
                             basketProductIds = products.map { product -> product.detailId }
@@ -68,7 +74,7 @@ class DetailsViewModel @AssistedInject constructor(
             }
             is DetailsIntent.CollectCartSize -> {
                 launch {
-                    interactor.cartSize
+                    cartInteractor.cartSize
                         .distinctUntilChanged()
                         .collectLatest { size ->
                             reduce { it.copy(cartSize = size) }
@@ -77,7 +83,7 @@ class DetailsViewModel @AssistedInject constructor(
             }
             is DetailsIntent.CollectActiveEmployee -> {
                 launch {
-                    interactor.employeeEntitiesFlow
+                    employeeInteractor.employeeEntitiesFlow
                         .map { employees -> employees.firstOrNull { it.isActive } }
                         .distinctUntilChanged()
                         .collectLatest { employee ->
@@ -88,16 +94,16 @@ class DetailsViewModel @AssistedInject constructor(
                         }
                 }
             }
-            is DetailsIntent.LoadEmployees -> launch { runCatching { interactor.syncEmployees() } }
+            is DetailsIntent.LoadEmployees -> launch { runCatching { employeeInteractor.syncEmployees() } }
             is DetailsIntent.LoadCartData -> {
                 launch {
-                    runCatching { interactor.loadBasket() }
+                    runCatching { cartInteractor.loadBasket() }
 
-                    val badge = runCatching { interactor.cartBadge() }.getOrDefault(0)
+                    val badge = runCatching { cartInteractor.cartBadge() }.getOrDefault(0)
                     reduce { it.copy(cartBadge = badge) }
                 }
             }
-            is DetailsIntent.LoadProduct -> launch { interactor.loadProduct(route.id) }
+            is DetailsIntent.LoadProduct -> launch { productInteractor.loadProduct(route.id) }
             is DetailsIntent.BackClick -> launch {
                 when {
                     route.openedFromCart -> MainEventManager.send(BackRoute)
@@ -128,7 +134,7 @@ class DetailsViewModel @AssistedInject constructor(
                         reduce { it.copy(isSizePickerSheetVisible = false) }
                         launch {
                             withCenterLoading {
-                                interactor.addProductToBasket(route.id, state.selectedSizeId)
+                                cartInteractor.addProductToBasket(route.id, state.selectedSizeId)
                             }
                         }
                     }
@@ -166,7 +172,7 @@ class DetailsViewModel @AssistedInject constructor(
                         }
                         else -> null
                     }
-                    val route = interactor.catalogCategory(categoryId)?.toFilterRoute(brandEntity) ?: return@launch
+                    val route = catalogInteractor.catalogCategory(categoryId)?.toFilterRoute(brandEntity) ?: return@launch
                     val resolvedRoute = when {
                         catalogLinkData.viewType == BRAND_VIEW_TYPE -> {
                             route.copy(
@@ -183,7 +189,7 @@ class DetailsViewModel @AssistedInject constructor(
                         }
                     }
                     catalogLinkData.rootCategoryId?.let { rootCategoryId ->
-                        interactor.setLastCatalogRootId(rootCategoryId)
+                        catalogInteractor.setLastCatalogRootId(rootCategoryId)
                     }
                     CatalogStackEventManager.send(resolvedRoute)
                 }
@@ -194,7 +200,7 @@ class DetailsViewModel @AssistedInject constructor(
                     else -> CatalogStackEventManager.send(DetailsRoute(intent.id))
                 }
             }
-            is DetailsIntent.ProductBasketClick -> launch { interactor.addProductToBasket(intent.id, null) }
+            is DetailsIntent.ProductBasketClick -> launch { cartInteractor.addProductToBasket(intent.id, null) }
             is DetailsIntent.OpenMediaViewer -> launch {
                 val state = stateFlow.value
                 val totalCount = state.pagerImageUrls.size + if (state.selectedColorVideoUrl != null) 1 else 0

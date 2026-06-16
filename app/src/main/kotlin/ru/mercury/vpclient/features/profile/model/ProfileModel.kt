@@ -3,6 +3,7 @@ package ru.mercury.vpclient.features.profile.model
 import kotlinx.coroutines.Job
 import ru.mercury.vpclient.features.profile_loyalty_add_card_sheet.model.ProfileLoyaltyAddCardModel
 import ru.mercury.vpclient.features.profile_loyalty_code_sheet.model.ProfileLoyaltyCodeModel
+import ru.mercury.vpclient.shared.data.entity.LoyaltyCardInfo
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ClientEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
@@ -18,9 +19,11 @@ data class ProfileModel(
     val cartBadge: Int = 0,
     val viewHistoryProducts: List<CatalogFilterProductsEntity> = emptyList(),
     val isViewHistoryLoading: Boolean = true,
+    val isLoyaltyCardLoading: Boolean = true,
     val isLogoutDialogVisible: Boolean = false,
     val activeEmployee: EmployeeEntity = EmployeeEntity.Empty,
     val clientEntity: ClientEntity = ClientEntity.Empty,
+    val loyaltyCardInfo: LoyaltyCardInfo? = null,
     val loyaltyAddCardSheet: ProfileLoyaltyAddCardModel? = null,
     val loyaltyCodeSheet: ProfileLoyaltyCodeModel? = null
 ): Model {
@@ -36,6 +39,15 @@ data class ProfileModel(
 
     val showCartBadge: Boolean
         get() = cartBadge > 0
+
+    val visibleViewHistoryProducts: List<CatalogFilterProductsEntity>
+        get() = viewHistoryProducts.take(10)
+
+    val showViewHistory: Boolean
+        get() = isViewHistoryLoading || viewHistoryProducts.isNotEmpty()
+
+    val showViewHistoryMore: Boolean
+        get() = viewHistoryProducts.size > 10
 
     val fittingText: String
         get() = activeEmployee.fittingText

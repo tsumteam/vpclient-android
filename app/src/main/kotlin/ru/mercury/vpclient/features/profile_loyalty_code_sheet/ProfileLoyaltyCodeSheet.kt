@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -24,17 +26,28 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -46,9 +59,7 @@ import ru.mercury.vpclient.features.profile_loyalty_add_card_sheet.model.Profile
 import ru.mercury.vpclient.features.profile_loyalty_code_sheet.intent.ProfileLoyaltyCodeIntent
 import ru.mercury.vpclient.features.profile_loyalty_code_sheet.model.ProfileLoyaltyCodeModel
 import ru.mercury.vpclient.shared.domain.mapper.formatCodeResendTime
-import ru.mercury.vpclient.shared.domain.mapper.formatPhoneForDisplay
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
-import ru.mercury.vpclient.shared.ui.components.system.ClientInlineTextButton
 import ru.mercury.vpclient.shared.ui.components.system.ClientTextField
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
@@ -67,6 +78,7 @@ fun ProfileLoyaltyCodeSheet(
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
+    val focusRequester = remember { FocusRequester() }
     val sheetDispatch: (ProfileLoyaltyCodeIntent) -> Unit = { intent ->
         when (intent) {
             is ProfileLoyaltyCodeIntent.DismissRequest -> {
@@ -122,7 +134,9 @@ fun ProfileLoyaltyCodeSheet(
                 onValueChange = { sheetDispatch(ProfileLoyaltyCodeIntent.CodeChange(it)) },
                 placeholder = stringResource(ClientStrings.ProfileLoyaltyCodePlaceholder),
                 accepted = true,
-                modifier = Modifier.padding(start = 16.dp, top = 24.dp, end = 16.dp),
+                modifier = Modifier
+                    .padding(start = 16.dp, top = 24.dp, end = 16.dp)
+                    .focusRequester(focusRequester),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
 
@@ -141,17 +155,7 @@ fun ProfileLoyaltyCodeSheet(
             }
 
             Text(
-                text = when (state.mode) {
-                    ProfileLoyaltyAddCardMode.Phone -> {
-                        stringResource(
-                            ClientStrings.ProfileLoyaltyCodeSentPhone,
-                            formatPhoneForDisplay(state.phone)
-                        )
-                    }
-                    ProfileLoyaltyAddCardMode.CardNumber -> {
-                        stringResource(ClientStrings.ProfileLoyaltyCodeSentCard)
-                    }
-                },
+                text = stringResource(ClientStrings.ProfileLoyaltyCodeSentCard),
                 modifier = Modifier
                     .padding(start = 16.dp, top = 26.dp, end = 16.dp)
                     .fillMaxWidth(),
@@ -165,11 +169,19 @@ fun ProfileLoyaltyCodeSheet(
 
             when {
                 state.resendSecondsLeft > 0 -> {
+                    val resendTime = formatCodeResendTime(state.resendSecondsLeft)
                     Text(
-                        text = stringResource(
-                            ClientStrings.ProfileLoyaltyCodeResendCountdown,
-                            formatCodeResendTime(state.resendSecondsLeft)
-                        ),
+                        text = buildAnnotatedString {
+                            append(
+                                stringResource(
+                                    ClientStrings.ProfileLoyaltyCodeResendCountdown,
+                                    ""
+                                )
+                            )
+                            withStyle(SpanStyle(fontWeight = FontWeight.Medium)) {
+                                append(resendTime)
+                            }
+                        },
                         modifier = Modifier
                             .padding(start = 16.dp, top = 16.dp, end = 16.dp)
                             .fillMaxWidth(),
@@ -202,11 +214,34 @@ fun ProfileLoyaltyCodeSheet(
                             )
                         )
 
-                        ClientInlineTextButton(
-                            onClick = { sheetDispatch(ProfileLoyaltyCodeIntent.ResendCodeClick) },
-                            text = stringResource(ClientStrings.CodeResendButton),
-                            isLoading = state.isResendLoading
-                        )
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(4.dp))
+                                .clickable(
+                                    enabled = !state.isResendLoading,
+                                    onClick = { sheetDispatch(ProfileLoyaltyCodeIntent.ResendCodeClick) }
+                                )
+                                .padding(2.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = stringResource(ClientStrings.CodeResendButton),
+                                modifier = Modifier.alpha(if (state.isResendLoading) 0F else 1F),
+                                style = MaterialTheme.typography.medium15.copy(
+                                    color = MaterialTheme.colorScheme.error,
+                                    textAlign = TextAlign.Center,
+                                    letterSpacing = .3.sp
+                                )
+                            )
+
+                            if (state.isResendLoading) {
+                                LinearProgressIndicator(
+                                    modifier = Modifier.width(120.dp),
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    trackColor = MaterialTheme.colorScheme.onBackground.copy(alpha = .2F)
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -258,6 +293,10 @@ fun ProfileLoyaltyCodeSheet(
             }
         }
     }
+
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
 }
 
 @PreviewWrapper(ThemeWrapper::class)
@@ -289,6 +328,12 @@ private class ProfileLoyaltyCodeModelProvider: PreviewParameterProvider<ProfileL
             mode = ProfileLoyaltyAddCardMode.Phone,
             phone = "79295506234",
             code = "123456"
+        ),
+        ProfileLoyaltyCodeModel(
+            mode = ProfileLoyaltyAddCardMode.Phone,
+            phone = "79295506234",
+            code = "123456",
+            isCodeErrorVisible = true
         ),
         ProfileLoyaltyCodeModel(
             mode = ProfileLoyaltyAddCardMode.Phone,

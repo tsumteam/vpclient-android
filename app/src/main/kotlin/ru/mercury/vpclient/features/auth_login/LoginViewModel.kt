@@ -8,20 +8,20 @@ import ru.mercury.vpclient.features.auth_login.event.LoginEvents
 import ru.mercury.vpclient.features.auth_login.intent.LoginIntent
 import ru.mercury.vpclient.features.auth_login.model.LoginModel
 import ru.mercury.vpclient.shared.data.error.LoginException
-import ru.mercury.vpclient.shared.domain.interactor.Interactor
+import ru.mercury.vpclient.shared.domain.interactor.AuthenticationInteractor
 import ru.mercury.vpclient.shared.domain.mapper.normalizePhoneInput
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val interactor: Interactor
+    private val authenticationInteractor: AuthenticationInteractor
 ): ClientViewModel<LoginIntent, LoginModel, LoginEvents>(LoginModel()) {
 
     override fun dispatch(intent: LoginIntent) {
         when (intent) {
             is LoginIntent.LoginClick -> {
-                val phoneValidationError = interactor.validateRequiredPhone(stateFlow.value.phone)
+                val phoneValidationError = authenticationInteractor.validateRequiredPhone(stateFlow.value.phone)
                 when {
                     phoneValidationError != null -> {
                         reduce { it.copy(phoneValidationError = phoneValidationError) }
@@ -29,7 +29,7 @@ class LoginViewModel @Inject constructor(
                     else -> {
                         launch {
                             reduce { it.copy(phoneValidationError = null, isLoading = true) }
-                            interactor.login(stateFlow.value.phone)
+                            authenticationInteractor.login(stateFlow.value.phone)
                             MainEventManager.send(CodeRoute)
                         }
                     }
@@ -39,7 +39,7 @@ class LoginViewModel @Inject constructor(
             is LoginIntent.EnterPhone -> reduce { it.copy(phone = normalizePhoneInput(intent.phone), phoneValidationError = null) }
             is LoginIntent.OnKeyboardDone -> {
                 launch {
-                    val canClearFocus = interactor.validateRequiredPhone(stateFlow.value.phone) == null
+                    val canClearFocus = authenticationInteractor.validateRequiredPhone(stateFlow.value.phone) == null
                     dispatch(LoginIntent.LoginClick)
                     if (canClearFocus) {
                         send(LoginEvents.ClearFocus)

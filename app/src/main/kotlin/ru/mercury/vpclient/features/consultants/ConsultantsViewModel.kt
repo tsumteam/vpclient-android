@@ -12,13 +12,13 @@ import ru.mercury.vpclient.features.consultants.model.ConsultantsModel
 import ru.mercury.vpclient.shared.data.error.ClientException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
-import ru.mercury.vpclient.shared.domain.interactor.Interactor
+import ru.mercury.vpclient.shared.domain.interactor.EmployeeInteractor
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class ConsultantsViewModel @Inject constructor(
-    private val interactor: Interactor
+    private val employeeInteractor: EmployeeInteractor
 ): ClientViewModel<ConsultantsIntent, ConsultantsModel, ConsultantsEvents>(ConsultantsModel()) {
 
     init {
@@ -30,13 +30,13 @@ class ConsultantsViewModel @Inject constructor(
         when (intent) {
             is ConsultantsIntent.CollectEmployees -> {
                 launch {
-                    interactor.employeeEntitiesFlow.collectLatest { employees ->
+                    employeeInteractor.employeeEntitiesFlow.collectLatest { employees ->
                         reduce { it.copy(employees = employees) }
                     }
                 }
             }
             is ConsultantsIntent.LoadConsultants -> {
-                val job = launch { interactor.syncEmployees() }.also { launchedJob ->
+                val job = launch { employeeInteractor.syncEmployees() }.also { launchedJob ->
                     launchedJob.invokeOnCompletion { reduce { it.copy(loadConsultantsJob = null) } }
                 }
                 reduce { it.copy(loadConsultantsJob = job) }

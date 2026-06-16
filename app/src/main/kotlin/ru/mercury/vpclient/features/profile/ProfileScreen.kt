@@ -46,6 +46,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -60,6 +62,8 @@ import ru.mercury.vpclient.features.profile_logout_dialog.intent.ProfileLogoutDi
 import ru.mercury.vpclient.features.profile_loyalty_add_card_sheet.ProfileLoyaltyAddCardSheet
 import ru.mercury.vpclient.features.profile_loyalty_code_sheet.ProfileLoyaltyCodeSheet
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
+import ru.mercury.vpclient.shared.data.entity.LoyaltyCardInfo
+import ru.mercury.vpclient.shared.data.entity.LoyaltyCardType
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.BrandBox
 import ru.mercury.vpclient.shared.ui.components.IndicatorIcon
@@ -69,6 +73,8 @@ import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.cart.CartIconButton
 import ru.mercury.vpclient.shared.ui.components.cart.FittingIconButton
 import ru.mercury.vpclient.shared.ui.components.cart.MessengerIconButton
+import ru.mercury.vpclient.shared.ui.components.profile.ProfileLoyaltyCard
+import ru.mercury.vpclient.shared.ui.components.profile.ProfileLoyaltyCardState
 import ru.mercury.vpclient.shared.ui.components.profile.ProfileViewMoreButton
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.icons.Basket24
@@ -163,10 +169,6 @@ private fun ProfileScreenContent(
     state: ProfileModel,
     dispatch: (ProfileIntent) -> Unit
 ) {
-    val viewHistoryProducts = state.viewHistoryProducts.take(PROFILE_VIEW_HISTORY_PRODUCTS_COUNT)
-    val showViewHistory = state.isViewHistoryLoading || state.viewHistoryProducts.isNotEmpty()
-    val showViewHistoryMore = state.viewHistoryProducts.size > PROFILE_VIEW_HISTORY_PRODUCTS_COUNT
-
     SharedScaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -273,48 +275,71 @@ private fun ProfileScreenContent(
             modifier = Modifier.fillMaxSize(),
             contentPadding = innerPadding + PaddingValues(top = 16.dp, bottom = 92.dp)
         ) {
-            item {
-                OutlinedButton(
-                    onClick = { dispatch(ProfileIntent.AddLoyaltyCardClick) },
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .fillMaxWidth()
-                        .height(52.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    border = BorderStroke(
-                        width = 1.dp,
-                        color = MaterialTheme.colorScheme.onBackground
-                    ),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        contentColor = MaterialTheme.colorScheme.onBackground
-                    ),
-                    contentPadding = PaddingValues(horizontal = 16.dp)
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
+            if (state.loyaltyCardInfo != null) {
+                item {
+                    ProfileLoyaltyCard(
+                        state = ProfileLoyaltyCardState(
+                            cardInfo = state.loyaltyCardInfo
+                        ),
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        onQrClick = { dispatch(ProfileIntent.LoyaltyCardQrClick) },
+                        onMoreClick = { dispatch(ProfileIntent.LoyaltyCardMoreClick) }
+                    )
+                }
+            }
+            if (state.loyaltyCardInfo == null && !state.isLoyaltyCardLoading) {
+                item {
+                    OutlinedButton(
+                        onClick = { dispatch(ProfileIntent.AddLoyaltyCardClick) },
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .fillMaxWidth()
+                            .height(52.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        border = BorderStroke(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.onBackground
+                        ),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = MaterialTheme.colorScheme.background,
+                            contentColor = MaterialTheme.colorScheme.onBackground
+                        ),
+                        contentPadding = PaddingValues(horizontal = 16.dp)
                     ) {
-                        Icon(
-                            imageVector = VipBadge24,
-                            contentDescription = null,
-                            modifier = Modifier.size(24.dp),
-                            tint = Color.Unspecified
-                        )
-
-                        Text(
-                            text = stringResource(ClientStrings.ProfileAddLoyaltyCard),
-                            style = MaterialTheme.typography.medium15.copy(
-                                letterSpacing = .3.sp,
-                                textAlign = TextAlign.Center
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = VipBadge24,
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp),
+                                tint = Color.Unspecified
                             )
-                        )
+
+                            Text(
+                                text = stringResource(ClientStrings.ProfileAddLoyaltyCard),
+                                style = MaterialTheme.typography.medium15.copy(
+                                    letterSpacing = .3.sp,
+                                    textAlign = TextAlign.Center
+                                )
+                            )
+                        }
                     }
+                }
+            }
+            if (state.loyaltyCardInfo == null && state.isLoyaltyCardLoading) {
+                item {
+                    Spacer(
+                        modifier = Modifier.height(52.dp)
+                    )
                 }
             }
             item {
                 Spacer(
-                    modifier = Modifier.height(40.dp)
+                    modifier = Modifier.height(
+                        if (state.loyaltyCardInfo != null) 21.dp else 40.dp
+                    )
                 )
             }
             item {
@@ -475,7 +500,7 @@ private fun ProfileScreenContent(
                     color = MaterialTheme.colorScheme.divider
                 )
             }
-            if (showViewHistory) {
+            if (state.showViewHistory) {
                 item {
                     Spacer(
                         modifier = Modifier.height(40.dp)
@@ -531,7 +556,7 @@ private fun ProfileScreenContent(
                             }
                             else -> {
                                 items(
-                                    items = viewHistoryProducts,
+                                    items = state.visibleViewHistoryProducts,
                                     key = { product -> "${product.id}_${product.position}" }
                                 ) { product ->
                                     Column(
@@ -563,7 +588,7 @@ private fun ProfileScreenContent(
                                         )
                                     }
                                 }
-                                if (showViewHistoryMore) {
+                                if (state.showViewHistoryMore) {
                                     item {
                                         Box(
                                             modifier = Modifier.size(width = 112.dp, height = 156.dp),
@@ -584,15 +609,46 @@ private fun ProfileScreenContent(
     }
 }
 
-private const val PROFILE_VIEW_HISTORY_PRODUCTS_COUNT = 10
-
 @PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Composable
 private fun ProfileScreenContentPreview(
+    @PreviewParameter(ProfileModelPreviewParameterProvider::class) state: ProfileModel
 ) {
     ProfileScreenContent(
-        state = ProfileModel(),
+        state = state,
         dispatch = {}
+    )
+}
+
+private class ProfileModelPreviewParameterProvider: PreviewParameterProvider<ProfileModel> {
+    override val values: Sequence<ProfileModel> = sequenceOf(
+        ProfileModel(
+            isLoyaltyCardLoading = false
+        ),
+        ProfileModel(
+            isLoyaltyCardLoading = false,
+            loyaltyCardInfo = LoyaltyCardInfo(
+                loyaltyCardNumber = "G40135",
+                bonusAmount = 0,
+                typeCard = LoyaltyCardType.Black
+            )
+        ),
+        ProfileModel(
+            isLoyaltyCardLoading = false,
+            loyaltyCardInfo = LoyaltyCardInfo(
+                loyaltyCardNumber = "G40135",
+                bonusAmount = 0,
+                typeCard = LoyaltyCardType.Gold
+            )
+        ),
+        ProfileModel(
+            isLoyaltyCardLoading = false,
+            loyaltyCardInfo = LoyaltyCardInfo(
+                loyaltyCardNumber = "G40135",
+                bonusAmount = 0,
+                typeCard = LoyaltyCardType.Silver
+            )
+        )
     )
 }

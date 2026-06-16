@@ -12,8 +12,11 @@ sealed interface ProfileIntent: Intent {
     data object LoadEmployees: ProfileIntent
     data object LoadCartData: ProfileIntent
     data object LoadViewHistoryProducts: ProfileIntent
+    data object LoadLoyaltyCardInfo: ProfileIntent
     data object NotificationClick: ProfileIntent
     data object AddLoyaltyCardClick: ProfileIntent
+    data object LoyaltyCardQrClick: ProfileIntent
+    data object LoyaltyCardMoreClick: ProfileIntent
     data object MyDataClick: ProfileIntent
     data object PurchasesClick: ProfileIntent
     data object InformationClick: ProfileIntent

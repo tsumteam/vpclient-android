@@ -11,14 +11,16 @@ import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.features.brands.intent.BrandsIntent
 import ru.mercury.vpclient.features.brands.model.BrandsModel
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
-import ru.mercury.vpclient.shared.domain.interactor.Interactor
+import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
+import ru.mercury.vpclient.shared.domain.interactor.EmployeeInteractor
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.mvi.Event
 import javax.inject.Inject
 
 @HiltViewModel
 class BrandsViewModel @Inject constructor(
-    private val interactor: Interactor
+    private val cartInteractor: CartInteractor,
+    private val employeeInteractor: EmployeeInteractor
 ): ClientViewModel<BrandsIntent, BrandsModel, Event>(BrandsModel()) {
 
     init {
@@ -32,7 +34,7 @@ class BrandsViewModel @Inject constructor(
         when (intent) {
             is BrandsIntent.CollectCartSize -> {
                 launch {
-                    interactor.cartSize
+                    cartInteractor.cartSize
                         .distinctUntilChanged()
                         .collectLatest { size ->
                             reduce { it.copy(cartSize = size) }
@@ -41,7 +43,7 @@ class BrandsViewModel @Inject constructor(
             }
             is BrandsIntent.CollectActiveEmployee -> {
                 launch {
-                    interactor.employeeEntitiesFlow
+                    employeeInteractor.employeeEntitiesFlow
                         .map { employees -> employees.firstOrNull { it.isActive } }
                         .distinctUntilChanged()
                         .collectLatest { employee ->
@@ -52,12 +54,12 @@ class BrandsViewModel @Inject constructor(
                         }
                 }
             }
-            is BrandsIntent.LoadEmployees -> launch { runCatching { interactor.syncEmployees() } }
+            is BrandsIntent.LoadEmployees -> launch { runCatching { employeeInteractor.syncEmployees() } }
             is BrandsIntent.LoadCartData -> {
                 launch {
-                    runCatching { interactor.loadBasket() }
+                    runCatching { cartInteractor.loadBasket() }
 
-                    val badge = runCatching { interactor.cartBadge() }.getOrDefault(0)
+                    val badge = runCatching { cartInteractor.cartBadge() }.getOrDefault(0)
                     reduce { it.copy(cartBadge = badge) }
                 }
             }

@@ -8,21 +8,21 @@ import ru.mercury.vpclient.features.auth_register.event.RegisterEvents
 import ru.mercury.vpclient.features.auth_register.intent.RegisterIntent
 import ru.mercury.vpclient.features.auth_register.model.RegisterModel
 import ru.mercury.vpclient.shared.data.error.RegisterException
-import ru.mercury.vpclient.shared.domain.interactor.Interactor
+import ru.mercury.vpclient.shared.domain.interactor.AuthenticationInteractor
 import ru.mercury.vpclient.shared.domain.mapper.normalizePhoneInput
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
-    private val interactor: Interactor
+    private val authenticationInteractor: AuthenticationInteractor
 ): ClientViewModel<RegisterIntent, RegisterModel, RegisterEvents>(RegisterModel()) {
 
     override fun dispatch(intent: RegisterIntent) {
         when (intent) {
             is RegisterIntent.RegisterClick -> {
-                val nameValidationError = interactor.validateRequiredName(stateFlow.value.name)
-                val phoneValidationError = interactor.validateRequiredPhone(stateFlow.value.phone)
+                val nameValidationError = authenticationInteractor.validateRequiredName(stateFlow.value.name)
+                val phoneValidationError = authenticationInteractor.validateRequiredPhone(stateFlow.value.phone)
                 when {
                     nameValidationError != null || phoneValidationError != null -> {
                         reduce { it.copy(
@@ -37,7 +37,7 @@ class RegisterViewModel @Inject constructor(
                                 phoneValidationError = null,
                                 isLoading = true
                             ) }
-                            interactor.register(stateFlow.value.phone, stateFlow.value.name)
+                            authenticationInteractor.register(stateFlow.value.phone, stateFlow.value.name)
                             reduce { it.copy(isLoading = false) }
                             MainEventManager.send(CodeRoute)
                         }
@@ -57,7 +57,7 @@ class RegisterViewModel @Inject constructor(
             }
             is RegisterIntent.OnKeyboardDone -> {
                 launch {
-                    val canClearFocus = interactor.validateRequiredName(stateFlow.value.name) == null && interactor.validateRequiredPhone(stateFlow.value.phone) == null
+                    val canClearFocus = authenticationInteractor.validateRequiredName(stateFlow.value.name) == null && authenticationInteractor.validateRequiredPhone(stateFlow.value.phone) == null
                     dispatch(RegisterIntent.RegisterClick)
                     if (canClearFocus) {
                         send(RegisterEvents.ClearFocus)

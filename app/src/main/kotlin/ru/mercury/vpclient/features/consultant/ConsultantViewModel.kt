@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
 import ru.mercury.vpclient.shared.data.error.ClientException
-import ru.mercury.vpclient.shared.domain.interactor.Interactor
+import ru.mercury.vpclient.shared.domain.interactor.EmployeeInteractor
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.navigation.BackRoute
 import ru.mercury.vpclient.features.consultant.event.ConsultantEvent
@@ -21,7 +21,7 @@ import ru.mercury.vpclient.activity.event.MainEventManager
 @HiltViewModel(assistedFactory = ConsultantViewModel.Factory::class)
 class ConsultantViewModel @AssistedInject constructor(
     @Assisted private val route: ConsultantRoute,
-    private val interactor: Interactor
+    private val employeeInteractor: EmployeeInteractor
 ): ClientViewModel<ConsultantIntent, ConsultantModel, ConsultantEvent>(ConsultantModel()) {
 
     init {
@@ -33,12 +33,12 @@ class ConsultantViewModel @AssistedInject constructor(
         when (intent) {
             is ConsultantIntent.CollectConsultant -> {
                 launch {
-                    interactor.employeeEntityFlow(route.consultantId).collectLatest { entity ->
+                    employeeInteractor.employeeEntityFlow(route.consultantId).collectLatest { entity ->
                         reduce { it.copy(employeeEntity = entity) }
                     }
                 }
             }
-            is ConsultantIntent.LoadConsultant -> launch { interactor.syncEmployee(route.consultantId) }
+            is ConsultantIntent.LoadConsultant -> launch { employeeInteractor.syncEmployee(route.consultantId) }
             is ConsultantIntent.BackClick -> launch { MainEventManager.send(BackRoute) }
         }
     }

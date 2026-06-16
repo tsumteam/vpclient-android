@@ -7,16 +7,16 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.mercury.vpclient.BuildConfig
-import ru.mercury.vpclient.shared.domain.mapper.orEmpty
-import ru.mercury.vpclient.shared.mvi.ClientViewModel
-import ru.mercury.vpclient.shared.mvi.Event
+import ru.mercury.vpclient.features.debug.event.DebugEvent
+import ru.mercury.vpclient.features.debug.intent.DebugIntent
+import ru.mercury.vpclient.features.debug.model.DebugModel
 import ru.mercury.vpclient.shared.data.network.env.ClientEnvironment
 import ru.mercury.vpclient.shared.data.persistence.database.AppDatabase
 import ru.mercury.vpclient.shared.data.persistence.datastore.PreferenceKey
 import ru.mercury.vpclient.shared.data.persistence.datastore.SettingsDataStore
-import ru.mercury.vpclient.features.debug.event.DebugEvent
-import ru.mercury.vpclient.features.debug.intent.DebugIntent
-import ru.mercury.vpclient.features.debug.model.DebugModel
+import ru.mercury.vpclient.shared.domain.mapper.orEmpty
+import ru.mercury.vpclient.shared.mvi.ClientViewModel
+import ru.mercury.vpclient.shared.mvi.Event
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -38,19 +38,26 @@ class DebugViewModel @Inject constructor(
                     combine(
                         settingsDataStore.get().getValueFlow(PreferenceKey.UserToken),
                         settingsDataStore.get().getValueFlow(environmentPreferenceKey()),
-                        settingsDataStore.get().getValueFlow(PreferenceKey.RequestDelay)
-                    ) { userToken, environment, requestDelay ->
+                        settingsDataStore.get().getValueFlow(PreferenceKey.RequestDelay),
+                        settingsDataStore.get().getValueFlow(PreferenceKey.MockBackendEnabled)
+                    ) { userToken, environment, requestDelay, mockBackendEnabled ->
                         DebugModel(
                             userToken = userToken.orEmpty(),
                             environment = resolveEnvironment(environment),
-                            requestDelayEnabled = requestDelay.orEmpty > 0F
+                            requestDelayEnabled = requestDelay.orEmpty > 0F,
+                            mockBackendEnabled = mockBackendEnabled.orEmpty
                         )
                     }.collectLatest { model -> reduce { model } }
                 }
             }
             is DebugIntent.EnvironmentClick -> reduce { it.copy(environmentDialog = true) }
             is DebugIntent.DismissEnvironmentDialog -> reduce { it.copy(environmentDialog = false) }
-            is DebugIntent.ToggleRequestDelay -> launch { settingsDataStore.get().setValue(PreferenceKey.RequestDelay, if (intent.enabled) 5_000L else 0L) }
+            is DebugIntent.ToggleRequestDelay -> {
+                launch { settingsDataStore.get().setValue(PreferenceKey.RequestDelay, if (intent.enabled) 5_000L else 0L) }
+            }
+            is DebugIntent.ToggleMockBackend -> {
+                launch { settingsDataStore.get().setValue(PreferenceKey.MockBackendEnabled, !stateFlow.value.mockBackendEnabled) }
+            }
             is DebugIntent.SelectEnvironment -> {
                 launch {
                     settingsDataStore.get().setValue(environmentPreferenceKey(), intent.environment.name)

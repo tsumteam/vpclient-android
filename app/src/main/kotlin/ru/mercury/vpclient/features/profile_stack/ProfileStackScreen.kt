@@ -59,6 +59,10 @@ fun ProfileStackScreen(
         flow = ProfileStackEventManager.eventFlow
     ) { event ->
         when (event) {
+            is ProfileRoute -> {
+                navBackStack.clear()
+                navBackStack.add(ProfileRoute)
+            }
             is MyDataRoute -> navBackStack.add(event)
             is ProfileOrdersRoute -> navBackStack.add(event)
             is ProfileOrderRoute -> navBackStack.add(event)

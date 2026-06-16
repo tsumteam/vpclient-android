@@ -27,5 +27,6 @@ dependencyResolutionManagement {
 rootProject.name = "vpclient"
 include(":app")
 include(":shared:coroutines")
+include(":shared:domain")
 include(":shared:mvi")
 include(":shared:ui")

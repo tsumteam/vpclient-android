@@ -18,7 +18,8 @@ import ru.mercury.vpclient.features.profile_policy.navigation.ProfilePolicyRoute
 import ru.mercury.vpclient.features.profile_return.navigation.ProfileReturnRoute
 import ru.mercury.vpclient.features.profile_stack.event.ProfileStackEventManager
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
-import ru.mercury.vpclient.shared.domain.interactor.Interactor
+import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
+import ru.mercury.vpclient.shared.domain.interactor.EmployeeInteractor
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.mvi.Event
 import ru.mercury.vpclient.shared.navigation.BackRoute
@@ -26,7 +27,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileInfoViewModel @Inject constructor(
-    private val interactor: Interactor
+    private val cartInteractor: CartInteractor,
+    private val employeeInteractor: EmployeeInteractor
 ): ClientViewModel<ProfileInfoIntent, ProfileInfoModel, Event>(ProfileInfoModel()) {
 
     init {
@@ -39,7 +41,7 @@ class ProfileInfoViewModel @Inject constructor(
         when (intent) {
             is ProfileInfoIntent.CollectCartSize -> {
                 launch {
-                    interactor.cartSize
+                    cartInteractor.cartSize
                         .distinctUntilChanged()
                         .collectLatest { size ->
                             reduce { it.copy(cartSize = size) }
@@ -48,7 +50,7 @@ class ProfileInfoViewModel @Inject constructor(
             }
             is ProfileInfoIntent.CollectActiveEmployee -> {
                 launch {
-                    interactor.employeeEntitiesFlow
+                    employeeInteractor.employeeEntitiesFlow
                         .map { employees -> employees.firstOrNull { it.isActive } }
                         .distinctUntilChanged()
                         .collectLatest { employee ->
@@ -61,9 +63,9 @@ class ProfileInfoViewModel @Inject constructor(
             }
             is ProfileInfoIntent.LoadCartData -> {
                 launch {
-                    runCatching { interactor.loadBasket() }
+                    runCatching { cartInteractor.loadBasket() }
 
-                    val badge = runCatching { interactor.cartBadge() }.getOrDefault(0)
+                    val badge = runCatching { cartInteractor.cartBadge() }.getOrDefault(0)
                     reduce { it.copy(cartBadge = badge) }
                 }
             }

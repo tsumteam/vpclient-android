@@ -12,14 +12,14 @@ import ru.mercury.vpclient.features.profile_stack.event.ProfileStackEventManager
 import ru.mercury.vpclient.shared.data.CLIENT_SERVICE_EMAIL
 import ru.mercury.vpclient.shared.data.CLIENT_SERVICE_PHONE
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
-import ru.mercury.vpclient.shared.domain.interactor.Interactor
+import ru.mercury.vpclient.shared.domain.interactor.EmployeeInteractor
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.navigation.BackRoute
 import javax.inject.Inject
 
 @HiltViewModel
 class ProfileContactsViewModel @Inject constructor(
-    private val interactor: Interactor
+    private val employeeInteractor: EmployeeInteractor
 ): ClientViewModel<ProfileContactsIntent, ProfileContactsModel, ProfileContactsEvent>(ProfileContactsModel()) {
 
     init {
@@ -30,7 +30,7 @@ class ProfileContactsViewModel @Inject constructor(
         when (intent) {
             is ProfileContactsIntent.CollectActiveEmployee -> {
                 launch {
-                    interactor.employeeEntitiesFlow
+                    employeeInteractor.employeeEntitiesFlow
                         .map { employees -> employees.firstOrNull { it.isActive } ?: EmployeeEntity.Empty }
                         .distinctUntilChanged()
                         .collectLatest { employee ->

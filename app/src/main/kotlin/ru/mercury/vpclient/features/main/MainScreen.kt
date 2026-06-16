@@ -112,9 +112,10 @@ private fun MainScreenContent(
 ) {
     val dividerColor = MaterialTheme.colorScheme.outlineVariant
     val navigationSuiteScaffoldState = rememberNavigationSuiteScaffoldState()
-    val isBottomBarVisible by remember(state.selectedRoute, catalogNavBackStack) {
+    val isBottomBarVisible by remember(state.selectedRoute, catalogNavBackStack, profileNavBackStack) {
         derivedStateOf {
             when {
+                state.selectedRoute == ProfileStackRoute -> profileNavBackStack.lastOrNull() is ProfileRoute
                 state.selectedRoute != CatalogStackRoute -> true
                 else -> catalogNavBackStack.lastOrNull() !is DetailsRoute
             }

@@ -17,7 +17,9 @@ import ru.mercury.vpclient.features.category.model.CategoryModel
 import ru.mercury.vpclient.features.category.navigation.CategoryRoute
 import ru.mercury.vpclient.features.filter.navigation.FilterRoute
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
-import ru.mercury.vpclient.shared.domain.interactor.Interactor
+import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
+import ru.mercury.vpclient.shared.domain.interactor.CatalogInteractor
+import ru.mercury.vpclient.shared.domain.interactor.EmployeeInteractor
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.mvi.Event
 import ru.mercury.vpclient.shared.navigation.BackRoute
@@ -25,7 +27,9 @@ import ru.mercury.vpclient.shared.navigation.BackRoute
 @HiltViewModel(assistedFactory = CategoryViewModel.Factory::class)
 class CategoryViewModel @AssistedInject constructor(
     @Assisted private val route: CategoryRoute,
-    private val interactor: Interactor
+    private val catalogInteractor: CatalogInteractor,
+    private val cartInteractor: CartInteractor,
+    private val employeeInteractor: EmployeeInteractor
 ): ClientViewModel<CategoryIntent, CategoryModel, Event>(CategoryModel()) {
 
     init {
@@ -42,21 +46,21 @@ class CategoryViewModel @AssistedInject constructor(
         when (intent) {
             is CategoryIntent.CollectCategoryEntity -> {
                 launch {
-                    interactor.catalogCategoryFlow(route.categoryId).collectLatest { entity ->
+                    catalogInteractor.catalogCategoryFlow(route.categoryId).collectLatest { entity ->
                         reduce { it.copy(entity = entity) }
                     }
                 }
             }
             is CategoryIntent.CollectCategoryPojos -> {
                 launch {
-                    interactor.subcategoryPojosFlow(route.categoryId).collectLatest { pojos ->
+                    catalogInteractor.subcategoryPojosFlow(route.categoryId).collectLatest { pojos ->
                         reduce { it.copy(pojos = pojos.sortedBy { pojo -> pojo.entity.position }) }
                     }
                 }
             }
             is CategoryIntent.CollectCartSize -> {
                 launch {
-                    interactor.cartSize
+                    cartInteractor.cartSize
                         .distinctUntilChanged()
                         .collectLatest { size ->
                             reduce { it.copy(cartSize = size) }
@@ -65,7 +69,7 @@ class CategoryViewModel @AssistedInject constructor(
             }
             is CategoryIntent.CollectActiveEmployee -> {
                 launch {
-                    interactor.employeeEntitiesFlow
+                    employeeInteractor.employeeEntitiesFlow
                         .map { employees -> employees.firstOrNull { it.isActive } }
                         .distinctUntilChanged()
                         .collectLatest { employee ->
@@ -76,17 +80,17 @@ class CategoryViewModel @AssistedInject constructor(
                         }
                 }
             }
-            is CategoryIntent.LoadEmployees -> launch { runCatching { interactor.syncEmployees() } }
+            is CategoryIntent.LoadEmployees -> launch { runCatching { employeeInteractor.syncEmployees() } }
             is CategoryIntent.LoadCartData -> {
                 launch {
-                    runCatching { interactor.loadBasket() }
+                    runCatching { cartInteractor.loadBasket() }
 
-                    val badge = runCatching { interactor.cartBadge() }.getOrDefault(0)
+                    val badge = runCatching { cartInteractor.cartBadge() }.getOrDefault(0)
                     reduce { it.copy(cartBadge = badge) }
                 }
             }
             is CategoryIntent.LoadCatalogCategoriesBottom -> {
-                launch { interactor.loadCatalogCategoriesBottom(route.categoryId) }
+                launch { catalogInteractor.loadCatalogCategoriesBottom(route.categoryId) }
             }
             is CategoryIntent.BackClick -> launch { CatalogStackEventManager.send(BackRoute) }
             is CategoryIntent.CartClick -> launch { MainEventManager.send(CartRoute()) }

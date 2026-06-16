@@ -3,11 +3,11 @@
 package ru.mercury.vpclient.features.profile_qr
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,6 +30,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.mercury.vpclient.features.profile_qr.intent.ProfileQrIntent
 import ru.mercury.vpclient.features.profile_qr.model.ProfileQrModel
+import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.profile.ProfileQrImage
 import ru.mercury.vpclient.shared.ui.icons.Close24
@@ -85,30 +86,31 @@ private fun ProfileQrScreenContent(
             )
         }
     ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(start = 68.dp, top = 48.dp, end = 68.dp),
+        SharedLazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = innerPadding + PaddingValues(start = 68.dp, top = 48.dp, end = 68.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            ProfileQrImage(
-                qrCode = state.qrCode,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1F)
-            )
-
-            Text(
-                text = stringResource(ClientStrings.ProfileQrDescription),
-                style = MaterialTheme.typography.regular15.copy(
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    lineHeight = 19.sp,
-                    letterSpacing = .2.sp,
-                    textAlign = TextAlign.Center
+            item {
+                ProfileQrImage(
+                    qrCode = state.qrCode,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1F)
                 )
-            )
+            }
+            item {
+                Text(
+                    text = stringResource(ClientStrings.ProfileQrDescription),
+                    style = MaterialTheme.typography.regular15.copy(
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        lineHeight = 19.sp,
+                        letterSpacing = .2.sp,
+                        textAlign = TextAlign.Center
+                    )
+                )
+            }
         }
     }
 }

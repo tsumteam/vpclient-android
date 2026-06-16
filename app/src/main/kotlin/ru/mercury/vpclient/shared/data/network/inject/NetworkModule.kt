@@ -32,6 +32,7 @@ import ru.mercury.vpclient.shared.data.APP_FULL_VERSION
 import ru.mercury.vpclient.shared.data.APP_VERSION
 import ru.mercury.vpclient.shared.data.DEFAULT_EMPLOYEE_APP
 import ru.mercury.vpclient.shared.data.network.env.ClientEnvironment
+import ru.mercury.vpclient.shared.data.network.mock.MockBackendInterceptor
 import ru.mercury.vpclient.shared.data.persistence.datastore.PreferenceKey
 import ru.mercury.vpclient.shared.data.persistence.datastore.SettingsDataStore
 import ru.mercury.vpclient.shared.domain.mapper.orEmpty
@@ -128,6 +129,7 @@ object NetworkModule {
                         .createShortcut(true)
                     addInterceptor(chuckerBuilder.build())
                     if (BuildConfig.DEBUG) {
+                        addInterceptor(MockBackendInterceptor(context, settingsDataStore))
                         addInterceptor(provideLoggingInterceptor())
                     }
                 }

@@ -152,6 +152,7 @@ androidComponents {
 
 dependencies {
     implementation(projects.shared.coroutines)
+    implementation(projects.shared.domain)
     implementation(projects.shared.mvi)
     implementation(projects.shared.ui)
 

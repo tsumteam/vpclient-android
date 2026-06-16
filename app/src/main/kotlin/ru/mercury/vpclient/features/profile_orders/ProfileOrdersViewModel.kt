@@ -20,7 +20,10 @@ import ru.mercury.vpclient.features.profile_orders.model.toProfileOrderItemState
 import ru.mercury.vpclient.features.profile_order.navigation.ProfileOrderRoute
 import ru.mercury.vpclient.features.profile_stack.event.ProfileStackEventManager
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
-import ru.mercury.vpclient.shared.domain.interactor.Interactor
+import ru.mercury.vpclient.shared.domain.interactor.AuthenticationInteractor
+import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
+import ru.mercury.vpclient.shared.domain.interactor.EmployeeInteractor
+import ru.mercury.vpclient.shared.domain.interactor.OrderInteractor
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.ui.components.profile.ProfileOrderItemState
 import ru.mercury.vpclient.shared.navigation.BackRoute
@@ -28,7 +31,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileOrdersViewModel @Inject constructor(
-    private val interactor: Interactor
+    private val authenticationInteractor: AuthenticationInteractor,
+    private val cartInteractor: CartInteractor,
+    private val employeeInteractor: EmployeeInteractor,
+    private val orderInteractor: OrderInteractor
 ): ClientViewModel<ProfileOrdersIntent, ProfileOrdersModel, ProfileOrdersEvent>(ProfileOrdersModel()) {
 
     val ordersPagingFlow = Pager(
@@ -39,7 +45,8 @@ class ProfileOrdersViewModel @Inject constructor(
         ),
         pagingSourceFactory = {
             ProfileOrdersPagingSource(
-                interactor = interactor,
+                authenticationInteractor = authenticationInteractor,
+                orderInteractor = orderInteractor,
                 pageSize = PROFILE_ORDERS_LIMIT
             )
         }
@@ -55,7 +62,7 @@ class ProfileOrdersViewModel @Inject constructor(
         when (intent) {
             is ProfileOrdersIntent.CollectCartSize -> {
                 launch {
-                    interactor.cartSize
+                    cartInteractor.cartSize
                         .distinctUntilChanged()
                         .collectLatest { size ->
                             reduce { it.copy(cartSize = size) }
@@ -64,7 +71,7 @@ class ProfileOrdersViewModel @Inject constructor(
             }
             is ProfileOrdersIntent.CollectActiveEmployee -> {
                 launch {
-                    interactor.employeeEntitiesFlow
+                    employeeInteractor.employeeEntitiesFlow
                         .map { employees -> employees.firstOrNull { it.isActive } }
                         .distinctUntilChanged()
                         .collectLatest { employee ->
@@ -74,9 +81,9 @@ class ProfileOrdersViewModel @Inject constructor(
             }
             is ProfileOrdersIntent.LoadCartData -> {
                 launch {
-                    runCatching { interactor.loadBasket() }
+                    runCatching { cartInteractor.loadBasket() }
 
-                    val badge = runCatching { interactor.cartBadge() }.getOrDefault(0)
+                    val badge = runCatching { cartInteractor.cartBadge() }.getOrDefault(0)
                     reduce { it.copy(cartBadge = badge) }
                 }
             }
@@ -85,9 +92,9 @@ class ProfileOrdersViewModel @Inject constructor(
                 reduce { it.copy(isRefreshing = true) }
                 launch { send(ProfileOrdersEvent.RefreshOrders) }
                 launch {
-                    runCatching { interactor.loadBasket() }
+                    runCatching { cartInteractor.loadBasket() }
 
-                    val badge = runCatching { interactor.cartBadge() }.getOrDefault(0)
+                    val badge = runCatching { cartInteractor.cartBadge() }.getOrDefault(0)
                     reduce { it.copy(cartBadge = badge) }
                 }
             }
@@ -116,7 +123,8 @@ class ProfileOrdersViewModel @Inject constructor(
 }
 
 private class ProfileOrdersPagingSource(
-    private val interactor: Interactor,
+    private val authenticationInteractor: AuthenticationInteractor,
+    private val orderInteractor: OrderInteractor,
     private val pageSize: Int
 ): PagingSource<Int, ProfileOrderItemState>() {
 
@@ -130,7 +138,7 @@ private class ProfileOrdersPagingSource(
         return try {
             val offset = params.key ?: 0
             val limit = params.loadSize
-            val clientId = interactor.userId()
+            val clientId = authenticationInteractor.userId()
 
             if (clientId.isEmpty()) {
                 return LoadResult.Page(
@@ -140,7 +148,7 @@ private class ProfileOrdersPagingSource(
                 )
             }
 
-            val orders = interactor.profileOrders(
+            val orders = orderInteractor.profileOrders(
                 clientId = clientId,
                 limit = limit,
                 offset = offset

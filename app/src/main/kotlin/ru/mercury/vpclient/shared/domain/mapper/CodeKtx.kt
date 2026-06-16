@@ -1,11 +1,23 @@
 package ru.mercury.vpclient.shared.domain.mapper
 
+import ru.mercury.vpclient.shared.data.CODE_RESEND_MAX_TIME
+import ru.mercury.vpclient.shared.data.CODE_RESEND_TIMER_DELAY
 import java.util.Locale
 
 fun formatCodeResendTime(seconds: Int): String {
     val minutes = (seconds / 60).coerceAtLeast(0)
     val remainingSeconds = (seconds % 60).coerceAtLeast(0)
     return String.format(Locale.getDefault(), "%02d:%02d", minutes, remainingSeconds)
+}
+
+fun codeResendSecondsLeft(
+    startedAt: Long,
+    now: Long = System.currentTimeMillis()
+): Int {
+    val elapsedMillis = now - startedAt
+    if (elapsedMillis >= CODE_RESEND_MAX_TIME) return 0
+    val remainingMillis = CODE_RESEND_MAX_TIME - elapsedMillis
+    return (remainingMillis / CODE_RESEND_TIMER_DELAY).toInt().coerceAtLeast(1)
 }
 
 fun formatPhoneForDisplay(phone: String): String {
