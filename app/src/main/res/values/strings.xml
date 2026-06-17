@@ -47,6 +47,7 @@
 
     <string name="catalog_watch_all">Смотреть\nвсё</string>
     <string name="catalog_view_all_clothing">Смотреть всю одежду</string>
+    <string name="catalog_added_to_cart">Добавлено в корзину</string>
 
     <string name="cart_title">Корзина</string>
     <string name="cart_toolbar_cart">КОРЗИНА</string>
@@ -88,6 +89,7 @@
     <string name="cart_in_basket">В корзине:</string>
     <string name="cart_to_fitting">К примерке:</string>
     <string name="cart_to_payment">К оплате:</string>
+    <string name="cart_redeem_until">Выкупить до %1$s</string>
     <string name="cart_consultant_name">Екатерина</string><!--fixme-->
     <string name="cart_consultant_brand">Brioni</string><!--fixme-->
     <string name="cart_empty_message">На данный момент Вы не добавили ни одного товара в заказ.</string>
@@ -257,6 +259,13 @@
     <string name="details_field_item_id">Артикул</string>
     <string name="details_field_article">Артикул производителя</string>
     <string name="details_field_measurements">Замеры</string>
+
+    <string name="video_speed_title">Скорость</string>
+    <string name="video_speed_05">0,5x</string>
+    <string name="video_speed_1">1x</string>
+    <string name="video_speed_15">1,5x</string>
+    <string name="video_speed_2">2x</string>
+    <string name="video_time">%1$s / %2$s</string>
 
     <string name="consultants_title">Консультанты</string>
     <string name="consultants_active_button">Активный</string>

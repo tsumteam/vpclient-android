@@ -34,6 +34,7 @@ sealed interface CartIntent: Intent {
     data object ConfirmSizePicker: CartIntent
     data object ConfirmColorPicker: CartIntent
     data object ConfirmQuantityPicker: CartIntent
+    data object CollectInitialPage: CartIntent
     data class FittingDeliveryClick(
         val productIds: List<String>,
         val deliveryId: String,

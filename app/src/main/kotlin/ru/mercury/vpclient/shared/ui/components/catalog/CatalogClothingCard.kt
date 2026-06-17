@@ -2,7 +2,6 @@ package ru.mercury.vpclient.shared.ui.components.catalog
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -13,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
@@ -23,7 +23,6 @@ import ru.mercury.vpclient.shared.domain.mapper.isEmpty
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.placeholder
-import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.livretMedium19
@@ -46,8 +45,10 @@ fun CatalogClothingCard(
     ) {
         ClientAsyncImage(
             imageUrl = entity.photoUrl,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Fit
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(149.dp),
+            contentScale = ContentScale.Crop
         )
 
         Text(
@@ -66,7 +67,7 @@ fun CatalogClothingCard(
 }
 
 @PreviewWrapper(ThemeWrapper::class)
-@FontScalePreviews
+@Preview
 @Composable
 private fun CatalogClothingCardPreview(
     @PreviewParameter(CatalogClothingCardCatalogCategoryEntityProvider::class) entity: CatalogCategoryEntity

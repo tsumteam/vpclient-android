@@ -1,9 +1,9 @@
-package ru.mercury.vpclient.features.mediaviewer.model
+package ru.mercury.vpclient.features.media.model
 
 import ru.mercury.vpclient.shared.data.entity.DetailsMediaItem
 import ru.mercury.vpclient.shared.mvi.Model
 
-data class MediaViewerModel(
+data class MediaModel(
     val imageUrls: List<String> = emptyList(),
     val videoUrl: String? = null,
     val initialPage: Int = 0

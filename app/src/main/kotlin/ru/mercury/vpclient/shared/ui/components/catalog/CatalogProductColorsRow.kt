@@ -7,9 +7,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
@@ -17,8 +17,6 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.data.FORMAT_PLUS
-import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
-import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.regular12
 
@@ -35,10 +33,9 @@ fun CatalogProductColorsRow(
         modifier = modifier.height(16.dp),
         content = {
             visibleUrls.forEach { url ->
-                ClientAsyncImage(
+                CatalogProductColorImage(
                     imageUrl = url,
-                    modifier = Modifier.clip(CircleShape),
-                    contentScale = ContentScale.Crop
+                    modifier = Modifier.clip(CircleShape)
                 )
             }
             if (extraCount > 0) {
@@ -79,7 +76,7 @@ fun CatalogProductColorsRow(
 }
 
 @PreviewWrapper(ThemeWrapper::class)
-@FontScalePreviews
+@Preview
 @Composable
 private fun CatalogProductColorsRowPreview(
     @PreviewParameter(CatalogProductColorsRowProvider::class) colorPhotoUrls: List<String>

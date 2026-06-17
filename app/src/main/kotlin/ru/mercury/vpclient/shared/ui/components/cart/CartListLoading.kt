@@ -32,8 +32,7 @@ fun CartListLoading(
         userScrollEnabled = false
     ) {
         items(
-            items = List(5) { it },
-            key = { index -> "cart_list_product_placeholder_$index" }
+            count = 5
         ) {
             Box(
                 modifier = Modifier

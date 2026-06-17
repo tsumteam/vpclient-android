@@ -581,8 +581,7 @@ private fun ProfileScreenContent(
                         when {
                             state.isViewHistoryLoading -> {
                                 items(
-                                    items = listOf(0, 1, 2, 3),
-                                    key = { index -> "profile_history_placeholder_$index" }
+                                    count = 4
                                 ) {
                                     Spacer(
                                         modifier = Modifier

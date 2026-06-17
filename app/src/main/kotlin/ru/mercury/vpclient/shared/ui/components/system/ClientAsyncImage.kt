@@ -53,7 +53,7 @@ fun ClientAsyncImage(
 @Composable
 private fun ClientAsyncImagePreview() {
     ClientAsyncImage(
-        imageUrl = "https://example.com/image.png",
+        imageUrl = "",
         modifier = Modifier.size(
             width = 121.dp,
             height = 45.dp

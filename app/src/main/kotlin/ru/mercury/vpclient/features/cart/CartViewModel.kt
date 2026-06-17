@@ -54,21 +54,15 @@ import ru.mercury.vpclient.shared.navigation.BackRoute
 
 @HiltViewModel(assistedFactory = CartViewModel.Factory::class)
 class CartViewModel @AssistedInject constructor(
-    @Assisted route: CartRoute,
+    @Assisted private val route: CartRoute,
     private val authenticationInteractor: AuthenticationInteractor,
     private val cartInteractor: CartInteractor,
     private val employeeInteractor: EmployeeInteractor,
     private val productInteractor: ProductInteractor
-): ClientViewModel<CartIntent, CartModel, CartEvent>(
-    CartModel(
-        initialPage = when (route.page) {
-            CartPage.Cart -> CartModel.CART_PAGE_INDEX
-            CartPage.Fitting -> CartModel.FITTING_PAGE_INDEX
-        }
-    )
-) {
+): ClientViewModel<CartIntent, CartModel, CartEvent>(CartModel()) {
 
     init {
+        dispatch(CartIntent.CollectInitialPage)
         dispatch(CartIntent.CollectCart)
         dispatch(CartIntent.CollectActiveEmployee)
         dispatch(CartIntent.LoadCurrentUser)
@@ -79,6 +73,16 @@ class CartViewModel @AssistedInject constructor(
 
     override fun dispatch(intent: CartIntent) {
         when (intent) {
+            is CartIntent.CollectInitialPage -> {
+                reduce {
+                    it.copy(
+                        initialPage = when (route.page) {
+                            CartPage.Cart -> CartModel.CART_PAGE_INDEX
+                            CartPage.Fitting -> CartModel.FITTING_PAGE_INDEX
+                        }
+                    )
+                }
+            }
             is CartIntent.CollectCart -> {
                 launch {
                     cartInteractor.cartProductsFlow.collectLatest { products ->

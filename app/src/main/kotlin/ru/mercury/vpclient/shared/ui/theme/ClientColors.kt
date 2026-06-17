@@ -63,3 +63,9 @@ val ColorScheme.silver2: Color
 
 val ColorScheme.silver3: Color
     get() = Color(0xFFB0B8C4)
+
+val ColorScheme.primary40: Color
+    get() = Color(0x661F1F1F)
+
+val ColorScheme.secondary2: Color
+    get() = Color(0xFF363636)

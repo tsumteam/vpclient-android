@@ -17,6 +17,7 @@ sealed interface DetailsIntent: Intent {
     data object MessageClick: DetailsIntent
     data object SizeTableClick: DetailsIntent
     data object AddToBasketClick: DetailsIntent
+    data object OpenVideo: DetailsIntent
     data object HideSizePicker: DetailsIntent
     data object ShowWearWithSheet: DetailsIntent
     data object HideWearWithSheet: DetailsIntent
@@ -27,5 +28,5 @@ sealed interface DetailsIntent: Intent {
     data class ButtonClick(val index: Int): DetailsIntent
     data class ProductClick(val id: String): DetailsIntent
     data class ProductBasketClick(val id: String): DetailsIntent
-    data class OpenMediaViewer(val initialPage: Int): DetailsIntent
+    data class OpenMedia(val initialPage: Int): DetailsIntent
 }

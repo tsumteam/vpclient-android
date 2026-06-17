@@ -16,7 +16,8 @@ import ru.mercury.vpclient.features.details.event.DetailsEvent
 import ru.mercury.vpclient.features.details.intent.DetailsIntent
 import ru.mercury.vpclient.features.details.model.DetailsModel
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
-import ru.mercury.vpclient.features.mediaviewer.navigation.MediaViewerRoute
+import ru.mercury.vpclient.features.media.navigation.MediaRoute
+import ru.mercury.vpclient.features.video.navigation.VideoRoute
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.error.AddProductToBasketException
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
@@ -201,12 +202,16 @@ class DetailsViewModel @AssistedInject constructor(
                 }
             }
             is DetailsIntent.ProductBasketClick -> launch { cartInteractor.addProductToBasket(intent.id, null) }
-            is DetailsIntent.OpenMediaViewer -> launch {
+            is DetailsIntent.OpenVideo -> launch {
+                val videoUrl = stateFlow.value.selectedColorVideoUrl ?: return@launch
+                MainEventManager.send(VideoRoute(videoUrl))
+            }
+            is DetailsIntent.OpenMedia -> launch {
                 val state = stateFlow.value
                 val totalCount = state.pagerImageUrls.size + if (state.selectedColorVideoUrl != null) 1 else 0
                 if (totalCount > 0) {
                     MainEventManager.send(
-                        MediaViewerRoute(
+                        MediaRoute(
                             imageUrls = state.pagerImageUrls,
                             videoUrl = state.selectedColorVideoUrl,
                             initialPage = intent.initialPage.coerceIn(0, totalCount - 1)

@@ -34,8 +34,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
@@ -43,7 +45,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
@@ -58,10 +59,11 @@ import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.icons.Basket24
 import ru.mercury.vpclient.shared.ui.icons.BasketFilled24
 import ru.mercury.vpclient.shared.ui.icons.Message24
-import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
+import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.regular12
 import ru.mercury.vpclient.shared.ui.theme.regular14
+import kotlin.time.Duration.Companion.milliseconds
 
 private const val ADDED_TO_BASKET_BADGE_VISIBLE_DURATION = 1_500L
 private const val ADDED_TO_BASKET_BADGE_FADE_OUT_DURATION = 800
@@ -166,7 +168,7 @@ fun CatalogProductCard(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "Добавлено в корзину",
+                    text = stringResource(ClientStrings.CatalogAddedToCart),
                     maxLines = 1,
                     overflow = TextOverflow.Clip,
                     style = MaterialTheme.typography.regular12.copy(
@@ -269,7 +271,7 @@ fun CatalogProductCard(
 }
 
 @PreviewWrapper(ThemeWrapper::class)
-@FontScalePreviews
+@Preview
 @Composable
 private fun CatalogProductCardPreview(
     @PreviewParameter(CatalogProductCardCatalogFilterProductsEntityProvider::class) product: CatalogFilterProductsEntity

@@ -3,6 +3,7 @@
 package ru.mercury.vpclient.features.details
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,12 +11,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.layout.size
@@ -33,7 +33,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -93,7 +92,7 @@ import ru.mercury.vpclient.shared.ui.components.details.DetailsOutfitButton
 import ru.mercury.vpclient.shared.ui.components.details.DetailsPagerIndicator
 import ru.mercury.vpclient.shared.ui.components.details.DetailsProductInfoBox
 import ru.mercury.vpclient.shared.ui.components.details.DetailsSizeSelector
-import ru.mercury.vpclient.shared.ui.components.details.DetailsVideoPlayer
+import ru.mercury.vpclient.shared.ui.components.video.VideoPlayer
 import ru.mercury.vpclient.shared.ui.components.details.DetailsWearWithSection
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
@@ -122,6 +121,72 @@ fun DetailsScreen(
         dispatch = viewModel::dispatch,
         snackbarHostStateError = snackbarHostStateError
     )
+
+    if (state.isMessageSheetVisible) {
+        DetailsMessageSheet(
+            state = DetailsMessageSheetModel(
+                productEntity = state.productEntity
+            ),
+            dispatch = { intent ->
+                when (intent) {
+                    is DetailsMessageSheetIntent.CommentChange -> Unit
+                    is DetailsMessageSheetIntent.SendClick -> {
+                        viewModel.dispatch(DetailsIntent.HideMessageSheet)
+                    }
+                    is DetailsMessageSheetIntent.DismissRequest -> {
+                        viewModel.dispatch(DetailsIntent.HideMessageSheet)
+                    }
+                }
+            }
+        )
+    }
+
+    if (state.isWearWithSheetVisible) {
+        DetailsWearWithSheet(
+            state = DetailsWearWithSheetModel(
+                products = state.wearWithProducts,
+                basketProductIds = state.basketProductIds,
+                basketProductKeys = state.basketProductKeys
+            ),
+            dispatch = { intent ->
+                when (intent) {
+                    is DetailsWearWithSheetIntent.ProductClick -> {
+                        viewModel.dispatch(DetailsIntent.ProductClick(intent.id))
+                    }
+                    is DetailsWearWithSheetIntent.ProductBasketClick -> {
+                        viewModel.dispatch(DetailsIntent.ProductBasketClick(intent.product.id))
+                    }
+                    is DetailsWearWithSheetIntent.DismissRequest -> {
+                        viewModel.dispatch(DetailsIntent.HideWearWithSheet)
+                    }
+                }
+            }
+        )
+    }
+
+    if (state.isSizePickerSheetVisible) {
+        DetailsSizePickerSheet(
+            state = DetailsSizePickerSheetModel(
+                sizeSelectorState = state.sizePickerState
+            ),
+            dispatch = { intent ->
+                when (intent) {
+                    is DetailsSizePickerSheetIntent.SizeClick -> {
+                        viewModel.dispatch(DetailsIntent.SizeClick(intent.index))
+                    }
+                    is DetailsSizePickerSheetIntent.SizeTableClick -> {
+                        viewModel.dispatch(DetailsIntent.SizeTableClick)
+                    }
+                    is DetailsSizePickerSheetIntent.AddToBasketClick -> {
+                        viewModel.dispatch(DetailsIntent.AddToBasketClick)
+                    }
+                    is DetailsSizePickerSheetIntent.DismissRequest -> {
+                        viewModel.dispatch(DetailsIntent.HideSizePicker)
+                    }
+                }
+            }
+        )
+    }
 
     ObserveAsEvents(
         flow = viewModel.eventFlow
@@ -174,72 +239,6 @@ private fun DetailsScreenContent(
             val mid = Int.MAX_VALUE / 2
             pagerState.scrollToPage(mid - mid % pagerItems.size)
         }
-    }
-
-    if (state.isMessageSheetVisible) {
-        DetailsMessageSheet(
-            state = DetailsMessageSheetModel(
-                productEntity = state.productEntity
-            ),
-            dispatch = { intent ->
-                when (intent) {
-                    is DetailsMessageSheetIntent.CommentChange -> Unit
-                    is DetailsMessageSheetIntent.SendClick -> {
-                        dispatch(DetailsIntent.HideMessageSheet)
-                    }
-                    is DetailsMessageSheetIntent.DismissRequest -> {
-                        dispatch(DetailsIntent.HideMessageSheet)
-                    }
-                }
-            }
-        )
-    }
-
-    if (state.isWearWithSheetVisible) {
-        DetailsWearWithSheet(
-            state = DetailsWearWithSheetModel(
-                products = state.wearWithProducts,
-                basketProductIds = state.basketProductIds,
-                basketProductKeys = state.basketProductKeys
-            ),
-            dispatch = { intent ->
-                when (intent) {
-                    is DetailsWearWithSheetIntent.ProductClick -> {
-                        dispatch(DetailsIntent.ProductClick(intent.id))
-                    }
-                    is DetailsWearWithSheetIntent.ProductBasketClick -> {
-                        dispatch(DetailsIntent.ProductBasketClick(intent.product.id))
-                    }
-                    is DetailsWearWithSheetIntent.DismissRequest -> {
-                        dispatch(DetailsIntent.HideWearWithSheet)
-                    }
-                }
-            }
-        )
-    }
-
-    if (state.isSizePickerSheetVisible) {
-        DetailsSizePickerSheet(
-            state = DetailsSizePickerSheetModel(
-                sizeSelectorState = state.sizePickerState
-            ),
-            dispatch = { intent ->
-                when (intent) {
-                    is DetailsSizePickerSheetIntent.SizeClick -> {
-                        dispatch(DetailsIntent.SizeClick(intent.index))
-                    }
-                    is DetailsSizePickerSheetIntent.SizeTableClick -> {
-                        dispatch(DetailsIntent.SizeTableClick)
-                    }
-                    is DetailsSizePickerSheetIntent.AddToBasketClick -> {
-                        dispatch(DetailsIntent.AddToBasketClick)
-                    }
-                    is DetailsSizePickerSheetIntent.DismissRequest -> {
-                        dispatch(DetailsIntent.HideSizePicker)
-                    }
-                }
-            }
-        )
     }
 
     SharedScaffold(
@@ -301,32 +300,39 @@ private fun DetailsScreenContent(
                 )
             )
         },
-        floatingActionButton = {
-            Button(
-                onClick = { dispatch(DetailsIntent.AddToBasketClick) },
+        bottomBar = {
+            Box(
                 modifier = Modifier
-                    .padding(bottom = 8.dp)
                     .fillMaxWidth()
-                    .height(52.dp)
-                    .placeholder(
-                        visible = state.isLoading,
-                        highlight = PlaceholderHighlight.shimmer(),
-                        color = MaterialTheme.colorScheme.surfaceVariant,
-                        shape = RoundedCornerShape(8.dp)
-                    ),
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                )
+                    .background(MaterialTheme.colorScheme.background)
+                    .navigationBarsPadding()
+                    .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
             ) {
-                Text(
-                    text = stringResource(ClientStrings.DetailsAddToBasket),
-                    style = MaterialTheme.typography.medium15.copy(
-                        textAlign = TextAlign.Center,
-                        letterSpacing = .3.sp
+                Button(
+                    onClick = { dispatch(DetailsIntent.AddToBasketClick) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                        .placeholder(
+                            visible = state.isLoading,
+                            highlight = PlaceholderHighlight.shimmer(),
+                            color = MaterialTheme.colorScheme.surfaceVariant,
+                            shape = RoundedCornerShape(8.dp)
+                        ),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     )
-                )
+                ) {
+                    Text(
+                        text = stringResource(ClientStrings.DetailsAddToBasket),
+                        style = MaterialTheme.typography.medium15.copy(
+                            textAlign = TextAlign.Center,
+                            letterSpacing = .3.sp
+                        )
+                    )
+                }
             }
         },
         snackbarHost = {
@@ -335,8 +341,7 @@ private fun DetailsScreenContent(
                 modifier = Modifier.padding(bottom = 8.dp),
                 containerColor = MaterialTheme.colorScheme.error
             )
-        },
-        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal)
+        }
     ) { innerPadding ->
         when {
             state.isLoading -> {
@@ -450,7 +455,7 @@ private fun DetailsScreenContent(
                 SharedLazyColumn(
                     state = lazyListState,
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = innerPadding + PaddingValues(bottom = 120.dp)
+                    contentPadding = innerPadding + PaddingValues(bottom = 40.dp)
                 ) {
                     item {
                         Box(
@@ -469,7 +474,7 @@ private fun DetailsScreenContent(
                                             imageUrl = item.url,
                                             modifier = Modifier
                                                 .fillMaxSize()
-                                                .clickable { dispatch(DetailsIntent.OpenMediaViewer(page % pagerItems.size)) },
+                                                .clickable { dispatch(DetailsIntent.OpenMedia(page % pagerItems.size)) },
                                             contentScale = ContentScale.Fit
                                         )
                                     }
@@ -479,7 +484,7 @@ private fun DetailsScreenContent(
                                                 .padding(horizontal = 16.dp)
                                                 .fillMaxSize()
                                         ) {
-                                            DetailsVideoPlayer(
+                                            VideoPlayer(
                                                 videoUrl = item.url,
                                                 isVisible = pagerState.currentPage == page,
                                                 modifier = Modifier.fillMaxSize()
@@ -488,7 +493,7 @@ private fun DetailsScreenContent(
                                             Box(
                                                 modifier = Modifier
                                                     .matchParentSize()
-                                                    .clickable { dispatch(DetailsIntent.OpenMediaViewer(page % pagerItems.size)) }
+                                                    .clickable { dispatch(DetailsIntent.OpenMedia(page % pagerItems.size)) }
                                             )
                                         }
                                     }
@@ -514,11 +519,12 @@ private fun DetailsScreenContent(
                         DetailsPagerIndicator(
                             pagerState = pagerState,
                             pageCount = pagerItems.size,
-                            pageIndexMapping = { it % pagerItems.size },
                             showVideoIcon = state.hasVideo,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(44.dp)
+                                .height(44.dp),
+                            pageIndexMapping = { it % pagerItems.size },
+                            onVideoClick = { dispatch(DetailsIntent.OpenVideo) }
                         )
                     }
                     item {

@@ -39,8 +39,8 @@ import ru.mercury.vpclient.features.auth_login.LoginScreen
 import ru.mercury.vpclient.features.auth_login.navigation.LoginRoute
 import ru.mercury.vpclient.features.main.MainScreen
 import ru.mercury.vpclient.features.main.navigation.MainRoute
-import ru.mercury.vpclient.features.mediaviewer.MediaViewerScreen
-import ru.mercury.vpclient.features.mediaviewer.navigation.MediaViewerRoute
+import ru.mercury.vpclient.features.media.MediaScreen
+import ru.mercury.vpclient.features.media.navigation.MediaRoute
 import ru.mercury.vpclient.features.profile_qr.ProfileQrScreen
 import ru.mercury.vpclient.features.profile_qr.navigation.ProfileQrRoute
 import ru.mercury.vpclient.features.profile_loyalty_info.ProfileLoyaltyInfoScreen
@@ -49,6 +49,8 @@ import ru.mercury.vpclient.features.profile_loyalty_qr.ProfileLoyaltyQrScreen
 import ru.mercury.vpclient.features.profile_loyalty_qr.navigation.ProfileLoyaltyQrRoute
 import ru.mercury.vpclient.features.profile_loyalty_terms.ProfileLoyaltyTermsScreen
 import ru.mercury.vpclient.features.profile_loyalty_terms.navigation.ProfileLoyaltyTermsRoute
+import ru.mercury.vpclient.features.video.VideoScreen
+import ru.mercury.vpclient.features.video.navigation.VideoRoute
 import ru.mercury.vpclient.features.auth_register.RegisterScreen
 import ru.mercury.vpclient.features.auth_register.navigation.RegisterRoute
 import ru.mercury.vpclient.features.auth_welcome.WelcomeScreen
@@ -93,7 +95,8 @@ fun MainActivityContent(
                 entry<FittingAddressSelectionRoute> { FittingAddressSelectionScreen(it) }
                 entry<FittingSuccessRoute> { FittingSuccessScreen(it) }
                 entry<ConsultantRoute> { ConsultantScreen(it) }
-                entry<MediaViewerRoute> { MediaViewerScreen(it) }
+                entry<MediaRoute> { MediaScreen(it) }
+                entry<VideoRoute> { VideoScreen(it) }
             }
         )
 

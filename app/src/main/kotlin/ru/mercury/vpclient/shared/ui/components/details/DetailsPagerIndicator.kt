@@ -5,23 +5,23 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.ui.components.HorizontalPagerIndicator
 import ru.mercury.vpclient.shared.ui.icons.Video24
 import ru.mercury.vpclient.shared.ui.preview.BooleanPreviewParameterProvider
-import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 
 @Composable
@@ -30,11 +30,12 @@ fun DetailsPagerIndicator(
     pageCount: Int,
     showVideoIcon: Boolean,
     modifier: Modifier = Modifier,
+    onVideoClick: () -> Unit = {},
     pageIndexMapping: (Int) -> Int = { it }
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.Center,
+        horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally),
         verticalAlignment = Alignment.CenterVertically
     ) {
         HorizontalPagerIndicator(
@@ -54,20 +55,23 @@ fun DetailsPagerIndicator(
                 targetValue = if (isLastPage) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.outline
             )
 
-            Icon(
-                imageVector = Video24,
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(start = 6.dp)
-                    .size(24.dp),
-                tint = videoIconColor
-            )
+            IconButton(
+                onClick = onVideoClick,
+                modifier = Modifier.size(24.dp)
+            ) {
+                Icon(
+                    imageVector = Video24,
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp),
+                    tint = videoIconColor
+                )
+            }
         }
     }
 }
 
 @PreviewWrapper(ThemeWrapper::class)
-@FontScalePreviews
+@Preview(showBackground = true)
 @Composable
 private fun DetailsPagerIndicatorPreview(
     @PreviewParameter(BooleanPreviewParameterProvider::class) showVideoIcon: Boolean
@@ -81,6 +85,7 @@ private fun DetailsPagerIndicatorPreview(
         pagerState = pagerState,
         pageCount = 5,
         showVideoIcon = showVideoIcon,
+        onVideoClick = {},
         modifier = Modifier
             .fillMaxWidth()
             .height(44.dp)

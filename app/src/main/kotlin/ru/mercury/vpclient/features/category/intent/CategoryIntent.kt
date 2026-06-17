@@ -1,5 +1,6 @@
 package ru.mercury.vpclient.features.category.intent
 
+import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogCategoryEntity
 import ru.mercury.vpclient.shared.mvi.Intent
 
 sealed interface CategoryIntent: Intent {
@@ -14,5 +15,5 @@ sealed interface CategoryIntent: Intent {
     data object CartClick: CategoryIntent
     data object FittingClick: CategoryIntent
     data object MessengerClick: CategoryIntent
-    data class FilterClick(val categoryId: Int, val titleCategoryId: Int, val subtitleCategoryId: Int): CategoryIntent
+    data class FilterClick(val entity: CatalogCategoryEntity): CategoryIntent
 }

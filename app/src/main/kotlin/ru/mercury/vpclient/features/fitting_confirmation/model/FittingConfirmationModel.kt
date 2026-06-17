@@ -12,7 +12,9 @@ import ru.mercury.vpclient.shared.data.entity.FittingConfirmationPlaceType
 import ru.mercury.vpclient.shared.mvi.Model
 
 data class FittingConfirmationModel(
-    val route: FittingConfirmationRoute,
+    val route: FittingConfirmationRoute = FittingConfirmationRoute(
+        productIds = emptyList()
+    ),
     val products: List<CartProduct> = emptyList(),
     val boutiqueAddress: String? = null,
     val clientAddress: String? = null,

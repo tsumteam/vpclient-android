@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
@@ -27,10 +28,9 @@ import ru.mercury.vpclient.shared.domain.mapper.isNotEmpty
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.placeholder
-import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
-import ru.mercury.vpclient.shared.ui.theme.livretMedium13
+import ru.mercury.vpclient.shared.ui.theme.livretMedium10
 
 @Composable
 fun CatalogSubcategoryCard(
@@ -40,7 +40,7 @@ fun CatalogSubcategoryCard(
 ) {
     Column(
         modifier = modifier
-            .size(width = 110.dp, height = 163.dp)
+            .size(width = 110.dp, height = 153.dp)
             .padding(4.dp)
             .clip(RoundedCornerShape(4.dp))
             .clickable(enabled = entity.isNotEmpty, onClick = onClick),
@@ -71,7 +71,7 @@ fun CatalogSubcategoryCard(
                 ),
             color = MaterialTheme.colorScheme.onBackground,
             maxLines = 2,
-            style = MaterialTheme.typography.livretMedium13.copy(
+            style = MaterialTheme.typography.livretMedium10.copy(
                 textAlign = TextAlign.Center
             )
         )
@@ -79,7 +79,7 @@ fun CatalogSubcategoryCard(
 }
 
 @PreviewWrapper(ThemeWrapper::class)
-@FontScalePreviews
+@Preview(showBackground = true)
 @Composable
 private fun CatalogSubcategoryCardPreview(
     @PreviewParameter(CatalogSubcategoryCardCatalogCategoryEntityProvider::class) entity: CatalogCategoryEntity

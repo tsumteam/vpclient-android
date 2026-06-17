@@ -18,6 +18,9 @@ data class CatalogModel(
     val isLoading: Boolean
         get() = catalogData.pages.isEmpty()
 
+    val selectedTabIndex: Int
+        get() = catalogData.tabs.indexOfFirst { it.selected }.takeIf { it >= 0 } ?: 0
+
     val cartText: String
         get() = when {
             cartSize > 0 -> cartSize.toString()

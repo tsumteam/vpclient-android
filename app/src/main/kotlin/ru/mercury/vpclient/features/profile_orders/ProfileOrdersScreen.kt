@@ -196,8 +196,7 @@ private fun ProfileOrdersScreenContent(
             ) {
                 if (pagingItems.isRefreshLoading) {
                     items(
-                        count = 3,
-                        key = { index -> "profile_order_placeholder_$index" }
+                        count = 3
                     ) {
                         Spacer(
                             modifier = Modifier

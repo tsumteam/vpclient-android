@@ -1,4 +1,4 @@
-package ru.mercury.vpclient.shared.ui.components.details
+package ru.mercury.vpclient.shared.ui.components.video
 
 import android.view.TextureView
 import androidx.compose.foundation.layout.aspectRatio
@@ -6,8 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -21,11 +21,13 @@ import androidx.media3.common.VideoSize
 import androidx.media3.exoplayer.ExoPlayer
 
 @Composable
-fun DetailsVideoPlayer(
+fun VideoPlayer(
     videoUrl: String,
     isVisible: Boolean,
     modifier: Modifier = Modifier,
-    keepAspectRatio: Boolean = false
+    keepAspectRatio: Boolean = false,
+    onPlayerChanged: (ExoPlayer?) -> Unit = {},
+    onIsPlayingChanged: (Boolean) -> Unit = {}
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -45,14 +47,23 @@ fun DetailsVideoPlayer(
 
     DisposableEffect(exoPlayer) {
         val listener = object : Player.Listener {
+            override fun onIsPlayingChanged(isPlaying: Boolean) {
+                onIsPlayingChanged(isPlaying)
+            }
+
             override fun onVideoSizeChanged(videoSize: VideoSize) {
                 val width = videoSize.width.takeIf { it > 0 } ?: return
                 val height = videoSize.height.takeIf { it > 0 } ?: return
                 videoAspectRatio = width.toFloat() * videoSize.pixelWidthHeightRatio / height.toFloat()
             }
         }
+        onPlayerChanged(exoPlayer)
+        onIsPlayingChanged(exoPlayer.isPlaying)
         exoPlayer.addListener(listener)
-        onDispose { exoPlayer.removeListener(listener) }
+        onDispose {
+            onPlayerChanged(null)
+            exoPlayer.removeListener(listener)
+        }
     }
 
     DisposableEffect(lifecycleOwner) {

@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package ru.mercury.vpclient.features.mediaviewer
+package ru.mercury.vpclient.features.media
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -26,35 +26,35 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import ru.mercury.vpclient.features.mediaviewer.intent.MediaViewerIntent
-import ru.mercury.vpclient.features.mediaviewer.model.MediaViewerModel
-import ru.mercury.vpclient.features.mediaviewer.navigation.MediaViewerRoute
+import ru.mercury.vpclient.features.media.intent.MediaIntent
+import ru.mercury.vpclient.features.media.model.MediaModel
+import ru.mercury.vpclient.features.media.navigation.MediaRoute
 import ru.mercury.vpclient.shared.data.entity.DetailsMediaItem
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.details.DetailsPagerIndicator
-import ru.mercury.vpclient.shared.ui.components.details.DetailsVideoPlayer
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
+import ru.mercury.vpclient.shared.ui.components.video.VideoPlayer
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.rememberZoomState
 import ru.mercury.vpclient.shared.ui.zoomable
 
 @Composable
-fun MediaViewerScreen(
-    route: MediaViewerRoute,
-    viewModel: MediaViewerViewModel = hiltViewModel<MediaViewerViewModel, MediaViewerViewModel.Factory>(creationCallback = { it.create(route) })
+fun MediaScreen(
+    route: MediaRoute,
+    viewModel: MediaViewModel = hiltViewModel<MediaViewModel, MediaViewModel.Factory>(creationCallback = { it.create(route) })
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
 
-    MediaViewerScreenContent(
+    MediaScreenContent(
         state = state,
         dispatch = viewModel::dispatch
     )
 }
 
 @Composable
-private fun MediaViewerScreenContent(
-    state: MediaViewerModel,
-    dispatch: (MediaViewerIntent) -> Unit
+private fun MediaScreenContent(
+    state: MediaModel,
+    dispatch: (MediaIntent) -> Unit
 ) {
     val mediaItems = state.mediaItems
     val pagerState = rememberPagerState(
@@ -68,7 +68,7 @@ private fun MediaViewerScreenContent(
                 title = {},
                 navigationIcon = {
                     IconButton(
-                        onClick = { dispatch(MediaViewerIntent.BackClick) },
+                        onClick = { dispatch(MediaIntent.BackClick) },
                         modifier = Modifier.size(42.dp)
                     ) {
                         Icon(
@@ -88,13 +88,15 @@ private fun MediaViewerScreenContent(
             DetailsPagerIndicator(
                 pagerState = pagerState,
                 pageCount = mediaItems.size,
-                showVideoIcon = state.hasVideo,
+                showVideoIcon = false,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(44.dp)
+                    .height(24.dp)
             )
         },
-        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal)
+        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(
+            WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
+        )
     ) { innerPadding ->
         HorizontalPager(
             state = pagerState,
@@ -125,7 +127,7 @@ private fun MediaViewerScreenContent(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.TopCenter
                     ) {
-                        DetailsVideoPlayer(
+                        VideoPlayer(
                             videoUrl = item.url,
                             isVisible = pagerState.currentPage == page,
                             modifier = Modifier

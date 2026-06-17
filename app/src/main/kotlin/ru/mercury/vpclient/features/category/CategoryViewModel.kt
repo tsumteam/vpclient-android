@@ -97,12 +97,24 @@ class CategoryViewModel @AssistedInject constructor(
             is CategoryIntent.FittingClick -> launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
             is CategoryIntent.MessengerClick -> return
             is CategoryIntent.FilterClick -> {
+                val entity = intent.entity
+                val currentEntity = stateFlow.value.entity
+                val titleCategoryId = when {
+                    entity.id == currentEntity.id -> entity.rootId
+                    entity.parentId == currentEntity.id -> currentEntity.id
+                    else -> entity.id
+                }
+                val subtitleCategoryId = when {
+                    entity.id == currentEntity.id -> entity.id
+                    entity.parentId == currentEntity.id -> entity.id
+                    else -> entity.parentId ?: entity.id
+                }
                 launch {
                     CatalogStackEventManager.send(
                         FilterRoute(
-                            categoryId = intent.categoryId,
-                            titleCategoryId = intent.titleCategoryId,
-                            subtitleCategoryId = intent.subtitleCategoryId
+                            categoryId = entity.id,
+                            titleCategoryId = titleCategoryId,
+                            subtitleCategoryId = subtitleCategoryId
                         )
                     )
                 }

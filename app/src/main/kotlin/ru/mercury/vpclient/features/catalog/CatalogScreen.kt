@@ -3,12 +3,16 @@
 package ru.mercury.vpclient.features.catalog
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -53,7 +57,6 @@ import ru.mercury.vpclient.shared.ui.components.cart.CartIconButton
 import ru.mercury.vpclient.shared.ui.components.cart.FittingIconButton
 import ru.mercury.vpclient.shared.ui.components.cart.MessengerIconButton
 import ru.mercury.vpclient.shared.ui.components.catalog.CatalogClothingCard
-import ru.mercury.vpclient.shared.ui.components.catalog.CatalogClothingContent
 import ru.mercury.vpclient.shared.ui.components.catalog.CatalogTabRow
 import ru.mercury.vpclient.shared.ui.icons.Search24
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
@@ -93,16 +96,15 @@ private fun CatalogScreenContent(
     dispatch: (CatalogIntent) -> Unit,
     snackbarHostStateError: SnackbarHostState
 ) {
-    val selectedTabIndex = state.catalogData.tabs.indexOfFirst { it.selected }.takeIf { it >= 0 } ?: 0
     val pagerState = rememberPagerState(pageCount = { state.catalogData.pages.size.coerceAtLeast(1) })
     val scope = rememberCoroutineScope()
     var selectionInitialized by remember(state.catalogData.tabs) { mutableStateOf(false) }
 
-    LaunchedEffect(selectedTabIndex, state.catalogData.tabs) {
-        if (state.catalogData.tabs.getOrNull(selectedTabIndex) != null && pagerState.currentPage != selectedTabIndex) {
-            pagerState.scrollToPage(selectedTabIndex)
+    LaunchedEffect(state.selectedTabIndex, state.catalogData.tabs) {
+        if (state.catalogData.tabs.getOrNull(state.selectedTabIndex) != null && pagerState.currentPage != state.selectedTabIndex) {
+            pagerState.scrollToPage(state.selectedTabIndex)
         }
-        selectionInitialized = state.catalogData.tabs.getOrNull(selectedTabIndex) != null
+        selectionInitialized = state.catalogData.tabs.getOrNull(state.selectedTabIndex) != null
     }
 
     LaunchedEffect(pagerState, state.catalogData.tabs, selectionInitialized) {
@@ -195,8 +197,7 @@ private fun CatalogScreenContent(
                     userScrollEnabled = false
                 ) {
                     items(
-                        count = 6,
-                        key = { index -> "catalog_placeholder_$index" }
+                        count = 6
                     ) {
                         CatalogClothingCard(
                             entity = CatalogCategoryEntity.Empty
@@ -212,11 +213,30 @@ private fun CatalogScreenContent(
                     pageSpacing = 8.dp
                 ) { page ->
                     val pageData = state.catalogData.pages.getOrNull(page)
+                    val entities = pageData.orEmpty()
 
-                    CatalogClothingContent(
-                        entities = pageData.orEmpty(),
-                        onItemClick = { dispatch(CatalogIntent.CategoryClick(it.id)) }
-                    )
+                    SharedLazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(top = 16.dp, bottom = 8.dp)
+                    ) {
+                        itemsIndexed(
+                            items = entities,
+                            key = { _, entity -> entity.id }
+                        ) { index, entity ->
+                            CatalogClothingCard(
+                                entity = entity,
+                                modifier = Modifier.clickable {
+                                    dispatch(CatalogIntent.CategoryClick(entity.id))
+                                }
+                            )
+
+                            if (index != entities.lastIndex) {
+                                Spacer(
+                                    modifier = Modifier.height(8.dp)
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }

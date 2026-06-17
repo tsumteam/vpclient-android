@@ -29,21 +29,26 @@ import ru.mercury.vpclient.shared.navigation.BackRoute
 class FittingAddressSelectionViewModel @AssistedInject constructor(
     @Assisted private val route: FittingAddressSelectionRoute,
     private val cartInteractor: CartInteractor
-): ClientViewModel<FittingConfirmationIntent, FittingConfirmationModel, FittingConfirmationEvent>(
-    FittingConfirmationModel(
-        route = route.confirmationRoute,
-        selectedClientAddressId = route.selectedClientAddressId,
-        pendingClientAddressId = route.selectedClientAddressId,
-        clientAddress = route.clientAddress
-    )
-) {
+): ClientViewModel<FittingConfirmationIntent, FittingConfirmationModel, FittingConfirmationEvent>(FittingConfirmationModel()) {
 
     init {
+        dispatch(FittingConfirmationIntent.CollectAddressSelectionRoute)
         dispatch(FittingConfirmationIntent.LoadClientAddresses)
     }
 
     override fun dispatch(intent: FittingConfirmationIntent) {
         when (intent) {
+            is FittingConfirmationIntent.CollectRoute -> reduce { it.copy(route = route.confirmationRoute) }
+            is FittingConfirmationIntent.CollectAddressSelectionRoute -> {
+                reduce {
+                    it.copy(
+                        route = route.confirmationRoute,
+                        selectedClientAddressId = route.selectedClientAddressId,
+                        pendingClientAddressId = route.selectedClientAddressId,
+                        clientAddress = route.clientAddress
+                    )
+                }
+            }
             is FittingConfirmationIntent.LoadClientAddresses -> loadClientAddresses()
             is FittingConfirmationIntent.AddressSelectionBackClick -> launch { MainEventManager.send(BackRoute) }
             is FittingConfirmationIntent.SaveAddressSelectionClick -> saveSelection()

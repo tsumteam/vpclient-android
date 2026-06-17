@@ -153,8 +153,7 @@ private fun ProfileOrderScreenContent(
         ) {
             if (state.isLoading) {
                 items(
-                    items = List(4) { it },
-                    key = { index -> "profile_order_placeholder_$index" }
+                    count = 4
                 ) { index ->
                     Spacer(
                         modifier = Modifier

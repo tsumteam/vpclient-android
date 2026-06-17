@@ -90,8 +90,7 @@ fun CartSizePickerLoading(
                 userScrollEnabled = false
             ) {
                 items(
-                    items = List(5) { it },
-                    key = { index -> "cart_size_picker_size_placeholder_$index" }
+                    count = 5
                 ) {
                     Box(
                         modifier = Modifier

@@ -170,6 +170,13 @@ val Typography.livretRegular16: TextStyle
         fontSize = 16.sp
     )
 
+val Typography.livretMedium10: TextStyle
+    get() = TextStyle(
+        fontWeight = FontWeight.W500,
+        fontFamily = FontFamily(Font(resId = R.font.tt_livret_subhead_medium, weight = FontWeight.W500)),
+        fontSize = 10.sp
+    )
+
 val Typography.livretMedium13: TextStyle
     get() = TextStyle(
         fontWeight = FontWeight.W500,

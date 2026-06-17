@@ -1,10 +1,10 @@
-package ru.mercury.vpclient.features.mediaviewer.navigation
+package ru.mercury.vpclient.features.media.navigation
 
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
 @Serializable
-class MediaViewerRoute(
+data class MediaRoute(
     val imageUrls: List<String>,
     val videoUrl: String?,
     val initialPage: Int

@@ -34,42 +34,54 @@ import ru.mercury.vpclient.shared.navigation.BackRoute
 
 @HiltViewModel(assistedFactory = FittingConfirmationViewModel.Factory::class)
 class FittingConfirmationViewModel @AssistedInject constructor(
-    @Assisted route: FittingConfirmationRoute,
+    @Assisted private val route: FittingConfirmationRoute,
     private val cartInteractor: CartInteractor
-): ClientViewModel<FittingConfirmationIntent, FittingConfirmationModel, FittingConfirmationEvent>(FittingConfirmationModel(route)) {
+): ClientViewModel<FittingConfirmationIntent, FittingConfirmationModel, FittingConfirmationEvent>(FittingConfirmationModel()) {
 
     init {
-        route.fittingType?.let { fittingType ->
-            reduce {
-                it.copy(selectedPlaceType = fittingType.fittingConfirmationPlaceType)
-            }
-        }
-        launch {
-            cartInteractor.cartProductsFlow.collectLatest { products ->
-                reduce { state -> state.copy(products = (state.products + products).distinctBy { it.id }) }
-            }
-        }
-        launch {
-            FittingAddressSelectionResultManager.resultFlow.collectLatest { result ->
-                if (result.confirmationRoute == stateFlow.value.route) {
-                    reduce {
-                        it.copy(
-                            clientAddresses = result.clientAddresses,
-                            selectedClientAddressId = result.selectedClientAddressId,
-                            pendingClientAddressId = result.selectedClientAddressId,
-                            selectedPlaceType = FittingConfirmationPlaceType.Home
-                        )
-                    }
-                    dispatch(FittingConfirmationIntent.LoadFittingData)
-                }
-            }
-        }
+        dispatch(FittingConfirmationIntent.CollectRoute)
+        dispatch(FittingConfirmationIntent.CollectCartProducts)
+        dispatch(FittingConfirmationIntent.CollectAddressSelectionResult)
         dispatch(FittingConfirmationIntent.LoadFittingData)
         dispatch(FittingConfirmationIntent.LoadClientAddresses)
     }
 
     override fun dispatch(intent: FittingConfirmationIntent) {
         when (intent) {
+            is FittingConfirmationIntent.CollectRoute -> {
+                reduce {
+                    it.copy(
+                        route = route,
+                        selectedPlaceType = route.fittingType?.fittingConfirmationPlaceType
+                            ?: it.selectedPlaceType
+                    )
+                }
+            }
+            is FittingConfirmationIntent.CollectAddressSelectionRoute -> Unit
+            is FittingConfirmationIntent.CollectCartProducts -> {
+                launch {
+                    cartInteractor.cartProductsFlow.collectLatest { products ->
+                        reduce { state -> state.copy(products = (state.products + products).distinctBy { it.id }) }
+                    }
+                }
+            }
+            is FittingConfirmationIntent.CollectAddressSelectionResult -> {
+                launch {
+                    FittingAddressSelectionResultManager.resultFlow.collectLatest { result ->
+                        if (result.confirmationRoute == stateFlow.value.route) {
+                            reduce {
+                                it.copy(
+                                    clientAddresses = result.clientAddresses,
+                                    selectedClientAddressId = result.selectedClientAddressId,
+                                    pendingClientAddressId = result.selectedClientAddressId,
+                                    selectedPlaceType = FittingConfirmationPlaceType.Home
+                                )
+                            }
+                            dispatch(FittingConfirmationIntent.LoadFittingData)
+                        }
+                    }
+                }
+            }
             is FittingConfirmationIntent.BackClick -> launch { MainEventManager.send(BackRoute) }
             is FittingConfirmationIntent.ConfirmClick -> confirmFitting()
             is FittingConfirmationIntent.LoadFittingData -> loadFittingData()

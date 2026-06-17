@@ -129,6 +129,8 @@ import kotlin.math.max
 
 private const val FILTER_NAVIGATION_ICONS_COUNT = 2
 private const val TOP_BAR_ICON_SIZE_DP = 42
+private val FILTERS_ROW_LOADING_HEIGHT = 108.dp
+private val FILTER_BRAND_FAVORITES_BAR_HEIGHT = 48.dp
 
 @Composable
 fun FilterScreen(
@@ -277,7 +279,12 @@ private fun FilterScreenContent(
     val gridState = rememberLazyGridState()
     val pullToRefreshState = rememberPullToRefreshState()
     val scope = rememberCoroutineScope()
-    var filtersRowHeightPx by remember { mutableFloatStateOf(0F) }
+    val filtersRowLoadingHeightDp = when {
+        state.brandEntity != null -> FILTERS_ROW_LOADING_HEIGHT + FILTER_BRAND_FAVORITES_BAR_HEIGHT
+        else -> FILTERS_ROW_LOADING_HEIGHT
+    }
+    val filtersRowLoadingHeightPx = with(density) { filtersRowLoadingHeightDp.toPx() }
+    var filtersRowHeightPx by remember { mutableFloatStateOf(filtersRowLoadingHeightPx) }
     var filtersRowOffsetPx by remember { mutableFloatStateOf(0F) }
     val nestedScrollConnection = remember {
         object: NestedScrollConnection {
@@ -398,7 +405,7 @@ private fun FilterScreenContent(
                     FilterProductsLoadingContent(
                         contentPadding = innerPadding + PaddingValues(
                             start = 4.dp,
-                            top = visibleFiltersRowHeightDp,
+                            top = filtersRowLoadingHeightDp,
                             end = 4.dp,
                             bottom = 16.dp
                         ),
@@ -532,9 +539,15 @@ private fun FilterScreenContent(
 
                     FiltersRow(
                         state = FiltersRowState(
-                            filterRibbonData = state.filterData.filterRibbonData,
-                            sortSelected = state.selectedSortType.isSortChipSelected,
-                            selectedFilterValueChips = state.selectedFilterValueChips
+                            filterRibbonData = when {
+                                pagingItems.isRefreshLoading -> FilterRibbonData.Empty
+                                else -> state.filterData.filterRibbonData
+                            },
+                            sortSelected = !pagingItems.isRefreshLoading && state.selectedSortType.isSortChipSelected,
+                            selectedFilterValueChips = when {
+                                pagingItems.isRefreshLoading -> emptyList()
+                                else -> state.selectedFilterValueChips
+                            }
                         ),
                         enabled = !pagingItems.isRefreshLoading,
                         onSortClick = { dispatch(FilterIntent.ShowSortDialog) },

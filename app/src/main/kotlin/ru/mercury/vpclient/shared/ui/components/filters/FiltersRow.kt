@@ -155,7 +155,7 @@ fun FiltersRow(
                     item {
                         Box(
                             modifier = Modifier
-                                .size(40.dp)
+                                .size(34.dp)
                                 .placeholder(
                                     visible = true,
                                     highlight = PlaceholderHighlight.shimmer(),
@@ -170,7 +170,7 @@ fun FiltersRow(
                         Box(
                             modifier = Modifier
                                 .width(width)
-                                .height(40.dp)
+                                .height(34.dp)
                                 .placeholder(
                                     visible = true,
                                     highlight = PlaceholderHighlight.shimmer(),
@@ -270,7 +270,7 @@ fun FiltersRow(
                         Box(
                             modifier = Modifier
                                 .width(width)
-                                .height(40.dp)
+                                .height(34.dp)
                                 .placeholder(
                                     visible = true,
                                     highlight = PlaceholderHighlight.shimmer(),

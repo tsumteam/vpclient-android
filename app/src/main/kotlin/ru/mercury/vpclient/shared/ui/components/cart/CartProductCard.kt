@@ -270,7 +270,7 @@ fun CartProductCard(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "Выкупить до $dateReceipt",
+                            text = stringResource(ClientStrings.CartRedeemUntil, dateReceipt),
                             style = MaterialTheme.typography.regular11.copy(
                                 color = MaterialTheme.colorScheme.onPrimary,
                                 fontSize = 9.sp,

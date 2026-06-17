@@ -23,19 +23,23 @@ import ru.mercury.vpclient.shared.ui.components.profile.ProfileOrderProductItemS
 class ProfileOrderViewModel @AssistedInject constructor(
     @Assisted private val route: ProfileOrderRoute,
     private val orderInteractor: OrderInteractor
-): ClientViewModel<ProfileOrderIntent, ProfileOrderModel, Event>(
-    ProfileOrderModel(
-        orderNumber = route.orderNumber,
-        amount = route.amount
-    )
-) {
+): ClientViewModel<ProfileOrderIntent, ProfileOrderModel, Event>(ProfileOrderModel()) {
 
     init {
+        dispatch(ProfileOrderIntent.CollectRoute)
         dispatch(ProfileOrderIntent.LoadData)
     }
 
     override fun dispatch(intent: ProfileOrderIntent) {
         when (intent) {
+            is ProfileOrderIntent.CollectRoute -> {
+                reduce {
+                    it.copy(
+                        orderNumber = route.orderNumber,
+                        amount = route.amount
+                    )
+                }
+            }
             is ProfileOrderIntent.LoadData -> {
                 launch {
                     val details = runCatching {

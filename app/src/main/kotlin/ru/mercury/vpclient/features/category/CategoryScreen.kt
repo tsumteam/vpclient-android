@@ -146,8 +146,7 @@ private fun CategoryScreenContent(
                     userScrollEnabled = false
                 ) {
                     items(
-                        count = 4,
-                        key = { index -> "category_placeholder_$index" }
+                        count = 4
                     ) {
                         CatalogCategorySection(
                             pojo = SubcategoryPojo(
@@ -172,38 +171,14 @@ private fun CategoryScreenContent(
                     ) { item ->
                         CatalogCategorySection(
                             pojo = item,
-                            onClick = {
-                                dispatch(
-                                    CategoryIntent.FilterClick(
-                                        categoryId = item.entity.id,
-                                        titleCategoryId = state.entity.id,
-                                        subtitleCategoryId = item.entity.id
-                                    )
-                                )
-                            },
-                            onItemClick = { entity ->
-                                dispatch(
-                                    CategoryIntent.FilterClick(
-                                        categoryId = entity.id,
-                                        titleCategoryId = entity.id,
-                                        subtitleCategoryId = item.entity.id
-                                    )
-                                )
-                            }
+                            onClick = { dispatch(CategoryIntent.FilterClick(item.entity)) },
+                            onItemClick = { entity -> dispatch(CategoryIntent.FilterClick(entity)) }
                         )
                     }
 
                     item {
                         OutlinedButton(
-                            onClick = {
-                                dispatch(
-                                    CategoryIntent.FilterClick(
-                                        categoryId = state.entity.id,
-                                        titleCategoryId = state.entity.rootId,
-                                        subtitleCategoryId = state.entity.id
-                                    )
-                                )
-                            },
+                            onClick = { dispatch(CategoryIntent.FilterClick(state.entity)) },
                             modifier = Modifier
                                 .padding(horizontal = 16.dp)
                                 .fillMaxWidth()

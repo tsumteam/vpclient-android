@@ -1,10 +1,10 @@
 package ru.mercury.vpclient.features.fitting_confirmation.intent
 
-import ru.mercury.vpclient.shared.mvi.Intent
 import ru.mercury.vpclient.shared.data.entity.ClientDeliveryAddressSuggestion
 import ru.mercury.vpclient.shared.data.entity.FittingAddressFormField
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationDeliveryMode
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationPlaceType
+import ru.mercury.vpclient.shared.mvi.Intent
 
 sealed interface FittingConfirmationIntent: Intent {
     data object BackClick: FittingConfirmationIntent
@@ -23,6 +23,10 @@ sealed interface FittingConfirmationIntent: Intent {
     data object EditAddressClick: FittingConfirmationIntent
     data object DismissDeleteAddress: FittingConfirmationIntent
     data object ConfirmDeleteAddress: FittingConfirmationIntent
+    data object CollectRoute: FittingConfirmationIntent
+    data object CollectAddressSelectionRoute: FittingConfirmationIntent
+    data object CollectCartProducts: FittingConfirmationIntent
+    data object CollectAddressSelectionResult: FittingConfirmationIntent
     data class SelectPlace(val placeType: FittingConfirmationPlaceType): FittingConfirmationIntent
     data class SelectDeliveryMode(val mode: FittingConfirmationDeliveryMode): FittingConfirmationIntent
     data class SelectSingleDay(val dayId: String): FittingConfirmationIntent

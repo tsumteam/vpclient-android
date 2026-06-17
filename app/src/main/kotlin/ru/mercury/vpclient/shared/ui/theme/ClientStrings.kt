@@ -51,6 +51,7 @@ object ClientStrings {
 
     val CatalogWatchAll get() = R.string.catalog_watch_all
     val CatalogViewAllClothing get() = R.string.catalog_view_all_clothing
+    val CatalogAddedToCart get() = R.string.catalog_added_to_cart
 
     val CartTitle get() = R.string.cart_title
     val CartToolbarCart get() = R.string.cart_toolbar_cart
@@ -94,6 +95,7 @@ object ClientStrings {
     val CartInBasket get() = R.string.cart_in_basket
     val CartToFitting get() = R.string.cart_to_fitting
     val CartToPayment get() = R.string.cart_to_payment
+    val CartRedeemUntil get() = R.string.cart_redeem_until
     val CartConsultantName get() = R.string.cart_consultant_name
     val CartConsultantBrand get() = R.string.cart_consultant_brand
     val CartEmptyMessage get() = R.string.cart_empty_message
@@ -220,6 +222,13 @@ object ClientStrings {
     val DetailsFieldItemId get() = R.string.details_field_item_id
     val DetailsFieldArticle get() = R.string.details_field_article
     val DetailsFieldMeasurements get() = R.string.details_field_measurements
+
+    val VideoSpeedTitle get() = R.string.video_speed_title
+    val VideoSpeed05 get() = R.string.video_speed_05
+    val VideoSpeed1 get() = R.string.video_speed_1
+    val VideoSpeed15 get() = R.string.video_speed_15
+    val VideoSpeed2 get() = R.string.video_speed_2
+    val VideoTime get() = R.string.video_time
 
     val ConsultantsTitle get() = R.string.consultants_title
     val ConsultantsActiveButton get() = R.string.consultants_active_button
