@@ -3,7 +3,9 @@ package ru.mercury.vpclient.features.profile.model
 import kotlinx.coroutines.Job
 import ru.mercury.vpclient.features.profile_loyalty_add_card_sheet.model.ProfileLoyaltyAddCardModel
 import ru.mercury.vpclient.features.profile_loyalty_code_sheet.model.ProfileLoyaltyCodeModel
+import ru.mercury.vpclient.features.profile_privileges_sheet.model.ProfilePrivilegesModel
 import ru.mercury.vpclient.shared.data.entity.LoyaltyCardInfo
+import ru.mercury.vpclient.shared.data.entity.LoyaltyCardType
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ClientEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
@@ -24,6 +26,8 @@ data class ProfileModel(
     val activeEmployee: EmployeeEntity = EmployeeEntity.Empty,
     val clientEntity: ClientEntity = ClientEntity.Empty,
     val loyaltyCardInfo: LoyaltyCardInfo? = null,
+    val alphaBankBannerCardType: LoyaltyCardType? = null,
+    val profilePrivilegesSheet: ProfilePrivilegesModel? = null,
     val loyaltyAddCardSheet: ProfileLoyaltyAddCardModel? = null,
     val loyaltyCodeSheet: ProfileLoyaltyCodeModel? = null
 ): Model {

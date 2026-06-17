@@ -237,6 +237,17 @@ object ClientStrings {
     val ProfileLoyaltyCardBonuses get() = R.plurals.profile_loyalty_card_bonuses
     val ProfileLoyaltyCardQrCode get() = R.string.profile_loyalty_card_qr_code
     val ProfileLoyaltyCardMore get() = R.string.profile_loyalty_card_more
+    val ProfileAlphaBankBannerBlackTitle get() = R.string.profile_alpha_bank_banner_black_title
+    val ProfileAlphaBankBannerGoldTitle get() = R.string.profile_alpha_bank_banner_gold_title
+    val ProfileAlphaBankBannerDescription get() = R.string.profile_alpha_bank_banner_description
+    val ProfileAlphaBankMore get() = R.string.profile_alpha_bank_more
+    val ProfileAlphaBankPrivilegesTitleCaps get() = R.string.profile_alpha_bank_privileges_title_caps
+    val ProfileAlphaBankPrivilegeBlackBonus get() = R.string.profile_alpha_bank_privilege_black_bonus
+    val ProfileAlphaBankPrivilegeBlackGoldBonus get() = R.string.profile_alpha_bank_privilege_black_gold_bonus
+    val ProfileAlphaBankPrivilegePurchases get() = R.string.profile_alpha_bank_privilege_purchases
+    val ProfileAlphaBankPrivilegePayment get() = R.string.profile_alpha_bank_privilege_payment
+    val ProfileAlphaBankPrivilegeBlackService get() = R.string.profile_alpha_bank_privilege_black_service
+    val ProfileAlphaBankPrivilegeBlackGoldService get() = R.string.profile_alpha_bank_privilege_black_gold_service
     val ProfileLoyaltyAddCardTitleCaps get() = R.string.profile_loyalty_add_card_title_caps
     val ProfileLoyaltyAddCardPhoneModeCaps get() = R.string.profile_loyalty_add_card_phone_mode_caps
     val ProfileLoyaltyAddCardCardModeCaps get() = R.string.profile_loyalty_add_card_card_mode_caps

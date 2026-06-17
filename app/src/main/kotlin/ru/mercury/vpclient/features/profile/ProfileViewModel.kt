@@ -22,13 +22,19 @@ import ru.mercury.vpclient.features.profile_loyalty_code_sheet.intent.ProfileLoy
 import ru.mercury.vpclient.features.profile_loyalty_code_sheet.model.ProfileLoyaltyCodeModel
 import ru.mercury.vpclient.features.profile_my_data.navigation.MyDataRoute
 import ru.mercury.vpclient.features.profile_orders.navigation.ProfileOrdersRoute
+import ru.mercury.vpclient.features.profile_privileges_sheet.intent.ProfilePrivilegeIntent
+import ru.mercury.vpclient.features.profile_privileges_sheet.model.ProfilePrivilegesModel
 import ru.mercury.vpclient.features.profile_loyalty_info.navigation.ProfileLoyaltyInfoRoute
 import ru.mercury.vpclient.features.profile_loyalty_qr.navigation.ProfileLoyaltyQrRoute
 import ru.mercury.vpclient.features.profile_qr.navigation.ProfileQrRoute
 import ru.mercury.vpclient.features.profile_stack.event.ProfileStackEventManager
 import ru.mercury.vpclient.shared.data.CODE_LENGTH
 import ru.mercury.vpclient.shared.data.CODE_RESEND_TIMER_DELAY
+import ru.mercury.vpclient.shared.data.entity.LoyaltyCardInfo
+import ru.mercury.vpclient.shared.data.entity.LoyaltyCardType
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
+import ru.mercury.vpclient.shared.data.persistence.datastore.PreferenceKey
+import ru.mercury.vpclient.shared.data.persistence.datastore.SettingsDataStore
 import ru.mercury.vpclient.shared.domain.interactor.AuthenticationInteractor
 import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
 import ru.mercury.vpclient.shared.domain.interactor.EmployeeInteractor
@@ -47,7 +53,8 @@ class ProfileViewModel @Inject constructor(
     private val cartInteractor: CartInteractor,
     private val employeeInteractor: EmployeeInteractor,
     private val loyaltyInteractor: LoyaltyInteractor,
-    private val productInteractor: ProductInteractor
+    private val productInteractor: ProductInteractor,
+    private val settingsDataStore: SettingsDataStore
 ): ClientViewModel<ProfileIntent, ProfileModel, ProfileEvent>(ProfileModel()) {
 
     init {
@@ -126,17 +133,23 @@ class ProfileViewModel @Inject constructor(
                     reduce { it.copy(isLoyaltyCardLoading = true) }
                     runCatching { loyaltyInteractor.loyaltyCardInfo() }
                         .onSuccess { loyaltyCardInfo ->
+                            val visibleLoyaltyCardInfo = loyaltyCardInfo.takeIf { info ->
+                                info.loyaltyCardNumber.isNotBlank()
+                            }
                             reduce {
                                 it.copy(
-                                    loyaltyCardInfo = loyaltyCardInfo.takeIf { info -> info.loyaltyCardNumber.isNotBlank() },
+                                    loyaltyCardInfo = visibleLoyaltyCardInfo,
                                     isLoyaltyCardLoading = false
                                 )
                             }
+                            updateAlphaBankBanner(visibleLoyaltyCardInfo)
                         }
                         .onFailure {
                             reduce {
                                 it.copy(
                                     loyaltyCardInfo = null,
+                                    alphaBankBannerCardType = null,
+                                    profilePrivilegesSheet = null,
                                     isLoyaltyCardLoading = false
                                 )
                             }
@@ -160,6 +173,37 @@ class ProfileViewModel @Inject constructor(
                 }
             }
             is ProfileIntent.LoyaltyCardMoreClick -> launch { MainEventManager.send(ProfileLoyaltyInfoRoute) }
+            is ProfileIntent.AlphaBankBannerCloseClick -> {
+                launch {
+                    settingsDataStore.setValue(
+                        key = PreferenceKey.DisclaimerCloseTimestamp,
+                        value = System.currentTimeMillis()
+                    )
+                    reduce {
+                        it.copy(
+                            alphaBankBannerCardType = null,
+                            profilePrivilegesSheet = null
+                        )
+                    }
+                }
+            }
+            is ProfileIntent.AlphaBankBannerMoreClick -> {
+                reduce {
+                    it.copy(
+                        profilePrivilegesSheet = it.alphaBankBannerCardType?.let { cardType ->
+                            ProfilePrivilegesModel(cardType = cardType)
+                        }
+                    )
+                }
+            }
+            is ProfileIntent.DismissAlphaBankPrivilegesSheet -> {
+                reduce { it.copy(profilePrivilegesSheet = null) }
+            }
+            is ProfileIntent.ProfilePrivilegesSheetIntent -> when (intent.intent) {
+                is ProfilePrivilegeIntent.DismissRequest -> {
+                    reduce { it.copy(profilePrivilegesSheet = null) }
+                }
+            }
             is ProfileIntent.MyDataClick -> launch { ProfileStackEventManager.send(MyDataRoute) }
             is ProfileIntent.PurchasesClick -> launch { ProfileStackEventManager.send(ProfileOrdersRoute) }
             is ProfileIntent.InformationClick -> launch { ProfileStackEventManager.send(ProfileInfoRoute) }
@@ -461,4 +505,28 @@ class ProfileViewModel @Inject constructor(
             }
         }
     }
+
+    private suspend fun updateAlphaBankBanner(loyaltyCardInfo: LoyaltyCardInfo?) {
+        val cardType = loyaltyCardInfo?.typeCard
+        val availableCardType = when (cardType) {
+            LoyaltyCardType.Black,
+            LoyaltyCardType.Gold -> cardType
+            LoyaltyCardType.Silver,
+            null -> null
+        }
+        val closeTimestamp = settingsDataStore
+            .getValue(PreferenceKey.DisclaimerCloseTimestamp)
+            ?: 0L
+        val showBanner = availableCardType != null &&
+            System.currentTimeMillis() - closeTimestamp >= ALPHA_BANK_DISCLAIMER_HIDE_DURATION_MILLIS
+
+        reduce {
+            it.copy(
+                alphaBankBannerCardType = availableCardType.takeIf { showBanner },
+                profilePrivilegesSheet = it.profilePrivilegesSheet.takeIf { showBanner }
+            )
+        }
+    }
 }
+
+private const val ALPHA_BANK_DISCLAIMER_HIDE_DURATION_MILLIS = 7L * 24L * 60L * 60L * 1000L

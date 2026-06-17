@@ -20,4 +20,5 @@ sealed class PreferenceKey<T>(
     data object EnvironmentDev: PreferenceKey<String>(stringPreferencesKey("environmentDev"))
     data object Autofill: PreferenceKey<Boolean>(booleanPreferencesKey("autofill"))
     data object LastCatalogRootId: PreferenceKey<Int>(intPreferencesKey("lastCatalogRootId"))
+    data object DisclaimerCloseTimestamp: PreferenceKey<Long>(longPreferencesKey("disclaimerCloseTimestamp"))
 }

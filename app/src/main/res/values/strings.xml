@@ -279,6 +279,17 @@
     </plurals>
     <string name="profile_loyalty_card_qr_code">QR-код</string>
     <string name="profile_loyalty_card_more">Подробнее</string>
+    <string name="profile_alpha_bank_banner_black_title">20% кешбэк без лимита</string>
+    <string name="profile_alpha_bank_banner_gold_title">20% кешбэк для карты VIP Black\n8% кешбэк для карт VIP Gold</string>
+    <string name="profile_alpha_bank_banner_description">С Альфа-Банком на карту лояльности</string>
+    <string name="profile_alpha_bank_more">Подробнее</string>
+    <string name="profile_alpha_bank_privileges_title_caps">ПРИВИЛЕГИИ</string>
+    <string name="profile_alpha_bank_privilege_black_bonus">20% бонусов на карту VIP Black</string>
+    <string name="profile_alpha_bank_privilege_black_gold_bonus">20% бонусов на карту VIP Black и 8% бонусов на карту VIP Gold</string>
+    <string name="profile_alpha_bank_privilege_purchases">Бонусы начисляются за покупки в бутиках и в приложении VIP Platinum</string>
+    <string name="profile_alpha_bank_privilege_payment">Бонусы начисляются при оплате картой Альфа-Банка с премиальным пакетом</string>
+    <string name="profile_alpha_bank_privilege_black_service">1 год бесплатного обслуживания премиального пакета Alfa Only для клиентов VIP Black</string>
+    <string name="profile_alpha_bank_privilege_black_gold_service">1 год бесплатного обслуживания премиального пакета Alfa Only для клиентов VIP Black и VIP Gold</string>
     <string name="profile_my_data">Мои данные</string>
     <string name="profile_purchases">Покупки</string>
     <string name="profile_information">Информация</string>

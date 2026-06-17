@@ -61,6 +61,8 @@ import ru.mercury.vpclient.features.profile_logout_dialog.ProfileLogoutDialog
 import ru.mercury.vpclient.features.profile_logout_dialog.intent.ProfileLogoutDialogIntent
 import ru.mercury.vpclient.features.profile_loyalty_add_card_sheet.ProfileLoyaltyAddCardSheet
 import ru.mercury.vpclient.features.profile_loyalty_code_sheet.ProfileLoyaltyCodeSheet
+import ru.mercury.vpclient.features.profile_privileges_sheet.ProfilePrivilegesSheet
+import ru.mercury.vpclient.features.profile_privileges_sheet.intent.ProfilePrivilegeIntent
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.entity.LoyaltyCardInfo
 import ru.mercury.vpclient.shared.data.entity.LoyaltyCardType
@@ -73,6 +75,8 @@ import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.cart.CartIconButton
 import ru.mercury.vpclient.shared.ui.components.cart.FittingIconButton
 import ru.mercury.vpclient.shared.ui.components.cart.MessengerIconButton
+import ru.mercury.vpclient.shared.ui.components.profile.ProfileAlphaBankBanner
+import ru.mercury.vpclient.shared.ui.components.profile.ProfileAlphaBankCardBanner
 import ru.mercury.vpclient.shared.ui.components.profile.ProfileLoyaltyCard
 import ru.mercury.vpclient.shared.ui.components.profile.ProfileLoyaltyCardState
 import ru.mercury.vpclient.shared.ui.components.profile.ProfileViewMoreButton
@@ -139,6 +143,19 @@ fun ProfileScreen(
             ProfileLoyaltyCodeSheet(
                 state = sheetState,
                 dispatch = { intent -> viewModel.dispatch(ProfileIntent.LoyaltyCodeSheetIntent(intent)) }
+            )
+        }
+
+        state.profilePrivilegesSheet?.let { sheetState ->
+            ProfilePrivilegesSheet(
+                state = sheetState,
+                dispatch = { intent ->
+                    when (intent) {
+                        is ProfilePrivilegeIntent.DismissRequest -> {
+                            viewModel.dispatch(ProfileIntent.ProfilePrivilegesSheetIntent(intent))
+                        }
+                    }
+                }
             )
         }
 
@@ -333,6 +350,32 @@ private fun ProfileScreenContent(
                     Spacer(
                         modifier = Modifier.height(52.dp)
                     )
+                }
+            }
+            state.alphaBankBannerCardType?.let { cardType ->
+                item {
+                    Spacer(
+                        modifier = Modifier.height(12.dp)
+                    )
+                }
+                item {
+                    when (cardType) {
+                        LoyaltyCardType.Black -> {
+                            ProfileAlphaBankBanner(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                onCloseClick = { dispatch(ProfileIntent.AlphaBankBannerCloseClick) },
+                                onMoreClick = { dispatch(ProfileIntent.AlphaBankBannerMoreClick) }
+                            )
+                        }
+                        LoyaltyCardType.Gold -> {
+                            ProfileAlphaBankCardBanner(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                onCloseClick = { dispatch(ProfileIntent.AlphaBankBannerCloseClick) },
+                                onMoreClick = { dispatch(ProfileIntent.AlphaBankBannerMoreClick) }
+                            )
+                        }
+                        LoyaltyCardType.Silver -> Unit
+                    }
                 }
             }
             item {
@@ -641,6 +684,24 @@ private class ProfileModelPreviewParameterProvider: PreviewParameterProvider<Pro
                 bonusAmount = 0,
                 typeCard = LoyaltyCardType.Gold
             )
+        ),
+        ProfileModel(
+            isLoyaltyCardLoading = false,
+            loyaltyCardInfo = LoyaltyCardInfo(
+                loyaltyCardNumber = "G40135",
+                bonusAmount = 0,
+                typeCard = LoyaltyCardType.Black
+            ),
+            alphaBankBannerCardType = LoyaltyCardType.Black
+        ),
+        ProfileModel(
+            isLoyaltyCardLoading = false,
+            loyaltyCardInfo = LoyaltyCardInfo(
+                loyaltyCardNumber = "G40135",
+                bonusAmount = 0,
+                typeCard = LoyaltyCardType.Gold
+            ),
+            alphaBankBannerCardType = LoyaltyCardType.Gold
         ),
         ProfileModel(
             isLoyaltyCardLoading = false,
