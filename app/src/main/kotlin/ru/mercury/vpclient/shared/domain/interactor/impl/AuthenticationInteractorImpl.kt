@@ -45,10 +45,6 @@ class AuthenticationInteractorImpl @Inject constructor(
         }
     }
 
-    override suspend fun register(phone: String, name: String) {
-        withContext(dispatchers.io) { authenticationRepository.register(phone, name) }
-    }
-
     override suspend fun login(phone: String) {
         withContext(dispatchers.io) { authenticationRepository.login(phone) }
     }

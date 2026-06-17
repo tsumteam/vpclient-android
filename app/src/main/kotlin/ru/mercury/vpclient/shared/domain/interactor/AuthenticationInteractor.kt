@@ -17,8 +17,6 @@ interface AuthenticationInteractor {
 
     fun validateRequiredCode(code: String): CodeValidationError?
 
-    suspend fun register(phone: String, name: String)
-
     suspend fun login(phone: String)
 
     suspend fun continueLogin(code: String)

@@ -8,8 +8,6 @@ interface AuthenticationRepository {
 
     val clientEntityFlow: Flow<ClientEntity>
 
-    suspend fun register(phone: String, name: String)
-
     suspend fun login(phone: String)
 
     suspend fun continueLogin(code: String)

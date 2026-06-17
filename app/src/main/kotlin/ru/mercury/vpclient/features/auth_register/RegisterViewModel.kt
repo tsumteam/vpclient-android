@@ -10,12 +10,14 @@ import ru.mercury.vpclient.features.auth_register.model.RegisterModel
 import ru.mercury.vpclient.shared.data.error.RegisterException
 import ru.mercury.vpclient.shared.domain.interactor.AuthenticationInteractor
 import ru.mercury.vpclient.shared.domain.mapper.normalizePhoneInput
+import ru.mercury.vpclient.shared.domain.usecase.RegisterUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
-    private val authenticationInteractor: AuthenticationInteractor
+    private val authenticationInteractor: AuthenticationInteractor,
+    private val registerUseCase: RegisterUseCase
 ): ClientViewModel<RegisterIntent, RegisterModel, RegisterEvents>(RegisterModel()) {
 
     override fun dispatch(intent: RegisterIntent) {
@@ -37,7 +39,11 @@ class RegisterViewModel @Inject constructor(
                                 phoneValidationError = null,
                                 isLoading = true
                             ) }
-                            authenticationInteractor.register(stateFlow.value.phone, stateFlow.value.name)
+                            val parameters = RegisterUseCase.Parameters(
+                                phone = stateFlow.value.phone,
+                                name = stateFlow.value.name
+                            )
+                            registerUseCase(parameters).getOrThrow()
                             reduce { it.copy(isLoading = false) }
                             MainEventManager.send(CodeRoute)
                         }
