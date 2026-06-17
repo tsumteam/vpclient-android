@@ -10,12 +10,14 @@ import ru.mercury.vpclient.features.auth_login.model.LoginModel
 import ru.mercury.vpclient.shared.data.error.LoginException
 import ru.mercury.vpclient.shared.domain.interactor.AuthenticationInteractor
 import ru.mercury.vpclient.shared.domain.mapper.normalizePhoneInput
+import ru.mercury.vpclient.shared.domain.usecase.LoginUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val authenticationInteractor: AuthenticationInteractor
+    private val authenticationInteractor: AuthenticationInteractor,
+    private val loginUseCase: LoginUseCase
 ): ClientViewModel<LoginIntent, LoginModel, LoginEvents>(LoginModel()) {
 
     override fun dispatch(intent: LoginIntent) {
@@ -29,7 +31,7 @@ class LoginViewModel @Inject constructor(
                     else -> {
                         launch {
                             reduce { it.copy(phoneValidationError = null, isLoading = true) }
-                            authenticationInteractor.login(stateFlow.value.phone)
+                            loginUseCase(stateFlow.value.phone).getOrThrow()
                             MainEventManager.send(CodeRoute)
                         }
                     }

@@ -28,25 +28,6 @@ class AuthenticationRepositoryImpl @Inject constructor(
 
     override val clientEntityFlow: Flow<ClientEntity> = clientDao.selectFlow()
 
-    override suspend fun login(phone: String) {
-        val formattedPhone = String.format(Locale.getDefault(), FORMAT_PHONE_NUMBER, phone)
-
-        handleResponse(
-            request = {
-                val request = AuthenticationLoginRequest(formattedPhone)
-                networkService.authenticationLogin(request)
-            },
-            onSuccess = {
-                val clientEntity = ClientEntity.Empty.copy(
-                    phone = phone,
-                    codeResendTimer = System.currentTimeMillis()
-                )
-                clientDao.upsert(clientEntity)
-            },
-            onFailure = { error -> throw LoginException(error.message) }
-        )
-    }
-
     override suspend fun continueLogin(code: String) {
         val clientEntity = clientDao.select()
         val formattedPhone = String.format(Locale.getDefault(), FORMAT_PHONE_NUMBER, clientEntity.phone)
