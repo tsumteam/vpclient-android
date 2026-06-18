@@ -2,6 +2,7 @@
 
 package ru.mercury.vpclient.features.profile_loyalty_code_sheet
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,7 +17,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -120,6 +120,7 @@ fun ProfileLoyaltyCodeSheet(
                         Icon(
                             imageVector = Close24,
                             contentDescription = null,
+                            modifier = Modifier.size(24.dp),
                             tint = MaterialTheme.colorScheme.onBackground
                         )
                     }

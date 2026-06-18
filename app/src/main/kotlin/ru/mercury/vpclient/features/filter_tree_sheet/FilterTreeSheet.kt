@@ -2,7 +2,6 @@
 
 package ru.mercury.vpclient.features.filter_tree_sheet
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +16,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -25,11 +25,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -52,11 +52,12 @@ import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.filters.FilterSelectableRow
 import ru.mercury.vpclient.shared.ui.icons.Check24
+import ru.mercury.vpclient.shared.ui.icons.ChevronEnd24
 import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.livretMedium19
+import ru.mercury.vpclient.shared.ui.theme.livretMedium18
 import ru.mercury.vpclient.shared.ui.theme.medium15
 import ru.mercury.vpclient.shared.ui.theme.medium16
 import ru.mercury.vpclient.shared.ui.theme.regular15
@@ -73,50 +74,50 @@ fun FilterTreeSheet(
         sheetState = sheetState
     ) {
         Column {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 16.dp)
-            ) {
-                IconButton(
-                    onClick = { dispatch(FilterTreeIntent.HideFilterTreeDialog) },
-                    modifier = Modifier.align(Alignment.CenterStart)
-                ) {
-                    Icon(
-                        imageVector = Close24,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onBackground
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = state.title.uppercase(),
+                        style = MaterialTheme.typography.livretMedium18.copy(
+                            color = MaterialTheme.colorScheme.onBackground,
+                            lineHeight = 26.sp,
+                            letterSpacing = .2.sp
+                        )
                     )
-                }
-
-                Text(
-                    text = state.title.uppercase(),
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(horizontal = 56.dp),
-                    style = MaterialTheme.typography.livretMedium19.copy(
-                        color = MaterialTheme.colorScheme.onBackground,
-                        textAlign = TextAlign.Center
-                    )
-                )
-
-                SharedAnimatedVisibility(
-                    visible = state.selectedIds.isNotEmpty(),
-                    modifier = Modifier.align(Alignment.CenterEnd)
-                ) {
-                    TextButton(
-                        onClick = { dispatch(FilterTreeIntent.ResetFilterValues) },
-                        contentPadding = PaddingValues(horizontal = 8.dp)
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = { dispatch(FilterTreeIntent.HideFilterTreeDialog) }
                     ) {
-                        Text(
-                            text = stringResource(ClientStrings.CommonReset),
-                            style = MaterialTheme.typography.medium16.copy(
-                                color = MaterialTheme.colorScheme.error
-                            )
+                        Icon(
+                            imageVector = Close24,
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp),
+                            tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
-                }
-            }
+                },
+                actions = {
+                    SharedAnimatedVisibility(
+                        visible = state.selectedIds.isNotEmpty()
+                    ) {
+                        TextButton(
+                            onClick = { dispatch(FilterTreeIntent.ResetFilterValues) },
+                            contentPadding = PaddingValues(horizontal = 8.dp)
+                        ) {
+                            Text(
+                                text = stringResource(ClientStrings.CommonReset),
+                                style = MaterialTheme.typography.medium16.copy(
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            )
+                        }
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
+            )
 
             SharedAnimatedVisibility(
                 visible = state.currentParentId != null
@@ -190,9 +191,9 @@ fun FilterTreeSheet(
                                     )
 
                                     Icon(
-                                        imageVector = ChevronStart24,
+                                        imageVector = ChevronEnd24,
                                         contentDescription = null,
-                                        modifier = Modifier.rotate(180F),
+                                        modifier = Modifier.size(24.dp),
                                         tint = MaterialTheme.colorScheme.onBackground
                                     )
                                 }
@@ -266,9 +267,7 @@ private fun FilterTreeSheetPreview(
     @PreviewParameter(FilterTreeModelProvider::class) state: FilterTreeModel
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Gray)
+        modifier = Modifier.fillMaxSize()
     ) {
         FilterTreeSheet(
             state = state,

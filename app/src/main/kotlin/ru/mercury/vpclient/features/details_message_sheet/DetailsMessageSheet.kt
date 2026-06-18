@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,11 +19,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -50,7 +53,7 @@ import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.icons.Message24
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.livretMedium19
+import ru.mercury.vpclient.shared.ui.theme.livretMedium18
 import ru.mercury.vpclient.shared.ui.theme.regular15
 
 @Composable
@@ -83,32 +86,34 @@ fun DetailsMessageSheet(
         Column(
             modifier = Modifier.imePadding()
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
-            ) {
-                IconButton(
-                    onClick = { sheetDispatch(DetailsMessageSheetIntent.DismissRequest) },
-                    modifier = Modifier.align(Alignment.CenterStart)
-                ) {
-                    Icon(
-                        imageVector = Close24,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onBackground
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(ClientStrings.DetailsMessageSheetTitle),
+                        style = MaterialTheme.typography.livretMedium18.copy(
+                            color = MaterialTheme.colorScheme.onBackground,
+                            lineHeight = 26.sp,
+                            letterSpacing = .2.sp
+                        )
                     )
-                }
-
-                Text(
-                    text = stringResource(ClientStrings.DetailsMessageSheetTitle),
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(horizontal = 56.dp),
-                    style = MaterialTheme.typography.livretMedium19.copy(
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                )
-            }
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = { sheetDispatch(DetailsMessageSheetIntent.DismissRequest) }
+                    ) {
+                        Icon(
+                            imageVector = Close24,
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp),
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                ),
+                windowInsets = WindowInsets()
+            )
 
             DetailsMessageProductCard(
                 entity = inlinedState.productEntity

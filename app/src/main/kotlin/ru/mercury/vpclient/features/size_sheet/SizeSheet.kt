@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -40,7 +41,7 @@ import ru.mercury.vpclient.shared.ui.components.details.SizeState
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.livretMedium19
+import ru.mercury.vpclient.shared.ui.theme.livretMedium18
 import ru.mercury.vpclient.shared.ui.theme.medium15
 
 @Composable
@@ -73,8 +74,10 @@ fun SizeSheet(
                 title = {
                     Text(
                         text = stringResource(ClientStrings.DetailsSizeSelectCaps),
-                        style = MaterialTheme.typography.livretMedium19.copy(
-                            color = MaterialTheme.colorScheme.onBackground
+                        style = MaterialTheme.typography.livretMedium18.copy(
+                            color = MaterialTheme.colorScheme.onBackground,
+                            lineHeight = 26.sp,
+                            letterSpacing = .2.sp
                         )
                     )
                 },
@@ -85,6 +88,7 @@ fun SizeSheet(
                         Icon(
                             imageVector = Close24,
                             contentDescription = null,
+                            modifier = Modifier.size(24.dp),
                             tint = MaterialTheme.colorScheme.onBackground
                         )
                     }

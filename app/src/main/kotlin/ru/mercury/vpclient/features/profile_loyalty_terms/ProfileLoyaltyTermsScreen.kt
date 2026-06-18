@@ -4,6 +4,7 @@ package ru.mercury.vpclient.features.profile_loyalty_terms
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -18,7 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.mercury.vpclient.features.profile_loyalty_terms.intent.ProfileLoyaltyTermsIntent
@@ -70,6 +71,7 @@ private fun ProfileLoyaltyTermsScreenContent(
                         Icon(
                             imageVector = ChevronStart24,
                             contentDescription = null,
+                            modifier = Modifier.size(24.dp),
                             tint = MaterialTheme.colorScheme.onBackground
                         )
                     }

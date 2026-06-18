@@ -2,13 +2,11 @@
 
 package ru.mercury.vpclient.features.filter_size_sheet
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -39,7 +37,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -69,7 +66,7 @@ import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.livretMedium19
+import ru.mercury.vpclient.shared.ui.theme.livretMedium18
 import ru.mercury.vpclient.shared.ui.theme.medium15
 import ru.mercury.vpclient.shared.ui.theme.medium16
 
@@ -91,13 +88,13 @@ fun FilterSizeSheet(
                 title = {
                     Text(
                         text = stringResource(ClientStrings.FilterSizeTitle),
-                        style = MaterialTheme.typography.livretMedium19.copy(
+                        style = MaterialTheme.typography.livretMedium18.copy(
                             color = MaterialTheme.colorScheme.onBackground,
-                            textAlign = TextAlign.Center
+                            lineHeight = 26.sp,
+                            letterSpacing = .2.sp
                         )
                     )
                 },
-                modifier = Modifier.height(64.dp),
                 navigationIcon = {
                     IconButton(
                         onClick = { dispatch(FilterSizeIntent.HideFilterSizeDialog) }
@@ -105,6 +102,7 @@ fun FilterSizeSheet(
                         Icon(
                             imageVector = Close24,
                             contentDescription = null,
+                            modifier = Modifier.size(24.dp),
                             tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
@@ -128,8 +126,7 @@ fun FilterSizeSheet(
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background
-                ),
-                windowInsets = WindowInsets()
+                )
             )
 
             when {
@@ -300,9 +297,7 @@ private fun FilterSizeSheetPreview(
     @PreviewParameter(FilterSizeSheetStateProvider::class) state: FilterSizeModel
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Gray)
+        modifier = Modifier.fillMaxSize()
     ) {
         FilterSizeSheet(
             state = state,

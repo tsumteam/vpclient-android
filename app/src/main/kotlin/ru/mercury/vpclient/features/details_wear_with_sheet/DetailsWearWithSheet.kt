@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.plus
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -29,6 +30,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.details_wear_with_sheet.intent.DetailsWearWithSheetIntent
 import ru.mercury.vpclient.features.details_wear_with_sheet.model.DetailsWearWithSheetModel
@@ -39,7 +41,7 @@ import ru.mercury.vpclient.shared.ui.components.catalog.CatalogProductCard
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.livretMedium19
+import ru.mercury.vpclient.shared.ui.theme.livretMedium18
 
 @Composable
 fun DetailsWearWithSheet(
@@ -74,8 +76,10 @@ fun DetailsWearWithSheet(
                     title = {
                         Text(
                             text = stringResource(ClientStrings.DetailsWearWithTitle),
-                            style = MaterialTheme.typography.livretMedium19.copy(
-                                color = MaterialTheme.colorScheme.onBackground
+                            style = MaterialTheme.typography.livretMedium18.copy(
+                                color = MaterialTheme.colorScheme.onBackground,
+                                lineHeight = 26.sp,
+                                letterSpacing = .2.sp
                             )
                         )
                     },
@@ -86,6 +90,7 @@ fun DetailsWearWithSheet(
                             Icon(
                                 imageVector = Close24,
                                 contentDescription = null,
+                                modifier = Modifier.size(24.dp),
                                 tint = MaterialTheme.colorScheme.onBackground
                             )
                         }

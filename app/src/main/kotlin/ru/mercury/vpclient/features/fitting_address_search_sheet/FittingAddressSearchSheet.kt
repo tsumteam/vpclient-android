@@ -52,7 +52,7 @@ import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.medium14
+import ru.mercury.vpclient.shared.ui.theme.livretMedium18
 import ru.mercury.vpclient.shared.ui.theme.medium15
 
 @Composable
@@ -76,15 +76,16 @@ fun FittingAddressSearchSheet(
                         title = {
                             Text(
                                 text = stringResource(ClientStrings.FittingAddressNewDeliveryTitle),
-                                style = MaterialTheme.typography.medium14.copy(
-                                    color = MaterialTheme.colorScheme.onBackground
+                                style = MaterialTheme.typography.livretMedium18.copy(
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    lineHeight = 26.sp,
+                                    letterSpacing = .2.sp
                                 )
                             )
                         },
                         navigationIcon = {
                             IconButton(
-                                onClick = { dispatch(FittingAddressSearchSheetIntent.DismissRequest) },
-                                modifier = Modifier.size(42.dp)
+                                onClick = { dispatch(FittingAddressSearchSheetIntent.DismissRequest) }
                             ) {
                                 Icon(
                                     imageVector = Close24,

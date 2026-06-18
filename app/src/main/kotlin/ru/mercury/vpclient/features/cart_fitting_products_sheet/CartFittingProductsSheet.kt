@@ -3,12 +3,13 @@
 package ru.mercury.vpclient.features.cart_fitting_products_sheet
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -34,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
@@ -103,7 +105,9 @@ fun CartFittingProductsSheet(
                             text = stringResource(ClientStrings.CartFittingProductsSheetTitle),
                             style = MaterialTheme.typography.livretMedium18.copy(
                                 color = MaterialTheme.colorScheme.onBackground,
-                                textAlign = TextAlign.Center
+                                textAlign = TextAlign.Center,
+                                lineHeight = 26.sp,
+                                letterSpacing = .2.sp
                             )
                         )
                     },
@@ -114,6 +118,7 @@ fun CartFittingProductsSheet(
                             Icon(
                                 imageVector = Close24,
                                 contentDescription = null,
+                                modifier = Modifier.size(24.dp),
                                 tint = MaterialTheme.colorScheme.onBackground
                             )
                         }
@@ -151,36 +156,31 @@ fun CartFittingProductsSheet(
                 }
             }
         ) { innerPadding ->
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(innerPadding)
+                    .padding(innerPadding),
+                contentPadding = PaddingValues(bottom = 80.dp)
             ) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1F)
-                ) {
-                    itemsIndexed(
-                        items = inlinedState.products,
-                        key = { _, product -> product.id }
-                    ) { index, product ->
-                        FittingProductRow(
-                            state = FittingProductRowState(
-                                product = product,
-                                checked = inlinedState.selectedProductIds.contains(product.id)
-                            ),
-                            onCheckedChange = { checked ->
-                                sheetDispatch(CartFittingProductsSheetIntent.ProductCheckedChange(product.id, checked))
-                            }
-                        )
-
-                        if (index < inlinedState.products.lastIndex) {
-                            HorizontalDivider(
-                                modifier = Modifier.padding(start = 16.dp),
-                                color = MaterialTheme.colorScheme.outlineVariant
-                            )
+                itemsIndexed(
+                    items = inlinedState.products,
+                    key = { _, product -> product.id }
+                ) { index, product ->
+                    FittingProductRow(
+                        state = FittingProductRowState(
+                            product = product,
+                            checked = inlinedState.selectedProductIds.contains(product.id)
+                        ),
+                        onCheckedChange = { checked ->
+                            sheetDispatch(CartFittingProductsSheetIntent.ProductCheckedChange(product.id, checked))
                         }
+                    )
+
+                    if (index < inlinedState.products.lastIndex) {
+                        HorizontalDivider(
+                            modifier = Modifier.padding(start = 16.dp),
+                            color = MaterialTheme.colorScheme.outlineVariant
+                        )
                     }
                 }
             }
@@ -191,22 +191,28 @@ fun CartFittingProductsSheet(
 @PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Composable
-private fun CartFittingProductsSheetPreview() {
-    val products = CartFittingProductsSheetCartProductProvider().values
-        .toList()
-        .filter { it.size.isNotBlank() && !it.isSold }
-
+private fun CartFittingProductsSheetPreview(
+    @PreviewParameter(CartFittingProductsSheetModelProvider::class) state: CartFittingProductsSheetModel
+) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
         CartFittingProductsSheet(
-            state = CartFittingProductsSheetModel(
-                products = products,
-                selectedProductIds = setOf("1")
-            ),
+            state = state,
             dispatch = {}
         )
     }
+}
+
+private class CartFittingProductsSheetModelProvider: PreviewParameterProvider<CartFittingProductsSheetModel> {
+    private val products = CartFittingProductsSheetCartProductProvider().values.toList()
+
+    override val values: Sequence<CartFittingProductsSheetModel> = sequenceOf(
+        CartFittingProductsSheetModel(
+            products = products.filter { it.size.isNotBlank() && !it.isSold },
+            selectedProductIds = setOf("1")
+        )
+    )
 }
 
 private class CartFittingProductsSheetCartProductProvider: PreviewParameterProvider<CartProduct> {

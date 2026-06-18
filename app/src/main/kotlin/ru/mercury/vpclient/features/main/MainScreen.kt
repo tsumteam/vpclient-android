@@ -2,6 +2,7 @@ package ru.mercury.vpclient.features.main
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -161,7 +162,8 @@ private fun MainScreenContent(
                     icon = {
                         Icon(
                             imageVector = Home24,
-                            contentDescription = null
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
                         )
                     },
                     label = {
@@ -201,7 +203,8 @@ private fun MainScreenContent(
                     icon = {
                         Icon(
                             imageVector = Brands24,
-                            contentDescription = null
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
                         )
                     },
                     label = {
@@ -243,7 +246,8 @@ private fun MainScreenContent(
                     icon = {
                         Icon(
                             imageVector = Catalog24,
-                            contentDescription = null
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
                         )
                     },
                     label = {
@@ -283,7 +287,8 @@ private fun MainScreenContent(
                     icon = {
                         Icon(
                             imageVector = Fitting24,
-                            contentDescription = null
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
                         )
                     },
                     label = {
@@ -324,6 +329,7 @@ private fun MainScreenContent(
                         Icon(
                             painter = painterResource(if (state.selectedRoute == ConsultantsRoute) R.drawable.ic_consultants_active_24 else R.drawable.ic_consultants_inactive_24),
                             contentDescription = null,
+                            modifier = Modifier.size(24.dp),
                             tint = Color.Unspecified
                         )
                     },
@@ -366,7 +372,8 @@ private fun MainScreenContent(
                     icon = {
                         Icon(
                             imageVector = Profile24,
-                            contentDescription = null
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
                         )
                     },
                     label = {

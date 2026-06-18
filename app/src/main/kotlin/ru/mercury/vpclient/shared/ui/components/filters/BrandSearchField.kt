@@ -121,6 +121,7 @@ fun BrandSearchField(
                 Icon(
                     imageVector = Close24,
                     contentDescription = null,
+                    modifier = Modifier.size(24.dp),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
