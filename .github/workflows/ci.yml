@@ -61,6 +61,13 @@ jobs:
           path: app/build/outputs/apk/*/debug/*.apk
           retention-days: 1
 
+      - uses: actions/upload-artifact@v6
+        if: ${{ env.IS_DEBUG == 'true' }}
+        with:
+          name: debug-mapping-${{ env.VERSION_CODE }}
+          path: app/build/outputs/mapping/*Debug/
+          retention-days: 60
+
       - name: expose debug apk paths
         if: ${{ env.IS_DEBUG == 'true' }}
         run: |

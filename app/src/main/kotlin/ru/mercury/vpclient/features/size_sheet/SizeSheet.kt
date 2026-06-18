@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package ru.mercury.vpclient.features.details_size_picker_sheet
+package ru.mercury.vpclient.features.size_sheet
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,15 +11,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -31,8 +32,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.cart_size_picker_sheet.SizeSelectorState
-import ru.mercury.vpclient.features.details_size_picker_sheet.intent.DetailsSizePickerSheetIntent
-import ru.mercury.vpclient.features.details_size_picker_sheet.model.DetailsSizePickerSheetModel
+import ru.mercury.vpclient.features.size_sheet.intent.SizeSheetIntent
+import ru.mercury.vpclient.features.size_sheet.model.SizeSheetModel
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.details.DetailsSizeSelector
 import ru.mercury.vpclient.shared.ui.components.details.SizeState
@@ -43,67 +44,65 @@ import ru.mercury.vpclient.shared.ui.theme.livretMedium19
 import ru.mercury.vpclient.shared.ui.theme.medium15
 
 @Composable
-fun DetailsSizePickerSheet(
-    state: DetailsSizePickerSheetModel,
-    dispatch: (DetailsSizePickerSheetIntent) -> Unit
+fun SizeSheet(
+    state: SizeSheetModel,
+    dispatch: (SizeSheetIntent) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
-    val sheetDispatch: (DetailsSizePickerSheetIntent) -> Unit = { intent ->
+    val sheetDispatch: (SizeSheetIntent) -> Unit = { intent ->
         when (intent) {
-            is DetailsSizePickerSheetIntent.AddToBasketClick,
-            is DetailsSizePickerSheetIntent.DismissRequest -> {
+            is SizeSheetIntent.AddToBasketClick,
+            is SizeSheetIntent.DismissRequest -> {
                 scope.launch {
                     sheetState.hide()
                     dispatch(intent)
                 }
             }
-            is DetailsSizePickerSheetIntent.SizeClick,
-            is DetailsSizePickerSheetIntent.SizeTableClick -> dispatch(intent)
+            is SizeSheetIntent.SizeClick,
+            is SizeSheetIntent.SizeTableClick -> dispatch(intent)
         }
     }
 
     SharedModalBottomSheet(
-        onDismissRequest = { dispatch(DetailsSizePickerSheetIntent.DismissRequest) },
+        onDismissRequest = { dispatch(SizeSheetIntent.DismissRequest) },
         sheetState = sheetState
     ) {
         Column {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
-            ) {
-                IconButton(
-                    onClick = { sheetDispatch(DetailsSizePickerSheetIntent.DismissRequest) },
-                    modifier = Modifier.align(Alignment.CenterStart)
-                ) {
-                    Icon(
-                        imageVector = Close24,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onBackground
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(ClientStrings.DetailsSizeSelectCaps),
+                        style = MaterialTheme.typography.livretMedium19.copy(
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
                     )
-                }
-
-                Text(
-                    text = stringResource(ClientStrings.DetailsSizeSelectCaps),
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(horizontal = 56.dp),
-                    style = MaterialTheme.typography.livretMedium19.copy(
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = { sheetDispatch(SizeSheetIntent.DismissRequest) }
+                    ) {
+                        Icon(
+                            imageVector = Close24,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
                 )
-            }
+            )
 
             DetailsSizeSelector(
                 state = state.sizeSelectorState,
-                onSizeClick = { index -> sheetDispatch(DetailsSizePickerSheetIntent.SizeClick(index)) },
-                onSizeTableClick = { sheetDispatch(DetailsSizePickerSheetIntent.SizeTableClick) },
+                onSizeClick = { index -> sheetDispatch(SizeSheetIntent.SizeClick(index)) },
+                onSizeTableClick = { sheetDispatch(SizeSheetIntent.SizeTableClick) },
                 modifier = Modifier.padding(top = 8.dp)
             )
 
             Button(
-                onClick = { sheetDispatch(DetailsSizePickerSheetIntent.AddToBasketClick) },
+                onClick = { sheetDispatch(SizeSheetIntent.AddToBasketClick) },
                 modifier = Modifier
                     .padding(start = 16.dp, top = 28.dp, end = 16.dp, bottom = 8.dp)
                     .fillMaxWidth()
@@ -129,20 +128,20 @@ fun DetailsSizePickerSheet(
 @PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Composable
-private fun DetailsSizePickerSheetPreview(
-    @PreviewParameter(DetailsSizePickerSheetSizeSelectorStateProvider::class) state: SizeSelectorState
+private fun SizeSheetPreview(
+    @PreviewParameter(SizeSheetSizeSelectorStateProvider::class) state: SizeSelectorState
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        DetailsSizePickerSheet(
-            state = DetailsSizePickerSheetModel(sizeSelectorState = state),
+        SizeSheet(
+            state = SizeSheetModel(sizeSelectorState = state),
             dispatch = {}
         )
     }
 }
 
-private class DetailsSizePickerSheetSizeSelectorStateProvider: PreviewParameterProvider<SizeSelectorState> {
+private class SizeSheetSizeSelectorStateProvider: PreviewParameterProvider<SizeSelectorState> {
 
     private val sizes = listOf(
         SizeState(topText = "RU 36", bottomText = "IT 34", selected = false, enabled = true),

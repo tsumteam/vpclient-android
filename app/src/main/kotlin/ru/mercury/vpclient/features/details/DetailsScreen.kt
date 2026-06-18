@@ -65,12 +65,12 @@ import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.features.details_message_sheet.DetailsMessageSheet
 import ru.mercury.vpclient.features.details_message_sheet.intent.DetailsMessageSheetIntent
 import ru.mercury.vpclient.features.details_message_sheet.model.DetailsMessageSheetModel
-import ru.mercury.vpclient.features.details_size_picker_sheet.DetailsSizePickerSheet
-import ru.mercury.vpclient.features.details_size_picker_sheet.intent.DetailsSizePickerSheetIntent
-import ru.mercury.vpclient.features.details_size_picker_sheet.model.DetailsSizePickerSheetModel
 import ru.mercury.vpclient.features.details_wear_with_sheet.DetailsWearWithSheet
 import ru.mercury.vpclient.features.details_wear_with_sheet.intent.DetailsWearWithSheetIntent
 import ru.mercury.vpclient.features.details_wear_with_sheet.model.DetailsWearWithSheetModel
+import ru.mercury.vpclient.features.size_sheet.SizeSheet
+import ru.mercury.vpclient.features.size_sheet.intent.SizeSheetIntent
+import ru.mercury.vpclient.features.size_sheet.model.SizeSheetModel
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.entity.DetailsMediaItem
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductButtonEntity
@@ -165,22 +165,22 @@ fun DetailsScreen(
     }
 
     if (state.isSizePickerSheetVisible) {
-        DetailsSizePickerSheet(
-            state = DetailsSizePickerSheetModel(
+        SizeSheet(
+            state = SizeSheetModel(
                 sizeSelectorState = state.sizePickerState
             ),
             dispatch = { intent ->
                 when (intent) {
-                    is DetailsSizePickerSheetIntent.SizeClick -> {
+                    is SizeSheetIntent.SizeClick -> {
                         viewModel.dispatch(DetailsIntent.SizeClick(intent.index))
                     }
-                    is DetailsSizePickerSheetIntent.SizeTableClick -> {
+                    is SizeSheetIntent.SizeTableClick -> {
                         viewModel.dispatch(DetailsIntent.SizeTableClick)
                     }
-                    is DetailsSizePickerSheetIntent.AddToBasketClick -> {
+                    is SizeSheetIntent.AddToBasketClick -> {
                         viewModel.dispatch(DetailsIntent.AddToBasketClick)
                     }
-                    is DetailsSizePickerSheetIntent.DismissRequest -> {
+                    is SizeSheetIntent.DismissRequest -> {
                         viewModel.dispatch(DetailsIntent.HideSizePicker)
                     }
                 }

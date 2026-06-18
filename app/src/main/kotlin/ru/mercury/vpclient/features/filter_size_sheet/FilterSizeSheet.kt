@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,6 +21,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -28,6 +30,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -84,50 +87,50 @@ fun FilterSizeSheet(
         var selectedCountry by remember { mutableStateOf<SizeCountry>(SizeCountry.Russia) }
 
         Column {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 16.dp)
-            ) {
-                IconButton(
-                    onClick = { dispatch(FilterSizeIntent.HideFilterSizeDialog) },
-                    modifier = Modifier.align(Alignment.CenterStart)
-                ) {
-                    Icon(
-                        imageVector = Close24,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onBackground
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(ClientStrings.FilterSizeTitle),
+                        style = MaterialTheme.typography.livretMedium19.copy(
+                            color = MaterialTheme.colorScheme.onBackground,
+                            textAlign = TextAlign.Center
+                        )
                     )
-                }
-
-                Text(
-                    text = stringResource(ClientStrings.FilterSizeTitle),
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(horizontal = 56.dp, vertical = 0.dp),
-                    style = MaterialTheme.typography.livretMedium19.copy(
-                        color = MaterialTheme.colorScheme.onBackground,
-                        textAlign = TextAlign.Center
-                    )
-                )
-
-                SharedAnimatedVisibility(
-                    visible = state.selectedIds.isNotEmpty(),
-                    modifier = Modifier.align(Alignment.CenterEnd)
-                ) {
-                    TextButton(
-                        onClick = { dispatch(FilterSizeIntent.ResetFilterSizeValues) },
-                        contentPadding = PaddingValues(horizontal = 8.dp)
+                },
+                modifier = Modifier.height(64.dp),
+                navigationIcon = {
+                    IconButton(
+                        onClick = { dispatch(FilterSizeIntent.HideFilterSizeDialog) }
                     ) {
-                        Text(
-                            text = stringResource(ClientStrings.CommonReset),
-                            style = MaterialTheme.typography.medium16.copy(
-                                color = MaterialTheme.colorScheme.error
-                            )
+                        Icon(
+                            imageVector = Close24,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
-                }
-            }
+                },
+                actions = {
+                    SharedAnimatedVisibility(
+                        visible = state.selectedIds.isNotEmpty()
+                    ) {
+                        TextButton(
+                            onClick = { dispatch(FilterSizeIntent.ResetFilterSizeValues) },
+                            contentPadding = PaddingValues(horizontal = 8.dp)
+                        ) {
+                            Text(
+                                text = stringResource(ClientStrings.CommonReset),
+                                style = MaterialTheme.typography.medium16.copy(
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            )
+                        }
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                ),
+                windowInsets = WindowInsets()
+            )
 
             when {
                 state.isLoading -> {
