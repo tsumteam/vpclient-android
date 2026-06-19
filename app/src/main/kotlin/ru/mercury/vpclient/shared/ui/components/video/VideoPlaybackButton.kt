@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.ui.icons.Pause33
 import ru.mercury.vpclient.shared.ui.icons.Play33
 import ru.mercury.vpclient.shared.ui.preview.BooleanPreviewParameterProvider
-import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
+import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.primary40
 
 @Composable

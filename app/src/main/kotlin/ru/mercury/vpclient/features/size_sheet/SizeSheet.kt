@@ -32,14 +32,14 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.features.cart_size_picker_sheet.SizeSelectorState
 import ru.mercury.vpclient.features.size_sheet.intent.SizeSheetIntent
 import ru.mercury.vpclient.features.size_sheet.model.SizeSheetModel
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.details.DetailsSizeSelector
+import ru.mercury.vpclient.shared.ui.components.details.SizeSelectorState
 import ru.mercury.vpclient.shared.ui.components.details.SizeState
 import ru.mercury.vpclient.shared.ui.icons.Close24
-import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
+import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.livretMedium18
 import ru.mercury.vpclient.shared.ui.theme.medium15

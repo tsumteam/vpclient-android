@@ -32,7 +32,7 @@ import ru.mercury.vpclient.features.fitting_success.navigation.FittingSuccessRou
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.fitting.FittingSuccessDeliveryText
 import ru.mercury.vpclient.shared.ui.icons.Logo117
-import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
+import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.medium15
 import ru.mercury.vpclient.shared.ui.theme.medium18

@@ -17,13 +17,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
+import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.regular14
 
 data class SizeState(
@@ -46,7 +46,11 @@ fun DetailsSizeButton(
 
     Column(
         modifier = modifier
-            .border(1.dp, outerBorderColor, RoundedCornerShape(4.dp))
+            .border(
+                width = 1.dp,
+                color = outerBorderColor,
+                shape = RoundedCornerShape(5.dp)
+            )
             .padding(2.dp)
             .size(width = 50.dp, height = 58.dp)
             .border(
@@ -65,6 +69,7 @@ fun DetailsSizeButton(
             text = state.topText,
             style = MaterialTheme.typography.regular14.copy(
                 color = if (state.enabled) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.outline,
+                lineHeight = 18.sp,
                 letterSpacing = .2.sp
             )
         )
@@ -73,6 +78,7 @@ fun DetailsSizeButton(
             text = state.bottomText,
             style = MaterialTheme.typography.regular14.copy(
                 color = if (state.enabled) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.outline,
+                lineHeight = 18.sp,
                 letterSpacing = .2.sp
             )
         )
@@ -80,15 +86,14 @@ fun DetailsSizeButton(
 }
 
 @PreviewWrapper(ThemeWrapper::class)
-@FontScalePreviews
+@Preview
 @Composable
 private fun DetailsSizeButtonPreview(
     @PreviewParameter(SizeStateProvider::class) state: SizeState
 ) {
     DetailsSizeButton(
         state = state,
-        onClick = {},
-        modifier = Modifier.padding(8.dp)
+        onClick = {}
     )
 }
 

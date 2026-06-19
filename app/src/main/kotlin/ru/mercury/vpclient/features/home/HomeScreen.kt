@@ -28,7 +28,7 @@ import ru.mercury.vpclient.shared.ui.components.cart.FittingIconButton
 import ru.mercury.vpclient.shared.ui.components.cart.MessengerIconButton
 import ru.mercury.vpclient.shared.ui.icons.Logo82
 import ru.mercury.vpclient.shared.ui.icons.Search24
-import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
+import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 
 @Composable
 fun HomeScreen(

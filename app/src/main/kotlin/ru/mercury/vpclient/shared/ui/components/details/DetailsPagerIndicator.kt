@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.ui.components.HorizontalPagerIndicator
 import ru.mercury.vpclient.shared.ui.icons.Video24
 import ru.mercury.vpclient.shared.ui.preview.BooleanPreviewParameterProvider
-import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
+import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 
 @Composable
 fun DetailsPagerIndicator(

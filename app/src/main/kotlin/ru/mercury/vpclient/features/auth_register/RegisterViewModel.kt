@@ -39,11 +39,11 @@ class RegisterViewModel @Inject constructor(
                                 phoneValidationError = null,
                                 isLoading = true
                             ) }
-                            val parameters = RegisterUseCase.Parameters(
+                            val params = RegisterUseCase.Params(
                                 phone = stateFlow.value.phone,
                                 name = stateFlow.value.name
                             )
-                            registerUseCase(parameters).getOrThrow()
+                            registerUseCase(params).getOrThrow()
                             reduce { it.copy(isLoading = false) }
                             MainEventManager.send(CodeRoute)
                         }

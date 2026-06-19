@@ -46,7 +46,7 @@ import ru.mercury.vpclient.shared.ui.icons.GiftCard24
 import ru.mercury.vpclient.shared.ui.icons.Payment24
 import ru.mercury.vpclient.shared.ui.icons.PrivacyPolicy24
 import ru.mercury.vpclient.shared.ui.icons.Return24
-import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
+import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.divider
 import ru.mercury.vpclient.shared.ui.theme.medium14

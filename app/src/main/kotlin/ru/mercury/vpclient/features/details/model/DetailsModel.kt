@@ -1,6 +1,5 @@
 package ru.mercury.vpclient.features.details.model
 
-import ru.mercury.vpclient.shared.domain.mapper.toField
 import ru.mercury.vpclient.shared.data.entity.DetailsField
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
@@ -10,8 +9,9 @@ import ru.mercury.vpclient.shared.domain.mapper.hasFittingBadge
 import ru.mercury.vpclient.shared.domain.mapper.hasFittingProducts
 import ru.mercury.vpclient.shared.domain.mapper.hasMessengerBadge
 import ru.mercury.vpclient.shared.domain.mapper.toCatalogFilterProductsEntity
+import ru.mercury.vpclient.shared.domain.mapper.toField
 import ru.mercury.vpclient.shared.mvi.Model
-import ru.mercury.vpclient.features.cart_size_picker_sheet.SizeSelectorState
+import ru.mercury.vpclient.shared.ui.components.details.SizeSelectorState
 import ru.mercury.vpclient.shared.ui.components.details.SizeState
 
 // fixme
@@ -23,6 +23,7 @@ data class DetailsModel(
     val isSizePickerSheetVisible: Boolean = false,
     val isWearWithSheetVisible: Boolean = false,
     val isMessageSheetVisible: Boolean = false,
+    val isCartAddedSheetVisible: Boolean = false,
     val basketProductIds: Set<String> = emptySet(),
     val basketProductKeys: Set<String> = emptySet(),
     val cartSize: Int = 0,

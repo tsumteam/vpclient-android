@@ -15,23 +15,23 @@ class RegisterUseCase @Inject constructor(
     private val networkService: NetworkService,
     private val clientDao: ClientDao,
     dispatchers: SharedDispatchers
-): UseCase<RegisterUseCase.Parameters, Unit>(dispatchers.io) {
+): UseCase<RegisterUseCase.Params, Unit>(dispatchers.io) {
 
-    override suspend fun execute(parameters: Parameters) {
-        val formattedPhone = String.format(Locale.getDefault(), FORMAT_PHONE_NUMBER, parameters.phone)
+    override suspend fun execute(params: Params) {
+        val formattedPhone = String.format(Locale.getDefault(), FORMAT_PHONE_NUMBER, params.phone)
 
         handleResponse(
             request = {
                 val request = AuthenticationRegisterRequest(
                     phone = formattedPhone,
-                    name = parameters.name
+                    name = params.name
                 )
                 networkService.authenticationRegister(request)
             },
             onSuccess = {
                 val clientEntity = ClientEntity.Empty.copy(
-                    phone = parameters.phone,
-                    name = parameters.name,
+                    phone = params.phone,
+                    name = params.name,
                     codeResendTimer = System.currentTimeMillis()
                 )
                 clientDao.upsert(clientEntity)
@@ -40,7 +40,7 @@ class RegisterUseCase @Inject constructor(
         )
     }
 
-    data class Parameters(
+    data class Params(
         val phone: String,
         val name: String
     )

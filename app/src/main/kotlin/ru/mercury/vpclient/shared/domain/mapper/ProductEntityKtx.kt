@@ -27,6 +27,12 @@ val ProductEntity.cardDiscountedPrice: String?
 val ProductEntity.cardDiscountLabel: String?
     get() = price.discountLabel(priceWithoutDiscount)
 
+val ProductEntity.detailsMessageProductName: String
+    get() = shortDescription?.takeIf { it.isNotBlank() } ?: name.orEmpty()
+
+val ProductEntity.detailsMessageProductArticle: String
+    get() = itemId?.takeIf { it.isNotBlank() } ?: article.orEmpty()
+
 private fun Double?.formattedPrice(): String {
     return when {
         this == null -> ""

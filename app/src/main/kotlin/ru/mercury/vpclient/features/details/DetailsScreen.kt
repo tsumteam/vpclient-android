@@ -58,6 +58,9 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
+import ru.mercury.vpclient.features.details_cart_added_sheet.DetailsCartAddedSheet
+import ru.mercury.vpclient.features.details_cart_added_sheet.intent.DetailsCartAddedSheetIntent
+import ru.mercury.vpclient.features.details_cart_added_sheet.model.DetailsCartAddedSheetModel
 import ru.mercury.vpclient.features.details.event.DetailsEvent
 import ru.mercury.vpclient.features.details.intent.DetailsIntent
 import ru.mercury.vpclient.features.details.model.DetailsModel
@@ -92,15 +95,14 @@ import ru.mercury.vpclient.shared.ui.components.details.DetailsOutfitButton
 import ru.mercury.vpclient.shared.ui.components.details.DetailsPagerIndicator
 import ru.mercury.vpclient.shared.ui.components.details.DetailsProductInfoBox
 import ru.mercury.vpclient.shared.ui.components.details.DetailsSizeSelector
-import ru.mercury.vpclient.shared.ui.components.video.VideoPlayer
 import ru.mercury.vpclient.shared.ui.components.details.DetailsWearWithSection
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
+import ru.mercury.vpclient.shared.ui.components.video.VideoPlayer
 import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.ktx.clickableWithoutRipple
 import ru.mercury.vpclient.shared.ui.placeholder
-import ru.mercury.vpclient.shared.ui.preview.annotation.HightPreview
-import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
+import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.livretRegular15
@@ -135,6 +137,27 @@ fun DetailsScreen(
                     }
                     is DetailsMessageSheetIntent.DismissRequest -> {
                         viewModel.dispatch(DetailsIntent.HideMessageSheet)
+                    }
+                }
+            }
+        )
+    }
+
+    if (state.isCartAddedSheetVisible) {
+        DetailsCartAddedSheet(
+            state = DetailsCartAddedSheetModel(
+                productEntity = state.productEntity
+            ),
+            dispatch = { intent ->
+                when (intent) {
+                    is DetailsCartAddedSheetIntent.ContinueShoppingClick -> {
+                        viewModel.dispatch(DetailsIntent.HideCartAddedSheet)
+                    }
+                    is DetailsCartAddedSheetIntent.CartClick -> {
+                        viewModel.dispatch(DetailsIntent.CartAddedSheetCartClick)
+                    }
+                    is DetailsCartAddedSheetIntent.DismissRequest -> {
+                        viewModel.dispatch(DetailsIntent.HideCartAddedSheet)
                     }
                 }
             }
@@ -652,7 +675,7 @@ private fun DetailsScreenContent(
 
 @PreviewWrapper(ThemeWrapper::class)
 @Preview
-@HightPreview
+@Preview(heightDp = 2000, showBackground = true)
 @Composable
 private fun DetailsScreenContentPreview(
     @PreviewParameter(DetailsModelProvider::class) state: DetailsModel

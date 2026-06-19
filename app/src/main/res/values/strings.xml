@@ -251,6 +251,9 @@
     <string name="details_message_sheet_title">ОТПРАВИТЬ КОНСУЛЬТАНТУ</string>
     <string name="details_message_comment_placeholder">Добавить комментарий</string>
     <string name="details_message_product_article">Артикул: %1$s</string>
+    <string name="details_cart_added_sheet_title">ТОВАР ДОБАВЛЕН В КОРЗИНУ</string>
+    <string name="details_cart_added_sheet_continue_shopping">Продолжить покупки</string>
+    <string name="details_cart_added_sheet_cart">Перейти в корзину</string>
     <string name="details_complete_set_title">ДОПОЛНИТЕ КОМПЛЕКТ</string>
     <string name="details_field_brand">Бренд</string>
     <string name="details_field_color">Цвет</string>

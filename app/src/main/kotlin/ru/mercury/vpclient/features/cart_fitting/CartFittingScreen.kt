@@ -51,7 +51,7 @@ import ru.mercury.vpclient.shared.ui.components.cart.CartProductCardState
 import ru.mercury.vpclient.shared.ui.components.cart.CartProductLargeCard
 import ru.mercury.vpclient.shared.ui.components.fitting.FittingDeliveryHeader
 import ru.mercury.vpclient.shared.ui.components.fitting.FittingDeliveryHeaderState
-import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
+import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.divider
 import ru.mercury.vpclient.shared.ui.theme.medium13

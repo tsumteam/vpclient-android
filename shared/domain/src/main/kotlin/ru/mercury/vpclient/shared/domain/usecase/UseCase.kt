@@ -7,10 +7,10 @@ abstract class UseCase<in P, R>(
     private val coroutineDispatcher: CoroutineDispatcher
 ) {
 
-    suspend operator fun invoke(parameters: P): Result<R> {
+    suspend operator fun invoke(params: P): Result<R> {
         return try {
             withContext(coroutineDispatcher) {
-                Result.success(execute(parameters))
+                Result.success(execute(params))
             }
         } catch (e: Exception) {
             Result.failure(e)
@@ -18,5 +18,5 @@ abstract class UseCase<in P, R>(
     }
 
     @Throws(RuntimeException::class)
-    protected abstract suspend fun execute(parameters: P): R
+    protected abstract suspend fun execute(params: P): R
 }

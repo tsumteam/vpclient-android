@@ -214,6 +214,9 @@ object ClientStrings {
     val DetailsMessageSheetTitle get() = R.string.details_message_sheet_title
     val DetailsMessageCommentPlaceholder get() = R.string.details_message_comment_placeholder
     val DetailsMessageProductArticle get() = R.string.details_message_product_article
+    val DetailsCartAddedSheetTitle get() = R.string.details_cart_added_sheet_title
+    val DetailsCartAddedSheetContinueShopping get() = R.string.details_cart_added_sheet_continue_shopping
+    val DetailsCartAddedSheetCart get() = R.string.details_cart_added_sheet_cart
     val DetailsCompleteSetTitle get() = R.string.details_complete_set_title
     val DetailsFieldBrand get() = R.string.details_field_brand
     val DetailsFieldColor get() = R.string.details_field_color

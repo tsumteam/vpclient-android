@@ -92,7 +92,7 @@ import ru.mercury.vpclient.shared.ui.components.filters.FilterBrandSectionHeader
 import ru.mercury.vpclient.shared.ui.components.filters.FilterChip
 import ru.mercury.vpclient.shared.ui.components.filters.FilterSelectableRow
 import ru.mercury.vpclient.shared.ui.icons.Close24
-import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
+import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.livretMedium18
 import ru.mercury.vpclient.shared.ui.theme.medium15
@@ -179,8 +179,7 @@ fun FilterBrandSheet(
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background
-                ),
-                windowInsets = WindowInsets()
+                )
             )
 
             when {

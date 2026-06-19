@@ -1,4 +1,4 @@
-package ru.mercury.vpclient.shared.ui.preview.wrapper
+package ru.mercury.vpclient.shared.ui.preview
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.PreviewWrapperProvider

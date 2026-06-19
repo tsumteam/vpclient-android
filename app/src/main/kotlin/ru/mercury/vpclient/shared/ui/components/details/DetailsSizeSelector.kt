@@ -4,16 +4,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
@@ -21,14 +21,30 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import ru.mercury.vpclient.features.cart_size_picker_sheet.SizeSelectorState
-import ru.mercury.vpclient.shared.ui.components.details.SizeState
-import ru.mercury.vpclient.shared.ui.preview.annotation.FontScalePreviews
-import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
+import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.medium14
 import ru.mercury.vpclient.shared.ui.theme.regular12
 import ru.mercury.vpclient.shared.ui.theme.regular14
+
+data class SizeSelectorState(
+    val sizes: List<SizeState>,
+    val topText: String,
+    val bottomText: String,
+    val isSizeTableVisible: Boolean
+) {
+    val selectedSize: SizeState?
+        get() = sizes.firstOrNull { it.selected }
+
+    companion object {
+        val Empty = SizeSelectorState(
+            sizes = emptyList(),
+            topText = "",
+            bottomText = "",
+            isSizeTableVisible = false
+        )
+    }
+}
 
 @Composable
 fun DetailsSizeSelector(
@@ -37,8 +53,6 @@ fun DetailsSizeSelector(
     onSizeTableClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val selectedSize = state.sizes.firstOrNull { it.selected }
-
     ConstraintLayout(
         modifier = modifier.fillMaxWidth()
     ) {
@@ -77,19 +91,16 @@ fun DetailsSizeSelector(
 
         Column(
             modifier = Modifier.constrainAs(textsRef) {
-                width = Dimension.value(50.dp)
-                height = Dimension.value(58.dp)
+                width = Dimension.wrapContent
+                height = Dimension.value(54.dp)
                 start.linkTo(parent.start, 16.dp)
                 top.linkTo(sizeListRef.top)
                 bottom.linkTo(sizeListRef.bottom)
             },
-            verticalArrangement = Arrangement.spacedBy(
-                space = 6.dp,
-                alignment = Alignment.CenterVertically
-            )
+            verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterVertically)
         ) {
             Text(
-                text = state.topText.ifEmpty { selectedSize?.topText.orEmpty() },
+                text = state.topText.ifEmpty { state.selectedSize?.topText.orEmpty() },
                 style = MaterialTheme.typography.regular14.copy(
                     color = MaterialTheme.colorScheme.onBackground,
                     letterSpacing = .2.sp
@@ -97,7 +108,7 @@ fun DetailsSizeSelector(
             )
 
             Text(
-                text = state.bottomText.ifEmpty { selectedSize?.bottomText.orEmpty() },
+                text = state.bottomText.ifEmpty { state.selectedSize?.bottomText.orEmpty() },
                 style = MaterialTheme.typography.regular14.copy(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     letterSpacing = .2.sp
@@ -108,12 +119,12 @@ fun DetailsSizeSelector(
         LazyRow(
             modifier = Modifier.constrainAs(sizeListRef) {
                 width = Dimension.fillToConstraints
-                start.linkTo(textsRef.end, 8.dp)
+                start.linkTo(textsRef.end)
                 top.linkTo(titleRef.bottom, 16.dp)
                 end.linkTo(parent.end)
             },
-            contentPadding = PaddingValues(end = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             itemsIndexed(state.sizes) { index, sizeState ->
                 DetailsSizeButton(
@@ -125,8 +136,8 @@ fun DetailsSizeSelector(
 
         Text(
             text = when {
-                selectedSize == null -> stringResource(ClientStrings.DetailsSizeSelect)
-                selectedSize.enabled -> stringResource(ClientStrings.DetailsSizeInStock)
+                state.selectedSize == null -> stringResource(ClientStrings.DetailsSizeSelect)
+                state.selectedSize?.enabled == true -> stringResource(ClientStrings.DetailsSizeInStock)
                 else -> stringResource(ClientStrings.DetailsSizeSold)
             },
             modifier = Modifier.constrainAs(statusRef) {
@@ -135,7 +146,7 @@ fun DetailsSizeSelector(
             },
             style = MaterialTheme.typography.regular12.copy(
                 color = when {
-                    selectedSize == null -> MaterialTheme.colorScheme.outline
+                    state.selectedSize == null -> MaterialTheme.colorScheme.outline
                     else -> MaterialTheme.colorScheme.error
                 },
                 lineHeight = 16.sp,
@@ -146,7 +157,7 @@ fun DetailsSizeSelector(
 }
 
 @PreviewWrapper(ThemeWrapper::class)
-@FontScalePreviews
+@Preview(showBackground = true)
 @Composable
 private fun DetailsSizeSelectorPreview(
     @PreviewParameter(DetailsSizeSelectorSizeSelectorStateProvider::class) state: SizeSelectorState

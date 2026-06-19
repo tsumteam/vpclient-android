@@ -8,8 +8,8 @@ abstract class FlowUseCase<in P, R>(
     private val coroutineDispatcher: CoroutineDispatcher
 ) {
 
-    operator fun invoke(parameters: P): Flow<R> {
-        return execute(parameters).flowOn(coroutineDispatcher)
+    operator fun invoke(params: P): Flow<R> {
+        return execute(params).flowOn(coroutineDispatcher)
     }
 
     protected abstract fun execute(parameters: P): Flow<R>

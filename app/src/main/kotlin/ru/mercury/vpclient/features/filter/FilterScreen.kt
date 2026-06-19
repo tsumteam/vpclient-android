@@ -121,7 +121,7 @@ import ru.mercury.vpclient.shared.ui.ktx.isPagingFailure
 import ru.mercury.vpclient.shared.ui.ktx.isPagingLoading
 import ru.mercury.vpclient.shared.ui.ktx.isRefreshFailure
 import ru.mercury.vpclient.shared.ui.ktx.isRefreshLoading
-import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
+import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.medium18
 import ru.mercury.vpclient.shared.ui.theme.regular15

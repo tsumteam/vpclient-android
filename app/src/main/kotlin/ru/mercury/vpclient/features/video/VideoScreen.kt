@@ -45,7 +45,7 @@ import ru.mercury.vpclient.shared.ui.components.video.VideoPlayer
 import ru.mercury.vpclient.shared.ui.components.video.VideoSpeedDropdownMenu
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.icons.Settings24
-import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
+import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import kotlin.time.Duration.Companion.milliseconds
 
 private const val VIDEO_CONTROLS_HIDE_DELAY_MILLIS = 2_000L

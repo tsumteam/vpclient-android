@@ -26,7 +26,7 @@ import ru.mercury.vpclient.features.debug_env_dialog.intent.DebugEnvironmentDial
 import ru.mercury.vpclient.features.debug_env_dialog.model.DebugEnvironmentDialogModel
 import ru.mercury.vpclient.shared.data.network.env.ClientEnvironment
 import ru.mercury.vpclient.shared.ui.components.RadioRow
-import ru.mercury.vpclient.shared.ui.preview.wrapper.ThemeWrapper
+import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.regular22
 
 @Composable

@@ -137,6 +137,7 @@ class DetailsViewModel @AssistedInject constructor(
                             withCenterLoading {
                                 cartInteractor.addProductToBasket(route.id, state.selectedSizeId)
                             }
+                            reduce { it.copy(isCartAddedSheetVisible = true) }
                         }
                     }
                 }
@@ -146,6 +147,11 @@ class DetailsViewModel @AssistedInject constructor(
             is DetailsIntent.HideWearWithSheet -> reduce { it.copy(isWearWithSheetVisible = false) }
             is DetailsIntent.ShowMessageSheet -> reduce { it.copy(isMessageSheetVisible = true) }
             is DetailsIntent.HideMessageSheet -> reduce { it.copy(isMessageSheetVisible = false) }
+            is DetailsIntent.HideCartAddedSheet -> reduce { it.copy(isCartAddedSheetVisible = false) }
+            is DetailsIntent.CartAddedSheetCartClick -> {
+                reduce { it.copy(isCartAddedSheetVisible = false) }
+                launch { MainEventManager.send(CartRoute()) }
+            }
             is DetailsIntent.SizeClick -> {
                 val size = stateFlow.value.productEntity.availableSizes?.items?.getOrNull(intent.index)
                 reduce { it.copy(selectedSizeId = size?.sizeId) }

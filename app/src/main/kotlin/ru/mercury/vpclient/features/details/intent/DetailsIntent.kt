@@ -23,6 +23,8 @@ sealed interface DetailsIntent: Intent {
     data object HideWearWithSheet: DetailsIntent
     data object ShowMessageSheet: DetailsIntent
     data object HideMessageSheet: DetailsIntent
+    data object HideCartAddedSheet: DetailsIntent
+    data object CartAddedSheetCartClick: DetailsIntent
     data class SizeClick(val index: Int): DetailsIntent
     data class ColorClick(val index: Int): DetailsIntent
     data class ButtonClick(val index: Int): DetailsIntent

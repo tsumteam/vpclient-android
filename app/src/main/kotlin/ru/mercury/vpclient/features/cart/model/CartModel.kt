@@ -15,7 +15,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductAvaila
 import ru.mercury.vpclient.shared.domain.mapper.hasFittingProducts
 import ru.mercury.vpclient.shared.domain.mapper.thousandsSeparator
 import ru.mercury.vpclient.shared.mvi.Model
-import ru.mercury.vpclient.features.cart_size_picker_sheet.SizeSelectorState
+import ru.mercury.vpclient.shared.ui.components.details.SizeSelectorState
 import ru.mercury.vpclient.shared.ui.components.details.SizeState
 import kotlin.math.roundToInt
 
