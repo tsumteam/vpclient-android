@@ -61,17 +61,13 @@ data class FilterModel(
     // fixme
 
     val cartText: String
-        get() {
-            return when {
-                cartSize > 0 -> cartSize.toString()
-                else -> ""
-            }
+        get() = when {
+            cartSize > 0 -> cartSize.toString()
+            else -> ""
         }
 
     val showCartBadge: Boolean
-        get() {
-            return cartBadge > 0
-        }
+        get() = cartBadge > 0
 
     val fittingText: String
         get() = activeEmployee.fittingText

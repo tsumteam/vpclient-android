@@ -2,6 +2,7 @@
 
 package ru.mercury.vpclient.features.cart_fitting_products_sheet
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -104,7 +106,6 @@ fun CartFittingProductsSheet(
                         Text(
                             text = stringResource(ClientStrings.CartFittingProductsSheetTitle),
                             style = MaterialTheme.typography.livretMedium18.copy(
-                                color = MaterialTheme.colorScheme.onBackground,
                                 textAlign = TextAlign.Center,
                                 lineHeight = 26.sp,
                                 letterSpacing = .2.sp
@@ -118,49 +119,55 @@ fun CartFittingProductsSheet(
                             Icon(
                                 imageVector = Close24,
                                 contentDescription = null,
-                                modifier = Modifier.size(24.dp),
-                                tint = MaterialTheme.colorScheme.onBackground
+                                modifier = Modifier.size(24.dp)
                             )
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.background
+                        containerColor = MaterialTheme.colorScheme.background,
+                        navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
+                        titleContentColor = MaterialTheme.colorScheme.onBackground
                     )
                 )
             },
-            floatingActionButton = {
-                Button(
-                    onClick = { sheetDispatch(CartFittingProductsSheetIntent.ConfirmClick(inlinedState.selectedProductIds.toList())) },
+            bottomBar = {
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(52.dp),
-                    enabled = inlinedState.selectedProductIds.isNotEmpty(),
-                    shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                        disabledContainerColor = MaterialTheme.colorScheme.disabled,
-                        disabledContentColor = MaterialTheme.colorScheme.onDisabled
-                    )
+                        .background(MaterialTheme.colorScheme.background)
+                        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
                 ) {
-                    Text(
-                        text = when {
-                            inlinedState.selectedProductIds.isEmpty() -> stringResource(ClientStrings.CartFittingProductsSheetSelect)
-                            else -> stringResource(ClientStrings.CartFittingSheetConfirm)
-                        },
-                        style = MaterialTheme.typography.medium15.copy(
-                            textAlign = TextAlign.Center,
-                            letterSpacing = .3.sp
+                    Button(
+                        onClick = { sheetDispatch(CartFittingProductsSheetIntent.ConfirmClick(inlinedState.selectedProductIds.toList())) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp),
+                        enabled = inlinedState.selectedProductIds.isNotEmpty(),
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary,
+                            disabledContainerColor = MaterialTheme.colorScheme.disabled,
+                            disabledContentColor = MaterialTheme.colorScheme.onDisabled
                         )
-                    )
+                    ) {
+                        Text(
+                            text = when {
+                                inlinedState.selectedProductIds.isEmpty() -> stringResource(ClientStrings.CartFittingProductsSheetSelect)
+                                else -> stringResource(ClientStrings.CartFittingSheetConfirm)
+                            },
+                            style = MaterialTheme.typography.medium15.copy(
+                                textAlign = TextAlign.Center,
+                                letterSpacing = .3.sp
+                            )
+                        )
+                    }
                 }
             }
         ) { innerPadding ->
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(innerPadding),
-                contentPadding = PaddingValues(bottom = 80.dp)
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = innerPadding + PaddingValues(bottom = 8.dp)
             ) {
                 itemsIndexed(
                     items = inlinedState.products,
@@ -205,18 +212,7 @@ private fun CartFittingProductsSheetPreview(
 }
 
 private class CartFittingProductsSheetModelProvider: PreviewParameterProvider<CartFittingProductsSheetModel> {
-    private val products = CartFittingProductsSheetCartProductProvider().values.toList()
-
-    override val values: Sequence<CartFittingProductsSheetModel> = sequenceOf(
-        CartFittingProductsSheetModel(
-            products = products.filter { it.size.isNotBlank() && !it.isSold },
-            selectedProductIds = setOf("1")
-        )
-    )
-}
-
-private class CartFittingProductsSheetCartProductProvider: PreviewParameterProvider<CartProduct> {
-    override val values: Sequence<CartProduct> = sequenceOf(
+    private val products = listOf(
         CartProduct(
             id = "1",
             detailId = "1",
@@ -310,6 +306,13 @@ private class CartFittingProductsSheetCartProductProvider: PreviewParameterProvi
             imageUrl = "",
             isForPayment = false,
             priceValue = 920_000.0
+        )
+    )
+
+    override val values: Sequence<CartFittingProductsSheetModel> = sequenceOf(
+        CartFittingProductsSheetModel(
+            products = products.filter { it.size.isNotBlank() && !it.isSold },
+            selectedProductIds = setOf("1")
         )
     )
 }

@@ -1,11 +1,8 @@
 package ru.mercury.vpclient.shared.ui.components.cart
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -13,19 +10,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -43,13 +35,112 @@ import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
 import ru.mercury.vpclient.shared.data.entity.CartProductSize
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
-import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.blue
 import ru.mercury.vpclient.shared.ui.theme.regular11
 import ru.mercury.vpclient.shared.ui.theme.regular14
 import ru.mercury.vpclient.shared.ui.theme.regular15
+
+data class CartProductCardState(
+    val product: CartProduct,
+    val onClick: () -> Unit = {},
+    val onSelectSizeClick: () -> Unit = {},
+    val onSizeClick: (CartProductSize) -> Unit = {},
+    val onBuySwitchChange: (Boolean) -> Unit = {},
+    val onAlternativeClick: (CartProductAlternative) -> Unit = {},
+    val onRemoveAlternativeClick: (CartProductAlternative) -> Unit = {},
+    val onHideAlternativesClick: () -> Unit = {},
+    val onEditSwipeClick: () -> Unit = {},
+    val onDeleteSwipeClick: () -> Unit = {},
+    val onDetachFromLookSwipeClick: () -> Unit = {},
+    val onReturnOriginalSwipeClick: () -> Unit = {},
+    val onShowAlternativesSwipeClick: () -> Unit = {},
+    val onHideAlternativesSwipeClick: () -> Unit = {},
+    val onReturnToBasketSwipeClick: () -> Unit = {},
+    val useFittingSwipeActions: Boolean = false,
+    val selectedAlternativeId: String? = null
+) {
+    val articleText: String
+        get() = product.article.takeIf { it.isNotEmpty() } ?: product.itemId
+
+    val isPriceVisible: Boolean
+        get() = product.priceValue > .0 && product.price.isNotBlank()
+
+    val dateReceipt: String?
+        get() = product.dateReceipt?.takeIf { it.isNotBlank() }
+
+    val dateReceiptBadgeText: String
+        get() = dateReceipt.orEmpty()
+
+    val isDateReceiptBadgeVisible: Boolean
+        get() = dateReceipt != null
+
+    val hasSize: Boolean
+        get() = product.size.isNotBlank()
+
+    val isSoldSizeVisible: Boolean
+        get() = product.isSold && hasSize
+
+    val isSelectSizeButtonVisible: Boolean
+        get() = !product.isSold && !hasSize
+
+    val isMultipleSizesVisible: Boolean
+        get() = product.sizeItems.size > 1
+
+    val isAvailabilityVisible: Boolean
+        get() = !product.isSold && hasSize && product.isLastInStock
+
+    val isSingleSizeAvailabilityVisible: Boolean
+        get() = isAvailabilityVisible && product.sizeItems.size <= 1
+
+    val isAlternativesVisible: Boolean
+        get() = product.isAlternativesPaletteOpen && product.alternatives.isNotEmpty()
+
+    val isAlternativesEmptyVisible: Boolean
+        get() = product.isAlternativesPaletteOpen && product.alternatives.isEmpty()
+
+    val isReturnOriginalSwipeActionVisible: Boolean
+        get() = product.isSwitchAlternativeBackToOriginalAvailable
+
+    val isShowAlternativesSwipeActionVisible: Boolean
+        get() = product.isAlternativePaletteControlsAvailable && !product.isAlternativesPaletteOpen
+
+    val isHideAlternativesSwipeActionVisible: Boolean
+        get() = product.isAlternativePaletteControlsAvailable && product.isAlternativesPaletteOpen
+
+    val isEditSwipeActionVisible: Boolean
+        get() = hasSize && product.sizeCount in 1..2
+
+    val isDetachFromLookSwipeActionVisible: Boolean
+        get() = !product.lookId.isNullOrEmpty()
+
+    val quantityText: String
+        get() = FORMAT_QUANTITY.format(product.quantity)
+
+    val leadingSwipeActionsCount: Int
+        get() = when {
+            useFittingSwipeActions -> 0
+            else -> {
+                listOf(
+                    isReturnOriginalSwipeActionVisible,
+                    isShowAlternativesSwipeActionVisible,
+                    isHideAlternativesSwipeActionVisible
+                ).count { it }
+            }
+        }
+
+    val trailingSwipeActionsCount: Int
+        get() = when {
+            useFittingSwipeActions -> 2
+            else -> {
+                listOf(
+                    isEditSwipeActionVisible,
+                    isDetachFromLookSwipeActionVisible,
+                    true
+                ).count { it }
+            }
+        }
+}
 
 @Composable
 fun CartProductCard(
@@ -57,138 +148,125 @@ fun CartProductCard(
     modifier: Modifier = Modifier,
 ) {
     val product = state.product
-    val articleText = product.article.takeIf { it.isNotEmpty() } ?: product.itemId
-    val isPriceVisible = product.priceValue > .0 && product.price.isNotBlank()
-    val dateReceipt = product.dateReceipt?.takeIf { it.isNotBlank() }
-    val isDateReceiptBadgeVisible = dateReceipt != null
-    val hasSize = product.size.isNotBlank()
-    val isAvailabilityVisible = !product.isSold && hasSize && product.isLastInStock
-    val isAlternativesVisible = product.isAlternativesPaletteOpen && product.alternatives.isNotEmpty()
-    val isAlternativesEmptyVisible = product.isAlternativesPaletteOpen && product.alternatives.isEmpty()
-    val isReturnOriginalSwipeActionVisible = product.isSwitchAlternativeBackToOriginalAvailable
-    val isShowAlternativesSwipeActionVisible = product.isAlternativePaletteControlsAvailable &&
-        !product.isAlternativesPaletteOpen
-    val isHideAlternativesSwipeActionVisible = product.isAlternativePaletteControlsAvailable &&
-        product.isAlternativesPaletteOpen
-    val isEditSwipeActionVisible = hasSize && product.sizeCount in 1..2
-    val isDetachFromLookSwipeActionVisible = !product.lookId.isNullOrEmpty()
-    val leadingSwipeActionsCount = when {
-        state.useFittingSwipeActions -> 0
-        else -> {
-            listOf(
-                isReturnOriginalSwipeActionVisible,
-                isShowAlternativesSwipeActionVisible,
-                isHideAlternativesSwipeActionVisible
-            ).count { it }
-        }
-    }
-    val trailingSwipeActionsCount = when {
-        state.useFittingSwipeActions -> 2
-        else -> {
-            listOf(
-                isEditSwipeActionVisible,
-                isDetachFromLookSwipeActionVisible,
-                true
-            ).count { it }
-        }
-    }
 
-    CartProductSwipeableCard(
-        modifier = modifier,
-        leadingActionsContent = { swipeProgress, onSwipeActionClick ->
-            CartProductLeadingSwipeActions(
-                swipeProgress = swipeProgress,
-                isReturnOriginalVisible = isReturnOriginalSwipeActionVisible,
-                isShowAlternativesVisible = isShowAlternativesSwipeActionVisible,
-                isHideAlternativesVisible = isHideAlternativesSwipeActionVisible,
-                onReturnOriginalClick = { onSwipeActionClick(state.onReturnOriginalSwipeClick) },
-                onShowAlternativesClick = { onSwipeActionClick(state.onShowAlternativesSwipeClick) },
-                onHideAlternativesClick = { onSwipeActionClick(state.onHideAlternativesSwipeClick) }
-            )
-        },
-        trailingActionsContent = { swipeProgress, onSwipeActionClick ->
-            when {
-                state.useFittingSwipeActions -> {
-                    CartProductFittingSwipeActions(
-                        swipeProgress = swipeProgress,
-                        onEditClick = { onSwipeActionClick(state.onEditSwipeClick) },
-                        onReturnToBasketClick = { onSwipeActionClick(state.onReturnToBasketSwipeClick) }
-                    )
-                }
-                else -> {
-                    CartProductTrailingSwipeActions(
-                        swipeProgress = swipeProgress,
-                        isEditVisible = isEditSwipeActionVisible,
-                        isDetachFromLookVisible = isDetachFromLookSwipeActionVisible,
-                        isDeleteVisible = true,
-                        onEditClick = { onSwipeActionClick(state.onEditSwipeClick) },
-                        onDetachFromLookClick = { onSwipeActionClick(state.onDetachFromLookSwipeClick) },
-                        onDeleteClick = { onSwipeActionClick(state.onDeleteSwipeClick) }
-                    )
-                }
-            }
-        },
-        leadingSwipeSize = (88 * leadingSwipeActionsCount).dp,
-        trailingSwipeSize = (88 * trailingSwipeActionsCount).dp
+    Column(
+        modifier = modifier.fillMaxWidth()
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(onClick = state.onClick)
+        CartProductSwipeableCard(
+            leadingActionsContent = { swipeProgress, onSwipeActionClick ->
+                CartProductLeadingSwipeActions(
+                    swipeProgress = swipeProgress,
+                    isReturnOriginalVisible = state.isReturnOriginalSwipeActionVisible,
+                    isShowAlternativesVisible = state.isShowAlternativesSwipeActionVisible,
+                    isHideAlternativesVisible = state.isHideAlternativesSwipeActionVisible,
+                    onReturnOriginalClick = { onSwipeActionClick(state.onReturnOriginalSwipeClick) },
+                    onShowAlternativesClick = { onSwipeActionClick(state.onShowAlternativesSwipeClick) },
+                    onHideAlternativesClick = { onSwipeActionClick(state.onHideAlternativesSwipeClick) }
+                )
+            },
+            trailingActionsContent = { swipeProgress, onSwipeActionClick ->
+                when {
+                    state.useFittingSwipeActions -> {
+                        CartProductFittingSwipeActions(
+                            swipeProgress = swipeProgress,
+                            onEditClick = { onSwipeActionClick(state.onEditSwipeClick) },
+                            onReturnToBasketClick = { onSwipeActionClick(state.onReturnToBasketSwipeClick) }
+                        )
+                    }
+                    else -> {
+                        CartProductTrailingSwipeActions(
+                            swipeProgress = swipeProgress,
+                            isEditVisible = state.isEditSwipeActionVisible,
+                            isDetachFromLookVisible = state.isDetachFromLookSwipeActionVisible,
+                            isDeleteVisible = true,
+                            onEditClick = { onSwipeActionClick(state.onEditSwipeClick) },
+                            onDetachFromLookClick = { onSwipeActionClick(state.onDetachFromLookSwipeClick) },
+                            onDeleteClick = { onSwipeActionClick(state.onDeleteSwipeClick) }
+                        )
+                    }
+                }
+            },
+            leadingSwipeSize = (88 * state.leadingSwipeActionsCount).dp,
+            trailingSwipeSize = (88 * state.trailingSwipeActionsCount).dp
         ) {
             ConstraintLayout(
                 modifier = Modifier
                     .fillMaxWidth()
                     .heightIn(min = 178.dp)
+                    .clickable(onClick = state.onClick)
             ) {
                 val (
                     image,
-                    brand,
+                    header,
                     title,
                     color,
                     article,
                     price,
-                    sold,
-                    buySwitch,
                     size,
                     availability,
                     quantity,
                     dateReceiptBadge
                 ) = createRefs()
-                val priceTopBarrier = createBottomBarrier(article, size)
+                val mainContentBottom = createGuidelineFromTop(178.dp)
 
                 ClientAsyncImage(
                     imageUrl = product.imageUrl,
-                    modifier = Modifier
-                        .size(width = 85.dp, height = 130.dp)
-                        .constrainAs(image) {
-                            start.linkTo(parent.start, 16.dp)
-                            top.linkTo(parent.top, 24.dp)
-                        },
+                    modifier = Modifier.constrainAs(image) {
+                        width = Dimension.value(85.dp)
+                        height = Dimension.value(130.dp)
+                        start.linkTo(parent.start, 16.dp)
+                        top.linkTo(parent.top, 24.dp)
+                    },
                     contentScale = ContentScale.Fit
                 )
 
-                CartBrandBox(
-                    entity = BrandEntity(
-                        brand = product.brand,
-                        urlBrandLogo = product.urlBrandLogo
-                    ),
-                    modifier = Modifier
-                        .width(119.dp)
-                        .height(24.dp)
-                        .constrainAs(brand) {
-                            start.linkTo(image.end, 16.dp)
-                            top.linkTo(image.top, 4.dp)
+                Row(
+                    modifier = Modifier.constrainAs(header) {
+                        width = Dimension.fillToConstraints
+                        start.linkTo(image.end, 16.dp)
+                        top.linkTo(image.top)
+                        end.linkTo(parent.end, 16.dp)
+                    },
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    CartBrandBox(
+                        entity = BrandEntity(
+                            brand = product.brand,
+                            urlBrandLogo = product.urlBrandLogo
+                        ),
+                        modifier = Modifier
+                            .height(24.dp)
+                            .weight(1F)
+                    )
+
+                    when {
+                        product.isSold -> {
+                            Text(
+                                text = stringResource(ClientStrings.CartSold),
+                                style = MaterialTheme.typography.regular14.copy(
+                                    color = MaterialTheme.colorScheme.error,
+                                    lineHeight = 18.sp,
+                                    letterSpacing = .2.sp
+                                )
+                            )
                         }
-                )
+                        else -> {
+                            CartBuySwitch(
+                                checked = product.isForPayment,
+                                onCheckedChange = state.onBuySwitchChange
+                            )
+                        }
+                    }
+                }
 
                 Text(
                     text = product.name,
                     modifier = Modifier.constrainAs(title) {
-                        start.linkTo(brand.start)
-                        top.linkTo(brand.bottom, 4.dp)
-                        end.linkTo(buySwitch.start, 8.dp)
                         width = Dimension.fillToConstraints
+                        start.linkTo(header.start)
+                        top.linkTo(header.bottom)
+                        end.linkTo(parent.end, 16.dp)
                     },
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
@@ -202,10 +280,10 @@ fun CartProductCard(
                 Text(
                     text = product.color,
                     modifier = Modifier.constrainAs(color) {
-                        start.linkTo(brand.start)
-                        top.linkTo(title.bottom, 4.dp)
-                        end.linkTo(buySwitch.start, 8.dp)
                         width = Dimension.fillToConstraints
+                        start.linkTo(header.start)
+                        top.linkTo(title.bottom, 4.dp)
+                        end.linkTo(size.start, 8.dp)
                     },
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
@@ -217,12 +295,12 @@ fun CartProductCard(
                 )
 
                 Text(
-                    text = stringResource(ClientStrings.CartArticle, articleText),
+                    text = stringResource(ClientStrings.CartArticle, state.articleText),
                     modifier = Modifier.constrainAs(article) {
-                        start.linkTo(brand.start)
+                        width = Dimension.fillToConstraints
+                        start.linkTo(header.start)
                         top.linkTo(color.bottom, 4.dp)
                         end.linkTo(size.start, 8.dp)
-                        width = Dimension.fillToConstraints
                     },
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
@@ -236,83 +314,37 @@ fun CartProductCard(
                 CartPriceRow(
                     product = product,
                     modifier = Modifier.constrainAs(price) {
-                        start.linkTo(brand.start)
-                        top.linkTo(priceTopBarrier, 5.dp)
+                        start.linkTo(header.start)
+                        top.linkTo(article.bottom, if (state.isDateReceiptBadgeVisible) 3.dp else 17.dp)
                         end.linkTo(quantity.start, 8.dp)
-                        if (isPriceVisible) {
-                            bottom.linkTo(parent.bottom, if (isDateReceiptBadgeVisible) 57.dp else 27.dp)
+                        if (state.isPriceVisible) {
+                            bottom.linkTo(mainContentBottom, if (state.isDateReceiptBadgeVisible) 57.dp else 27.dp)
                             verticalBias = 0F
                         }
                         width = Dimension.fillToConstraints
                     }
                 )
 
-                if (dateReceipt != null) {
-                    Box(
+                if (state.isDateReceiptBadgeVisible) {
+                    CartProductDateReceiptBadge(
+                        state = CartProductDateReceiptBadgeState(
+                            text = stringResource(ClientStrings.CartRedeemUntil, state.dateReceiptBadgeText),
+                            isOverdue = product.isDateReceiptOverdue
+                        ),
                         modifier = Modifier.constrainAs(dateReceiptBadge) {
-                            start.linkTo(brand.start)
+                            start.linkTo(header.start)
                             top.linkTo(price.bottom, 10.dp)
                         }
-                            .height(20.dp)
-                            .shadow(
-                                elevation = 2.dp,
-                                shape = RoundedCornerShape(4.dp),
-                                clip = false
-                            )
-                            .background(
-                                color = when {
-                                    product.isDateReceiptOverdue -> MaterialTheme.colorScheme.error
-                                    else -> MaterialTheme.colorScheme.blue
-                                },
-                                shape = RoundedCornerShape(4.dp)
-                            )
-                            .padding(horizontal = 8.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = stringResource(ClientStrings.CartRedeemUntil, dateReceipt),
-                            style = MaterialTheme.typography.regular11.copy(
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                fontSize = 9.sp,
-                                lineHeight = 12.sp,
-                                letterSpacing = 0.sp
-                            )
-                        )
-                    }
-                }
-
-                CartBuySwitch(
-                    checked = product.isForPayment && !product.isSold,
-                    modifier = Modifier.constrainAs(buySwitch) {
-                        top.linkTo(image.top)
-                        end.linkTo(parent.end, 16.dp)
-                    },
-                    isVisible = !product.isSold,
-                    onCheckedChange = state.onBuySwitchChange
-                )
-
-                if (product.isSold) {
-                    Text(
-                        text = stringResource(ClientStrings.CartSold),
-                        modifier = Modifier.constrainAs(sold) {
-                            top.linkTo(image.top, 4.dp)
-                            end.linkTo(parent.end, 16.dp)
-                        },
-                        style = MaterialTheme.typography.regular14.copy(
-                            color = MaterialTheme.colorScheme.error,
-                            lineHeight = 18.sp,
-                            letterSpacing = .2.sp
-                        )
                     )
                 }
 
                 when {
-                    product.isSold && hasSize -> {
+                    state.isSoldSizeVisible -> {
                         Text(
                             text = product.size,
                             modifier = Modifier.constrainAs(size) {
-                                top.linkTo(sold.bottom, 4.dp)
-                                end.linkTo(sold.end)
+                                top.linkTo(color.top)
+                                end.linkTo(parent.end, 16.dp)
                             },
                             style = MaterialTheme.typography.regular14.copy(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -321,14 +353,14 @@ fun CartProductCard(
                             )
                         )
                     }
-                    !product.isSold && !hasSize -> {
+                    state.isSelectSizeButtonVisible -> {
                         OutlinedButton(
                             onClick = state.onSelectSizeClick,
-                            modifier = modifier.constrainAs(size) {
+                            modifier = Modifier.constrainAs(size) {
                                 width = Dimension.wrapContent
                                 height = Dimension.value(32.dp)
-                                top.linkTo(buySwitch.bottom, 21.dp)
-                                end.linkTo(buySwitch.end)
+                                top.linkTo(color.top)
+                                end.linkTo(parent.end, 16.dp)
                             },
                             shape = RoundedCornerShape(4.dp),
                             border = BorderStroke(
@@ -353,11 +385,11 @@ fun CartProductCard(
                     }
                     else -> {
                         when {
-                            product.sizeItems.size > 1 -> {
+                            state.isMultipleSizesVisible -> {
                                 Column(
                                     modifier = Modifier.constrainAs(size) {
-                                        top.linkTo(buySwitch.bottom, 21.dp)
-                                        end.linkTo(buySwitch.end)
+                                        top.linkTo(color.top)
+                                        end.linkTo(parent.end, 16.dp)
                                     },
                                     verticalArrangement = Arrangement.spacedBy(4.dp),
                                     horizontalAlignment = Alignment.End
@@ -366,39 +398,10 @@ fun CartProductCard(
                                         Column(
                                             horizontalAlignment = Alignment.End
                                         ) {
-                                            Row(
-                                                modifier = Modifier
-                                                    .height(24.dp)
-                                                    .border(
-                                                        width = 1.dp,
-                                                        color = MaterialTheme.colorScheme.outlineVariant,
-                                                        shape = RoundedCornerShape(6.dp)
-                                                    )
-                                                    .padding(start = 8.dp, end = 2.dp),
-                                                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                                                verticalAlignment = Alignment.CenterVertically
-                                            ) {
-                                                Text(
-                                                    text = item.name,
-                                                    style = MaterialTheme.typography.regular11.copy(
-                                                        color = MaterialTheme.colorScheme.onBackground,
-                                                        lineHeight = 16.sp,
-                                                        letterSpacing = .2.sp
-                                                    )
-                                                )
-
-                                                IconButton(
-                                                    onClick = { state.onSizeClick(item) },
-                                                    modifier = Modifier.size(20.dp)
-                                                ) {
-                                                    Icon(
-                                                        imageVector = Close24,
-                                                        contentDescription = null,
-                                                        modifier = Modifier.size(12.dp),
-                                                        tint = MaterialTheme.colorScheme.onBackground
-                                                    )
-                                                }
-                                            }
+                                            CartProductSizeChip(
+                                                size = item,
+                                                onRemoveClick = { state.onSizeClick(item) }
+                                            )
 
                                             if (item.isLastInStock) {
                                                 Text(
@@ -417,8 +420,8 @@ fun CartProductCard(
                                 Text(
                                     text = product.size,
                                     modifier = Modifier.constrainAs(size) {
-                                        top.linkTo(buySwitch.bottom, 21.dp)
-                                        end.linkTo(buySwitch.end)
+                                        top.linkTo(color.top)
+                                        end.linkTo(parent.end, 16.dp)
                                     },
                                     style = MaterialTheme.typography.regular14.copy(
                                         color = MaterialTheme.colorScheme.onBackground,
@@ -431,7 +434,7 @@ fun CartProductCard(
                     }
                 }
 
-                if (isAvailabilityVisible && product.sizeItems.size <= 1) {
+                if (state.isSingleSizeAvailabilityVisible) {
                     Text(
                         text = stringResource(ClientStrings.CartInStock),
                         modifier = Modifier.constrainAs(availability) {
@@ -445,24 +448,29 @@ fun CartProductCard(
                 }
 
                 Text(
-                    text = FORMAT_QUANTITY.format(product.quantity),
+                    text = state.quantityText,
                     modifier = Modifier.constrainAs(quantity) {
-                        end.linkTo(parent.end, 16.dp)
+                        top.linkTo(
+                            anchor = when {
+                                state.isSingleSizeAvailabilityVisible -> availability.bottom
+                                else -> price.top
+                            },
+                            margin = when {
+                                state.isSingleSizeAvailabilityVisible -> 8.dp
+                                else -> 0.dp
+                            }
+                        )
                         when {
-                            isAvailabilityVisible && product.sizeItems.size <= 1 -> {
-                                top.linkTo(availability.bottom, 8.dp)
-                            }
-                            else -> {
-                                top.linkTo(price.top)
-                            }
+                            state.isSelectSizeButtonVisible -> end.linkTo(size.start, 16.dp)
+                            else -> end.linkTo(parent.end, 16.dp)
                         }
                         bottom.linkTo(
                             anchor = when {
-                                isPriceVisible -> price.bottom
+                                state.isPriceVisible -> price.bottom
                                 else -> image.bottom
                             },
                             margin = when {
-                                isPriceVisible -> 0.dp
+                                state.isPriceVisible -> 0.dp
                                 else -> 3.dp
                             }
                         )
@@ -474,44 +482,27 @@ fun CartProductCard(
                     )
                 )
             }
+        }
 
-            if (isAlternativesVisible) {
-                CartAlternativesSection(
+        if (state.isAlternativesVisible) {
+            CartAlternativesSection(
+                state = CartAlternativesSectionState(
                     alternatives = product.alternatives,
-                    selectedAlternativeId = state.selectedAlternativeId,
-                    onAlternativeClick = state.onAlternativeClick,
-                    onRemoveClick = state.onRemoveAlternativeClick
-                )
-            }
+                    selectedAlternativeId = state.selectedAlternativeId
+                ),
+                onAlternativeClick = state.onAlternativeClick,
+                onRemoveClick = state.onRemoveAlternativeClick
+            )
+        }
 
-            if (isAlternativesEmptyVisible) {
-                CartAlternativesEmpty(
-                    onHideClick = state.onHideAlternativesClick
-                )
-            }
+        if (state.isAlternativesEmptyVisible) {
+            CartAlternativesEmpty(
+                modifier = Modifier.fillMaxWidth(),
+                onHideClick = state.onHideAlternativesClick
+            )
         }
     }
 }
-
-data class CartProductCardState(
-    val product: CartProduct,
-    val onClick: () -> Unit = {},
-    val onSelectSizeClick: () -> Unit = {},
-    val onSizeClick: (CartProductSize) -> Unit = {},
-    val onBuySwitchChange: (Boolean) -> Unit = {},
-    val onAlternativeClick: (CartProductAlternative) -> Unit = {},
-    val onRemoveAlternativeClick: (CartProductAlternative) -> Unit = {},
-    val onHideAlternativesClick: () -> Unit = {},
-    val onEditSwipeClick: () -> Unit = {},
-    val onDeleteSwipeClick: () -> Unit = {},
-    val onDetachFromLookSwipeClick: () -> Unit = {},
-    val onReturnOriginalSwipeClick: () -> Unit = {},
-    val onShowAlternativesSwipeClick: () -> Unit = {},
-    val onHideAlternativesSwipeClick: () -> Unit = {},
-    val onReturnToBasketSwipeClick: () -> Unit = {},
-    val useFittingSwipeActions: Boolean = false,
-    val selectedAlternativeId: String? = null
-)
 
 @PreviewWrapper(ThemeWrapper::class)
 @Preview(showBackground = true)

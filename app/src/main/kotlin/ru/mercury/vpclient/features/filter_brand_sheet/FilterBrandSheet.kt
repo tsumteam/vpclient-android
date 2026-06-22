@@ -220,8 +220,10 @@ fun FilterBrandSheet(
                                     key(brand.id) {
                                         AnimatedVisibility(
                                             visible = animatingIds[brand.id] == true,
-                                            enter = fadeIn(tween(200)) + expandHorizontally(tween(200)),
-                                            exit = fadeOut(tween(200)) + shrinkHorizontally(tween(200))
+                                            enter = fadeIn(tween(FilterBrandModel.BRAND_ANIMATION_DURATION)) +
+                                                expandHorizontally(tween(FilterBrandModel.BRAND_ANIMATION_DURATION)),
+                                            exit = fadeOut(tween(FilterBrandModel.BRAND_ANIMATION_DURATION)) +
+                                                shrinkHorizontally(tween(FilterBrandModel.BRAND_ANIMATION_DURATION))
                                         ) {
                                             FilterChip(
                                                 text = brand.label,
@@ -414,8 +416,10 @@ fun FilterBrandSheet(
                         Box(modifier = Modifier.align(Alignment.CenterEnd)) {
                             SharedAnimatedVisibility(
                                 visible = showScrubber,
-                                enter = fadeIn(tween(200)) + slideInHorizontally(tween(200)) { it },
-                                exit = fadeOut(tween(200)) + slideOutHorizontally(tween(200)) { it }
+                                enter = fadeIn(tween(FilterBrandModel.BRAND_ANIMATION_DURATION)) +
+                                    slideInHorizontally(tween(FilterBrandModel.BRAND_ANIMATION_DURATION)) { it },
+                                exit = fadeOut(tween(FilterBrandModel.BRAND_ANIMATION_DURATION)) +
+                                    slideOutHorizontally(tween(FilterBrandModel.BRAND_ANIMATION_DURATION)) { it }
                             ) {
                                 Column(
                                     modifier = Modifier

@@ -256,7 +256,7 @@ fun FittingAddressSheet(
                             colors = TextFieldDefaults.colors(
                                 focusedTextColor = MaterialTheme.colorScheme.onBackground,
                                 unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
-                                cursorColor = MaterialTheme.colorScheme.onBackground,
+                                cursorColor = MaterialTheme.colorScheme.error,
                                 focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                                 unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                                 focusedIndicatorColor = Color.Transparent,
@@ -302,7 +302,7 @@ fun FittingAddressSheet(
                             colors = TextFieldDefaults.colors(
                                 focusedTextColor = MaterialTheme.colorScheme.onBackground,
                                 unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
-                                cursorColor = MaterialTheme.colorScheme.onBackground,
+                                cursorColor = MaterialTheme.colorScheme.error,
                                 focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                                 unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                                 focusedIndicatorColor = Color.Transparent,
@@ -354,7 +354,7 @@ fun FittingAddressSheet(
                             colors = TextFieldDefaults.colors(
                                 focusedTextColor = MaterialTheme.colorScheme.onBackground,
                                 unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
-                                cursorColor = MaterialTheme.colorScheme.onBackground,
+                                cursorColor = MaterialTheme.colorScheme.error,
                                 focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                                 unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                                 focusedIndicatorColor = Color.Transparent,
@@ -400,7 +400,7 @@ fun FittingAddressSheet(
                             colors = TextFieldDefaults.colors(
                                 focusedTextColor = MaterialTheme.colorScheme.onBackground,
                                 unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
-                                cursorColor = MaterialTheme.colorScheme.onBackground,
+                                cursorColor = MaterialTheme.colorScheme.error,
                                 focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                                 unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                                 focusedIndicatorColor = Color.Transparent,
@@ -435,7 +435,7 @@ fun FittingAddressSheet(
                         colors = TextFieldDefaults.colors(
                             focusedTextColor = MaterialTheme.colorScheme.onBackground,
                             unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
-                            cursorColor = MaterialTheme.colorScheme.onBackground,
+                            cursorColor = MaterialTheme.colorScheme.error,
                             focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                             unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                             focusedIndicatorColor = Color.Transparent,

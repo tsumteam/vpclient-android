@@ -12,12 +12,8 @@ data class FittingAddressModel(
     val longitude: Double? = null
 ) {
     val isEdit: Boolean
-        get() {
-            return addressId != null
-        }
+        get() = addressId != null
 
     val isSaveEnabled: Boolean
-        get() {
-            return address.isNotBlank()
-        }
+        get() = address.isNotBlank()
 }

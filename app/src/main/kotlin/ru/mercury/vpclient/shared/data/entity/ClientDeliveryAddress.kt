@@ -12,10 +12,8 @@ data class ClientDeliveryAddress(
     val longitude: Double? = null
 ) {
     val title: String
-        get() {
-            return listOf(
-                address,
-                flat.takeIf { it.isNotBlank() }?.let { "кв./офис $it" }
-            ).filterNotNull().joinToString(", ")
-        }
+        get() = listOf(
+            address,
+            flat.takeIf { it.isNotBlank() }?.let { "кв./офис $it" }
+        ).filterNotNull().joinToString(", ")
 }

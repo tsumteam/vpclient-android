@@ -37,7 +37,6 @@ import ru.mercury.vpclient.features.cart.intent.CartIntent
 import ru.mercury.vpclient.features.cart.model.CartModel
 import ru.mercury.vpclient.shared.data.entity.CartPayMode
 import ru.mercury.vpclient.shared.data.entity.CartProduct
-import ru.mercury.vpclient.shared.data.entity.CartViewMode
 import ru.mercury.vpclient.shared.data.entity.FittingDeliveryData
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedPullToRefreshBox
@@ -48,7 +47,6 @@ import ru.mercury.vpclient.shared.ui.components.cart.CartFittingSummary
 import ru.mercury.vpclient.shared.ui.components.cart.CartLookCard
 import ru.mercury.vpclient.shared.ui.components.cart.CartProductCard
 import ru.mercury.vpclient.shared.ui.components.cart.CartProductCardState
-import ru.mercury.vpclient.shared.ui.components.cart.CartProductLargeCard
 import ru.mercury.vpclient.shared.ui.components.fitting.FittingDeliveryHeader
 import ru.mercury.vpclient.shared.ui.components.fitting.FittingDeliveryHeaderState
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
@@ -182,12 +180,7 @@ private fun CartFittingScreenContent(
                     SharedLazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = innerPadding + PaddingValues(bottom = 76.dp),
-                        verticalArrangement = Arrangement.spacedBy(
-                            when (state.viewMode) {
-                                CartViewMode.List -> 0.dp
-                                CartViewMode.Cards -> 24.dp
-                            }
-                        )
+                        verticalArrangement = Arrangement.spacedBy(0.dp)
                     ) {
                         state.visibleFittingDeliveryGroups.forEachIndexed { deliveryIndex, deliveryGroup ->
                             item(
@@ -234,7 +227,6 @@ private fun CartFittingScreenContent(
                                             lookName = group.lookName,
                                             lookImageUrl = group.lookImageUrl,
                                             products = group.products,
-                                            isLargeCard = state.viewMode == CartViewMode.Cards,
                                             onAddClick = {},
                                             onProductClick = { product -> dispatch(CartIntent.ProductClick(product.detailId)) },
                                             onSelectSizeClick = { product -> dispatch(CartIntent.ShowSizePicker(product)) },
@@ -277,102 +269,55 @@ private fun CartFittingScreenContent(
                                     else -> {
                                         val product = group.products.first()
 
-                                        when (state.viewMode) {
-                                            CartViewMode.List -> {
-                                                CartProductCard(
-                                                    state = CartProductCardState(
-                                                        product = product,
-                                                        onClick = { dispatch(CartIntent.ProductClick(product.detailId)) },
-                                                        onSelectSizeClick = { dispatch(CartIntent.ShowSizePicker(product)) },
-                                                        onBuySwitchChange = { paySwitch ->
-                                                            dispatch(CartIntent.ChangeFittingPaySwitch(product, paySwitch))
-                                                        },
-                                                        onAlternativeClick = { alternative ->
-                                                            dispatch(CartIntent.AlternativeClick(alternative))
-                                                        },
-                                                        onRemoveAlternativeClick = { alternative ->
-                                                            dispatch(CartIntent.RemoveAlternativeClick(alternative))
-                                                        },
-                                                        onHideAlternativesClick = {
-                                                            dispatch(CartIntent.HideAlternativesClick(product))
-                                                        },
-                                                        onEditSwipeClick = {
-                                                            dispatch(CartIntent.EditFittingProductSwipeClick(product))
-                                                        },
-                                                        onDeleteSwipeClick = {
-                                                            dispatch(CartIntent.DeleteProductSwipeClick(product))
-                                                        },
-                                                        onDetachFromLookSwipeClick = {
-                                                            dispatch(CartIntent.DetachProductFromLookSwipeClick(product))
-                                                        },
-                                                        onReturnOriginalSwipeClick = {
-                                                            dispatch(CartIntent.ReturnOriginalSwipeClick(product))
-                                                        },
-                                                        onShowAlternativesSwipeClick = {
-                                                            dispatch(CartIntent.ShowAlternativesSwipeClick(product))
-                                                        },
-                                                        onHideAlternativesSwipeClick = {
-                                                            dispatch(CartIntent.HideAlternativesSwipeClick(product))
-                                                        },
-                                                        onReturnToBasketSwipeClick = {
-                                                            dispatch(CartIntent.ReturnFittingProductToBasketSwipeClick(product))
-                                                        },
-                                                        useFittingSwipeActions = true,
-                                                        selectedAlternativeId = state.selectedAlternativeId
-                                                    )
-                                                )
-                                            }
-                                            CartViewMode.Cards -> {
-                                                CartProductLargeCard(
-                                                    product = product,
-                                                    onClick = { dispatch(CartIntent.ProductClick(product.detailId)) },
-                                                    onSelectSizeClick = { dispatch(CartIntent.ShowSizePicker(product)) },
-                                                    onBuySwitchChange = { paySwitch ->
-                                                        dispatch(CartIntent.ChangeFittingPaySwitch(product, paySwitch))
-                                                    },
-                                                    onAlternativeClick = { alternative ->
-                                                        dispatch(CartIntent.AlternativeClick(alternative))
-                                                    },
-                                                    onRemoveAlternativeClick = { alternative ->
-                                                        dispatch(CartIntent.RemoveAlternativeClick(alternative))
-                                                    },
-                                                    onHideAlternativesClick = {
-                                                        dispatch(CartIntent.HideAlternativesClick(product))
-                                                    },
-                                                    onEditSwipeClick = {
-                                                        dispatch(CartIntent.EditFittingProductSwipeClick(product))
-                                                    },
-                                                    onDeleteSwipeClick = {
-                                                        dispatch(CartIntent.DeleteProductSwipeClick(product))
-                                                    },
-                                                    onDetachFromLookSwipeClick = {
-                                                        dispatch(CartIntent.DetachProductFromLookSwipeClick(product))
-                                                    },
-                                                    onReturnOriginalSwipeClick = {
-                                                        dispatch(CartIntent.ReturnOriginalSwipeClick(product))
-                                                    },
-                                                    onShowAlternativesSwipeClick = {
-                                                        dispatch(CartIntent.ShowAlternativesSwipeClick(product))
-                                                    },
-                                                    onHideAlternativesSwipeClick = {
-                                                        dispatch(CartIntent.HideAlternativesSwipeClick(product))
-                                                    },
-                                                    onReturnToBasketSwipeClick = {
-                                                        dispatch(CartIntent.ReturnFittingProductToBasketSwipeClick(product))
-                                                    },
-                                                    useFittingSwipeActions = true,
-                                                    selectedAlternativeId = state.selectedAlternativeId
-                                                )
-                                            }
-                                        }
+                                        CartProductCard(
+                                            state = CartProductCardState(
+                                                product = product,
+                                                onClick = { dispatch(CartIntent.ProductClick(product.detailId)) },
+                                                onSelectSizeClick = { dispatch(CartIntent.ShowSizePicker(product)) },
+                                                onBuySwitchChange = { paySwitch ->
+                                                    dispatch(CartIntent.ChangeFittingPaySwitch(product, paySwitch))
+                                                },
+                                                onAlternativeClick = { alternative ->
+                                                    dispatch(CartIntent.AlternativeClick(alternative))
+                                                },
+                                                onRemoveAlternativeClick = { alternative ->
+                                                    dispatch(CartIntent.RemoveAlternativeClick(alternative))
+                                                },
+                                                onHideAlternativesClick = {
+                                                    dispatch(CartIntent.HideAlternativesClick(product))
+                                                },
+                                                onEditSwipeClick = {
+                                                    dispatch(CartIntent.EditFittingProductSwipeClick(product))
+                                                },
+                                                onDeleteSwipeClick = {
+                                                    dispatch(CartIntent.DeleteProductSwipeClick(product))
+                                                },
+                                                onDetachFromLookSwipeClick = {
+                                                    dispatch(CartIntent.DetachProductFromLookSwipeClick(product))
+                                                },
+                                                onReturnOriginalSwipeClick = {
+                                                    dispatch(CartIntent.ReturnOriginalSwipeClick(product))
+                                                },
+                                                onShowAlternativesSwipeClick = {
+                                                    dispatch(CartIntent.ShowAlternativesSwipeClick(product))
+                                                },
+                                                onHideAlternativesSwipeClick = {
+                                                    dispatch(CartIntent.HideAlternativesSwipeClick(product))
+                                                },
+                                                onReturnToBasketSwipeClick = {
+                                                    dispatch(CartIntent.ReturnFittingProductToBasketSwipeClick(product))
+                                                },
+                                                useFittingSwipeActions = true,
+                                                selectedAlternativeId = state.selectedAlternativeId
+                                            )
+                                        )
                                     }
                                 }
 
                                 val product = group.products.firstOrNull()
                                 val isAlternativesVisible = product?.isAlternativesPaletteOpen == true &&
                                     product.alternatives.isNotEmpty()
-                                val isDividerVisible = state.viewMode == CartViewMode.List &&
-                                    !group.isLook &&
+                                val isDividerVisible = !group.isLook &&
                                     index < deliveryGroup.productGroups.lastIndex &&
                                     !isAlternativesVisible
 
@@ -476,7 +421,6 @@ private class CartFittingScreenModelProvider: PreviewParameterProvider<CartModel
             )
         ),
         CartModel(
-            viewMode = CartViewMode.Cards,
             payMode = CartPayMode.Payment,
             apiFittingProducts = products,
             apiFittingDeliveries = listOf(

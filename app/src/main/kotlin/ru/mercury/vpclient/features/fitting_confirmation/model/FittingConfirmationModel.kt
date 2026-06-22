@@ -41,55 +41,40 @@ data class FittingConfirmationModel(
     val selectedDeliveryDayIds: Map<String, String> = emptyMap(),
     val selectedDeliveryIntervalIds: Map<String, String> = emptyMap(),
     val expandedDeliveryId: String? = null,
+    val isInitialIntervalsLoading: Boolean = true,
     val isIntervalsLoading: Boolean = false,
     val isConfirmLoading: Boolean = false,
     val intervalsError: String? = null
 ): Model {
     val selectedProducts: List<CartProduct>
-        get() {
-            return route.productIds.mapNotNull { productId ->
-                products.firstOrNull { product -> product.id == productId }
-            }
+        get() = route.productIds.mapNotNull { productId ->
+            products.firstOrNull { product -> product.id == productId }
         }
 
     val selectedClientAddress: ClientDeliveryAddress?
-        get() {
-            return clientAddresses.firstOrNull { address -> address.id == selectedClientAddressId }
-        }
+        get() = clientAddresses.firstOrNull { address -> address.id == selectedClientAddressId }
 
     val pendingClientAddress: ClientDeliveryAddress?
-        get() {
-            return clientAddresses.firstOrNull { address -> address.id == pendingClientAddressId }
-        }
+        get() = clientAddresses.firstOrNull { address -> address.id == pendingClientAddressId }
 
     val addressActionAddress: ClientDeliveryAddress?
-        get() {
-            return clientAddresses.firstOrNull { address -> address.id == addressActionAddressId }
-        }
+        get() = clientAddresses.firstOrNull { address -> address.id == addressActionAddressId }
 
     val deleteAddress: ClientDeliveryAddress?
-        get() {
-            return clientAddresses.firstOrNull { address -> address.id == deleteAddressId }
-        }
+        get() = clientAddresses.firstOrNull { address -> address.id == deleteAddressId }
 
     val displayedClientAddress: String?
-        get() {
-            return selectedClientAddress?.title ?: clientAddress
-        }
+        get() = selectedClientAddress?.title ?: clientAddress
 
     val isSelectedPlaceWithoutAddress: Boolean
-        get() {
-            return when (selectedPlaceType) {
-                FittingConfirmationPlaceType.Boutique -> false
-                FittingConfirmationPlaceType.Home -> displayedClientAddress.isNullOrBlank()
-                FittingConfirmationPlaceType.Other -> true
-            }
+        get() = when (selectedPlaceType) {
+            FittingConfirmationPlaceType.Boutique -> false
+            FittingConfirmationPlaceType.Home -> displayedClientAddress.isNullOrBlank()
+            FittingConfirmationPlaceType.Other -> true
         }
 
     val isMultipleDeliveryAvailable: Boolean
-        get() {
-            return deliveryGroups.size > 1
-        }
+        get() = deliveryGroups.size > 1
 
     val selectedSingleDayIntervals: List<FittingConfirmationDeliveryInterval>
         get() {
@@ -98,22 +83,18 @@ data class FittingConfirmationModel(
         }
 
     val selectedSingleInterval: FittingConfirmationDeliveryInterval?
-        get() {
-            return singleIntervals.firstOrNull { interval -> interval.id == selectedSingleIntervalId }
-        }
+        get() = singleIntervals.firstOrNull { interval -> interval.id == selectedSingleIntervalId }
 
     val isConfirmEnabled: Boolean
-        get() {
-            return when {
-                selectedProducts.isEmpty() -> false
-                isIntervalsLoading -> false
-                isConfirmLoading -> false
-                isSelectedPlaceWithoutAddress -> false
-                deliveryMode == FittingConfirmationDeliveryMode.Single -> selectedSingleIntervalId != null
-                isMultipleDeliveryAvailable -> {
-                    deliveryGroups.all { group -> selectedDeliveryIntervalIds[group.id] != null }
-                }
-                else -> selectedSingleIntervalId != null
+        get() = when {
+            selectedProducts.isEmpty() -> false
+            isIntervalsLoading -> false
+            isConfirmLoading -> false
+            isSelectedPlaceWithoutAddress -> false
+            deliveryMode == FittingConfirmationDeliveryMode.Single -> selectedSingleIntervalId != null
+            isMultipleDeliveryAvailable -> {
+                deliveryGroups.all { group -> selectedDeliveryIntervalIds[group.id] != null }
             }
+            else -> selectedSingleIntervalId != null
         }
 }

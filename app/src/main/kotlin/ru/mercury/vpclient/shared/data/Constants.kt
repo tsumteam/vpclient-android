@@ -14,6 +14,7 @@ const val CLIENT_SERVICE_EMAIL = "customerservice@vip-platinum.ru"
 const val APP_VERSION = "1.59"
 const val APP_FULL_VERSION = "1.59.0"
 const val DEFAULT_EMPLOYEE_APP = "true"
+const val CART_DRAG_AND_DROP_ENABLED = false
 
 const val FORMAT_RUB = "%s ₽"
 const val FORMAT_PLUS = "+%s"

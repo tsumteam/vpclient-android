@@ -62,8 +62,6 @@ import ru.mercury.vpclient.features.cart_quantity_sheet.model.CartQuantityModel
 import ru.mercury.vpclient.features.cart_size_picker_sheet.CartSizePickerSheet
 import ru.mercury.vpclient.features.cart_size_picker_sheet.intent.CartSizePickerSheetIntent
 import ru.mercury.vpclient.features.cart_size_picker_sheet.model.CartSizePickerSheetModel
-import ru.mercury.vpclient.features.cart_size_require_dialog.CartSizeRequireDialog
-import ru.mercury.vpclient.features.cart_size_require_dialog.intent.CartSizeRequireIntent
 import ru.mercury.vpclient.shared.data.entity.CartFittingSheetOption
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
@@ -80,49 +78,20 @@ import ru.mercury.vpclient.shared.ui.theme.medium18
 @Composable
 fun CartScreen(
     route: CartRoute,
-    viewModel: CartViewModel = hiltViewModel<CartViewModel, CartViewModel.Factory>(creationCallback = { it.create(route) })
+    viewModel: CartViewModel = hiltViewModel<CartViewModel, CartViewModel.Factory>(
+        creationCallback = { it.create(route) }
+    )
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
+    val dispatch = viewModel::dispatch
     val scope = rememberCoroutineScope()
     val snackbarHostStateError = remember { SnackbarHostState() }
 
     CartScreenContent(
         state = state,
-        dispatch = viewModel::dispatch,
+        dispatch = dispatch,
         snackbarHostStateError = snackbarHostStateError
     )
-
-    ObserveAsEvents(
-        flow = viewModel.eventFlow
-    ) { event ->
-        when (event) {
-            is CartEvent.SnackbarErrorMessage -> {
-                snackbarHostStateError.currentSnackbarData?.dismiss()
-                scope.launch { snackbarHostStateError.showSnackbar(event.message) }
-            }
-        }
-    }
-}
-
-@Composable
-private fun CartScreenContent(
-    state: CartModel,
-    dispatch: (CartIntent) -> Unit,
-    snackbarHostStateError: SnackbarHostState
-) {
-    val pagerState = rememberPagerState(
-        initialPage = state.initialPage,
-        pageCount = { CartModel.CART_PAGE_COUNT }
-    )
-    val scope = rememberCoroutineScope()
-    val animateToPage = { page: Int ->
-        scope.launch {
-            pagerState.animateScrollToPage(
-                page = page,
-                animationSpec = tween(durationMillis = 350)
-            )
-        }
-    }
 
     state.editProduct?.let { product ->
         val editProductActions = listOf(
@@ -229,21 +198,6 @@ private fun CartScreenContent(
         )
     }
 
-    state.selectSizeProduct?.let { product ->
-        CartSizeRequireDialog(
-            dispatch = { intent ->
-                when (intent) {
-                    is CartSizeRequireIntent.SelectSizeClick -> {
-                        dispatch(CartIntent.SelectSizeClick(product))
-                    }
-                    is CartSizeRequireIntent.DismissRequest -> {
-                        dispatch(CartIntent.HideSelectSizeDialog)
-                    }
-                }
-            }
-        )
-    }
-
     if (state.sizePickerProduct != null) {
         CartSizePickerSheet(
             state = CartSizePickerSheetModel(
@@ -311,6 +265,38 @@ private fun CartScreenContent(
         )
     }
 
+    ObserveAsEvents(
+        flow = viewModel.eventFlow
+    ) { event ->
+        when (event) {
+            is CartEvent.SnackbarErrorMessage -> {
+                snackbarHostStateError.currentSnackbarData?.dismiss()
+                scope.launch { snackbarHostStateError.showSnackbar(event.message) }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CartScreenContent(
+    state: CartModel,
+    dispatch: (CartIntent) -> Unit,
+    snackbarHostStateError: SnackbarHostState
+) {
+    val pagerState = rememberPagerState(
+        initialPage = state.initialPage,
+        pageCount = { CartModel.CART_PAGE_COUNT }
+    )
+    val scope = rememberCoroutineScope()
+    val animateToPage = { page: Int ->
+        scope.launch {
+            pagerState.animateScrollToPage(
+                page = page,
+                animationSpec = tween(durationMillis = CartModel.CART_PAGE_ANIMATION_DURATION)
+            )
+        }
+    }
+
     SharedScaffold(
         topBar = {
             Column(
@@ -359,7 +345,7 @@ private fun CartScreenContent(
         },
         bottomBar = {
             CartChatDock(
-                name = state.cartChatName,
+                name = state.activeEmployee.employeeName,
                 brand = state.cartChatBrand,
                 onClick = { dispatch(CartIntent.ChatClick) }
             )
@@ -497,10 +483,6 @@ private class CartScreenCartProductProvider: PreviewParameterProvider<CartModel>
         CartModel(
             products = products,
             payMode = ru.mercury.vpclient.shared.data.entity.CartPayMode.Payment
-        ),
-        CartModel(
-            products = products,
-            viewMode = ru.mercury.vpclient.shared.data.entity.CartViewMode.Cards
         ),
         CartModel(
             products = products,

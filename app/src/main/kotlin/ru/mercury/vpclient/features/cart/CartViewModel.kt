@@ -195,7 +195,7 @@ class CartViewModel @AssistedInject constructor(
             is CartIntent.ChangePaySwitch -> {
                 when {
                     !intent.product.isForPayment && intent.product.size.isBlank() && intent.paySwitch -> {
-                        reduce { it.copy(selectSizeProduct = intent.product) }
+                        dispatch(CartIntent.ShowSizePicker(intent.product))
                     }
                     else -> {
                         stateFlow.value.paySwitchJob?.cancel()
@@ -222,11 +222,6 @@ class CartViewModel @AssistedInject constructor(
                     }
                 }
             }
-            is CartIntent.SelectSizeClick -> {
-                reduce { it.copy(selectSizeProduct = null) }
-                dispatch(CartIntent.ShowSizePicker(intent.product))
-            }
-            is CartIntent.HideSelectSizeDialog -> reduce { it.copy(selectSizeProduct = null) }
             is CartIntent.ShowSizePicker -> {
                 val detailId = intent.product.detailId
                 if (detailId.isEmpty()) {

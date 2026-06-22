@@ -236,6 +236,7 @@ class FittingConfirmationViewModel @AssistedInject constructor(
                     reduce {
                         it.copy(
                             products = products,
+                            isInitialIntervalsLoading = false,
                             isIntervalsLoading = false
                         )
                     }
@@ -293,6 +294,7 @@ class FittingConfirmationViewModel @AssistedInject constructor(
                                     expandedDeliveryId = it.expandedDeliveryId?.takeIf { id ->
                                         data.deliveryGroups.any { group -> group.id == id }
                                     },
+                                    isInitialIntervalsLoading = false,
                                     isIntervalsLoading = false,
                                     intervalsError = null
                                 )
@@ -302,6 +304,7 @@ class FittingConfirmationViewModel @AssistedInject constructor(
                             reduce {
                                 it.copy(
                                     products = products,
+                                    isInitialIntervalsLoading = false,
                                     isIntervalsLoading = false,
                                     intervalsError = error.message
                                 )
@@ -456,20 +459,16 @@ class FittingConfirmationViewModel @AssistedInject constructor(
 }
 
 private val FittingConfirmationPlaceType.fittingTypeDto: FittingTypeDtoEnum
-    get() {
-        return when (this) {
-            FittingConfirmationPlaceType.Boutique -> FittingTypeDtoEnum.IN_THE_STORE
-            FittingConfirmationPlaceType.Home -> FittingTypeDtoEnum.AT_HOME
-            FittingConfirmationPlaceType.Other -> FittingTypeDtoEnum.AT_HOME
-        }
+    get() = when (this) {
+        FittingConfirmationPlaceType.Boutique -> FittingTypeDtoEnum.IN_THE_STORE
+        FittingConfirmationPlaceType.Home -> FittingTypeDtoEnum.AT_HOME
+        FittingConfirmationPlaceType.Other -> FittingTypeDtoEnum.AT_HOME
     }
 
 private val FittingTypeDtoEnum.fittingConfirmationPlaceType: FittingConfirmationPlaceType
-    get() {
-        return when (this) {
-            FittingTypeDtoEnum.IN_THE_STORE -> FittingConfirmationPlaceType.Boutique
-            FittingTypeDtoEnum.AT_HOME -> FittingConfirmationPlaceType.Home
-        }
+    get() = when (this) {
+        FittingTypeDtoEnum.IN_THE_STORE -> FittingConfirmationPlaceType.Boutique
+        FittingTypeDtoEnum.AT_HOME -> FittingConfirmationPlaceType.Home
     }
 
 private fun FittingConfirmationDeliveryMode.updatedFor(

@@ -7,12 +7,8 @@ data class CartProductGroup(
     val products: List<CartProduct>
 ) {
     val key: String
-        get() {
-            return lookId ?: products.firstOrNull()?.id.orEmpty()
-        }
+        get() = lookId ?: products.firstOrNull()?.id.orEmpty()
 
     val isLook: Boolean
-        get() {
-            return !lookId.isNullOrEmpty()
-        }
+        get() = !lookId.isNullOrEmpty()
 }

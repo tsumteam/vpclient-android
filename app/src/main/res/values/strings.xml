@@ -63,7 +63,6 @@
     <string name="cart_select_alternative">Выберите альтернативу</string>
     <string name="cart_alternatives_not_found">Альтернативы не найдены</string>
     <string name="cart_hide_alternatives">Скрыть</string>
-    <string name="cart_select_size_for_payment_title">Для оплаты товара\nвыберите размер</string>
     <string name="cart_select_size_for_payment_button">Выбрать размер</string>
     <string name="cart_look_default_title">Образ</string>
     <string name="cart_look_add">Дополнить образ</string>

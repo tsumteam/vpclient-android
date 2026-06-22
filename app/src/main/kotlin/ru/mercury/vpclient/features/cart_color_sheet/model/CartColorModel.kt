@@ -6,7 +6,5 @@ data class CartColorModel(
     val colors: List<ProductAvailableColor>
 ) {
     val hasSelectedColor: Boolean
-        get() {
-            return colors.any { it.selected }
-        }
+        get() = colors.any { it.selected }
 }

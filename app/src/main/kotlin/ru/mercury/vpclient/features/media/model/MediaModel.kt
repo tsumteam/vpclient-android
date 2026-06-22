@@ -17,7 +17,5 @@ data class MediaModel(
         }
 
     val hasVideo: Boolean
-        get() {
-            return videoUrl != null
-        }
+        get() = videoUrl != null
 }

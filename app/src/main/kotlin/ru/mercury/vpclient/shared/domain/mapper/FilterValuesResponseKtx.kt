@@ -137,14 +137,10 @@ private fun FilterIdTreeValueDto.toTreeFilterValues(
 }
 
 private val JsonElement.filterValueType: String?
-    get() {
-        return jsonObject["valueType"]?.jsonPrimitive?.contentOrNull
-    }
+    get() = jsonObject["valueType"]?.jsonPrimitive?.contentOrNull
 
 private val JsonElement?.filterValueId: String?
-    get() {
-        return this?.jsonPrimitive?.contentOrNull
-    }
+    get() = this?.jsonPrimitive?.contentOrNull
 
 private fun String.priceRangeChipId(
     fromValue: Double?,

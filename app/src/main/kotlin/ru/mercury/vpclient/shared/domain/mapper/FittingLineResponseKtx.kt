@@ -70,19 +70,15 @@ val FittingLineResponseDto.cartProduct: CartProduct?
     }
 
 val FittingDeliveryResponseDto.fittingDeliveryHeader: FittingDeliveryHeaderState
-    get() {
-        return FittingDeliveryHeaderState(
-            status = deliveryStatusAsString.orEmpty(),
-            date = deliveryDateAsString.orEmpty(),
-            address = address.orEmpty(),
-            isDelivered = deliveryStatusAsString?.lowercase() == "доставлено"
-        )
-    }
+    get() = FittingDeliveryHeaderState(
+        status = deliveryStatusAsString.orEmpty(),
+        date = deliveryDateAsString.orEmpty(),
+        address = address.orEmpty(),
+        isDelivered = deliveryStatusAsString?.lowercase() == "доставлено"
+    )
 
 private val Double.formattedFittingPrice: String
-    get() {
-        return FORMAT_RUB.format(fittingPriceFormatter.format(this))
-    }
+    get() = FORMAT_RUB.format(fittingPriceFormatter.format(this))
 
 private fun Double?.formattedOldFittingPrice(currentPrice: Double): String? {
     return when {

@@ -35,7 +35,6 @@ fun CartLookCard(
     lookName: String,
     lookImageUrl: String?,
     products: List<CartProduct>,
-    isLargeCard: Boolean,
     onAddClick: () -> Unit,
     onProductClick: (CartProduct) -> Unit,
     onSelectSizeClick: (CartProduct) -> Unit,
@@ -112,61 +111,36 @@ fun CartLookCard(
         }
 
         products.forEachIndexed { index, product ->
-            when (isLargeCard) {
-                true -> {
-                    CartProductLargeCard(
-                        product = product,
-                        modifier = productModifier(product),
-                        onClick = { onProductClick(product) },
-                        onSelectSizeClick = { onSelectSizeClick(product) },
-                        onSizeClick = { size -> onSizeClick(product, size) },
-                        onBuySwitchChange = { paySwitch -> onBuySwitchChange(product, paySwitch) },
-                        onAlternativeClick = onAlternativeClick,
-                        onRemoveAlternativeClick = onRemoveAlternativeClick,
-                        onHideAlternativesClick = { onHideAlternativesClick(product) },
-                        onEditSwipeClick = { onEditProductSwipeClick(product) },
-                        onDeleteSwipeClick = { onDeleteProductSwipeClick(product) },
-                        onDetachFromLookSwipeClick = { onDetachProductFromLookSwipeClick(product) },
-                        onReturnOriginalSwipeClick = { onReturnOriginalSwipeClick(product) },
-                        onShowAlternativesSwipeClick = { onShowAlternativesSwipeClick(product) },
-                        onHideAlternativesSwipeClick = { onHideAlternativesSwipeClick(product) },
-                        selectedAlternativeId = selectedAlternativeId,
-                        isDividerVisible = index < products.lastIndex
-                    )
-                }
-                false -> {
-                    val isAlternativesVisible = product.isAlternativesPaletteOpen && product.alternatives.isNotEmpty()
+            val isAlternativesVisible = product.isAlternativesPaletteOpen && product.alternatives.isNotEmpty()
 
-                    CartProductCard(
-                        state = CartProductCardState(
-                            product = product,
-                            onClick = { onProductClick(product) },
-                            onSelectSizeClick = { onSelectSizeClick(product) },
-                            onSizeClick = { size -> onSizeClick(product, size) },
-                            onBuySwitchChange = { paySwitch -> onBuySwitchChange(product, paySwitch) },
-                            onAlternativeClick = onAlternativeClick,
-                            onRemoveAlternativeClick = onRemoveAlternativeClick,
-                            onHideAlternativesClick = { onHideAlternativesClick(product) },
-                            onEditSwipeClick = { onEditProductSwipeClick(product) },
-                            onDeleteSwipeClick = { onDeleteProductSwipeClick(product) },
-                            onDetachFromLookSwipeClick = { onDetachProductFromLookSwipeClick(product) },
-                            onReturnOriginalSwipeClick = { onReturnOriginalSwipeClick(product) },
-                            onShowAlternativesSwipeClick = { onShowAlternativesSwipeClick(product) },
-                            onHideAlternativesSwipeClick = { onHideAlternativesSwipeClick(product) },
-                            onReturnToBasketSwipeClick = { onReturnToBasketSwipeClick(product) },
-                            useFittingSwipeActions = useFittingProductSwipeActions,
-                            selectedAlternativeId = selectedAlternativeId
-                        ),
-                        modifier = productModifier(product),
-                    )
+            CartProductCard(
+                state = CartProductCardState(
+                    product = product,
+                    onClick = { onProductClick(product) },
+                    onSelectSizeClick = { onSelectSizeClick(product) },
+                    onSizeClick = { size -> onSizeClick(product, size) },
+                    onBuySwitchChange = { paySwitch -> onBuySwitchChange(product, paySwitch) },
+                    onAlternativeClick = onAlternativeClick,
+                    onRemoveAlternativeClick = onRemoveAlternativeClick,
+                    onHideAlternativesClick = { onHideAlternativesClick(product) },
+                    onEditSwipeClick = { onEditProductSwipeClick(product) },
+                    onDeleteSwipeClick = { onDeleteProductSwipeClick(product) },
+                    onDetachFromLookSwipeClick = { onDetachProductFromLookSwipeClick(product) },
+                    onReturnOriginalSwipeClick = { onReturnOriginalSwipeClick(product) },
+                    onShowAlternativesSwipeClick = { onShowAlternativesSwipeClick(product) },
+                    onHideAlternativesSwipeClick = { onHideAlternativesSwipeClick(product) },
+                    onReturnToBasketSwipeClick = { onReturnToBasketSwipeClick(product) },
+                    useFittingSwipeActions = useFittingProductSwipeActions,
+                    selectedAlternativeId = selectedAlternativeId
+                ),
+                modifier = productModifier(product)
+            )
 
-                    if (index < products.lastIndex && !isAlternativesVisible) {
-                        HorizontalDivider(
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            color = MaterialTheme.colorScheme.divider
-                        )
-                    }
-                }
+            if (index < products.lastIndex && !isAlternativesVisible) {
+                HorizontalDivider(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    color = MaterialTheme.colorScheme.divider
+                )
             }
         }
     }
@@ -180,7 +154,6 @@ private fun CartLookCardPreview() {
         lookName = "Evening look",
         lookImageUrl = null,
         products = CartLookCardCartProductProvider().values.take(2).toList(),
-        isLargeCard = false,
         onAddClick = {},
         onProductClick = {},
         onSelectSizeClick = {},

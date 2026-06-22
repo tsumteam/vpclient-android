@@ -12,11 +12,9 @@ data class ProfileLoyaltyAddCardModel(
 ): Model {
 
     val isConfirmEnabled: Boolean
-        get() {
-            return when (mode) {
-                ProfileLoyaltyAddCardMode.Phone -> phone.isNotBlank()
-                ProfileLoyaltyAddCardMode.CardNumber -> cardNumber.isNotBlank()
-            }
+        get() = when (mode) {
+            ProfileLoyaltyAddCardMode.Phone -> phone.isNotBlank()
+            ProfileLoyaltyAddCardMode.CardNumber -> cardNumber.isNotBlank()
         }
 }
 

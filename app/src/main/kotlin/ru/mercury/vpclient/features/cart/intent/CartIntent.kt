@@ -25,7 +25,6 @@ sealed interface CartIntent: Intent {
     data object HideFittingSheet: CartIntent
     data object ShowFittingProductsSheet: CartIntent
     data object HideFittingProductsSheet: CartIntent
-    data object HideSelectSizeDialog: CartIntent
     data object HideSizePicker: CartIntent
     data object HideEditProductSheet: CartIntent
     data object HideFittingEditProductSheet: CartIntent
@@ -48,7 +47,6 @@ sealed interface CartIntent: Intent {
     data class ShowFittingSizePicker(val product: CartProduct): CartIntent
     data class ShowColorPicker(val product: CartProduct, val forFitting: Boolean = false): CartIntent
     data class ShowQuantityPicker(val product: CartProduct): CartIntent
-    data class SelectSizeClick(val product: CartProduct): CartIntent
     data class AlternativeClick(val alternative: CartProductAlternative): CartIntent
     data class RemoveAlternativeClick(val alternative: CartProductAlternative): CartIntent
     data class HideAlternativesClick(val product: CartProduct): CartIntent
@@ -58,7 +56,10 @@ sealed interface CartIntent: Intent {
     data class AddSizeClick(val product: CartProduct): CartIntent
     data class ChangeQuantityClick(val product: CartProduct): CartIntent
     data class ChangeColorClick(val product: CartProduct): CartIntent
-    data class RemoveProductSizeClick(val product: CartProduct, val size: CartProductSize): CartIntent
+    data class RemoveProductSizeClick(
+        val product: CartProduct,
+        val size: CartProductSize
+    ): CartIntent
     data class DeleteProductSwipeClick(val product: CartProduct): CartIntent
     data class DetachProductFromLookSwipeClick(val product: CartProduct): CartIntent
     data class ReturnOriginalSwipeClick(val product: CartProduct): CartIntent
@@ -70,7 +71,11 @@ sealed interface CartIntent: Intent {
     data class ToggleColorPickerItem(val index: Int): CartIntent
     data class ToggleQuantityPickerItem(val index: Int): CartIntent
     data class SelectPayMode(val mode: CartPayMode): CartIntent
-    data class MoveProductAfterDrag(val productId: String, val targetProductId: String, val placeAfterTarget: Boolean): CartIntent
+    data class MoveProductAfterDrag(
+        val productId: String,
+        val targetProductId: String,
+        val placeAfterTarget: Boolean
+    ): CartIntent
     data class ConfirmFittingSheet(val productIds: List<String>): CartIntent
     data class ConfirmFittingProductsSheet(val productIds: List<String>): CartIntent
 }

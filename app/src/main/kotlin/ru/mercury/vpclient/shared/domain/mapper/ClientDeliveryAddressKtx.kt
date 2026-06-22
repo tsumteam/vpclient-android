@@ -30,29 +30,25 @@ val ClientAddressWithCoordinateDto.clientDeliveryAddress: ClientDeliveryAddress?
     }
 
 val ClientDeliveryAddress.clientAddressBaseDto: ClientAddressBaseDto
-    get() {
-        return ClientAddressBaseDto(
-            address = address,
-            flat = flat,
-            entrance = entrance,
-            intercom = intercom,
-            floor = floor,
-            comment = comment
-        )
-    }
+    get() = ClientAddressBaseDto(
+        address = address,
+        flat = flat,
+        entrance = entrance,
+        intercom = intercom,
+        floor = floor,
+        comment = comment
+    )
 
 val ClientDeliveryAddress.clientAddressDto: ClientAddressDto
-    get() {
-        return ClientAddressDto(
-            addressId = id,
-            address = address,
-            flat = flat,
-            entrance = entrance,
-            intercom = intercom,
-            floor = floor,
-            comment = comment
-        )
-    }
+    get() = ClientAddressDto(
+        addressId = id,
+        address = address,
+        flat = flat,
+        entrance = entrance,
+        intercom = intercom,
+        floor = floor,
+        comment = comment
+    )
 
 fun ClientAddressDto.clientDeliveryAddress(
     fallback: ClientDeliveryAddress
@@ -71,14 +67,12 @@ fun ClientAddressDto.clientDeliveryAddress(
 }
 
 val ClientDeliveryAddress.coordinateDto: CoordinateDto?
-    get() {
-        return when {
-            latitude != null && longitude != null -> CoordinateDto(
-                latitude = latitude,
-                longitude = longitude
-            )
-            else -> null
-        }
+    get() = when {
+        latitude != null && longitude != null -> CoordinateDto(
+            latitude = latitude,
+            longitude = longitude
+        )
+        else -> null
     }
 
 val AddressSuggestionDto.clientDeliveryAddressSuggestion: ClientDeliveryAddressSuggestion?

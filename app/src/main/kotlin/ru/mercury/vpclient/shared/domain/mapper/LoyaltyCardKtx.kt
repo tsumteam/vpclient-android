@@ -28,20 +28,16 @@ val CardTypeDto.loyaltyCardDescription: LoyaltyCardDescription
     )
 
 val LoyaltyCardType.order: Int
-    get() {
-        return when (this) {
-            LoyaltyCardType.Silver -> 0
-            LoyaltyCardType.Gold -> 1
-            LoyaltyCardType.Black -> 2
-        }
+    get() = when (this) {
+        LoyaltyCardType.Silver -> 0
+        LoyaltyCardType.Gold -> 1
+        LoyaltyCardType.Black -> 2
     }
 
 private val String?.loyaltyCardType: LoyaltyCardType
-    get() {
-        return when (this) {
-            "silver" -> LoyaltyCardType.Silver
-            "gold" -> LoyaltyCardType.Gold
-            "black" -> LoyaltyCardType.Black
-            else -> LoyaltyCardType.Black
-        }
+    get() = when (this) {
+        "silver" -> LoyaltyCardType.Silver
+        "gold" -> LoyaltyCardType.Gold
+        "black" -> LoyaltyCardType.Black
+        else -> LoyaltyCardType.Black
     }

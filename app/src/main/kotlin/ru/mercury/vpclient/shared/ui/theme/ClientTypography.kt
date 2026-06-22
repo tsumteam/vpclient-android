@@ -9,11 +9,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.R
 
+val Typography.regular9: TextStyle
+    get() = TextStyle(
+        fontWeight = FontWeight.W400,
+        fontSize = 9.sp
+    )
+
 val Typography.regular10: TextStyle
     get() = TextStyle(
         fontWeight = FontWeight.W400,
-        fontSize = 10.sp,
-        lineHeight = 12.sp
+        fontSize = 10.sp
     )
 
 val Typography.regular11: TextStyle

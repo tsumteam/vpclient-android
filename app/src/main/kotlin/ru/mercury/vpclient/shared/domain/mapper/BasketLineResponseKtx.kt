@@ -113,9 +113,7 @@ private val BasketAlternativeResponseDto.cartProductAlternative: CartProductAlte
     }
 
 private val Double.formattedCartPrice: String
-    get() {
-        return FORMAT_RUB.format(cartPriceFormatter.format(this))
-    }
+    get() = FORMAT_RUB.format(cartPriceFormatter.format(this))
 
 private fun Double?.formattedOldCartPrice(currentPrice: Double): String? {
     return when {

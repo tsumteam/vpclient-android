@@ -2,6 +2,7 @@ package ru.mercury.vpclient.features.cart_list
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -52,12 +54,13 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import kotlinx.coroutines.delay
 import ru.mercury.vpclient.features.cart.intent.CartIntent
 import ru.mercury.vpclient.features.cart.model.CartModel
 import ru.mercury.vpclient.shared.data.entity.CartPayMode
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductGroup
-import ru.mercury.vpclient.shared.data.entity.CartViewMode
+import ru.mercury.vpclient.shared.domain.mapper.moveProductAfterDrag
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedPullToRefreshBox
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
@@ -66,7 +69,6 @@ import ru.mercury.vpclient.shared.ui.components.SharedTabRowState
 import ru.mercury.vpclient.shared.ui.components.cart.CartLookCard
 import ru.mercury.vpclient.shared.ui.components.cart.CartProductCard
 import ru.mercury.vpclient.shared.ui.components.cart.CartProductCardState
-import ru.mercury.vpclient.shared.ui.components.cart.CartProductLargeCard
 import ru.mercury.vpclient.shared.ui.components.cart.CartSummary
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
@@ -75,6 +77,9 @@ import ru.mercury.vpclient.shared.ui.theme.medium13
 import ru.mercury.vpclient.shared.ui.theme.medium15
 import ru.mercury.vpclient.shared.ui.theme.regular14
 import kotlin.math.roundToInt
+
+private const val DRAG_AUTO_SCROLL_EDGE_DP = 80
+private const val DRAG_AUTO_SCROLL_STEP_DP = 28
 
 @Composable
 fun CartListScreen(
@@ -94,14 +99,20 @@ private fun CartListScreenContent(
 ) {
     val productBounds = remember { mutableStateMapOf<String, Rect>() }
     var draggingProductId by remember { mutableStateOf<String?>(null) }
+    var draggingProducts by remember { mutableStateOf<List<CartProduct>?>(null) }
+    var dragTargetProductId by remember { mutableStateOf<String?>(null) }
+    var dragPlaceAfterTarget by remember { mutableStateOf(false) }
     var dragOffset by remember { mutableStateOf(Offset.Zero) }
     var dragPointerPosition by remember { mutableStateOf<Offset?>(null) }
     var contentBounds by remember { mutableStateOf<Rect?>(null) }
-    val dragEnabled = state.payMode == CartPayMode.All && !state.isRefreshing
+    val lazyListState = rememberLazyListState()
     val pullToRefreshState = rememberPullToRefreshState()
     val density = LocalDensity.current
     val resetDrag = {
         draggingProductId = null
+        draggingProducts = null
+        dragTargetProductId = null
+        dragPlaceAfterTarget = false
         dragOffset = Offset.Zero
         dragPointerPosition = null
     }
@@ -205,15 +216,65 @@ private fun CartListScreenContent(
         },
         contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal)
     ) { innerPadding ->
+        val displayState = draggingProducts?.let { products -> state.copy(products = products) } ?: state
+        val autoScrollEdgePx = with(density) { DRAG_AUTO_SCROLL_EDGE_DP.dp.toPx() }
+        val autoScrollStepPx = with(density) { DRAG_AUTO_SCROLL_STEP_DP.dp.toPx() }
+        val moveDraggingProductOverTarget: (String, Offset) -> Unit = { productId, pointer ->
+            val target = productBounds.entries.firstOrNull { entry ->
+                entry.key != productId && entry.value.contains(pointer)
+            }
+
+            if (target != null) {
+                val placeAfterTarget = pointer.y > target.value.center.y
+                val movedProducts = (draggingProducts ?: state.products).moveProductAfterDrag(
+                    productId = productId,
+                    targetProductId = target.key,
+                    placeAfterTarget = placeAfterTarget
+                )
+                when (movedProducts) {
+                    draggingProducts -> Unit
+                    else -> {
+                        draggingProducts = movedProducts
+                        dragTargetProductId = target.key
+                        dragPlaceAfterTarget = placeAfterTarget
+                    }
+                }
+            }
+        }
+
+        LaunchedEffect(draggingProductId, dragPointerPosition, contentBounds) {
+            while (draggingProductId != null) {
+                val productId = draggingProductId
+                val pointer = dragPointerPosition
+                val currentContentBounds = contentBounds
+                val scrollAmount = when {
+                    pointer == null || currentContentBounds == null -> 0F
+                    pointer.y < currentContentBounds.top + autoScrollEdgePx -> -autoScrollStepPx
+                    pointer.y > currentContentBounds.bottom - autoScrollEdgePx -> autoScrollStepPx
+                    else -> 0F
+                }
+                if (scrollAmount != 0F) {
+                    lazyListState.scrollBy(scrollAmount)
+                }
+                if (productId != null && pointer != null) {
+                    moveDraggingProductOverTarget(productId, pointer)
+                }
+                delay(16)
+            }
+        }
+
         val productModifier: (CartProduct) -> Modifier = { product ->
             val isDragging = draggingProductId == product.id
             val dragModifier = when {
-                dragEnabled -> {
+                state.dragEnabled -> {
                     Modifier.pointerInput(product.id) {
                         detectDragGesturesAfterLongPress(
                             onDragStart = { touchOffset ->
                                 productBounds[product.id]?.let { bounds ->
                                     draggingProductId = product.id
+                                    draggingProducts = state.products
+                                    dragTargetProductId = null
+                                    dragPlaceAfterTarget = false
                                     dragOffset = Offset.Zero
                                     dragPointerPosition = Offset(
                                         x = bounds.left + touchOffset.x,
@@ -224,23 +285,21 @@ private fun CartListScreenContent(
                             onDrag = { change, dragAmount ->
                                 change.consume()
                                 dragOffset += dragAmount
-                                dragPointerPosition = dragPointerPosition?.plus(dragAmount)
+                                val pointer = dragPointerPosition?.plus(dragAmount)
+                                dragPointerPosition = pointer
+
+                                if (pointer != null) {
+                                    moveDraggingProductOverTarget(product.id, pointer)
+                                }
                             },
                             onDragEnd = {
-                                val pointer = dragPointerPosition
-                                val target = when {
-                                    pointer == null -> null
-                                    else -> productBounds.entries.firstOrNull { entry ->
-                                        entry.key != product.id && entry.value.contains(pointer)
-                                    }
-                                }
-
-                                if (target != null && pointer != null) {
+                                val targetProductId = dragTargetProductId
+                                if (targetProductId != null) {
                                     dispatch(
                                         CartIntent.MoveProductAfterDrag(
                                             productId = product.id,
-                                            targetProductId = target.key,
-                                            placeAfterTarget = pointer.y > target.value.center.y
+                                            targetProductId = targetProductId,
+                                            placeAfterTarget = dragPlaceAfterTarget
                                         )
                                     )
                                 }
@@ -256,7 +315,7 @@ private fun CartListScreenContent(
             Modifier
                 .zIndex(if (isDragging) 1F else 0F)
                 .graphicsLayer {
-                    alpha = if (isDragging) .18F else 1F
+                    alpha = if (isDragging) 0F else 1F
                 }
                 .onGloballyPositioned { coordinates ->
                     productBounds[product.id] = coordinates.boundsInWindow()
@@ -278,7 +337,6 @@ private fun CartListScreenContent(
                             lookName = group.lookName,
                             lookImageUrl = group.lookImageUrl,
                             products = group.products,
-                            isLargeCard = state.viewMode == CartViewMode.Cards,
                             onAddClick = {},
                             onProductClick = { product -> dispatch(CartIntent.ProductClick(product.detailId)) },
                             onSelectSizeClick = { product -> dispatch(CartIntent.ShowSizePicker(product)) },
@@ -309,90 +367,46 @@ private fun CartListScreenContent(
                     }
                     else -> {
                         val product = group.products.first()
-                        when (state.viewMode) {
-                            CartViewMode.List -> {
-                                CartProductCard(
-                                    state = CartProductCardState(
-                                        product = product,
-                                        onClick = { dispatch(CartIntent.ProductClick(product.detailId)) },
-                                        onSelectSizeClick = { dispatch(CartIntent.ShowSizePicker(product)) },
-                                        onSizeClick = { size -> dispatch(CartIntent.RemoveProductSizeClick(product, size)) },
-                                        onBuySwitchChange = { paySwitch ->
-                                            dispatch(CartIntent.ChangePaySwitch(product, paySwitch))
-                                        },
-                                        onAlternativeClick = { alternative ->
-                                            dispatch(CartIntent.AlternativeClick(alternative))
-                                        },
-                                        onRemoveAlternativeClick = { alternative ->
-                                            dispatch(CartIntent.RemoveAlternativeClick(alternative))
-                                        },
-                                        onHideAlternativesClick = {
-                                            dispatch(CartIntent.HideAlternativesClick(product))
-                                        },
-                                        onEditSwipeClick = {
-                                            dispatch(CartIntent.EditProductSwipeClick(product))
-                                        },
-                                        onDeleteSwipeClick = {
-                                            dispatch(CartIntent.DeleteProductSwipeClick(product))
-                                        },
-                                        onDetachFromLookSwipeClick = {
-                                            dispatch(CartIntent.DetachProductFromLookSwipeClick(product))
-                                        },
-                                        onReturnOriginalSwipeClick = {
-                                            dispatch(CartIntent.ReturnOriginalSwipeClick(product))
-                                        },
-                                        onShowAlternativesSwipeClick = {
-                                            dispatch(CartIntent.ShowAlternativesSwipeClick(product))
-                                        },
-                                        onHideAlternativesSwipeClick = {
-                                            dispatch(CartIntent.HideAlternativesSwipeClick(product))
-                                        },
-                                        selectedAlternativeId = state.selectedAlternativeId
-                                    ),
-                                    modifier = productModifier(product),
-                                )
-                            }
-                            CartViewMode.Cards -> {
-                                CartProductLargeCard(
-                                    product = product,
-                                    modifier = productModifier(product),
-                                    onClick = { dispatch(CartIntent.ProductClick(product.detailId)) },
-                                    onSelectSizeClick = { dispatch(CartIntent.ShowSizePicker(product)) },
-                                    onSizeClick = { size -> dispatch(CartIntent.RemoveProductSizeClick(product, size)) },
-                                    onBuySwitchChange = { paySwitch ->
-                                        dispatch(CartIntent.ChangePaySwitch(product, paySwitch))
-                                    },
-                                    onAlternativeClick = { alternative ->
-                                        dispatch(CartIntent.AlternativeClick(alternative))
-                                    },
-                                    onRemoveAlternativeClick = { alternative ->
-                                        dispatch(CartIntent.RemoveAlternativeClick(alternative))
-                                    },
-                                    onHideAlternativesClick = {
-                                        dispatch(CartIntent.HideAlternativesClick(product))
-                                    },
-                                    onEditSwipeClick = {
-                                        dispatch(CartIntent.EditProductSwipeClick(product))
-                                    },
-                                    onDeleteSwipeClick = {
-                                        dispatch(CartIntent.DeleteProductSwipeClick(product))
-                                    },
-                                    onDetachFromLookSwipeClick = {
-                                        dispatch(CartIntent.DetachProductFromLookSwipeClick(product))
-                                    },
-                                    onReturnOriginalSwipeClick = {
-                                        dispatch(CartIntent.ReturnOriginalSwipeClick(product))
-                                    },
-                                    onShowAlternativesSwipeClick = {
-                                        dispatch(CartIntent.ShowAlternativesSwipeClick(product))
-                                    },
-                                    onHideAlternativesSwipeClick = {
-                                        dispatch(CartIntent.HideAlternativesSwipeClick(product))
-                                    },
-                                    selectedAlternativeId = state.selectedAlternativeId
-                                )
-                            }
-                        }
+                        CartProductCard(
+                            state = CartProductCardState(
+                                product = product,
+                                onClick = { dispatch(CartIntent.ProductClick(product.detailId)) },
+                                onSelectSizeClick = { dispatch(CartIntent.ShowSizePicker(product)) },
+                                onSizeClick = { size -> dispatch(CartIntent.RemoveProductSizeClick(product, size)) },
+                                onBuySwitchChange = { paySwitch ->
+                                    dispatch(CartIntent.ChangePaySwitch(product, paySwitch))
+                                },
+                                onAlternativeClick = { alternative ->
+                                    dispatch(CartIntent.AlternativeClick(alternative))
+                                },
+                                onRemoveAlternativeClick = { alternative ->
+                                    dispatch(CartIntent.RemoveAlternativeClick(alternative))
+                                },
+                                onHideAlternativesClick = {
+                                    dispatch(CartIntent.HideAlternativesClick(product))
+                                },
+                                onEditSwipeClick = {
+                                    dispatch(CartIntent.EditProductSwipeClick(product))
+                                },
+                                onDeleteSwipeClick = {
+                                    dispatch(CartIntent.DeleteProductSwipeClick(product))
+                                },
+                                onDetachFromLookSwipeClick = {
+                                    dispatch(CartIntent.DetachProductFromLookSwipeClick(product))
+                                },
+                                onReturnOriginalSwipeClick = {
+                                    dispatch(CartIntent.ReturnOriginalSwipeClick(product))
+                                },
+                                onShowAlternativesSwipeClick = {
+                                    dispatch(CartIntent.ShowAlternativesSwipeClick(product))
+                                },
+                                onHideAlternativesSwipeClick = {
+                                    dispatch(CartIntent.HideAlternativesSwipeClick(product))
+                                },
+                                selectedAlternativeId = state.selectedAlternativeId
+                            ),
+                            modifier = productModifier(product)
+                        )
                     }
                 }
             }
@@ -400,8 +414,7 @@ private fun CartListScreenContent(
             val product = group.products.firstOrNull()
             val isAlternativesVisible = product?.isAlternativesPaletteOpen == true &&
                 product.alternatives.isNotEmpty()
-            val isDividerVisible = state.viewMode == CartViewMode.List &&
-                !group.isLook &&
+            val isDividerVisible = !group.isLook &&
                 groupIndex < lastGroupIndex &&
                 !isAlternativesVisible
 
@@ -456,22 +469,18 @@ private fun CartListScreenContent(
                     ) {
                         SharedLazyColumn(
                             modifier = Modifier.fillMaxSize(),
+                            state = lazyListState,
                             contentPadding = innerPadding + PaddingValues(bottom = 76.dp),
-                            verticalArrangement = Arrangement.spacedBy(
-                                when (state.viewMode) {
-                                    CartViewMode.List -> 0.dp
-                                    CartViewMode.Cards -> 24.dp
-                                }
-                            )
+                            verticalArrangement = Arrangement.spacedBy(0.dp)
                         ) {
                             itemsIndexed(
-                                items = state.visibleProductGroups,
+                                items = displayState.visibleProductGroups,
                                 key = { _, group -> group.key }
                             ) { index, group ->
                                 renderProductGroup(
                                     group,
                                     index,
-                                    state.visibleProductGroups.lastIndex
+                                    displayState.visibleProductGroups.lastIndex
                                 )
                             }
 
@@ -489,7 +498,7 @@ private fun CartListScreenContent(
                     }
 
                     val draggedProduct = draggingProductId?.let { productId ->
-                        state.visibleProducts.firstOrNull { product -> product.id == productId }
+                        displayState.visibleProducts.firstOrNull { product -> product.id == productId }
                     }
                     val draggedProductBounds = draggingProductId?.let { productId -> productBounds[productId] }
                     val currentContentBounds = contentBounds
@@ -509,22 +518,12 @@ private fun CartListScreenContent(
                                 shadowElevation = 6F
                             }
 
-                        when (state.viewMode) {
-                            CartViewMode.List -> {
-                                CartProductCard(
-                                    state = CartProductCardState(
-                                        product = draggedProduct
-                                    ),
-                                    modifier = modifier
-                                )
-                            }
-                            CartViewMode.Cards -> {
-                                CartProductLargeCard(
-                                    product = draggedProduct,
-                                    modifier = modifier
-                                )
-                            }
-                        }
+                        CartProductCard(
+                            state = CartProductCardState(
+                                product = draggedProduct
+                            ),
+                            modifier = modifier
+                        )
                     }
                 }
             }
@@ -582,10 +581,6 @@ private class CartListScreenModelProvider: PreviewParameterProvider<CartModel> {
 
     override val values: Sequence<CartModel> = sequenceOf(
         CartModel(),
-        CartModel(products = products),
-        CartModel(
-            products = products,
-            viewMode = CartViewMode.Cards
-        )
+        CartModel(products = products)
     )
 }

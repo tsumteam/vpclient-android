@@ -4,9 +4,7 @@ data class CartQuantityModel(
     val quantities: List<CartQuantityItem>
 ) {
     val hasSelectedQuantity: Boolean
-        get() {
-            return quantities.any { it.selected }
-        }
+        get() = quantities.any { it.selected }
 }
 
 data class CartQuantityItem(

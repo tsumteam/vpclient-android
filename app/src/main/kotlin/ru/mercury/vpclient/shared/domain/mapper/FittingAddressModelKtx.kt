@@ -6,19 +6,17 @@ import ru.mercury.vpclient.features.fitting_address_sheet.model.FittingAddressMo
 import ru.mercury.vpclient.shared.data.entity.FittingAddressFormField
 
 val ClientDeliveryAddress.fittingAddressModel: FittingAddressModel
-    get() {
-        return FittingAddressModel(
-            addressId = id,
-            address = address,
-            flat = flat,
-            entrance = entrance,
-            intercom = intercom,
-            floor = floor,
-            comment = comment,
-            latitude = latitude,
-            longitude = longitude
-        )
-    }
+    get() = FittingAddressModel(
+        addressId = id,
+        address = address,
+        flat = flat,
+        entrance = entrance,
+        intercom = intercom,
+        floor = floor,
+        comment = comment,
+        latitude = latitude,
+        longitude = longitude
+    )
 
 fun FittingAddressModel.withSuggestion(
     suggestion: ClientDeliveryAddressSuggestion

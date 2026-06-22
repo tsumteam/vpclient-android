@@ -20,7 +20,6 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -48,6 +47,7 @@ import ru.mercury.vpclient.features.debug_env_dialog.model.DebugEnvironmentDialo
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
+import ru.mercury.vpclient.shared.ui.components.SharedSwitch
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.icons.Copy24
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
@@ -345,7 +345,7 @@ private fun DebugActivityContent(
                         )
                     },
                     trailingContent = {
-                        Switch(
+                        SharedSwitch(
                             checked = state.requestDelayEnabled,
                             onCheckedChange = null
                         )
@@ -370,7 +370,7 @@ private fun DebugActivityContent(
                         )
                     },
                     trailingContent = {
-                        Switch(
+                        SharedSwitch(
                             checked = state.mockBackendEnabled,
                             onCheckedChange = null
                         )

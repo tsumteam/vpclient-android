@@ -1,7 +1,5 @@
 package ru.mercury.vpclient.shared.data.entity
 
-import kotlinx.serialization.Serializable
-
 data class CartProduct(
     val id: String,
     val detailId: String,
@@ -36,13 +34,4 @@ data class CartProduct(
     val sizeItems: List<CartProductSize> = emptyList(),
     val dateReceipt: String? = null,
     val isDateReceiptOverdue: Boolean = false
-)
-
-@Serializable
-data class CartProductSize(
-    val id: String,
-    val name: String,
-    val productId: String,
-    val catalogProductId: String = "",
-    val isLastInStock: Boolean = false
 )

@@ -53,9 +53,7 @@ class MockBackendInterceptor(
     }
 
     private val Context.isMockBackendMarkerEnabled: Boolean
-        get() {
-            return File(filesDir, MOCK_BACKEND_MARKER_FILE_NAME).exists()
-        }
+        get() = File(filesDir, MOCK_BACKEND_MARKER_FILE_NAME).exists()
 
     private var Context.pendingMockLoyaltyCardNumber: String?
         get() {
@@ -84,16 +82,12 @@ class MockBackendInterceptor(
     }
 
     private val okhttp3.Request.isMockBackendRequest: Boolean
-        get() {
-            return mockEndpoint in MOCK_BACKEND_ENDPOINTS
-        }
+        get() = mockEndpoint in MOCK_BACKEND_ENDPOINTS
 
     private val okhttp3.Request.mockEndpoint: String
-        get() {
-            return url.encodedPath
+        get() = url.encodedPath
                 .trim('/')
                 .removePrefix("$API_PATH_PREFIX/")
-        }
 
     private val okhttp3.Request.bodyText: String
         get() {
@@ -111,12 +105,10 @@ class MockBackendInterceptor(
         }
 
     private val okhttp3.Request.mockResponseBody: String
-        get() {
-            return when (mockEndpoint) {
-                LOYALTY_LINK_BY_PHONE_ENDPOINT -> LOYALTY_LINK_BY_PHONE_RESPONSE
-                LOYALTY_CARD_INFO_ENDPOINT -> context.mockLoyaltyCardNumber?.let(::loyaltyCardInfoResponse) ?: EMPTY_LOYALTY_CARD_INFO_RESPONSE
-                else -> LOYALTY_OPERATION_RESPONSE
-            }
+        get() = when (mockEndpoint) {
+            LOYALTY_LINK_BY_PHONE_ENDPOINT -> LOYALTY_LINK_BY_PHONE_RESPONSE
+            LOYALTY_CARD_INFO_ENDPOINT -> context.mockLoyaltyCardNumber?.let(::loyaltyCardInfoResponse) ?: EMPTY_LOYALTY_CARD_INFO_RESPONSE
+            else -> LOYALTY_OPERATION_RESPONSE
         }
 
     private companion object {

@@ -4,7 +4,5 @@ data class FittingData(
     val deliveries: List<FittingDeliveryData> = emptyList()
 ) {
     val products: List<CartProduct>
-        get() {
-            return deliveries.flatMap { delivery -> delivery.products }
-        }
+        get() = deliveries.flatMap { delivery -> delivery.products }
 }

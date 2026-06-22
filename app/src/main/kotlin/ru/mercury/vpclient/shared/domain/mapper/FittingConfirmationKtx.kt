@@ -92,12 +92,10 @@ val DeliveryTimeDto.fittingConfirmationDeliveryInterval: FittingConfirmationDeli
     }
 
 val FittingConfirmationDeliveryInterval.deliveryTimeDto: DeliveryTimeDto
-    get() {
-        return DeliveryTimeDto(
-            fromValue = from,
-            to = to
-        )
-    }
+    get() = DeliveryTimeDto(
+        fromValue = from,
+        to = to
+    )
 
 private fun List<FittingDeliveryTimeProductDto>.cartProducts(
     selectedProducts: List<CartProduct>

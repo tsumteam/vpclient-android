@@ -45,70 +45,46 @@ data class FittingModel(
         get() = activeEmployee.hasMessengerBadge
 
     val visibleProducts: List<CartProduct>
-        get() {
-            return when (payMode) {
-                CartPayMode.All -> products
-                CartPayMode.Payment -> paymentProducts
-            }
+        get() = when (payMode) {
+            CartPayMode.All -> products
+            CartPayMode.Payment -> paymentProducts
         }
 
     val fittingProducts: List<CartProduct>
-        get() {
-            return apiFittingProducts
-        }
+        get() = apiFittingProducts
 
     val visibleFittingProducts: List<CartProduct>
-        get() {
-            return when (payMode) {
-                CartPayMode.All -> fittingProducts
-                CartPayMode.Payment -> fittingPaymentProducts
-            }
+        get() = when (payMode) {
+            CartPayMode.All -> fittingProducts
+            CartPayMode.Payment -> fittingPaymentProducts
         }
 
     val allItemsCount: Int
-        get() {
-            return products.sumOf { it.itemsCount }
-        }
+        get() = products.sumOf { it.itemsCount }
 
     val paymentItemsCount: Int
-        get() {
-            return paymentProducts.sumOf { it.itemsCount }
-        }
+        get() = paymentProducts.sumOf { it.itemsCount }
 
     val fittingProductsCount: Int
-        get() {
-            return fittingProducts.sumOf { it.itemsCount }
-        }
+        get() = fittingProducts.sumOf { it.itemsCount }
 
     val fittingPaymentProductsCount: Int
-        get() {
-            return fittingPaymentProducts.sumOf { it.itemsCount }
-        }
+        get() = fittingPaymentProducts.sumOf { it.itemsCount }
 
     val totalSummary: String
-        get() {
-            return summary(products)
-        }
+        get() = summary(products)
 
     val fittingSummary: String
-        get() {
-            return summary(fittingProducts)
-        }
+        get() = summary(fittingProducts)
 
     val fittingPaymentSummary: String
-        get() {
-            return summary(fittingPaymentProducts)
-        }
+        get() = summary(fittingPaymentProducts)
 
     private val paymentProducts: List<CartProduct>
-        get() {
-            return products.filter { it.isForPayment && !it.isSold }
-        }
+        get() = products.filter { it.isForPayment && !it.isSold }
 
     private val fittingPaymentProducts: List<CartProduct>
-        get() {
-            return fittingProducts.filter { it.isForPayment }
-        }
+        get() = fittingProducts.filter { it.isForPayment }
 
     private fun summary(products: List<CartProduct>): String {
         val itemsCount = products.sumOf { it.itemsCount }
@@ -117,17 +93,13 @@ data class FittingModel(
     }
 
     private val CartProduct.itemsCount: Int
-        get() {
-            return quantity * sizeCount
-        }
+        get() = quantity * sizeCount
 
     private val Int.productsWord: String
-        get() {
-            return when {
-                this % 100 in 11..14 -> "товаров"
-                this % 10 == 1 -> "товар"
-                this % 10 in 2..4 -> "товара"
-                else -> "товаров"
-            }
+        get() = when {
+            this % 100 in 11..14 -> "товаров"
+            this % 10 == 1 -> "товар"
+            this % 10 in 2..4 -> "товара"
+            else -> "товаров"
         }
 }

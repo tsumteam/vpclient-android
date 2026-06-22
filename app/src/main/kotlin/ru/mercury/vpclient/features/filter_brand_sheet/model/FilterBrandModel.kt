@@ -9,4 +9,8 @@ data class FilterBrandModel(
     val quantityEntity: FilterValuesQuantityEntity,
     val isProductsQuantityLoading: Boolean,
     val isLoading: Boolean = false
-)
+) {
+    companion object {
+        const val BRAND_ANIMATION_DURATION = 200
+    }
+}

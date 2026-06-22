@@ -16,9 +16,6 @@ fun FittingConfirmationDeliverySection(
         modifier = Modifier.fillMaxWidth()
     ) {
         when {
-            state.isIntervalsLoading -> {
-                FittingConfirmationIntervalsLoading()
-            }
             state.intervalsError != null -> {
                 FittingConfirmationInfoText(
                     text = state.intervalsError

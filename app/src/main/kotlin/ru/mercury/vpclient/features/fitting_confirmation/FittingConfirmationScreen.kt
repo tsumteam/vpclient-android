@@ -2,12 +2,15 @@
 
 package ru.mercury.vpclient.features.fitting_confirmation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -64,6 +67,7 @@ import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.fitting.FittingConfirmationDeliverySection
 import ru.mercury.vpclient.shared.ui.components.fitting.FittingConfirmationPlaceRow
+import ru.mercury.vpclient.shared.ui.components.fitting.FittingConfirmationPlaceRowState
 import ru.mercury.vpclient.shared.ui.components.fitting.FittingConfirmationScreenLoading
 import ru.mercury.vpclient.shared.ui.components.fitting.FittingConfirmationSectionTitle
 import ru.mercury.vpclient.shared.ui.icons.Close24
@@ -97,7 +101,9 @@ fun FittingConfirmationScreen(
         )
 
         LoadingBox(
-            isVisible = state.isConfirmLoading || state.isAddressSaving
+            isVisible = state.isConfirmLoading ||
+                state.isAddressSaving ||
+                (state.isIntervalsLoading && !state.isInitialIntervalsLoading)
         )
     }
 
@@ -227,44 +233,52 @@ private fun FittingConfirmationMainContent(
                 )
             )
         },
-        floatingActionButton = {
-            Button(
-                onClick = {
-                    when (state.expandedDeliveryId) {
-                        null -> dispatch(FittingConfirmationIntent.ConfirmClick)
-                        else -> dispatch(FittingConfirmationIntent.ChangeDeliveryTimeClick(state.expandedDeliveryId))
-                    }
-                },
+        bottomBar = {
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(52.dp)
-                    .placeholder(
-                        visible = state.isIntervalsLoading,
-                        highlight = PlaceholderHighlight.shimmer(),
-                        color = MaterialTheme.colorScheme.surfaceVariant,
-                        shape = RoundedCornerShape(8.dp)
-                    ),
-                enabled = state.isConfirmEnabled,
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                    disabledContainerColor = MaterialTheme.colorScheme.disabled,
-                    disabledContentColor = MaterialTheme.colorScheme.onDisabled
-                )
+                    .background(MaterialTheme.colorScheme.background)
+                    .navigationBarsPadding()
+                    .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
             ) {
-                Text(
-                    text = stringResource(
+                Button(
+                    onClick = {
                         when (state.expandedDeliveryId) {
-                            null -> ClientStrings.FittingConfirmationConfirm
-                            else -> ClientStrings.FittingConfirmationConfirmTime
+                            null -> dispatch(FittingConfirmationIntent.ConfirmClick)
+                            else -> dispatch(FittingConfirmationIntent.ChangeDeliveryTimeClick(state.expandedDeliveryId))
                         }
-                    ),
-                    style = MaterialTheme.typography.medium15.copy(
-                        textAlign = TextAlign.Center,
-                        letterSpacing = .3.sp
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                        .placeholder(
+                            visible = state.isInitialIntervalsLoading,
+                            highlight = PlaceholderHighlight.shimmer(),
+                            color = MaterialTheme.colorScheme.surfaceVariant,
+                            shape = RoundedCornerShape(8.dp)
+                        ),
+                    enabled = state.isConfirmEnabled,
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                        disabledContainerColor = MaterialTheme.colorScheme.disabled,
+                        disabledContentColor = MaterialTheme.colorScheme.onDisabled
                     )
-                )
+                ) {
+                    Text(
+                        text = stringResource(
+                            when (state.expandedDeliveryId) {
+                                null -> ClientStrings.FittingConfirmationConfirm
+                                else -> ClientStrings.FittingConfirmationConfirmTime
+                            }
+                        ),
+                        style = MaterialTheme.typography.medium15.copy(
+                            textAlign = TextAlign.Center,
+                            letterSpacing = .3.sp
+                        )
+                    )
+                }
             }
         },
         snackbarHost = {
@@ -277,12 +291,9 @@ private fun FittingConfirmationMainContent(
     ) { innerPadding ->
         SharedLazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(
-                top = innerPadding.calculateTopPadding(),
-                bottom = 84.dp
-            )
+            contentPadding = innerPadding + PaddingValues(bottom = 8.dp)
         ) {
-            if (state.isIntervalsLoading) {
+            if (state.isInitialIntervalsLoading) {
                 item {
                     FittingConfirmationScreenLoading()
                 }
@@ -294,13 +305,17 @@ private fun FittingConfirmationMainContent(
                 }
                 item {
                     FittingConfirmationPlaceRow(
-                        text = state.boutiqueAddress ?: stringResource(ClientStrings.FittingConfirmationPlaceBoutique),
-                        selected = state.selectedPlaceType == FittingConfirmationPlaceType.Boutique,
-                        enabled = true,
-                        showChevron = false,
+                        state = FittingConfirmationPlaceRowState(
+                            text = state.boutiqueAddress
+                                ?: stringResource(ClientStrings.FittingConfirmationPlaceBoutique),
+                            selected = state.selectedPlaceType == FittingConfirmationPlaceType.Boutique,
+                            enabled = true,
+                            showChevron = false
+                        ),
                         onClick = {
                             dispatch(FittingConfirmationIntent.SelectPlace(FittingConfirmationPlaceType.Boutique))
-                        }
+                        },
+                        onChevronClick = { dispatch(FittingConfirmationIntent.OpenAddressSelection) }
                     )
                 }
                 item {
@@ -311,12 +326,17 @@ private fun FittingConfirmationMainContent(
                 }
                 item {
                     FittingConfirmationPlaceRow(
-                        text = state.displayedClientAddress
-                            ?: stringResource(ClientStrings.FittingConfirmationSelectAddress),
-                        selected = state.selectedPlaceType == FittingConfirmationPlaceType.Home,
-                        enabled = state.isClientAddressAvailable,
-                        showChevron = true,
-                        onClick = { dispatch(FittingConfirmationIntent.OpenAddressSelection) }
+                        state = FittingConfirmationPlaceRowState(
+                            text = state.displayedClientAddress
+                                ?: stringResource(ClientStrings.FittingConfirmationSelectAddress),
+                            selected = state.selectedPlaceType == FittingConfirmationPlaceType.Home,
+                            enabled = state.isClientAddressAvailable,
+                            showChevron = true
+                        ),
+                        onClick = {
+                            dispatch(FittingConfirmationIntent.SelectPlace(FittingConfirmationPlaceType.Home))
+                        },
+                        onChevronClick = { dispatch(FittingConfirmationIntent.OpenAddressSelection) }
                     )
                 }
                 item {
@@ -477,6 +497,7 @@ private class FittingConfirmationModelPreviewParameterProvider: PreviewParameter
         ),
         base(products).copy(
             isIntervalsLoading = true,
+            isInitialIntervalsLoading = true,
             singleIntervals = emptyList(),
             deliveryGroups = emptyList()
         )
@@ -501,7 +522,8 @@ private class FittingConfirmationModelPreviewParameterProvider: PreviewParameter
             selectedDeliveryIntervalIds = mapOf(
                 firstDelivery.id to firstInterval.id,
                 secondDelivery.id to thirdInterval.id
-            )
+            ),
+            isInitialIntervalsLoading = false
         )
     }
 }
