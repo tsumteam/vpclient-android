@@ -3,7 +3,6 @@ package ru.mercury.vpclient.features.catalog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.features.cart.navigation.CartPage
@@ -16,10 +15,10 @@ import ru.mercury.vpclient.features.category.navigation.CategoryRoute
 import ru.mercury.vpclient.shared.data.error.ClientException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
-import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
 import ru.mercury.vpclient.shared.domain.interactor.CatalogInteractor
-import ru.mercury.vpclient.shared.domain.interactor.EmployeeInteractor
+import ru.mercury.vpclient.shared.domain.mapper.isNotEmpty
+import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import javax.inject.Inject
 
@@ -27,7 +26,7 @@ import javax.inject.Inject
 class CatalogViewModel @Inject constructor(
     private val catalogInteractor: CatalogInteractor,
     private val cartInteractor: CartInteractor,
-    private val employeeInteractor: EmployeeInteractor
+    private val employeeActiveFlowUseCase: EmployeeActiveFlowUseCase
 ): ClientViewModel<CatalogIntent, CatalogModel, CatalogEvent>(CatalogModel()) {
 
     init {
@@ -35,7 +34,6 @@ class CatalogViewModel @Inject constructor(
         dispatch(CatalogIntent.LoadCatalogCategoriesTop)
         dispatch(CatalogIntent.CollectCartSize)
         dispatch(CatalogIntent.CollectActiveEmployee)
-        dispatch(CatalogIntent.LoadEmployees)
         dispatch(CatalogIntent.LoadCartData)
     }
 
@@ -62,18 +60,16 @@ class CatalogViewModel @Inject constructor(
             }
             is CatalogIntent.CollectActiveEmployee -> {
                 launch {
-                    employeeInteractor.employeeEntitiesFlow
-                        .map { employees -> employees.firstOrNull { it.isActive } }
+                    employeeActiveFlowUseCase(Unit)
                         .distinctUntilChanged()
                         .collectLatest { employee ->
-                            reduce { it.copy(activeEmployee = employee ?: EmployeeEntity.Empty) }
-                            if (employee != null) {
+                            reduce { it.copy(activeEmployee = employee) }
+                            if (employee.isNotEmpty) {
                                 dispatch(CatalogIntent.LoadCartData)
                             }
                         }
                 }
             }
-            is CatalogIntent.LoadEmployees -> launch { runCatching { employeeInteractor.syncEmployees() } }
             is CatalogIntent.LoadCartData -> {
                 launch {
                     runCatching { cartInteractor.loadBasket() }
@@ -92,14 +88,18 @@ class CatalogViewModel @Inject constructor(
                 launch { CatalogStackEventManager.send(CategoryRoute(categoryId = intent.categoryId)) }
             }
             is CatalogIntent.CartClick -> launch { MainEventManager.send(CartRoute()) }
-            is CatalogIntent.FittingClick -> launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
+            is CatalogIntent.FittingClick -> {
+                launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
+            }
             is CatalogIntent.MessengerClick -> return
         }
     }
 
     override fun catch(throwable: Throwable) {
         when (throwable) {
-            is RoomException, is RoomSQLiteException -> launch { send(CatalogEvent.SnackbarMessage(throwable.message.orEmpty())) }
+            is RoomException, is RoomSQLiteException -> {
+                launch { send(CatalogEvent.SnackbarMessage(throwable.message.orEmpty())) }
+            }
             is ClientException -> launch { send(CatalogEvent.SnackbarMessage(throwable.message)) }
             else -> super.catch(throwable)
         }

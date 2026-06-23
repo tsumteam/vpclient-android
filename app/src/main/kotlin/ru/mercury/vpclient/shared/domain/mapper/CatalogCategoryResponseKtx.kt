@@ -13,7 +13,7 @@ fun CatalogCategoryResponse.basicEntity(
         level = CatalogCategoryEntity.LEVEL_BASIC,
         name = name.orEmpty(),
         photoUrl = photoUrl.orEmpty(),
-        categoryType = categoryType.orEmpty(),
+        categoryType = categoryType,
         sortSettingId = sortSettingId.orEmpty,
         position = position
     )
@@ -31,7 +31,7 @@ fun CatalogCategoryResponse.topEntity(
         level = CatalogCategoryEntity.LEVEL_TOP,
         name = name.orEmpty(),
         photoUrl = photoUrl.orEmpty(),
-        categoryType = categoryType.orEmpty(),
+        categoryType = categoryType,
         sortSettingId = sortSettingId.orEmpty,
         position = position
     )
@@ -63,7 +63,7 @@ fun CatalogCategoryResponse.childEntity(
         level = level,
         name = name.orEmpty(),
         photoUrl = photoUrl.orEmpty(),
-        categoryType = categoryType.orEmpty(),
+        categoryType = categoryType,
         sortSettingId = sortSettingId.orEmpty,
         position = position
     )

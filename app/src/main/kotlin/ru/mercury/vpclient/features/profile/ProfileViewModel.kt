@@ -4,7 +4,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.features.auth_welcome.navigation.WelcomeRoute
@@ -20,29 +19,30 @@ import ru.mercury.vpclient.features.profile_loyalty_add_card_sheet.model.Profile
 import ru.mercury.vpclient.features.profile_loyalty_add_card_sheet.model.ProfileLoyaltyAddCardModel
 import ru.mercury.vpclient.features.profile_loyalty_code_sheet.intent.ProfileLoyaltyCodeIntent
 import ru.mercury.vpclient.features.profile_loyalty_code_sheet.model.ProfileLoyaltyCodeModel
-import ru.mercury.vpclient.features.profile_my_data.navigation.MyDataRoute
+import ru.mercury.vpclient.features.profile_loyalty_info.navigation.ProfileLoyaltyInfoRoute
+import ru.mercury.vpclient.features.profile_loyalty_qr.navigation.ProfileLoyaltyQrRoute
+import ru.mercury.vpclient.features.profile_my_data.navigation.ProfileMyDataRoute
 import ru.mercury.vpclient.features.profile_orders.navigation.ProfileOrdersRoute
 import ru.mercury.vpclient.features.profile_privileges_sheet.intent.ProfilePrivilegeIntent
 import ru.mercury.vpclient.features.profile_privileges_sheet.model.ProfilePrivilegesModel
-import ru.mercury.vpclient.features.profile_loyalty_info.navigation.ProfileLoyaltyInfoRoute
-import ru.mercury.vpclient.features.profile_loyalty_qr.navigation.ProfileLoyaltyQrRoute
 import ru.mercury.vpclient.features.profile_qr.navigation.ProfileQrRoute
 import ru.mercury.vpclient.features.profile_stack.event.ProfileStackEventManager
-import ru.mercury.vpclient.shared.data.CODE_LENGTH
 import ru.mercury.vpclient.shared.data.CODE_RESEND_TIMER_DELAY
 import ru.mercury.vpclient.shared.data.entity.LoyaltyCardInfo
 import ru.mercury.vpclient.shared.data.entity.LoyaltyCardType
-import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.data.persistence.datastore.PreferenceKey
 import ru.mercury.vpclient.shared.data.persistence.datastore.SettingsDataStore
 import ru.mercury.vpclient.shared.domain.interactor.AuthenticationInteractor
 import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
-import ru.mercury.vpclient.shared.domain.interactor.EmployeeInteractor
 import ru.mercury.vpclient.shared.domain.interactor.LoyaltyInteractor
 import ru.mercury.vpclient.shared.domain.interactor.ProductInteractor
 import ru.mercury.vpclient.shared.domain.mapper.codeResendSecondsLeft
 import ru.mercury.vpclient.shared.domain.mapper.formatPhoneForDisplay
+import ru.mercury.vpclient.shared.domain.mapper.isNotEmpty
 import ru.mercury.vpclient.shared.domain.mapper.normalizePhoneInput
+import ru.mercury.vpclient.shared.domain.usecase.AuthValidateCodeUseCase.Companion.CODE_LENGTH
+import ru.mercury.vpclient.shared.domain.usecase.ClientEntityFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
@@ -50,8 +50,9 @@ import kotlin.time.Duration.Companion.milliseconds
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val authenticationInteractor: AuthenticationInteractor,
+    private val clientEntityFlowUseCase: ClientEntityFlowUseCase,
     private val cartInteractor: CartInteractor,
-    private val employeeInteractor: EmployeeInteractor,
+    private val employeeActiveFlowUseCase: EmployeeActiveFlowUseCase,
     private val loyaltyInteractor: LoyaltyInteractor,
     private val productInteractor: ProductInteractor,
     private val settingsDataStore: SettingsDataStore
@@ -62,7 +63,6 @@ class ProfileViewModel @Inject constructor(
         dispatch(ProfileIntent.CollectClientEntity)
         dispatch(ProfileIntent.CollectActiveEmployee)
         dispatch(ProfileIntent.CollectViewHistoryProducts)
-        dispatch(ProfileIntent.LoadEmployees)
         dispatch(ProfileIntent.LoadCartData)
         dispatch(ProfileIntent.LoadViewHistoryProducts)
         dispatch(ProfileIntent.LoadLoyaltyCardInfo)
@@ -81,7 +81,7 @@ class ProfileViewModel @Inject constructor(
             }
             is ProfileIntent.CollectClientEntity -> {
                 launch {
-                    authenticationInteractor.clientEntityFlow
+                    clientEntityFlowUseCase(Unit)
                         .distinctUntilChanged()
                         .collectLatest { clientEntity ->
                             reduce { it.copy(clientEntity = clientEntity) }
@@ -90,12 +90,11 @@ class ProfileViewModel @Inject constructor(
             }
             is ProfileIntent.CollectActiveEmployee -> {
                 launch {
-                    employeeInteractor.employeeEntitiesFlow
-                        .map { employees -> employees.firstOrNull { it.isActive } }
+                    employeeActiveFlowUseCase(Unit)
                         .distinctUntilChanged()
                         .collectLatest { employee ->
-                            reduce { it.copy(activeEmployee = employee ?: EmployeeEntity.Empty) }
-                            if (employee != null) {
+                            reduce { it.copy(activeEmployee = employee) }
+                            if (employee.isNotEmpty) {
                                 dispatch(ProfileIntent.LoadCartData)
                             }
                         }
@@ -110,7 +109,6 @@ class ProfileViewModel @Inject constructor(
                         }
                 }
             }
-            is ProfileIntent.LoadEmployees -> launch { runCatching { employeeInteractor.syncEmployees() } }
             is ProfileIntent.LoadCartData -> {
                 launch {
                     runCatching { cartInteractor.loadBasket() }
@@ -172,7 +170,9 @@ class ProfileViewModel @Inject constructor(
                     launch { MainEventManager.send(ProfileLoyaltyQrRoute(qrCode = qrCode)) }
                 }
             }
-            is ProfileIntent.LoyaltyCardMoreClick -> launch { MainEventManager.send(ProfileLoyaltyInfoRoute) }
+            is ProfileIntent.LoyaltyCardMoreClick -> {
+                launch { MainEventManager.send(ProfileLoyaltyInfoRoute) }
+            }
             is ProfileIntent.AlphaBankBannerCloseClick -> {
                 launch {
                     settingsDataStore.setValue(
@@ -204,7 +204,7 @@ class ProfileViewModel @Inject constructor(
                     reduce { it.copy(profilePrivilegesSheet = null) }
                 }
             }
-            is ProfileIntent.MyDataClick -> launch { ProfileStackEventManager.send(MyDataRoute) }
+            is ProfileIntent.MyDataClick -> launch { ProfileStackEventManager.send(ProfileMyDataRoute) }
             is ProfileIntent.PurchasesClick -> launch { ProfileStackEventManager.send(ProfileOrdersRoute) }
             is ProfileIntent.InformationClick -> launch { ProfileStackEventManager.send(ProfileInfoRoute) }
             is ProfileIntent.QrCodeClick -> launch { MainEventManager.send(ProfileQrRoute) }

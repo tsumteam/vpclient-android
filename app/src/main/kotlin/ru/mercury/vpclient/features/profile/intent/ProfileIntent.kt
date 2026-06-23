@@ -10,7 +10,6 @@ sealed interface ProfileIntent: Intent {
     data object CollectClientEntity: ProfileIntent
     data object CollectActiveEmployee: ProfileIntent
     data object CollectViewHistoryProducts: ProfileIntent
-    data object LoadEmployees: ProfileIntent
     data object LoadCartData: ProfileIntent
     data object LoadViewHistoryProducts: ProfileIntent
     data object LoadLoyaltyCardInfo: ProfileIntent

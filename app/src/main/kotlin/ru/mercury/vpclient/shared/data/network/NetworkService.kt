@@ -2281,13 +2281,13 @@ class NetworkService @Inject constructor(
 
     private fun Any.asParameterValue(): String {
         return when (this) {
-            is Enum<*> -> serialNameValue()
+            is Enum<*> -> enumParameterValue(this)
             else -> toString()
         }
     }
 
-    private fun Enum<*>.serialNameValue(): String {
-        return javaClass.getField(name).getAnnotation(SerialName::class.java)?.value ?: name
+    private fun enumParameterValue(value: Enum<*>): String {
+        return value.javaClass.getField(value.name).getAnnotation(SerialName::class.java)?.value ?: value.name
     }
 }
 

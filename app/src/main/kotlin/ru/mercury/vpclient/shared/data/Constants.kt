@@ -23,7 +23,6 @@ const val FORMAT_QUANTITY = "х %s"
 
 const val PREFIX_SPACE = " "
 
-const val CODE_LENGTH = 6
 const val CODE_RESEND_MAX_TIME = 30_000L
 const val CODE_RESEND_TIMER_DELAY = 1_000L
 

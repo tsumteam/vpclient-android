@@ -1,0 +1,152 @@
+@file:OptIn(ExperimentalFoundationApi::class)
+
+package ru.mercury.vpclient.shared.ui.components
+
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
+import kotlin.math.absoluteValue
+import kotlin.math.sign
+
+@Composable
+fun SharedHorizontalPagerIndicator(
+    pagerState: PagerState,
+    modifier: Modifier = Modifier,
+    pageCount: Int = pagerState.pageCount,
+    pageIndexMapping: (Int) -> Int = { it },
+    activeColor: Color = MaterialTheme.colorScheme.onBackground,
+    inactiveColor: Color = MaterialTheme.colorScheme.surfaceVariant,
+    indicatorWidth: Dp = 5.dp,
+    indicatorHeight: Dp = indicatorWidth,
+    spacing: Dp = 4.dp,
+    indicatorShape: Shape = CircleShape
+) {
+    val indicatorWidthPx = LocalDensity.current.run {
+        return@run indicatorWidth.roundToPx()
+    }
+    val spacingPx = LocalDensity.current.run {
+        return@run spacing.roundToPx()
+    }
+
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.CenterStart
+    ) {
+        val currentPosition = when {
+            pageCount > 0 -> pageIndexMapping(pagerState.currentPage).coerceIn(0, pageCount - 1)
+            else -> 0
+        }
+
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(spacing),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            val indicatorModifier = Modifier
+                .size(width = indicatorWidth, height = indicatorHeight)
+                .background(color = inactiveColor, shape = indicatorShape)
+
+            repeat(pageCount) {
+                Box(
+                    modifier = indicatorModifier
+                )
+            }
+        }
+
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(spacing),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            repeat(pageCount) { position ->
+                Box(
+                    modifier = Modifier
+                        .graphicsLayer {
+                            val pageOffset = pagerState.currentPageOffsetFraction
+                            val targetPage = pagerState.currentPage + pageOffset.sign.toInt()
+                            val nextPosition = pageIndexMapping(targetPage).coerceIn(0, pageCount - 1)
+                            val transitionProgress = pageOffset.absoluteValue.coerceIn(0F, 1F)
+                            val isWrapTransition = pageCount > 2 && (nextPosition - currentPosition).absoluteValue > 1
+                            val indicatorAlpha = when {
+                                !isWrapTransition -> 0F
+                                position == currentPosition -> 1F - transitionProgress
+                                position == nextPosition -> transitionProgress
+                                else -> 0F
+                            }
+
+                            alpha = indicatorAlpha
+                            scaleX = 0.75F + indicatorAlpha * 0.25F
+                            scaleY = 0.75F + indicatorAlpha * 0.25F
+                        }
+                        .size(width = indicatorWidth, height = indicatorHeight)
+                        .background(color = activeColor, shape = indicatorShape)
+                )
+            }
+        }
+
+        Box(
+            modifier = Modifier
+                .offset {
+                    if (pageCount <= 0) return@offset IntOffset.Zero
+                    val pageOffset = pagerState.currentPageOffsetFraction
+                    val targetPage = pagerState.currentPage + pageOffset.sign.toInt()
+                    val nextPosition = pageIndexMapping(targetPage).coerceIn(0, pageCount - 1)
+                    val transitionProgress = pageOffset.absoluteValue.coerceIn(0F, 1F)
+                    val isWrapTransition = pageCount > 2 && (nextPosition - currentPosition).absoluteValue > 1
+                    val scrollPosition = when {
+                        isWrapTransition -> currentPosition.toFloat()
+                        else -> ((nextPosition - currentPosition) * transitionProgress + currentPosition)
+                            .coerceIn(0F, (pageCount - 1).toFloat())
+                    }
+
+                    IntOffset(x = ((spacingPx + indicatorWidthPx) * scrollPosition).toInt(), y = 0)
+                }
+                .graphicsLayer {
+                    if (pageCount <= 0) {
+                        alpha = 0F
+                    } else {
+                        val pageOffset = pagerState.currentPageOffsetFraction
+                        val targetPage = pagerState.currentPage + pageOffset.sign.toInt()
+                        val nextPosition = pageIndexMapping(targetPage).coerceIn(0, pageCount - 1)
+                        val isWrapTransition = pageCount > 2 && (nextPosition - currentPosition).absoluteValue > 1
+                        alpha = if (isWrapTransition) 0F else 1F
+                    }
+                }
+                .size(width = indicatorWidth, height = indicatorHeight)
+                .background(color = activeColor, shape = indicatorShape)
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SharedHorizontalPagerIndicatorPreview() {
+    val pagerState = rememberPagerState(
+        initialPage = 1,
+        pageCount = { 4 }
+    )
+
+    SharedHorizontalPagerIndicator(
+        pagerState = pagerState,
+        indicatorWidth = 5.dp,
+        indicatorHeight = 5.dp,
+        spacing = 4.dp
+    )
+}

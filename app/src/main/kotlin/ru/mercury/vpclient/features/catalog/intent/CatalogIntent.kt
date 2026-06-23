@@ -6,7 +6,6 @@ sealed interface CatalogIntent: Intent {
     data object CollectCatalogScreenData: CatalogIntent
     data object CollectCartSize: CatalogIntent
     data object CollectActiveEmployee: CatalogIntent
-    data object LoadEmployees: CatalogIntent
     data object LoadCartData: CatalogIntent
     data object LoadCatalogCategoriesTop: CatalogIntent
     data object FittingClick: CatalogIntent

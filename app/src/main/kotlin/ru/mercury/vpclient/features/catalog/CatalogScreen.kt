@@ -48,7 +48,7 @@ import ru.mercury.vpclient.features.catalog.intent.CatalogIntent
 import ru.mercury.vpclient.features.catalog.model.CatalogModel
 import ru.mercury.vpclient.shared.data.entity.CatalogData
 import ru.mercury.vpclient.shared.data.entity.CatalogTabData
-import ru.mercury.vpclient.shared.data.network.response.CatalogCategoryResponse
+import ru.mercury.vpclient.shared.data.network.type.CatalogCategoryType
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogCategoryEntity
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
@@ -264,7 +264,7 @@ private class CatalogModelProvider: PreviewParameterProvider<CatalogModel> {
         level = CatalogCategoryEntity.LEVEL_TOP,
         name = "Одежда",
         photoUrl = "",
-        categoryType = CatalogCategoryResponse.CATEGORY_TYPE_CATALOG,
+        categoryType = CatalogCategoryType.CATALOG,
         sortSettingId = 0,
         position = 1
     )

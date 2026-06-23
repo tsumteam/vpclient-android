@@ -20,6 +20,7 @@ import ru.mercury.vpclient.shared.data.network.response.FilterValuesResponse
 import ru.mercury.vpclient.shared.data.network.response.FilteredProductsQuantityResponse
 import ru.mercury.vpclient.shared.data.network.response.FilteredProductsResponse
 import ru.mercury.vpclient.shared.data.network.response.FiltersResponse
+import ru.mercury.vpclient.shared.data.network.type.ActivityCounterType
 
 @Serializable
 data class ActionItemDto(
@@ -110,18 +111,6 @@ data class ActiveEmployeeResponseDtoResponseDto(
     val error: ErrorDto? = null,
     val data: ActiveEmployeeResponseDto? = null
 )
-
-@Serializable
-enum class ActivityCounterTypeRequestEnum {
-    @SerialName("basket") BASKET,
-    @SerialName("messenger") MESSENGER,
-    @SerialName("order") ORDER,
-    @SerialName("fitting") FITTING,
-    @SerialName("compilation") COMPILATION,
-    @SerialName("axaptaNotification") AXAPTA_NOTIFICATION,
-    @SerialName("clientNotification") CLIENT_NOTIFICATION,
-    @SerialName("messages") MESSAGES
-}
 
 @Serializable
 data class AddProductToActionRequestDto(
@@ -4401,7 +4390,7 @@ data class ReserveResponseDtoResponseDto(
 
 @Serializable
 data class ResetActivityCountersRequestDto(
-    val type: ActivityCounterTypeRequestEnum? = null
+    val type: ActivityCounterType? = null
 )
 
 @Serializable

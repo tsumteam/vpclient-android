@@ -23,12 +23,16 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.SubcomposeAsyncImage
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.entity.ConsultantAvatarPlaceholderStyle
+import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeBadgeEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
+import ru.mercury.vpclient.shared.data.persistence.database.pojo.EmployeePojo
+import ru.mercury.vpclient.shared.domain.mapper.employeeFullName
+import ru.mercury.vpclient.shared.domain.mapper.isPhotoEmpty
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.BrandBox
+import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
@@ -36,7 +40,7 @@ import ru.mercury.vpclient.shared.ui.theme.regular15
 
 @Composable
 fun ConsultantCard(
-    employee: EmployeeEntity,
+    employeePojo: EmployeePojo,
     onActionClick: (Int) -> Unit,
     onActiveClick: () -> Unit,
     onClick: () -> Unit,
@@ -45,7 +49,7 @@ fun ConsultantCard(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .then(if (employee == EmployeeEntity.Empty) Modifier else Modifier.clickable(onClick = onClick))
+            .then(if (employeePojo == EmployeePojo.Empty) Modifier else Modifier.clickable(onClick = onClick))
     ) {
         Column(
             modifier = Modifier
@@ -59,38 +63,48 @@ fun ConsultantCard(
                     .padding(top = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                SubcomposeAsyncImage(
-                    model = employee.photoUrl.ifEmpty { employee.previewPhotoUrl },
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(72.dp)
-                        .clip(CircleShape)
-                        .placeholder(
-                            visible = employee == EmployeeEntity.Empty,
-                            highlight = PlaceholderHighlight.shimmer(),
-                            shape = CircleShape
-                        ),
-                    contentScale = ContentScale.Crop,
-                    error = {
+                when {
+                    employeePojo == EmployeePojo.Empty -> {
                         ConsultantAvatarPlaceholder(
-                            name = employee.employeeName,
+                            name = employeePojo.entity.employeeName,
+                            style = ConsultantAvatarPlaceholderStyle.Card,
+                            modifier = Modifier.placeholder(
+                                visible = true,
+                                highlight = PlaceholderHighlight.shimmer(),
+                                shape = CircleShape
+                            )
+                        )
+                    }
+                    employeePojo.isPhotoEmpty -> {
+                        ConsultantAvatarPlaceholder(
+                            name = employeePojo.entity.employeeName,
                             style = ConsultantAvatarPlaceholderStyle.Card
                         )
                     }
-                )
+                    else -> {
+                        ClientAsyncImage(
+                            imageUrl = employeePojo.entity.previewPhotoUrl,
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .size(72.dp)
+                                .clip(CircleShape)
+                        )
+                    }
+                }
 
                 Column(
                     modifier = Modifier
                         .weight(1F)
                         .padding(start = 16.dp, end = 8.dp)
                         .placeholder(
-                            visible = employee == EmployeeEntity.Empty,
+                            visible = employeePojo == EmployeePojo.Empty,
                             highlight = PlaceholderHighlight.shimmer(),
                             shape = RoundedCornerShape(4.dp)
                         )
                 ) {
                     Text(
-                        text = "${employee.employeeName} ${employee.employeeSurname}".trim(),
+                        text = employeePojo.employeeFullName,
                         maxLines = 1,
                         style = MaterialTheme.typography.regular15.copy(
                             color = MaterialTheme.colorScheme.onBackground,
@@ -100,17 +114,17 @@ fun ConsultantCard(
                     )
                     BrandBox(
                         entity = BrandEntity(
-                            brand = employee.employeeBrand,
+                            brand = employeePojo.entity.employeeBrand,
                             urlBrandLogo = null
                         )
                     )
                 }
 
                 when {
-                    employee.isActive -> {
+                    employeePojo.entity.isActive -> {
                         ConsultantActiveBadge(
                             modifier = Modifier.placeholder(
-                                visible = employee == EmployeeEntity.Empty,
+                                visible = employeePojo == EmployeePojo.Empty,
                                 highlight = PlaceholderHighlight.shimmer(),
                                 shape = RoundedCornerShape(4.dp)
                             )
@@ -120,7 +134,7 @@ fun ConsultantCard(
                         ConsultantInactiveButton(
                             onClick = onActiveClick,
                             modifier = Modifier.placeholder(
-                                visible = employee == EmployeeEntity.Empty,
+                                visible = employeePojo == EmployeePojo.Empty,
                                 highlight = PlaceholderHighlight.shimmer(),
                                 shape = RoundedCornerShape(4.dp)
                             )
@@ -130,7 +144,7 @@ fun ConsultantCard(
             }
 
             ConsultantActionsRow(
-                entity = employee,
+                employeePojo = employeePojo,
                 onClick = onActionClick,
                 modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)
             )
@@ -147,40 +161,45 @@ fun ConsultantCard(
 @Preview(showBackground = true)
 @Composable
 private fun ConsultantCardPreview(
-    @PreviewParameter(ConsultantCardEmployeeEntityProvider::class) entity: EmployeeEntity
+    @PreviewParameter(ConsultantCardEmployeeEntityProvider::class) employee: EmployeePojo
 ) {
     ConsultantCard(
-        employee = entity,
+        employeePojo = employee,
         onActionClick = {},
         onActiveClick = {},
         onClick = {}
     )
 }
 
-private class ConsultantCardEmployeeEntityProvider: PreviewParameterProvider<EmployeeEntity> {
-    override val values: Sequence<EmployeeEntity> = sequenceOf(
-        EmployeeEntity(
-            employeeId = "1",
-            employeeEmail = "anna@example.com",
-            employeeMiddleName = "",
-            employeeName = "Анна",
-            employeePhone = "+79990000000",
-            employeeSurname = "Смирнова",
-            photoUrl = "https://i.pravatar.cc/144?img=32",
-            previewPhotoUrl = "https://i.pravatar.cc/144?img=32",
-            lastActivityColorHex = "",
-            lastActivityDate = "",
-            employeeBotiqueAddress = "Барвиха Luxury Village",
-            employeeBotiqueAddressShort = "Барвиха Luxury Village",
-            employeeBrand = "MVST",
-            isActive = false,
-            basketBadge = 1,
-            fittingNumber = 2,
-            fittingBadge = 1,
-            messengerBadge = 1,
-            orderBadge = 1,
-            compilationBadge = 0
+private class ConsultantCardEmployeeEntityProvider: PreviewParameterProvider<EmployeePojo> {
+    override val values: Sequence<EmployeePojo> = sequenceOf(
+        EmployeePojo(
+            entity = EmployeeEntity(
+                employeeId = "1",
+                employeeEmail = "anna@example.com",
+                employeeMiddleName = "",
+                employeeName = "Анна",
+                employeePhone = "+79990000000",
+                employeeSurname = "Смирнова",
+                photoUrl = "https://i.pravatar.cc/144?img=32",
+                previewPhotoUrl = "https://i.pravatar.cc/144?img=32",
+                lastActivityColorHex = "",
+                lastActivityDate = "",
+                employeeBotiqueAddress = "Барвиха Luxury Village",
+                employeeBotiqueAddressShort = "Барвиха Luxury Village",
+                employeeBrand = "MVST",
+                isActive = false,
+                position = 0,
+                basketNumber = 0,
+                basketBadge = 0,
+                fittingNumber = 0,
+                fittingBadge = 0,
+                messengerBadge = 0,
+                orderBadge = 0,
+                compilationBadge = 0
+            ),
+            badgeEntity = EmployeeBadgeEntity.Empty.copy(employeeId = "1")
         ),
-        EmployeeEntity.Empty
+        EmployeePojo.Empty
     )
 }

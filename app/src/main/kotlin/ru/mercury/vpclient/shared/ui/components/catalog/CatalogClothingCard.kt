@@ -17,7 +17,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
-import ru.mercury.vpclient.shared.data.network.response.CatalogCategoryResponse
+import ru.mercury.vpclient.shared.data.network.type.CatalogCategoryType
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogCategoryEntity
 import ru.mercury.vpclient.shared.domain.mapper.isEmpty
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
@@ -86,7 +86,7 @@ private class CatalogClothingCardCatalogCategoryEntityProvider: PreviewParameter
             level = CatalogCategoryEntity.LEVEL_TOP,
             name = "Одежда",
             photoUrl = "",
-            categoryType = CatalogCategoryResponse.CATEGORY_TYPE_CATALOG,
+            categoryType = CatalogCategoryType.CATALOG,
             sortSettingId = 0,
             position = 1
         ),

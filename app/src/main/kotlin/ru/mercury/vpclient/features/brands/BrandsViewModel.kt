@@ -3,16 +3,15 @@ package ru.mercury.vpclient.features.brands
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.activity.event.MainEventManager
-import ru.mercury.vpclient.features.cart.navigation.CartPage
-import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.features.brands.intent.BrandsIntent
 import ru.mercury.vpclient.features.brands.model.BrandsModel
-import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
+import ru.mercury.vpclient.features.cart.navigation.CartPage
+import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
-import ru.mercury.vpclient.shared.domain.interactor.EmployeeInteractor
+import ru.mercury.vpclient.shared.domain.mapper.isNotEmpty
+import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.mvi.Event
 import javax.inject.Inject
@@ -20,13 +19,12 @@ import javax.inject.Inject
 @HiltViewModel
 class BrandsViewModel @Inject constructor(
     private val cartInteractor: CartInteractor,
-    private val employeeInteractor: EmployeeInteractor
+    private val employeeActiveFlowUseCase: EmployeeActiveFlowUseCase
 ): ClientViewModel<BrandsIntent, BrandsModel, Event>(BrandsModel()) {
 
     init {
         dispatch(BrandsIntent.CollectCartSize)
         dispatch(BrandsIntent.CollectActiveEmployee)
-        dispatch(BrandsIntent.LoadEmployees)
         dispatch(BrandsIntent.LoadCartData)
     }
 
@@ -43,18 +41,16 @@ class BrandsViewModel @Inject constructor(
             }
             is BrandsIntent.CollectActiveEmployee -> {
                 launch {
-                    employeeInteractor.employeeEntitiesFlow
-                        .map { employees -> employees.firstOrNull { it.isActive } }
+                    employeeActiveFlowUseCase(Unit)
                         .distinctUntilChanged()
                         .collectLatest { employee ->
-                            reduce { it.copy(activeEmployee = employee ?: EmployeeEntity.Empty) }
-                            if (employee != null) {
+                            reduce { it.copy(activeEmployee = employee) }
+                            if (employee.isNotEmpty) {
                                 dispatch(BrandsIntent.LoadCartData)
                             }
                         }
                 }
             }
-            is BrandsIntent.LoadEmployees -> launch { runCatching { employeeInteractor.syncEmployees() } }
             is BrandsIntent.LoadCartData -> {
                 launch {
                     runCatching { cartInteractor.loadBasket() }
@@ -64,7 +60,9 @@ class BrandsViewModel @Inject constructor(
                 }
             }
             is BrandsIntent.CartClick -> launch { MainEventManager.send(CartRoute()) }
-            is BrandsIntent.FittingClick -> launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
+            is BrandsIntent.FittingClick -> {
+                launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
+            }
             is BrandsIntent.MessengerClick -> return
             is BrandsIntent.SearchClick -> return
         }

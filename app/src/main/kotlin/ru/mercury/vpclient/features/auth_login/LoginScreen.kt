@@ -56,7 +56,7 @@ import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.auth_login.event.LoginEvents
 import ru.mercury.vpclient.features.auth_login.intent.LoginIntent
 import ru.mercury.vpclient.features.auth_login.model.LoginModel
-import ru.mercury.vpclient.shared.data.entity.PhoneValidationError
+import ru.mercury.vpclient.shared.domain.usecase.AuthValidatePhoneUseCase.PhoneValidationError
 import ru.mercury.vpclient.shared.ui.components.AgreementText
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
@@ -130,12 +130,12 @@ private fun LoginScreenContent(
                     Icon(
                         imageVector = Logo82,
                         contentDescription = null,
-                        modifier = Modifier.size(82.dp, 57.dp),
-                        tint = Color.Black
+                        modifier = Modifier.size(82.dp, 57.dp)
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors().copy(
-                    containerColor = MaterialTheme.colorScheme.background
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = Color.Black
                 )
             )
         },
@@ -143,7 +143,7 @@ private fun LoginScreenContent(
             Button(
                 onClick = { dispatch(LoginIntent.LoginClick) },
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
                     .imePadding()
                     .navigationBarsPadding()
                     .fillMaxWidth()

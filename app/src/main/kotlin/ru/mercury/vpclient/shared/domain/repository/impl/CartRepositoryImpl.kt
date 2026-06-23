@@ -41,7 +41,6 @@ import ru.mercury.vpclient.shared.data.error.SetProductSizeException
 import ru.mercury.vpclient.shared.data.error.SwitchProductWithAlternativeException
 import ru.mercury.vpclient.shared.data.error.FittingReturnProductException
 import ru.mercury.vpclient.shared.data.network.NetworkService
-import ru.mercury.vpclient.shared.data.network.entity.ActivityCounterTypeRequestEnum
 import ru.mercury.vpclient.shared.data.network.entity.AvailableColorsRequestDto
 import ru.mercury.vpclient.shared.data.network.entity.AvailableSizesRequestDto
 import ru.mercury.vpclient.shared.data.network.entity.BasketGetDeliveryTimesForFittingRequestDto
@@ -63,6 +62,7 @@ import ru.mercury.vpclient.shared.data.network.entity.FittingReturnProductOperat
 import ru.mercury.vpclient.shared.data.network.entity.TransferBasketToFittingLineDto
 import ru.mercury.vpclient.shared.data.network.entity.TransferBasketToFittingRequestDto
 import ru.mercury.vpclient.shared.data.network.entity.UpdateClientAddressRequestDto
+import ru.mercury.vpclient.shared.data.network.type.ActivityCounterType
 import ru.mercury.vpclient.shared.data.persistence.database.AppDatabase
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CartProductDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogFilterProductsDao
@@ -925,7 +925,7 @@ class CartRepositoryImpl @Inject constructor(
         }.getOrThrow()
 
         return counters.items.orEmpty()
-            .firstOrNull { it.type == ActivityCounterTypeRequestEnum.BASKET }
+            .firstOrNull { it.type == ActivityCounterType.BASKET }
             ?.value ?: 0
     }
 }

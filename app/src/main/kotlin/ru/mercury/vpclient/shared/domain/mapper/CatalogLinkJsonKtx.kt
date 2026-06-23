@@ -11,7 +11,8 @@ import kotlinx.serialization.json.jsonPrimitive
 import ru.mercury.vpclient.shared.data.entity.CatalogLinkData
 import ru.mercury.vpclient.shared.data.entity.FilterChip
 import ru.mercury.vpclient.shared.data.network.request.CatalogFilterRequest
-import ru.mercury.vpclient.shared.data.network.request.CatalogFilterValueRequest
+import ru.mercury.vpclient.shared.data.network.type.CatalogFilterValueType
+import ru.mercury.vpclient.shared.data.network.type.CatalogViewType
 
 private val catalogLinkJson = Json {
     ignoreUnknownKeys = true
@@ -47,7 +48,7 @@ fun JsonObject.toCatalogLinkData(): CatalogLinkData? {
 
 @Serializable
 private data class CatalogLinkResponse(
-    val viewType: String? = null,
+    val viewType: CatalogViewType? = null,
     val rootCategoryId: Int? = null,
     val filters: List<CatalogLinkFilterResponse> = emptyList()
 )
@@ -61,7 +62,7 @@ private data class CatalogLinkFilterResponse(
 
 @Serializable
 private data class CatalogLinkFilterValueResponse(
-    val valueType: String? = null,
+    val valueType: CatalogFilterValueType? = null,
     val value: JsonElement? = null,
     val label: String? = null
 )
@@ -126,7 +127,7 @@ private fun CatalogLinkFilterValueResponse.toFilterChipId(
         CatalogFilterRequest.CATEGORY -> {
             val rawValue = value?.jsonPrimitive?.contentOrNull?.toIntOrNull() ?: return null
             when (valueType) {
-                CatalogFilterValueRequest.ID_TREE -> "${filterType}_tree_$rawValue"
+                CatalogFilterValueType.ID_TREE -> "${filterType}_tree_$rawValue"
                 else -> "${filterType}_$rawValue"
             }
         }
@@ -134,7 +135,7 @@ private fun CatalogLinkFilterValueResponse.toFilterChipId(
             val subtype = filterSubtype.orEmpty().ifBlank { return null }
             val rawValue = value?.jsonPrimitive?.contentOrNull?.toIntOrNull() ?: return null
             when (valueType) {
-                CatalogFilterValueRequest.ID_TREE -> "${filterType}_${subtype}_tree_$rawValue"
+                CatalogFilterValueType.ID_TREE -> "${filterType}_${subtype}_tree_$rawValue"
                 else -> "${filterType}_${subtype}_$rawValue"
             }
         }

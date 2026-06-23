@@ -8,7 +8,6 @@ sealed interface FittingIntent: Intent {
     data object CollectCartSize: FittingIntent
     data object CollectCartProducts: FittingIntent
     data object CollectActiveEmployee: FittingIntent
-    data object LoadEmployees: FittingIntent
     data object LoadCartData: FittingIntent
     data object LoadFitting: FittingIntent
     data object SearchClick: FittingIntent

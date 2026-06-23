@@ -1,6 +1,7 @@
 package ru.mercury.vpclient.shared.data.persistence.database.entity
 
 import androidx.room.Entity
+import ru.mercury.vpclient.shared.data.network.type.CatalogCategoryType
 
 @Entity(
     tableName = "CatalogCategory",
@@ -13,7 +14,7 @@ data class CatalogCategoryEntity(
     val level: Int,
     val name: String,
     val photoUrl: String,
-    val categoryType: String,
+    val categoryType: CatalogCategoryType?,
     val sortSettingId: Int,
     val position: Int
 ) {
@@ -29,7 +30,7 @@ data class CatalogCategoryEntity(
             level = LEVEL_BASIC,
             name = "",
             photoUrl = "",
-            categoryType = "",
+            categoryType = null,
             sortSettingId = 0,
             position = 0
         )

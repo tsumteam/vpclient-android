@@ -8,37 +8,43 @@ import ru.mercury.vpclient.features.auth_register.event.RegisterEvents
 import ru.mercury.vpclient.features.auth_register.intent.RegisterIntent
 import ru.mercury.vpclient.features.auth_register.model.RegisterModel
 import ru.mercury.vpclient.shared.data.error.RegisterException
-import ru.mercury.vpclient.shared.domain.interactor.AuthenticationInteractor
 import ru.mercury.vpclient.shared.domain.mapper.normalizePhoneInput
+import ru.mercury.vpclient.shared.domain.usecase.AuthValidateNameUseCase
+import ru.mercury.vpclient.shared.domain.usecase.AuthValidatePhoneUseCase
 import ru.mercury.vpclient.shared.domain.usecase.RegisterUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
-    private val authenticationInteractor: AuthenticationInteractor,
+    private val authValidateNameUseCase: AuthValidateNameUseCase,
+    private val authValidatePhoneUseCase: AuthValidatePhoneUseCase,
     private val registerUseCase: RegisterUseCase
 ): ClientViewModel<RegisterIntent, RegisterModel, RegisterEvents>(RegisterModel()) {
 
     override fun dispatch(intent: RegisterIntent) {
         when (intent) {
             is RegisterIntent.RegisterClick -> {
-                val nameValidationError = authenticationInteractor.validateRequiredName(stateFlow.value.name)
-                val phoneValidationError = authenticationInteractor.validateRequiredPhone(stateFlow.value.phone)
-                when {
-                    nameValidationError != null || phoneValidationError != null -> {
-                        reduce { it.copy(
-                            nameValidationError = nameValidationError,
-                            phoneValidationError = phoneValidationError
-                        ) }
-                    }
-                    else -> {
-                        launch {
-                            reduce { it.copy(
-                                nameValidationError = null,
-                                phoneValidationError = null,
-                                isLoading = true
-                            ) }
+                launch {
+                    val nameValidationError = authValidateNameUseCase(stateFlow.value.name).getOrThrow()
+                    val phoneValidationError = authValidatePhoneUseCase(stateFlow.value.phone).getOrThrow()
+                    when {
+                        nameValidationError != null || phoneValidationError != null -> {
+                            reduce {
+                                it.copy(
+                                    nameValidationError = nameValidationError,
+                                    phoneValidationError = phoneValidationError
+                                )
+                            }
+                        }
+                        else -> {
+                            reduce {
+                                it.copy(
+                                    nameValidationError = null,
+                                    phoneValidationError = null,
+                                    isLoading = true
+                                )
+                            }
                             val params = RegisterUseCase.Params(
                                 phone = stateFlow.value.phone,
                                 name = stateFlow.value.name
@@ -63,7 +69,8 @@ class RegisterViewModel @Inject constructor(
             }
             is RegisterIntent.OnKeyboardDone -> {
                 launch {
-                    val canClearFocus = authenticationInteractor.validateRequiredName(stateFlow.value.name) == null && authenticationInteractor.validateRequiredPhone(stateFlow.value.phone) == null
+                    val canClearFocus = authValidateNameUseCase(stateFlow.value.name).getOrThrow() == null &&
+                        authValidatePhoneUseCase(stateFlow.value.phone).getOrThrow() == null
                     dispatch(RegisterIntent.RegisterClick)
                     if (canClearFocus) {
                         send(RegisterEvents.ClearFocus)

@@ -6,10 +6,11 @@ import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import ru.mercury.vpclient.shared.data.network.type.CatalogViewType
 
 @Serializable
 data class FilteredProductsQuantityRequest(
-    @SerialName("viewType") val viewType: String,
+    @SerialName("viewType") val viewType: CatalogViewType,
     @SerialName("hasUserInteractedWithStandartSizesFilter") val hasUserInteractedWithStandartSizesFilter: Boolean,
     @SerialName("filters") @EncodeDefault val filters: List<CatalogFilterRequest>
 )

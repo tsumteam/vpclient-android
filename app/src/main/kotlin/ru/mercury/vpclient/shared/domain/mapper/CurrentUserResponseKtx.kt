@@ -1,6 +1,7 @@
 package ru.mercury.vpclient.shared.domain.mapper
 
 import ru.mercury.vpclient.shared.data.network.response.CurrentUserResponse
+import ru.mercury.vpclient.shared.data.network.type.GenderType
 
 private const val DEFAULT_CLIENT_NAME = "Клиент"
 
@@ -11,4 +12,4 @@ val CurrentUserResponse.clientFullName: String
             .ifEmpty { DEFAULT_CLIENT_NAME }
 
 val CurrentUserResponse.isFeminine: Boolean
-    get() = gender == CurrentUserResponse.GENDER_FEMININE
+    get() = gender == GenderType.FEMININE

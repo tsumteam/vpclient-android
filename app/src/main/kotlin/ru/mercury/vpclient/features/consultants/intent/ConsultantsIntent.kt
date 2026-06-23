@@ -4,8 +4,8 @@ import ru.mercury.vpclient.shared.mvi.Intent
 
 sealed interface ConsultantsIntent: Intent {
     data object CollectEmployees: ConsultantsIntent
-    data object LoadConsultants: ConsultantsIntent
-    data class SetActiveConsultant(val consultantId: String): ConsultantsIntent
-    data class ConsultantClick(val consultantId: String): ConsultantsIntent
-    data class CartClick(val consultantId: String): ConsultantsIntent
+    data object LoadEmployees: ConsultantsIntent
+    data class SetActiveEmployee(val employeeId: String): ConsultantsIntent
+    data class EmployeeClick(val employeeId: String): ConsultantsIntent
+    data class EmployeeActionClick(val employeeId: String, val actionId: Int): ConsultantsIntent
 }

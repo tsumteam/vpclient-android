@@ -6,7 +6,6 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.features.cart.event.CartEvent
@@ -40,15 +39,14 @@ import ru.mercury.vpclient.shared.data.error.SetProductSizeException
 import ru.mercury.vpclient.shared.data.error.SwitchProductWithAlternativeException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
-import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.domain.interactor.AuthenticationInteractor
 import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
-import ru.mercury.vpclient.shared.domain.interactor.EmployeeInteractor
 import ru.mercury.vpclient.shared.domain.interactor.ProductInteractor
 import ru.mercury.vpclient.shared.domain.mapper.clientFullName
 import ru.mercury.vpclient.shared.domain.mapper.isFeminine
 import ru.mercury.vpclient.shared.domain.mapper.moveProductAfterDrag
 import ru.mercury.vpclient.shared.domain.mapper.withCenterLoading
+import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.navigation.BackRoute
 
@@ -57,7 +55,7 @@ class CartViewModel @AssistedInject constructor(
     @Assisted private val route: CartRoute,
     private val authenticationInteractor: AuthenticationInteractor,
     private val cartInteractor: CartInteractor,
-    private val employeeInteractor: EmployeeInteractor,
+    private val employeeActiveFlowUseCase: EmployeeActiveFlowUseCase,
     private val productInteractor: ProductInteractor
 ): ClientViewModel<CartIntent, CartModel, CartEvent>(CartModel()) {
 
@@ -66,7 +64,6 @@ class CartViewModel @AssistedInject constructor(
         dispatch(CartIntent.CollectCart)
         dispatch(CartIntent.CollectActiveEmployee)
         dispatch(CartIntent.LoadCurrentUser)
-        dispatch(CartIntent.LoadActiveEmployee)
         dispatch(CartIntent.LoadCart)
         dispatch(CartIntent.LoadFitting)
     }
@@ -92,8 +89,7 @@ class CartViewModel @AssistedInject constructor(
             }
             is CartIntent.CollectActiveEmployee -> {
                 launch {
-                    employeeInteractor.employeeEntitiesFlow
-                        .map { employees -> employees.firstOrNull { it.isActive } ?: EmployeeEntity.Empty }
+                    employeeActiveFlowUseCase(Unit)
                         .distinctUntilChanged()
                         .collectLatest { employee ->
                             reduce { it.copy(activeEmployee = employee) }
@@ -113,7 +109,6 @@ class CartViewModel @AssistedInject constructor(
                         }
                 }
             }
-            is CartIntent.LoadActiveEmployee -> launch { runCatching { employeeInteractor.syncActiveEmployee() } }
             is CartIntent.LoadCart -> launch { cartInteractor.loadBasket() }
             is CartIntent.LoadFitting -> {
                 launch {
@@ -184,7 +179,9 @@ class CartViewModel @AssistedInject constructor(
                     )
                 }
             }
-            is CartIntent.HideFittingProductsSheet -> reduce { it.copy(isFittingProductsSheetVisible = false) }
+            is CartIntent.HideFittingProductsSheet -> {
+                reduce { it.copy(isFittingProductsSheetVisible = false) }
+            }
             is CartIntent.ConfirmFittingProductsSheet -> {
                 reduce { it.copy(isFittingProductsSheetVisible = false) }
                 launch { MainEventManager.send(FittingConfirmationRoute(intent.productIds)) }
@@ -508,8 +505,12 @@ class CartViewModel @AssistedInject constructor(
             }
             is CartIntent.EditProductSwipeClick -> reduce { it.copy(editProduct = intent.product) }
             is CartIntent.HideEditProductSheet -> reduce { it.copy(editProduct = null) }
-            is CartIntent.EditFittingProductSwipeClick -> reduce { it.copy(fittingEditProduct = intent.product) }
-            is CartIntent.HideFittingEditProductSheet -> reduce { it.copy(fittingEditProduct = null) }
+            is CartIntent.EditFittingProductSwipeClick -> {
+                reduce { it.copy(fittingEditProduct = intent.product) }
+            }
+            is CartIntent.HideFittingEditProductSheet -> {
+                reduce { it.copy(fittingEditProduct = null) }
+            }
             is CartIntent.ReturnFittingProductToBasketSwipeClick -> {
                 launch {
                     withCenterLoading {
@@ -525,9 +526,13 @@ class CartViewModel @AssistedInject constructor(
                     }
                 }
             }
-            is CartIntent.AddSizeClick -> dispatch(CartIntent.ShowSizePicker(intent.product, addSize = true))
+            is CartIntent.AddSizeClick -> {
+                dispatch(CartIntent.ShowSizePicker(intent.product, addSize = true))
+            }
             is CartIntent.ChangeColorClick -> return
-            is CartIntent.ChangeQuantityClick -> dispatch(CartIntent.ShowQuantityPicker(intent.product))
+            is CartIntent.ChangeQuantityClick -> {
+                dispatch(CartIntent.ShowQuantityPicker(intent.product))
+            }
             is CartIntent.DetachProductFromLookSwipeClick -> return
             is CartIntent.MoveProductAfterDrag -> {
                 val movedProducts = stateFlow.value.products.moveProductAfterDrag(

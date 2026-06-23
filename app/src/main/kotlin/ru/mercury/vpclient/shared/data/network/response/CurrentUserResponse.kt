@@ -2,6 +2,7 @@ package ru.mercury.vpclient.shared.data.network.response
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import ru.mercury.vpclient.shared.data.network.type.GenderType
 
 @Serializable
 data class CurrentUserResponse(
@@ -25,7 +26,7 @@ data class CurrentUserResponse(
     @SerialName("employeeName") val employeeName: String? = null,
     @SerialName("employeePhone") val employeePhone: String? = null,
     @SerialName("employeeSurname") val employeeSurname: String? = null,
-    @SerialName("gender") val gender: String? = null,
+    @SerialName("gender") val gender: GenderType? = null,
     @SerialName("id") val id: Int? = null,
     @SerialName("isBoutique") val isBoutique: Boolean? = null,
     @SerialName("isEmployee") val isEmployee: Boolean? = null,
@@ -37,10 +38,4 @@ data class CurrentUserResponse(
     @SerialName("employeeBuyoutPercent") val employeeBuyoutPercent: Double? = null,
     @SerialName("useDiginetica") val useDiginetica: Boolean? = null,
     @SerialName("hrId") val hrId: Int? = null
-) {
-    companion object {
-        const val GENDER_NONE = "none"
-        const val GENDER_MASCULINE = "masculine"
-        const val GENDER_FEMININE = "feminine"
-    }
-}
+)

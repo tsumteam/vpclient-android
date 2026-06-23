@@ -47,7 +47,7 @@ import ru.mercury.vpclient.shared.domain.mapper.toFilterRibbonData
 import ru.mercury.vpclient.shared.domain.mapper.toFilterValuesEntity
 import ru.mercury.vpclient.shared.domain.mapper.toFilterValuesPickers
 import ru.mercury.vpclient.shared.domain.mapper.viewType
-import ru.mercury.vpclient.shared.domain.remotemediator.CatalogFilterProductsRemoteMediator
+import ru.mercury.vpclient.shared.domain.paging.CatalogFilterProductsRemoteMediator
 import ru.mercury.vpclient.shared.domain.repository.FilterRepository
 import javax.inject.Inject
 

@@ -19,7 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
-import ru.mercury.vpclient.shared.ui.components.HorizontalPagerIndicator
+import ru.mercury.vpclient.shared.ui.components.SharedHorizontalPagerIndicator
 import ru.mercury.vpclient.shared.ui.icons.Video24
 import ru.mercury.vpclient.shared.ui.preview.BooleanPreviewParameterProvider
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
@@ -38,7 +38,7 @@ fun DetailsPagerIndicator(
         horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        HorizontalPagerIndicator(
+        SharedHorizontalPagerIndicator(
             pagerState = pagerState,
             pageCount = pageCount,
             pageIndexMapping = pageIndexMapping,

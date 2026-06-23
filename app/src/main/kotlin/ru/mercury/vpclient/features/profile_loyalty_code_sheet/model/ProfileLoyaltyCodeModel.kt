@@ -2,7 +2,7 @@ package ru.mercury.vpclient.features.profile_loyalty_code_sheet.model
 
 import kotlinx.coroutines.Job
 import ru.mercury.vpclient.features.profile_loyalty_add_card_sheet.model.ProfileLoyaltyAddCardMode
-import ru.mercury.vpclient.shared.data.CODE_LENGTH
+import ru.mercury.vpclient.shared.domain.usecase.AuthValidateCodeUseCase.Companion.CODE_LENGTH
 import ru.mercury.vpclient.shared.mvi.Model
 
 data class ProfileLoyaltyCodeModel(

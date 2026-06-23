@@ -3,7 +3,9 @@
 package ru.mercury.vpclient.features.profile_my_data
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,14 +30,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.mercury.vpclient.features.profile_delete_dialog.ProfileDeleteDialog
 import ru.mercury.vpclient.features.profile_delete_dialog.intent.ProfileDeleteDialogIntent
-import ru.mercury.vpclient.features.profile_my_data.intent.MyDataIntent
-import ru.mercury.vpclient.features.profile_my_data.model.MyDataModel
+import ru.mercury.vpclient.features.profile_my_data.intent.ProfileMyDataIntent
+import ru.mercury.vpclient.features.profile_my_data.model.ProfileMyDataModel
 import ru.mercury.vpclient.shared.ui.components.InfoItem
 import ru.mercury.vpclient.shared.ui.components.InfoItemState
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
@@ -50,12 +54,12 @@ import ru.mercury.vpclient.shared.ui.theme.livretRegular15
 import ru.mercury.vpclient.shared.ui.theme.medium18
 
 @Composable
-fun MyDataScreen(
-    viewModel: MyDataViewModel = hiltViewModel()
+fun ProfileMyDataScreen(
+    viewModel: ProfileMyDataViewModel = hiltViewModel()
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
 
-    MyDataScreenContent(
+    ProfileMyDataScreenContent(
         state = state,
         dispatch = viewModel::dispatch
     )
@@ -65,10 +69,10 @@ fun MyDataScreen(
             dispatch = { intent ->
                 when (intent) {
                     is ProfileDeleteDialogIntent.ConfirmRequest -> {
-                        viewModel.dispatch(MyDataIntent.DeleteProfile)
+                        viewModel.dispatch(ProfileMyDataIntent.DeleteProfile)
                     }
                     is ProfileDeleteDialogIntent.DismissRequest -> {
-                        viewModel.dispatch(MyDataIntent.DismissDeleteProfileDialog)
+                        viewModel.dispatch(ProfileMyDataIntent.DismissDeleteProfileDialog)
                     }
                 }
             }
@@ -77,9 +81,9 @@ fun MyDataScreen(
 }
 
 @Composable
-private fun MyDataScreenContent(
-    state: MyDataModel,
-    dispatch: (MyDataIntent) -> Unit
+private fun ProfileMyDataScreenContent(
+    state: ProfileMyDataModel,
+    dispatch: (ProfileMyDataIntent) -> Unit
 ) {
     SharedScaffold(
         topBar = {
@@ -87,21 +91,17 @@ private fun MyDataScreenContent(
                 title = {
                     Text(
                         text = stringResource(ClientStrings.MyDataTitle),
-                        style = MaterialTheme.typography.medium18.copy(
-                            color = MaterialTheme.colorScheme.onBackground,
-                            textAlign = TextAlign.Center
-                        )
+                        style = MaterialTheme.typography.medium18
                     )
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { dispatch(MyDataIntent.BackClick) }
+                        onClick = { dispatch(ProfileMyDataIntent.BackClick) }
                     ) {
                         Icon(
                             imageVector = ChevronStart24,
                             contentDescription = null,
-                            modifier = Modifier.size(24.dp),
-                            tint = MaterialTheme.colorScheme.onBackground
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 },
@@ -110,62 +110,70 @@ private fun MyDataScreenContent(
                         FittingIconButton(
                             text = state.fittingText,
                             showBadge = state.showFittingBadge,
-                            onClick = { dispatch(MyDataIntent.FittingClick) }
+                            onClick = { dispatch(ProfileMyDataIntent.FittingClick) }
                         )
                     }
 
                     CartIconButton(
                         text = state.cartText,
                         showBadge = state.showCartBadge,
-                        onClick = { dispatch(MyDataIntent.CartClick) }
+                        onClick = { dispatch(ProfileMyDataIntent.CartClick) }
                     )
 
                     MessengerIconButton(
                         showBadge = state.showMessengerBadge,
-                        onClick = { dispatch(MyDataIntent.MessengerClick) }
+                        onClick = { dispatch(ProfileMyDataIntent.MessengerClick) }
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
+                    containerColor = MaterialTheme.colorScheme.background,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground
                 )
             )
         },
-        floatingActionButton = {
-            OutlinedButton(
-                onClick = { dispatch(MyDataIntent.ShowDeleteProfileDialog) },
+        bottomBar = {
+            Box(
                 modifier = Modifier
-                    .padding(bottom = 8.dp)
                     .fillMaxWidth()
-                    .height(52.dp),
-                enabled = !state.isDeleteProfileLoading,
-                shape = RoundedCornerShape(8.dp),
-                border = BorderStroke(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.onBackground
-                ),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    contentColor = MaterialTheme.colorScheme.onBackground,
-                    disabledContainerColor = MaterialTheme.colorScheme.background,
-                    disabledContentColor = MaterialTheme.colorScheme.onBackground
-                ),
-                contentPadding = PaddingValues(horizontal = 16.dp)
+                    .background(MaterialTheme.colorScheme.background)
             ) {
-                when {
-                    state.isDeleteProfileLoading -> {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(24.dp),
-                            color = MaterialTheme.colorScheme.onBackground,
-                            strokeWidth = 2.dp
-                        )
-                    }
-                    else -> {
-                        Text(
-                            text = stringResource(ClientStrings.MyDataDeleteProfile),
-                            style = MaterialTheme.typography.livretRegular15.copy(
-                                textAlign = TextAlign.Center
+                OutlinedButton(
+                    onClick = { dispatch(ProfileMyDataIntent.ShowDeleteProfileDialog) },
+                    modifier = Modifier
+                        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                        .fillMaxWidth()
+                        .height(52.dp),
+                    enabled = !state.isDeleteProfileLoading,
+                    shape = RoundedCornerShape(8.dp),
+                    border = BorderStroke(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.onBackground
+                    ),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                        contentColor = MaterialTheme.colorScheme.onBackground,
+                        disabledContainerColor = MaterialTheme.colorScheme.background,
+                        disabledContentColor = MaterialTheme.colorScheme.onBackground
+                    ),
+                    contentPadding = PaddingValues(horizontal = 16.dp)
+                ) {
+                    when {
+                        state.isDeleteProfileLoading -> {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = MaterialTheme.colorScheme.onBackground,
+                                strokeWidth = 2.dp
                             )
-                        )
+                        }
+                        else -> {
+                            Text(
+                                text = stringResource(ClientStrings.MyDataDeleteProfile),
+                                style = MaterialTheme.typography.livretRegular15.copy(
+                                    textAlign = TextAlign.Center
+                                )
+                            )
+                        }
                     }
                 }
             }
@@ -173,7 +181,7 @@ private fun MyDataScreenContent(
     ) { innerPadding ->
         SharedLazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = innerPadding + PaddingValues(bottom = 92.dp),
+            contentPadding = innerPadding + PaddingValues(bottom = 8.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             item {
@@ -215,14 +223,23 @@ private fun MyDataScreenContent(
 @PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Composable
-private fun MyDataScreenContentPreview() {
-    MyDataScreenContent(
-        state = MyDataModel(
+private fun ProfileMyDataScreenContentPreview(
+    @PreviewParameter(ProfileMyDataModelPreviewParameterProvider::class) state: ProfileMyDataModel
+) {
+    ProfileMyDataScreenContent(
+        state = state,
+        dispatch = {}
+    )
+}
+
+private class ProfileMyDataModelPreviewParameterProvider: PreviewParameterProvider<ProfileMyDataModel> {
+    override val values: Sequence<ProfileMyDataModel> = sequenceOf(
+        ProfileMyDataModel(),
+        ProfileMyDataModel(
             surname = "Иванов",
             name = "Иван",
             phone = "+7 999 123-45-67",
             email = "ivan@example.com"
-        ),
-        dispatch = {}
+        )
     )
 }

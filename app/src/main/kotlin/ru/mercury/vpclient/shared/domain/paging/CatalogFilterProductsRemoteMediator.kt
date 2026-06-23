@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalPagingApi::class)
 
-package ru.mercury.vpclient.shared.domain.remotemediator
+package ru.mercury.vpclient.shared.domain.paging
 
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
@@ -10,7 +10,7 @@ import androidx.room.withTransaction
 import ru.mercury.vpclient.shared.data.entity.CatalogFilterProductsData
 import ru.mercury.vpclient.shared.data.network.NetworkService
 import ru.mercury.vpclient.shared.data.network.request.FilteredProductsRequest
-import ru.mercury.vpclient.shared.data.network.response.FiltersResponse
+import ru.mercury.vpclient.shared.data.network.type.CatalogViewType
 import ru.mercury.vpclient.shared.data.persistence.database.AppDatabase
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogCategoryDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogFilterProductsDao
@@ -48,9 +48,9 @@ class CatalogFilterProductsRemoteMediator(
             }
             val categoryEntity = catalogCategoryDao.select(categoryId)
             val viewType = data.viewTypeOverride ?: when {
-                categoryId == titleCategoryId -> FiltersResponse.VIEW_TYPE_CATALOG_LEVEL_5
-                titleCategoryId == categoryEntity.rootId -> FiltersResponse.VIEW_TYPE_CATALOG_LEVEL_3
-                else -> FiltersResponse.VIEW_TYPE_CATALOG_LEVEL_4
+                categoryId == titleCategoryId -> CatalogViewType.CATALOG_LEVEL_5
+                titleCategoryId == categoryEntity.rootId -> CatalogViewType.CATALOG_LEVEL_3
+                else -> CatalogViewType.CATALOG_LEVEL_4
             }
             val response = handleResponseResult {
                 val request = FilteredProductsRequest(

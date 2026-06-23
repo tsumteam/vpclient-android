@@ -2,30 +2,25 @@ package ru.mercury.vpclient.features.profile_orders
 
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
-import androidx.paging.PagingSource
-import androidx.paging.PagingState
 import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.features.cart.navigation.CartPage
 import ru.mercury.vpclient.features.cart.navigation.CartRoute
+import ru.mercury.vpclient.features.profile_order.navigation.ProfileOrderRoute
+import ru.mercury.vpclient.shared.domain.paging.ProfileOrdersPagingSource
 import ru.mercury.vpclient.features.profile_orders.event.ProfileOrdersEvent
 import ru.mercury.vpclient.features.profile_orders.intent.ProfileOrdersIntent
 import ru.mercury.vpclient.features.profile_orders.model.ProfileOrdersModel
-import ru.mercury.vpclient.features.profile_orders.model.toProfileOrderItemState
-import ru.mercury.vpclient.features.profile_order.navigation.ProfileOrderRoute
 import ru.mercury.vpclient.features.profile_stack.event.ProfileStackEventManager
-import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.domain.interactor.AuthenticationInteractor
 import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
-import ru.mercury.vpclient.shared.domain.interactor.EmployeeInteractor
 import ru.mercury.vpclient.shared.domain.interactor.OrderInteractor
+import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
-import ru.mercury.vpclient.shared.ui.components.profile.ProfileOrderItemState
 import ru.mercury.vpclient.shared.navigation.BackRoute
 import javax.inject.Inject
 
@@ -33,7 +28,7 @@ import javax.inject.Inject
 class ProfileOrdersViewModel @Inject constructor(
     private val authenticationInteractor: AuthenticationInteractor,
     private val cartInteractor: CartInteractor,
-    private val employeeInteractor: EmployeeInteractor,
+    private val employeeActiveFlowUseCase: EmployeeActiveFlowUseCase,
     private val orderInteractor: OrderInteractor
 ): ClientViewModel<ProfileOrdersIntent, ProfileOrdersModel, ProfileOrdersEvent>(ProfileOrdersModel()) {
 
@@ -71,11 +66,10 @@ class ProfileOrdersViewModel @Inject constructor(
             }
             is ProfileOrdersIntent.CollectActiveEmployee -> {
                 launch {
-                    employeeInteractor.employeeEntitiesFlow
-                        .map { employees -> employees.firstOrNull { it.isActive } }
+                    employeeActiveFlowUseCase(Unit)
                         .distinctUntilChanged()
                         .collectLatest { employee ->
-                            reduce { it.copy(activeEmployee = employee ?: EmployeeEntity.Empty) }
+                            reduce { it.copy(activeEmployee = employee) }
                         }
                 }
             }
@@ -102,7 +96,9 @@ class ProfileOrdersViewModel @Inject constructor(
             is ProfileOrdersIntent.BackClick -> launch { ProfileStackEventManager.send(BackRoute) }
             is ProfileOrdersIntent.NotificationClick -> return
             is ProfileOrdersIntent.CartClick -> launch { MainEventManager.send(CartRoute()) }
-            is ProfileOrdersIntent.FittingClick -> launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
+            is ProfileOrdersIntent.FittingClick -> {
+                launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
+            }
             is ProfileOrdersIntent.MessengerClick -> return
             is ProfileOrdersIntent.OrderClick -> {
                 launch {
@@ -119,54 +115,5 @@ class ProfileOrdersViewModel @Inject constructor(
 
     private companion object {
         private const val PROFILE_ORDERS_LIMIT = 15
-    }
-}
-
-private class ProfileOrdersPagingSource(
-    private val authenticationInteractor: AuthenticationInteractor,
-    private val orderInteractor: OrderInteractor,
-    private val pageSize: Int
-): PagingSource<Int, ProfileOrderItemState>() {
-
-    override fun getRefreshKey(state: PagingState<Int, ProfileOrderItemState>): Int? {
-        val anchorPosition = state.anchorPosition ?: return null
-        val anchorPage = state.closestPageToPosition(anchorPosition) ?: return null
-        return anchorPage.prevKey?.plus(pageSize) ?: anchorPage.nextKey?.minus(pageSize)
-    }
-
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ProfileOrderItemState> {
-        return try {
-            val offset = params.key ?: 0
-            val limit = params.loadSize
-            val clientId = authenticationInteractor.userId()
-
-            if (clientId.isEmpty()) {
-                return LoadResult.Page(
-                    data = emptyList(),
-                    prevKey = null,
-                    nextKey = null
-                )
-            }
-
-            val orders = orderInteractor.profileOrders(
-                clientId = clientId,
-                limit = limit,
-                offset = offset
-            ).map { order -> order.toProfileOrderItemState() }
-
-            LoadResult.Page(
-                data = orders,
-                prevKey = when {
-                    offset == 0 -> null
-                    else -> (offset - pageSize).coerceAtLeast(0)
-                },
-                nextKey = when {
-                    orders.size < limit -> null
-                    else -> offset + orders.size
-                }
-            )
-        } catch (throwable: Throwable) {
-            LoadResult.Error(throwable)
-        }
     }
 }

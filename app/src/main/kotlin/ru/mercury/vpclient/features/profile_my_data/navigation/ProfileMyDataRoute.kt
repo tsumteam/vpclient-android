@@ -4,4 +4,4 @@ import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object MyDataRoute: NavKey
+data object ProfileMyDataRoute: NavKey

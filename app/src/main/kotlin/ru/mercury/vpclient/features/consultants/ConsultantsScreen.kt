@@ -2,7 +2,9 @@
 
 package ru.mercury.vpclient.features.consultants
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -15,12 +17,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.Job
@@ -28,13 +31,15 @@ import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.consultants.event.ConsultantsEvents
 import ru.mercury.vpclient.features.consultants.intent.ConsultantsIntent
 import ru.mercury.vpclient.features.consultants.model.ConsultantsModel
+import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeBadgeEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
-import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity.Companion.ID_CART
+import ru.mercury.vpclient.shared.data.persistence.database.pojo.EmployeePojo
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.consultants.ConsultantCard
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
+import ru.mercury.vpclient.shared.ui.ktx.launcherDialer
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.medium18
@@ -45,6 +50,7 @@ fun ConsultantsScreen(
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
     val snackbarHostStateError = remember { SnackbarHostState() }
 
     ConsultantsScreenContent(
@@ -57,6 +63,7 @@ fun ConsultantsScreen(
         flow = viewModel.eventFlow
     ) { event ->
         when (event) {
+            is ConsultantsEvents.LaunchDialer -> context.launcherDialer(event.phone)
             is ConsultantsEvents.SnackbarMessage -> {
                 snackbarHostStateError.currentSnackbarData?.dismiss()
                 scope.launch { snackbarHostStateError.showSnackbar(event.message) }
@@ -77,14 +84,12 @@ private fun ConsultantsScreenContent(
                 title = {
                     Text(
                         text = stringResource(ClientStrings.ConsultantsTitle),
-                        style = MaterialTheme.typography.medium18.copy(
-                            color = MaterialTheme.colorScheme.onBackground,
-                            textAlign = TextAlign.Center
-                        )
+                        style = MaterialTheme.typography.medium18
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground
                 )
             )
         },
@@ -97,15 +102,14 @@ private fun ConsultantsScreenContent(
     ) { innerPadding ->
         SharedLazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = innerPadding
+            contentPadding = innerPadding + PaddingValues(bottom = 8.dp)
         ) {
-            if (state.isLoading && state.employees.isEmpty()) {
+            if (state.isLoading && state.employeePojos.isEmpty()) {
                 items(
-                    count = 3,
-                    key = { index -> "consultant_loading_$index" }
+                    count = 4
                 ) {
                     ConsultantCard(
-                        employee = EmployeeEntity.Empty,
+                        employeePojo = EmployeePojo.Empty,
                         onActionClick = {},
                         onActiveClick = {},
                         onClick = {}
@@ -113,18 +117,14 @@ private fun ConsultantsScreenContent(
                 }
             } else {
                 items(
-                    items = state.employees,
-                    key = { employee -> employee.employeeId }
+                    items = state.employeePojos,
+                    key = { employee -> employee.entity.employeeId }
                 ) { employee ->
                     ConsultantCard(
-                        employee = employee,
-                        onActionClick = { actionId ->
-                            when (actionId) {
-                                ID_CART -> dispatch(ConsultantsIntent.CartClick(employee.employeeId))
-                            }
-                        },
-                        onActiveClick = { dispatch(ConsultantsIntent.SetActiveConsultant(employee.employeeId)) },
-                        onClick = { dispatch(ConsultantsIntent.ConsultantClick(employee.employeeId)) }
+                        employeePojo = employee,
+                        onActionClick = { actionId -> dispatch(ConsultantsIntent.EmployeeActionClick(employee.entity.employeeId, actionId)) },
+                        onActiveClick = { dispatch(ConsultantsIntent.SetActiveEmployee(employee.entity.employeeId)) },
+                        onClick = { dispatch(ConsultantsIntent.EmployeeClick(employee.entity.employeeId)) }
                     )
                 }
             }
@@ -146,49 +146,54 @@ private fun ConsultantsScreenContentPreview(
 }
 
 private class ConsultantsModelProvider: PreviewParameterProvider<ConsultantsModel> {
-    private val employee = EmployeeEntity(
-        employeeId = "1",
-        employeeEmail = "anna@example.com",
-        employeeMiddleName = "",
-        employeeName = "Анна",
-        employeePhone = "+79990000000",
-        employeeSurname = "Смирнова",
-        photoUrl = "https://i.pravatar.cc/144?img=32",
-        previewPhotoUrl = "https://i.pravatar.cc/144?img=32",
-        lastActivityColorHex = "",
-        lastActivityDate = "",
-        employeeBotiqueAddress = "Барвиха Luxury Village",
-        employeeBotiqueAddressShort = "Барвиха Luxury Village",
-        employeeBrand = "MVST",
-        isActive = false,
-        basketBadge = 1,
-        fittingNumber = 2,
-        fittingBadge = 1,
-        messengerBadge = 1,
-        orderBadge = 1,
-        compilationBadge = 0
+    private val employee = EmployeePojo(
+        entity = EmployeeEntity(
+            employeeId = "1",
+            employeeEmail = "anna@example.com",
+            employeeMiddleName = "",
+            employeeName = "Анна",
+            employeePhone = "+79990000000",
+            employeeSurname = "Смирнова",
+            photoUrl = "https://i.pravatar.cc/144?img=32",
+            previewPhotoUrl = "https://i.pravatar.cc/144?img=32",
+            lastActivityColorHex = "",
+            lastActivityDate = "",
+            employeeBotiqueAddress = "Барвиха Luxury Village",
+            employeeBotiqueAddressShort = "Барвиха Luxury Village",
+            employeeBrand = "MVST",
+            isActive = false,
+            position = 0,
+            basketNumber = 0,
+            basketBadge = 0,
+            fittingNumber = 0,
+            fittingBadge = 0,
+            messengerBadge = 0,
+            orderBadge = 0,
+            compilationBadge = 0
+        ),
+        badgeEntity = EmployeeBadgeEntity.Empty.copy(employeeId = "1")
     )
 
     override val values: Sequence<ConsultantsModel> = sequenceOf(
         ConsultantsModel(
-            employees = listOf(
+            employeePojos = listOf(
                 employee,
                 employee.copy(
-                    employeeId = "2",
-                    employeeName = "Екатерина",
-                    employeeSurname = "Орлова",
-                    employeeBrand = "BORK",
-                    employeeBotiqueAddress = "Москва, Петровка, 2",
-                    employeeBotiqueAddressShort = "Петровка, 2",
-                    isActive = true,
-                    basketBadge = 0,
-                    fittingNumber = 2,
-                    fittingBadge = 2,
-                    messengerBadge = 3,
-                    orderBadge = 0
+                    entity = employee.entity.copy(
+                        employeeId = "2",
+                        employeeName = "Екатерина",
+                        employeeSurname = "Орлова",
+                        employeeBrand = "BORK",
+                        employeeBotiqueAddress = "Москва, Петровка, 2",
+                        employeeBotiqueAddressShort = "Петровка, 2",
+                        isActive = true
+                    ),
+                    badgeEntity = EmployeeBadgeEntity.Empty.copy(employeeId = "2")
                 )
             )
         ),
-        ConsultantsModel(loadConsultantsJob = Job())
+        ConsultantsModel(
+            loadJob = Job()
+        )
     )
 }

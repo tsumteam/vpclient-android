@@ -29,7 +29,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -48,8 +47,8 @@ import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
 import ru.mercury.vpclient.shared.ui.icons.Mail22
 import ru.mercury.vpclient.shared.ui.icons.Phone22
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
-import ru.mercury.vpclient.shared.ui.ktx.openDialer
-import ru.mercury.vpclient.shared.ui.ktx.openEmail
+import ru.mercury.vpclient.shared.ui.ktx.launcherDialer
+import ru.mercury.vpclient.shared.ui.ktx.launcherEmail
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.medium15
@@ -72,8 +71,8 @@ fun ProfileContactsScreen(
         flow = viewModel.eventFlow
     ) { event ->
         when (event) {
-            is ProfileContactsEvent.OpenDialer -> context.openDialer(event.phone)
-            is ProfileContactsEvent.OpenEmail -> context.openEmail(event.email)
+            is ProfileContactsEvent.LaunchDialer -> context.launcherDialer(event.phone)
+            is ProfileContactsEvent.LaunchEmail -> context.launcherEmail(event.email)
         }
     }
 }
@@ -89,10 +88,7 @@ private fun ProfileContactsScreenContent(
                 title = {
                     Text(
                         text = stringResource(ClientStrings.ProfileInfoContacts),
-                        style = MaterialTheme.typography.medium18.copy(
-                            color = MaterialTheme.colorScheme.onBackground,
-                            textAlign = TextAlign.Center
-                        )
+                        style = MaterialTheme.typography.medium18
                     )
                 },
                 navigationIcon = {
@@ -102,13 +98,14 @@ private fun ProfileContactsScreenContent(
                         Icon(
                             imageVector = ChevronStart24,
                             contentDescription = null,
-                            modifier = Modifier.size(24.dp),
-                            tint = MaterialTheme.colorScheme.onBackground
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
+                    containerColor = MaterialTheme.colorScheme.background,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground
                 )
             )
         }

@@ -18,8 +18,8 @@ import ru.mercury.vpclient.features.profile_gift.ProfileGiftScreen
 import ru.mercury.vpclient.features.profile_gift.navigation.ProfileGiftRoute
 import ru.mercury.vpclient.features.profile_info.ProfileInfoScreen
 import ru.mercury.vpclient.features.profile_info.navigation.ProfileInfoRoute
-import ru.mercury.vpclient.features.profile_my_data.MyDataScreen
-import ru.mercury.vpclient.features.profile_my_data.navigation.MyDataRoute
+import ru.mercury.vpclient.features.profile_my_data.ProfileMyDataScreen
+import ru.mercury.vpclient.features.profile_my_data.navigation.ProfileMyDataRoute
 import ru.mercury.vpclient.features.profile_orders.ProfileOrdersScreen
 import ru.mercury.vpclient.features.profile_orders.navigation.ProfileOrdersRoute
 import ru.mercury.vpclient.features.profile_payment.ProfilePaymentScreen
@@ -42,7 +42,7 @@ fun ProfileStackScreen(
         modifier = Modifier.fillMaxSize(),
         entryProvider = entryProvider {
             entry<ProfileRoute> { ProfileScreen() }
-            entry<MyDataRoute> { MyDataScreen() }
+            entry<ProfileMyDataRoute> { ProfileMyDataScreen() }
             entry<ProfileOrdersRoute> { ProfileOrdersScreen() }
             entry<ProfileOrderRoute> { ProfileOrderScreen(it) }
             entry<ProfileInfoRoute> { ProfileInfoScreen() }
@@ -63,7 +63,7 @@ fun ProfileStackScreen(
                 navBackStack.clear()
                 navBackStack.add(ProfileRoute)
             }
-            is MyDataRoute -> navBackStack.add(event)
+            is ProfileMyDataRoute -> navBackStack.add(event)
             is ProfileOrdersRoute -> navBackStack.add(event)
             is ProfileOrderRoute -> navBackStack.add(event)
             is ProfileInfoRoute -> navBackStack.add(event)

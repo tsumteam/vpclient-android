@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.ui.components.catalog.CatalogProductCard
+import ru.mercury.vpclient.shared.ui.components.catalog.CatalogProductCardState
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.livretMedium18
@@ -58,9 +59,11 @@ fun DetailsCompleteSetSection(
                 ) {
                     row.forEach { product ->
                         CatalogProductCard(
-                            entity = product,
+                            state = CatalogProductCardState(
+                                entity = product,
+                                isInBasket = isProductInBasket(product)
+                            ),
                             modifier = Modifier.weight(1F),
-                            isInBasket = isProductInBasket(product),
                             onClick = { onProductClick(product.id) },
                             onMessageClick = { onProductMessageClick(product) },
                             onBasketClick = { onProductBasketClick(product) }

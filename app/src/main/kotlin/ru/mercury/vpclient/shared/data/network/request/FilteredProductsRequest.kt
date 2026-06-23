@@ -6,18 +6,13 @@ import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import ru.mercury.vpclient.shared.data.network.type.CatalogViewType
+import ru.mercury.vpclient.shared.data.network.type.FilteredProductsSortType
 
 @Serializable
 data class FilteredProductsRequest(
-    @SerialName("viewType") val viewType: String,
-    @SerialName("sortType") val sortType: String,
+    @SerialName("viewType") val viewType: CatalogViewType,
+    @SerialName("sortType") val sortType: FilteredProductsSortType,
     @SerialName("hasUserInteractedWithStandartSizesFilter") val hasUserInteractedWithStandartSizesFilter: Boolean,
     @SerialName("filters") @EncodeDefault val filters: List<CatalogFilterRequest>
-) {
-    companion object {
-        const val PRICE_ASCENDING = "priceAscending"
-        const val PRICE_DESCENDING = "priceDescending"
-        const val ARRIVAL_DATE_DESCENDING = "arrivalDateDescending"
-        const val OUR_CHOICE = "ourChoice"
-    }
-}
+)

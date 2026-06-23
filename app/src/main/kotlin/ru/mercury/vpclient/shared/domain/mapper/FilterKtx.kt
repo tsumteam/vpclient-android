@@ -4,13 +4,14 @@ import ru.mercury.vpclient.features.filter.model.FilterModel
 import ru.mercury.vpclient.features.filter.navigation.FilterRoute
 import ru.mercury.vpclient.shared.data.entity.FilterChip
 import ru.mercury.vpclient.shared.data.network.request.CatalogFilterRequest
+import ru.mercury.vpclient.shared.data.network.type.CatalogViewType
 
 fun String.onlyDigits(): String {
     return filter(Char::isDigit)
 }
 
 fun FilterRoute.includeDefaultCategory(): Boolean {
-    return viewTypeOverride != "brand"
+    return viewTypeOverride != CatalogViewType.BRAND
 }
 
 fun FilterRoute.requestFilterValueChipIds(selectedFilterValueChipIds: Set<String>): Set<String> {

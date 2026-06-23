@@ -9,8 +9,8 @@ import kotlinx.serialization.json.jsonPrimitive
 import ru.mercury.vpclient.shared.data.network.entity.FilterDecimalRangeValueDto
 import ru.mercury.vpclient.shared.data.network.entity.FilterIdTreeValueDto
 import ru.mercury.vpclient.shared.data.network.response.FilterValuesValueResponse
+import ru.mercury.vpclient.shared.data.network.type.CatalogFilterValueType
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValueItemEntity
-import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValueTypeEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesEntity
 
 // fixme
@@ -20,16 +20,16 @@ private val filterValuesJson = Json { ignoreUnknownKeys = true; explicitNulls = 
 fun List<JsonElement>.toFilterValuesEntity(
     chipId: String,
     title: String,
-    valueType: String? = null,
+    valueType: CatalogFilterValueType? = null,
     showSearchBar: Boolean = false,
     showSidePanelWithLetters: Boolean = false
 ): FilterValuesEntity {
     val resolvedValueType = valueType ?: firstNotNullOfOrNull { element -> element.filterValueType }
     val values = when (resolvedValueType) {
-        FilterValueTypeEntity.DECIMAL_RANGE -> {
+        CatalogFilterValueType.DECIMAL_RANGE -> {
             mapNotNull { element -> element.toDecimalRangeFilterValue(chipId) }
         }
-        FilterValueTypeEntity.ID_TREE -> {
+        CatalogFilterValueType.ID_TREE -> {
             flatMap { element -> element.toTreeFilterValues(chipId, parentId = null) }
         }
         else -> {
@@ -136,8 +136,13 @@ private fun FilterIdTreeValueDto.toTreeFilterValues(
     }
 }
 
-private val JsonElement.filterValueType: String?
-    get() = jsonObject["valueType"]?.jsonPrimitive?.contentOrNull
+private val JsonElement.filterValueType: CatalogFilterValueType?
+    get() {
+        val valueTypeElement = jsonObject["valueType"] ?: return null
+        return runCatching {
+            filterValuesJson.decodeFromJsonElement<CatalogFilterValueType>(valueTypeElement)
+        }.getOrNull()
+    }
 
 private val JsonElement?.filterValueId: String?
     get() = this?.jsonPrimitive?.contentOrNull

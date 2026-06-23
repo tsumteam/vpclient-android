@@ -23,7 +23,6 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -34,7 +33,6 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
-import ru.mercury.vpclient.R
 import ru.mercury.vpclient.features.brands.BrandsScreen
 import ru.mercury.vpclient.features.brands.navigation.BrandsRoute
 import ru.mercury.vpclient.features.catalog.navigation.CatalogRoute
@@ -54,6 +52,8 @@ import ru.mercury.vpclient.features.main.navigation.MainRoute
 import ru.mercury.vpclient.features.profile.navigation.ProfileRoute
 import ru.mercury.vpclient.features.profile_stack.ProfileStackScreen
 import ru.mercury.vpclient.features.profile_stack.navigation.ProfileStackRoute
+import ru.mercury.vpclient.shared.ui.components.consultants.ConsultantsTabIcon
+import ru.mercury.vpclient.shared.ui.components.consultants.ConsultantsTabIconState
 import ru.mercury.vpclient.shared.ui.components.system.ClientNavDisplay
 import ru.mercury.vpclient.shared.ui.icons.Brands24
 import ru.mercury.vpclient.shared.ui.icons.Catalog24
@@ -113,10 +113,9 @@ private fun MainScreenContent(
 ) {
     val dividerColor = MaterialTheme.colorScheme.outlineVariant
     val navigationSuiteScaffoldState = rememberNavigationSuiteScaffoldState()
-    val isBottomBarVisible by remember(state.selectedRoute, catalogNavBackStack, profileNavBackStack) {
+    val isBottomBarVisible by remember(state.selectedRoute, catalogNavBackStack) {
         derivedStateOf {
             when {
-                state.selectedRoute == ProfileStackRoute -> profileNavBackStack.lastOrNull() is ProfileRoute
                 state.selectedRoute != CatalogStackRoute -> true
                 else -> catalogNavBackStack.lastOrNull() !is DetailsRoute
             }
@@ -326,11 +325,11 @@ private fun MainScreenContent(
                         }
                     },
                     icon = {
-                        Icon(
-                            painter = painterResource(if (state.selectedRoute == ConsultantsRoute) R.drawable.ic_consultants_active_24 else R.drawable.ic_consultants_inactive_24),
-                            contentDescription = null,
-                            modifier = Modifier.size(24.dp),
-                            tint = Color.Unspecified
+                        ConsultantsTabIcon(
+                            state = ConsultantsTabIconState(
+                                selected = state.selectedRoute == ConsultantsRoute,
+                                badgeText = state.consultantsBadgeText
+                            )
                         )
                     },
                     label = {

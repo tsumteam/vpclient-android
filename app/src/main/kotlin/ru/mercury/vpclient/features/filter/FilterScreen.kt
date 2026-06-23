@@ -89,7 +89,7 @@ import ru.mercury.vpclient.shared.data.entity.FilterChip
 import ru.mercury.vpclient.shared.data.entity.FilterData
 import ru.mercury.vpclient.shared.data.entity.FilterRibbonData
 import ru.mercury.vpclient.shared.data.entity.FilterTitleEntity
-import ru.mercury.vpclient.shared.data.network.response.CatalogCategoryResponse
+import ru.mercury.vpclient.shared.data.network.type.CatalogCategoryType
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogCategoryEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsQuantityEntity
@@ -108,6 +108,7 @@ import ru.mercury.vpclient.shared.ui.components.cart.CartIconButton
 import ru.mercury.vpclient.shared.ui.components.cart.FittingIconButton
 import ru.mercury.vpclient.shared.ui.components.cart.MessengerIconButton
 import ru.mercury.vpclient.shared.ui.components.catalog.CatalogProductCard
+import ru.mercury.vpclient.shared.ui.components.catalog.CatalogProductCardState
 import ru.mercury.vpclient.shared.ui.components.filters.FilterBrandFavoritesBar
 import ru.mercury.vpclient.shared.ui.components.filters.FilterProductsLoadingContent
 import ru.mercury.vpclient.shared.ui.components.filters.FilterScreenTitle
@@ -479,8 +480,10 @@ private fun FilterScreenContent(
                                 val entity = pagingItems[index]
                                 if (entity != null) {
                                     CatalogProductCard(
-                                        entity = entity,
-                                        isInBasket = state.isProductInBasket(entity),
+                                        state = CatalogProductCardState(
+                                            entity = entity,
+                                            isInBasket = state.isProductInBasket(entity)
+                                        ),
                                         onClick = { dispatch(FilterIntent.ProductClick(entity.id)) },
                                         onMessageClick = {},
                                         onBasketClick = { dispatch(FilterIntent.ProductBasketClick(entity.id)) }
@@ -588,7 +591,7 @@ private class FilterModelProvider: PreviewParameterProvider<Pair<FilterModel, Li
         level = CatalogCategoryEntity.LEVEL_TOP,
         name = "Одежда",
         photoUrl = "",
-        categoryType = CatalogCategoryResponse.CATEGORY_TYPE_CATALOG,
+        categoryType = CatalogCategoryType.CATALOG,
         sortSettingId = 0,
         position = 1
     )
@@ -599,7 +602,7 @@ private class FilterModelProvider: PreviewParameterProvider<Pair<FilterModel, Li
         level = CatalogCategoryEntity.LEVEL_BOTTOM,
         name = "ПУХОВЫЕ",
         photoUrl = "",
-        categoryType = "",
+        categoryType = null,
         sortSettingId = 0,
         position = 1
     )

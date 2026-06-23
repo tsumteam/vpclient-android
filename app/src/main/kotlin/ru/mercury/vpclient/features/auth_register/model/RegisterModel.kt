@@ -1,7 +1,7 @@
 package ru.mercury.vpclient.features.auth_register.model
 
-import ru.mercury.vpclient.shared.data.entity.NameValidationError
-import ru.mercury.vpclient.shared.data.entity.PhoneValidationError
+import ru.mercury.vpclient.shared.domain.usecase.AuthValidateNameUseCase.NameValidationError
+import ru.mercury.vpclient.shared.domain.usecase.AuthValidatePhoneUseCase.PhoneValidationError
 import ru.mercury.vpclient.shared.mvi.Model
 
 data class RegisterModel(

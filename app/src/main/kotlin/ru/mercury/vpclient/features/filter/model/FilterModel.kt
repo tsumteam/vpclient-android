@@ -17,8 +17,8 @@ import ru.mercury.vpclient.shared.domain.mapper.isEmpty
 import ru.mercury.vpclient.shared.domain.mapper.isRequestAffectingCatalogFilterValueChipId
 import ru.mercury.vpclient.shared.mvi.Model
 import ru.mercury.vpclient.shared.data.network.request.CatalogFilterRequest
+import ru.mercury.vpclient.shared.data.network.type.CatalogFilterValueType
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesEntity
-import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValueTypeEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesQuantityEntity
 import ru.mercury.vpclient.shared.domain.mapper.brandValues
 import ru.mercury.vpclient.shared.domain.mapper.toPriceRangeChipData
@@ -120,7 +120,7 @@ data class FilterModel(
                 picker.chipId == CatalogFilterRequest.COLOR -> return null
                 picker.chipId == CatalogFilterRequest.PRICE -> return null
                 picker.chipId == CatalogFilterRequest.SIZE -> return null
-                picker.valueType == FilterValueTypeEntity.ID_TREE -> return null
+                picker.valueType == CatalogFilterValueType.ID_TREE -> return null
             }
             return FilterValuesModel(
                 entity = picker.copy(title = picker.title.uppercase()),
@@ -170,7 +170,7 @@ data class FilterModel(
     val filterTreeSheetState: FilterTreeModel?
         get() {
             val picker = filterValuesEntity
-            if (picker.isEmpty || picker.valueType != FilterValueTypeEntity.ID_TREE) {
+            if (picker.isEmpty || picker.valueType != CatalogFilterValueType.ID_TREE) {
                 return null
             }
             val currentParentId = filterTreePath.lastOrNull()

@@ -3,7 +3,6 @@ package ru.mercury.vpclient.features.profile_info
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.features.cart.navigation.CartPage
@@ -17,9 +16,9 @@ import ru.mercury.vpclient.features.profile_payment.navigation.ProfilePaymentRou
 import ru.mercury.vpclient.features.profile_policy.navigation.ProfilePolicyRoute
 import ru.mercury.vpclient.features.profile_return.navigation.ProfileReturnRoute
 import ru.mercury.vpclient.features.profile_stack.event.ProfileStackEventManager
-import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
-import ru.mercury.vpclient.shared.domain.interactor.EmployeeInteractor
+import ru.mercury.vpclient.shared.domain.mapper.isNotEmpty
+import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.mvi.Event
 import ru.mercury.vpclient.shared.navigation.BackRoute
@@ -28,7 +27,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileInfoViewModel @Inject constructor(
     private val cartInteractor: CartInteractor,
-    private val employeeInteractor: EmployeeInteractor
+    private val employeeActiveFlowUseCase: EmployeeActiveFlowUseCase
 ): ClientViewModel<ProfileInfoIntent, ProfileInfoModel, Event>(ProfileInfoModel()) {
 
     init {
@@ -50,12 +49,11 @@ class ProfileInfoViewModel @Inject constructor(
             }
             is ProfileInfoIntent.CollectActiveEmployee -> {
                 launch {
-                    employeeInteractor.employeeEntitiesFlow
-                        .map { employees -> employees.firstOrNull { it.isActive } }
+                    employeeActiveFlowUseCase(Unit)
                         .distinctUntilChanged()
                         .collectLatest { employee ->
-                            reduce { it.copy(activeEmployee = employee ?: EmployeeEntity.Empty) }
-                            if (employee != null) {
+                            reduce { it.copy(activeEmployee = employee) }
+                            if (employee.isNotEmpty) {
                                 dispatch(ProfileInfoIntent.LoadCartData)
                             }
                         }

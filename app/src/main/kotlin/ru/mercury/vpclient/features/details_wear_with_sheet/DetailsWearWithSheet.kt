@@ -38,6 +38,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilter
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.catalog.CatalogProductCard
+import ru.mercury.vpclient.shared.ui.components.catalog.CatalogProductCardState
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
@@ -113,8 +114,10 @@ fun DetailsWearWithSheet(
                     key = { product -> product.id }
                 ) { product ->
                     CatalogProductCard(
-                        entity = product,
-                        isInBasket = state.isProductInBasket(product),
+                        state = CatalogProductCardState(
+                            entity = product,
+                            isInBasket = state.isProductInBasket(product)
+                        ),
                         onClick = { sheetDispatch(DetailsWearWithSheetIntent.ProductClick(product.id)) },
                         onBasketClick = { sheetDispatch(DetailsWearWithSheetIntent.ProductBasketClick(product)) }
                     )

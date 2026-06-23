@@ -38,7 +38,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.mercury.vpclient.features.category.intent.CategoryIntent
 import ru.mercury.vpclient.features.category.model.CategoryModel
 import ru.mercury.vpclient.features.category.navigation.CategoryRoute
-import ru.mercury.vpclient.shared.data.network.response.CatalogCategoryResponse
+import ru.mercury.vpclient.shared.data.network.type.CatalogCategoryType
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogCategoryEntity
 import ru.mercury.vpclient.shared.data.persistence.database.pojo.SubcategoryPojo
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
@@ -228,7 +228,7 @@ private class CategoryModelProvider: PreviewParameterProvider<CategoryModel> {
         level = CatalogCategoryEntity.LEVEL_TOP,
         name = "Одежда",
         photoUrl = "",
-        categoryType = CatalogCategoryResponse.CATEGORY_TYPE_CATALOG,
+        categoryType = CatalogCategoryType.CATALOG,
         sortSettingId = 0,
         position = 1
     )
@@ -239,7 +239,7 @@ private class CategoryModelProvider: PreviewParameterProvider<CategoryModel> {
         level = CatalogCategoryEntity.LEVEL_BOTTOM,
         name = "ПУХОВЫЕ",
         photoUrl = "",
-        categoryType = "",
+        categoryType = null,
         sortSettingId = 0,
         position = 1
     )

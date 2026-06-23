@@ -65,10 +65,10 @@ import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.auth_code.event.CodeEvents
 import ru.mercury.vpclient.features.auth_code.intent.CodeIntent
 import ru.mercury.vpclient.features.auth_code.model.CodeModel
-import ru.mercury.vpclient.shared.data.entity.CodeValidationError
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ClientEntity
 import ru.mercury.vpclient.shared.domain.mapper.formatCodeResendTime
 import ru.mercury.vpclient.shared.domain.mapper.formatPhoneForDisplay
+import ru.mercury.vpclient.shared.domain.usecase.AuthValidateCodeUseCase.CodeValidationError
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
@@ -134,12 +134,12 @@ private fun CodeScreenContent(
                     Icon(
                         imageVector = Logo82,
                         contentDescription = null,
-                        modifier = Modifier.size(82.dp, 57.dp),
-                        tint = Color.Black
+                        modifier = Modifier.size(82.dp, 57.dp)
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors().copy(
-                    containerColor = MaterialTheme.colorScheme.background
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = Color.Black
                 )
             )
         },

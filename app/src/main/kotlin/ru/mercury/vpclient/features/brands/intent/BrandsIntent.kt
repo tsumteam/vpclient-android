@@ -5,7 +5,6 @@ import ru.mercury.vpclient.shared.mvi.Intent
 sealed interface BrandsIntent: Intent {
     data object CollectCartSize: BrandsIntent
     data object CollectActiveEmployee: BrandsIntent
-    data object LoadEmployees: BrandsIntent
     data object LoadCartData: BrandsIntent
     data object SearchClick: BrandsIntent
     data object CartClick: BrandsIntent

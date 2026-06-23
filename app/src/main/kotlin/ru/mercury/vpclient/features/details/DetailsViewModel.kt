@@ -6,7 +6,6 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.features.cart.navigation.CartPage
@@ -20,15 +19,15 @@ import ru.mercury.vpclient.features.media.navigation.MediaRoute
 import ru.mercury.vpclient.features.video.navigation.VideoRoute
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.error.AddProductToBasketException
-import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
+import ru.mercury.vpclient.shared.data.network.type.CatalogViewType
 import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
 import ru.mercury.vpclient.shared.domain.interactor.CatalogInteractor
-import ru.mercury.vpclient.shared.domain.interactor.EmployeeInteractor
 import ru.mercury.vpclient.shared.domain.interactor.ProductInteractor
-import ru.mercury.vpclient.shared.domain.mapper.BRAND_VIEW_TYPE
+import ru.mercury.vpclient.shared.domain.mapper.isNotEmpty
 import ru.mercury.vpclient.shared.domain.mapper.toCatalogLinkData
 import ru.mercury.vpclient.shared.domain.mapper.toFilterRoute
 import ru.mercury.vpclient.shared.domain.mapper.withCenterLoading
+import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.navigation.BackRoute
 
@@ -37,7 +36,7 @@ class DetailsViewModel @AssistedInject constructor(
     @Assisted private val route: DetailsRoute,
     private val cartInteractor: CartInteractor,
     private val catalogInteractor: CatalogInteractor,
-    private val employeeInteractor: EmployeeInteractor,
+    private val employeeActiveFlowUseCase: EmployeeActiveFlowUseCase,
     private val productInteractor: ProductInteractor
 ): ClientViewModel<DetailsIntent, DetailsModel, DetailsEvent>(DetailsModel()) {
 
@@ -46,7 +45,6 @@ class DetailsViewModel @AssistedInject constructor(
         dispatch(DetailsIntent.CollectCartProducts)
         dispatch(DetailsIntent.CollectCartSize)
         dispatch(DetailsIntent.CollectActiveEmployee)
-        dispatch(DetailsIntent.LoadEmployees)
         dispatch(DetailsIntent.LoadCartData)
         dispatch(DetailsIntent.LoadProduct)
     }
@@ -84,18 +82,16 @@ class DetailsViewModel @AssistedInject constructor(
             }
             is DetailsIntent.CollectActiveEmployee -> {
                 launch {
-                    employeeInteractor.employeeEntitiesFlow
-                        .map { employees -> employees.firstOrNull { it.isActive } }
+                    employeeActiveFlowUseCase(Unit)
                         .distinctUntilChanged()
                         .collectLatest { employee ->
-                            reduce { it.copy(activeEmployee = employee ?: EmployeeEntity.Empty) }
-                            if (employee != null) {
+                            reduce { it.copy(activeEmployee = employee) }
+                            if (employee.isNotEmpty) {
                                 dispatch(DetailsIntent.LoadCartData)
                             }
                         }
                 }
             }
-            is DetailsIntent.LoadEmployees -> launch { runCatching { employeeInteractor.syncEmployees() } }
             is DetailsIntent.LoadCartData -> {
                 launch {
                     runCatching { cartInteractor.loadBasket() }
@@ -112,7 +108,9 @@ class DetailsViewModel @AssistedInject constructor(
                 }
             }
             is DetailsIntent.CartClick -> launch { MainEventManager.send(CartRoute()) }
-            is DetailsIntent.FittingClick -> launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
+            is DetailsIntent.FittingClick -> {
+                launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
+            }
             is DetailsIntent.MessengerClick -> return
             is DetailsIntent.MessageClick -> reduce { it.copy(isMessageSheetVisible = true) }
             is DetailsIntent.SizeTableClick -> Unit
@@ -167,11 +165,11 @@ class DetailsViewModel @AssistedInject constructor(
                     val catalogLinkData = button.catalogLink?.toCatalogLinkData() ?: return@launch
                     val categoryId = when {
                         catalogLinkData.categoryId != null -> catalogLinkData.categoryId
-                        catalogLinkData.viewType == BRAND_VIEW_TYPE -> productEntity.categoryId
+                        catalogLinkData.viewType == CatalogViewType.BRAND -> productEntity.categoryId
                         else -> null
                     } ?: return@launch
                     val brandEntity = when {
-                        catalogLinkData.viewType == BRAND_VIEW_TYPE -> {
+                        catalogLinkData.viewType == CatalogViewType.BRAND -> {
                             BrandEntity(
                                 brand = productEntity.brand.orEmpty(),
                                 urlBrandLogo = productEntity.urlBrandLogo
@@ -181,11 +179,11 @@ class DetailsViewModel @AssistedInject constructor(
                     }
                     val route = catalogInteractor.catalogCategory(categoryId)?.toFilterRoute(brandEntity) ?: return@launch
                     val resolvedRoute = when {
-                        catalogLinkData.viewType == BRAND_VIEW_TYPE -> {
+                        catalogLinkData.viewType == CatalogViewType.BRAND -> {
                             route.copy(
                                 initialSelectedFilterValueChips = emptyList(),
                                 hiddenFilterValueChipIds = catalogLinkData.selectedFilterValueChipIds,
-                                viewTypeOverride = BRAND_VIEW_TYPE
+                                viewTypeOverride = CatalogViewType.BRAND
                             )
                         }
                         else -> {

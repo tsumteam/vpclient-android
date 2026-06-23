@@ -7,7 +7,6 @@ sealed interface DetailsIntent: Intent {
     data object CollectCartProducts: DetailsIntent
     data object CollectCartSize: DetailsIntent
     data object CollectActiveEmployee: DetailsIntent
-    data object LoadEmployees: DetailsIntent
     data object LoadCartData: DetailsIntent
     data object LoadProduct: DetailsIntent
     data object BackClick: DetailsIntent

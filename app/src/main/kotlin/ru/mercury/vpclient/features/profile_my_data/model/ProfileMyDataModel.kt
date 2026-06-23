@@ -8,7 +8,7 @@ import ru.mercury.vpclient.shared.domain.mapper.hasFittingProducts
 import ru.mercury.vpclient.shared.domain.mapper.hasMessengerBadge
 import ru.mercury.vpclient.shared.mvi.Model
 
-data class MyDataModel(
+data class ProfileMyDataModel(
     val deleteProfileJob: Job? = null,
     val cartSize: Int = 0,
     val cartBadge: Int = 0,

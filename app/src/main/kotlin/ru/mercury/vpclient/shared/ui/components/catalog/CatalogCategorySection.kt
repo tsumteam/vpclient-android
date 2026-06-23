@@ -23,7 +23,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.mercury.vpclient.shared.data.network.response.CatalogCategoryResponse
+import ru.mercury.vpclient.shared.data.network.type.CatalogCategoryType
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogCategoryEntity
 import ru.mercury.vpclient.shared.data.persistence.database.pojo.SubcategoryPojo
 import ru.mercury.vpclient.shared.domain.mapper.isEmpty
@@ -175,7 +175,7 @@ private class CatalogCategorySectionCatalogCategoryEntityProvider: PreviewParame
             level = CatalogCategoryEntity.LEVEL_TOP,
             name = "Одежда",
             photoUrl = "",
-            categoryType = CatalogCategoryResponse.CATEGORY_TYPE_CATALOG,
+            categoryType = CatalogCategoryType.CATALOG,
             sortSettingId = 0,
             position = 1
         ),
@@ -192,7 +192,7 @@ private class CatalogCategorySectionCatalogCategoryEntityProvider2: PreviewParam
             level = CatalogCategoryEntity.LEVEL_BOTTOM,
             name = "ПУХОВЫЕ",
             photoUrl = "",
-            categoryType = "",
+            categoryType = null,
             sortSettingId = 0,
             position = 1
         )

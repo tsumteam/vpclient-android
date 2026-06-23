@@ -8,12 +8,14 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import ru.mercury.vpclient.shared.data.persistence.database.AppDatabase
+import ru.mercury.vpclient.shared.data.persistence.database.dao.ActivityCounterDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CartProductDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogCategoryDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogFilterDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogFilterProductsDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogFilterProductsQuantityDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.ClientDao
+import ru.mercury.vpclient.shared.data.persistence.database.dao.EmployeeBadgeDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.EmployeeDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.FilterValuesDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.FilterValuesQuantityDao
@@ -38,6 +40,15 @@ object DatabaseModule {
     }
 
     @Provides
+    fun activityCounterDao(database: AppDatabase): ActivityCounterDao = database.activityCounterDao()
+
+    @Provides
+    fun clientDao(database: AppDatabase): ClientDao = database.clientDao()
+
+    @Provides
+    fun catalogCategoryDao(database: AppDatabase): CatalogCategoryDao = database.catalogCategoryDao()
+
+    @Provides
     fun cartProductDao(database: AppDatabase): CartProductDao = database.cartProductDao()
 
     @Provides
@@ -50,19 +61,16 @@ object DatabaseModule {
     fun catalogFilterProductsQuantityDao(database: AppDatabase): CatalogFilterProductsQuantityDao = database.catalogFilterProductsQuantityDao()
 
     @Provides
+    fun employeeDao(database: AppDatabase): EmployeeDao = database.employeeDao()
+
+    @Provides
+    fun employeeBadgeDao(database: AppDatabase): EmployeeBadgeDao = database.employeeBadgeDao()
+
+    @Provides
     fun filterValuesDao(database: AppDatabase): FilterValuesDao = database.filterValuesDao()
 
     @Provides
     fun filterValuesQuantityDao(database: AppDatabase): FilterValuesQuantityDao = database.filterValuesQuantityDao()
-
-    @Provides
-    fun catalogCategoryDao(database: AppDatabase): CatalogCategoryDao = database.catalogCategoryDao()
-
-    @Provides
-    fun clientDao(database: AppDatabase): ClientDao = database.clientDao()
-
-    @Provides
-    fun employeeDao(database: AppDatabase): EmployeeDao = database.employeeDao()
 
     @Provides
     fun pagingKeyDao(database: AppDatabase): PagingKeyDao = database.pagingKeyDao()

@@ -5,6 +5,7 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import ru.mercury.vpclient.shared.data.network.request.CatalogFilterRequest
 import ru.mercury.vpclient.shared.data.network.request.CatalogFilterValueRequest
+import ru.mercury.vpclient.shared.data.network.type.CatalogFilterValueType
 
 // fixme
 
@@ -45,7 +46,7 @@ fun Set<String>.requests(
     val categoryRequestKey = RequestKey(filterType = CatalogFilterRequest.CATEGORY, filterSubtype = null)
     if (includeDefaultCategory && valuesByRequestKey[categoryRequestKey].isNullOrEmpty()) {
         valuesByRequestKey.getOrPut(categoryRequestKey) { mutableListOf() }
-            .add(CatalogFilterValueRequest(CatalogFilterValueRequest.ID_TREE, JsonPrimitive(categoryId)))
+            .add(CatalogFilterValueRequest(CatalogFilterValueType.ID_TREE, JsonPrimitive(categoryId)))
     }
     return buildList {
         valuesByRequestKey.toSortedMap(compareBy<RequestKey> { it.filterType }.thenBy { it.filterSubtype.orEmpty() })
@@ -66,7 +67,7 @@ private fun String.toCatalogFilterRequestEntry(): RequestEntry? {
             simpleRequestEntry(
                 chipId = this,
                 filterType = CatalogFilterRequest.ACTION,
-                valueType = CatalogFilterValueRequest.ID
+                valueType = CatalogFilterValueType.ID
             )
         }
         startsWith("${CatalogFilterRequest.CATEGORY}_") -> {
@@ -76,14 +77,14 @@ private fun String.toCatalogFilterRequestEntry(): RequestEntry? {
             simpleRequestEntry(
                 chipId = this,
                 filterType = CatalogFilterRequest.BRAND,
-                valueType = CatalogFilterValueRequest.BRAND
+                valueType = CatalogFilterValueType.BRAND
             )
         }
         startsWith("${CatalogFilterRequest.COLOR}_") -> {
             simpleRequestEntry(
                 chipId = this,
                 filterType = CatalogFilterRequest.COLOR,
-                valueType = CatalogFilterValueRequest.ID
+                valueType = CatalogFilterValueType.ID
             )
         }
         startsWith("${CatalogFilterRequest.PRICE}_range_") -> {
@@ -93,7 +94,7 @@ private fun String.toCatalogFilterRequestEntry(): RequestEntry? {
             simpleRequestEntry(
                 chipId = this,
                 filterType = CatalogFilterRequest.SIZE,
-                valueType = CatalogFilterValueRequest.CATALOG_PRODUCT_SIZE
+                valueType = CatalogFilterValueType.CATALOG_PRODUCT_SIZE
             )
         }
         startsWith("${CatalogFilterRequest.ATTRIBUTE}_") -> {
@@ -113,7 +114,7 @@ private fun categoryRequestEntry(chipId: String): RequestEntry? {
     return RequestEntry(
         key = RequestKey(filterType = CatalogFilterRequest.CATEGORY, filterSubtype = null),
         value = CatalogFilterValueRequest(
-            valueType = CatalogFilterValueRequest.ID_TREE,
+            valueType = CatalogFilterValueType.ID_TREE,
             value = JsonPrimitive(value)
         )
     )
@@ -122,7 +123,7 @@ private fun categoryRequestEntry(chipId: String): RequestEntry? {
 private fun simpleRequestEntry(
     chipId: String,
     filterType: String,
-    valueType: String
+    valueType: CatalogFilterValueType
 ): RequestEntry? {
     val value = chipId.substringAfter("${filterType}_").toIntOrNull() ?: return null
     return RequestEntry(
@@ -147,7 +148,7 @@ private fun priceRequestEntry(chipId: String): RequestEntry? {
     return RequestEntry(
         key = RequestKey(filterType = CatalogFilterRequest.PRICE, filterSubtype = null),
         value = CatalogFilterValueRequest(
-            valueType = CatalogFilterValueRequest.DECIMAL_RANGE,
+            valueType = CatalogFilterValueType.DECIMAL_RANGE,
             value = buildJsonObject {
                 if (fromValue != null) {
                     put("from", fromValue)
@@ -176,8 +177,8 @@ private fun attributeRequestEntry(chipId: String): RequestEntry? {
     }
     val value = valueString.toIntOrNull() ?: return null
     val valueType = when {
-        rawValue.contains(treeSeparator) -> CatalogFilterValueRequest.ID_TREE
-        else -> CatalogFilterValueRequest.ID
+        rawValue.contains(treeSeparator) -> CatalogFilterValueType.ID_TREE
+        else -> CatalogFilterValueType.ID
     }
     return RequestEntry(
         key = RequestKey(filterType = CatalogFilterRequest.ATTRIBUTE, filterSubtype = filterSubtype),

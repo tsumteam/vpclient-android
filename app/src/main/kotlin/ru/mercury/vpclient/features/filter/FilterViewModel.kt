@@ -31,14 +31,13 @@ import ru.mercury.vpclient.shared.data.entity.SortType
 import ru.mercury.vpclient.shared.data.error.ClientException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
-import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesQuantityEntity
 import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
-import ru.mercury.vpclient.shared.domain.interactor.EmployeeInteractor
 import ru.mercury.vpclient.shared.domain.interactor.FilterInteractor
 import ru.mercury.vpclient.shared.domain.mapper.includeDefaultCategory
 import ru.mercury.vpclient.shared.domain.mapper.isEmpty
+import ru.mercury.vpclient.shared.domain.mapper.isNotEmpty
 import ru.mercury.vpclient.shared.domain.mapper.isRequestAffectingCatalogFilterValueChipId
 import ru.mercury.vpclient.shared.domain.mapper.onlyDigits
 import ru.mercury.vpclient.shared.domain.mapper.priceFilterChip
@@ -48,6 +47,7 @@ import ru.mercury.vpclient.shared.domain.mapper.toPriceRangeChipData
 import ru.mercury.vpclient.shared.domain.mapper.topBarBrandChipId
 import ru.mercury.vpclient.shared.domain.mapper.topBarBrandId
 import ru.mercury.vpclient.shared.domain.mapper.values
+import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.navigation.BackRoute
 
@@ -55,7 +55,7 @@ import ru.mercury.vpclient.shared.navigation.BackRoute
 class FilterViewModel @AssistedInject constructor(
     @Assisted private val route: FilterRoute,
     private val cartInteractor: CartInteractor,
-    private val employeeInteractor: EmployeeInteractor,
+    private val employeeActiveFlowUseCase: EmployeeActiveFlowUseCase,
     private val filterInteractor: FilterInteractor
 ): ClientViewModel<FilterIntent, FilterModel, FilterEvent>(FilterModel()) {
 
@@ -79,7 +79,6 @@ class FilterViewModel @AssistedInject constructor(
         dispatch(FilterIntent.CollectFilterData)
         dispatch(FilterIntent.CollectCartSize)
         dispatch(FilterIntent.CollectActiveEmployee)
-        dispatch(FilterIntent.LoadEmployees)
         dispatch(FilterIntent.LoadCartData)
         dispatch(FilterIntent.LoadCatalogFilters)
         dispatch(FilterIntent.LoadProductsQuantity)
@@ -136,18 +135,16 @@ class FilterViewModel @AssistedInject constructor(
             }
             is FilterIntent.CollectActiveEmployee -> {
                 launch {
-                    employeeInteractor.employeeEntitiesFlow
-                        .map { employees -> employees.firstOrNull { it.isActive } }
+                    employeeActiveFlowUseCase(Unit)
                         .distinctUntilChanged()
                         .collectLatest { employee ->
-                            reduce { it.copy(activeEmployee = employee ?: EmployeeEntity.Empty) }
+                            reduce { it.copy(activeEmployee = employee) }
                             when {
-                                employee != null -> dispatch(FilterIntent.LoadCartData)
+                                employee.isNotEmpty -> dispatch(FilterIntent.LoadCartData)
                             }
                         }
                 }
             }
-            is FilterIntent.LoadEmployees -> launch { runCatching { employeeInteractor.syncEmployees() } }
             is FilterIntent.LoadCartData -> {
                 launch {
                     runCatching { cartInteractor.loadBasket() }

@@ -4,4 +4,5 @@ import ru.mercury.vpclient.shared.mvi.Event
 
 sealed interface ConsultantEvent: Event {
     data class SnackbarMessage(val message: String): ConsultantEvent
+    data class LaunchDialer(val phone: String): ConsultantEvent
 }

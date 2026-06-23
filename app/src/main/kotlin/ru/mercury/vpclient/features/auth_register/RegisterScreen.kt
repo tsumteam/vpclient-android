@@ -57,8 +57,8 @@ import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.auth_register.event.RegisterEvents
 import ru.mercury.vpclient.features.auth_register.intent.RegisterIntent
 import ru.mercury.vpclient.features.auth_register.model.RegisterModel
-import ru.mercury.vpclient.shared.data.entity.NameValidationError
-import ru.mercury.vpclient.shared.data.entity.PhoneValidationError
+import ru.mercury.vpclient.shared.domain.usecase.AuthValidateNameUseCase.NameValidationError
+import ru.mercury.vpclient.shared.domain.usecase.AuthValidatePhoneUseCase.PhoneValidationError
 import ru.mercury.vpclient.shared.ui.components.AgreementText
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
@@ -137,12 +137,12 @@ private fun RegisterScreenContent(
                     Icon(
                         imageVector = Logo82,
                         contentDescription = null,
-                        modifier = Modifier.size(82.dp, 57.dp),
-                        tint = Color.Black
+                        modifier = Modifier.size(82.dp, 57.dp)
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors().copy(
-                    containerColor = MaterialTheme.colorScheme.background
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = Color.Black
                 )
             )
         },

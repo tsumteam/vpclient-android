@@ -53,7 +53,7 @@ import ru.mercury.vpclient.shared.domain.mapper.imagePages
 import ru.mercury.vpclient.shared.domain.mapper.isDiscountLabelVisible
 import ru.mercury.vpclient.shared.ui.components.BrandBox
 import ru.mercury.vpclient.shared.ui.components.DiscountBadge
-import ru.mercury.vpclient.shared.ui.components.HorizontalPagerIndicator
+import ru.mercury.vpclient.shared.ui.components.SharedHorizontalPagerIndicator
 import ru.mercury.vpclient.shared.ui.components.PriceText
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.icons.Basket24
@@ -66,21 +66,35 @@ import ru.mercury.vpclient.shared.ui.theme.regular14
 import kotlin.time.Duration.Companion.milliseconds
 
 private const val ADDED_TO_BASKET_BADGE_VISIBLE_DURATION = 1_500L
-private const val ADDED_TO_BASKET_BADGE_FADE_OUT_DURATION = 800
+private const val ADDED_TO_BASKET_BADGE_FADE_OUT_DURATION = 800L
+
+data class CatalogProductCardState(
+    val entity: CatalogFilterProductsEntity,
+    val isInBasket: Boolean = false
+)
 
 @Composable
 fun CatalogProductCard(
-    entity: CatalogFilterProductsEntity,
+    state: CatalogProductCardState,
     modifier: Modifier = Modifier,
-    isInBasket: Boolean = false,
     onClick: () -> Unit = {},
     onMessageClick: () -> Unit = {},
     onBasketClick: () -> Unit = {}
 ) {
+    val entity = state.entity
     val pagerImages = remember(entity.imagePages) { entity.imagePages }
-    val pagerState = rememberPagerState(pageCount = { pagerImages.size })
+    val pagerState = rememberPagerState(
+        pageCount = { if (pagerImages.isEmpty()) 0 else Int.MAX_VALUE }
+    )
     var isAddedToBasketBadgeVisible by remember { mutableStateOf(false) }
     var addedToBasketBadgeTrigger by remember { mutableIntStateOf(0) }
+
+    LaunchedEffect(pagerImages.size) {
+        if (pagerImages.isNotEmpty()) {
+            val mid = Int.MAX_VALUE / 2
+            pagerState.scrollToPage(mid - mid % pagerImages.size)
+        }
+    }
 
     LaunchedEffect(addedToBasketBadgeTrigger) {
         if (addedToBasketBadgeTrigger == 0) return@LaunchedEffect
@@ -126,7 +140,7 @@ fun CatalogProductCard(
 
         IconButton(
             onClick = {
-                if (!isInBasket) {
+                if (!state.isInBasket) {
                     addedToBasketBadgeTrigger += 1
                 }
                 onBasketClick()
@@ -137,11 +151,11 @@ fun CatalogProductCard(
             }
         ) {
             Icon(
-                imageVector = if (isInBasket) BasketFilled24 else Basket24,
+                imageVector = if (state.isInBasket) BasketFilled24 else Basket24,
                 contentDescription = null,
                 modifier = Modifier.size(24.dp),
                 tint = when {
-                    isInBasket -> MaterialTheme.colorScheme.onBackground
+                    state.isInBasket -> MaterialTheme.colorScheme.onBackground
                     else -> Color.Unspecified
                 }
             )
@@ -151,7 +165,7 @@ fun CatalogProductCard(
             visible = isAddedToBasketBadgeVisible,
             enter = EnterTransition.None,
             exit = fadeOut(
-                animationSpec = tween(durationMillis = ADDED_TO_BASKET_BADGE_FADE_OUT_DURATION)
+                animationSpec = tween(durationMillis = ADDED_TO_BASKET_BADGE_FADE_OUT_DURATION.toInt())
             ),
             modifier = Modifier.constrainAs(addedToBasketBadge) {
                 top.linkTo(basketButton.top)
@@ -191,15 +205,16 @@ fun CatalogProductCard(
             userScrollEnabled = pagerImages.size > 1
         ) { page ->
             ClientAsyncImage(
-                imageUrl = pagerImages[page],
+                imageUrl = pagerImages[page % pagerImages.size],
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Fit
             )
         }
 
-        HorizontalPagerIndicator(
+        SharedHorizontalPagerIndicator(
             pagerState = pagerState,
             pageCount = pagerImages.size,
+            pageIndexMapping = { it % pagerImages.size },
             modifier = Modifier.constrainAs(pagerIndicator) {
                 start.linkTo(parent.start)
                 top.linkTo(pager.bottom, 2.dp)
@@ -277,7 +292,9 @@ private fun CatalogProductCardPreview(
     @PreviewParameter(CatalogProductCardCatalogFilterProductsEntityProvider::class) product: CatalogFilterProductsEntity
 ) {
     CatalogProductCard(
-        entity = product,
+        state = CatalogProductCardState(
+            entity = product
+        ),
         modifier = Modifier.width(200.dp)
     )
 }

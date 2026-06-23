@@ -1,5 +1,6 @@
 package ru.mercury.vpclient.shared.ui.components.system
 
+import android.util.Log
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -22,7 +23,8 @@ fun ClientAsyncImage(
     imageUrl: String,
     contentScale: ContentScale,
     modifier: Modifier = Modifier,
-    alignment: Alignment = Alignment.Center
+    alignment: Alignment = Alignment.Center,
+    contentDescription: String? = null
 ) {
     val context = LocalContext.current
     val isInspectionMode = LocalInspectionMode.current
@@ -38,13 +40,16 @@ fun ClientAsyncImage(
                 }
             }
             .build(),
-        contentDescription = null,
+        contentDescription = contentDescription,
         modifier = modifier,
         contentScale = contentScale,
         alignment = alignment,
         placeholder = if (isInspectionMode) null else painter,
         error = if (isInspectionMode) null else painter,
-        fallback = if (isInspectionMode) null else painter
+        fallback = if (isInspectionMode) null else painter,
+        onError = { state ->
+            Log.e("2", "imageUrl = $imageUrl, state = ${state.result.throwable}")
+        }
     )
 }
 
