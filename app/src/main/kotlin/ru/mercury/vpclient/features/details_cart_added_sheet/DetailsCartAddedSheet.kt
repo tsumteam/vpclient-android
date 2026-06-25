@@ -77,14 +77,12 @@ fun DetailsCartAddedSheet(
                     title = {
                         Text(
                             text = stringResource(ClientStrings.DetailsCartAddedSheetTitle),
-                            style = MaterialTheme.typography.livretMedium18.copy(
-                                color = MaterialTheme.colorScheme.onBackground,
-                                textAlign = TextAlign.Center
-                            )
+                            style = MaterialTheme.typography.livretMedium18
                         )
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.background
+                        containerColor = MaterialTheme.colorScheme.background,
+                        titleContentColor = MaterialTheme.colorScheme.onBackground
                     )
                 )
             }

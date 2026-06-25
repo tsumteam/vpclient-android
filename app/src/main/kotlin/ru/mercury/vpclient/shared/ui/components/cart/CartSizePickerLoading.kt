@@ -33,16 +33,34 @@ fun CartSizePickerLoading(
     ) {
         Box(
             modifier = Modifier
-                .padding(start = 16.dp, top = 16.dp)
-                .width(56.dp)
-                .height(16.dp)
-                .placeholder(
-                    visible = true,
-                    highlight = PlaceholderHighlight.shimmer(),
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    shape = RoundedCornerShape(4.dp)
-                )
-        )
+                .fillMaxWidth()
+                .padding(start = 16.dp, top = 16.dp, end = 16.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .width(56.dp)
+                    .height(16.dp)
+                    .placeholder(
+                        visible = true,
+                        highlight = PlaceholderHighlight.shimmer(),
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        shape = RoundedCornerShape(4.dp)
+                    )
+            )
+
+            Box(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .width(116.dp)
+                    .height(16.dp)
+                    .placeholder(
+                        visible = true,
+                        highlight = PlaceholderHighlight.shimmer(),
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        shape = RoundedCornerShape(4.dp)
+                    )
+            )
+        }
 
         Row(
             modifier = Modifier
@@ -118,19 +136,6 @@ fun CartSizePickerLoading(
                     shape = RoundedCornerShape(4.dp)
                 )
         )
-
-        /*Box(
-            modifier = Modifier
-                .padding(start = 16.dp, top = 28.dp, end = 16.dp, bottom = 8.dp)
-                .fillMaxWidth()
-                .height(52.dp)
-                .placeholder(
-                    visible = true,
-                    highlight = PlaceholderHighlight.shimmer(),
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    shape = RoundedCornerShape(8.dp)
-                )
-        )*/
     }
 }
 

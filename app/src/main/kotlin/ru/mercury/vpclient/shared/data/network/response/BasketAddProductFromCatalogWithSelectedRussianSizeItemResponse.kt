@@ -1,0 +1,11 @@
+package ru.mercury.vpclient.shared.data.network.response
+
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class BasketAddProductFromCatalogWithSelectedRussianSizeItemResponse(
+    @SerialName("itemId") val itemId: String? = null,
+    @SerialName("colorId") val colorId: String? = null,
+    @SerialName("russianSizeCode") val russianSizeCode: String? = null
+)

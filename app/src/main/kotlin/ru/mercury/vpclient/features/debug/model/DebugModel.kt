@@ -8,5 +8,5 @@ data class DebugModel(
     val environment: ClientEnvironment = ClientEnvironment.TEST,
     val requestDelayEnabled: Boolean = false,
     val mockBackendEnabled: Boolean = false,
-    val environmentDialog: Boolean = false
+    val isEnvironmentDialogVisible: Boolean = false
 ): Model

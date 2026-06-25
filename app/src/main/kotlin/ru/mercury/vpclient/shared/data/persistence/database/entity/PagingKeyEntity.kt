@@ -10,5 +10,6 @@ data class PagingKeyEntity(
     val categoryId: Int,
     val titleCategoryId: Int,
     val offset: Int?,
-    val limit: Int?
+    val limit: Int?,
+    val paginationToken: String?
 )

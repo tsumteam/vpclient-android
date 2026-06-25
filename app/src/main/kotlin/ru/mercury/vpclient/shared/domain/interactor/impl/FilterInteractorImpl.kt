@@ -6,8 +6,6 @@ import kotlinx.coroutines.withContext
 import ru.mercury.vpclient.shared.coroutines.SharedDispatchers
 import ru.mercury.vpclient.shared.data.entity.CatalogFilterProductsData
 import ru.mercury.vpclient.shared.data.entity.CatalogFilterRequestData2
-import ru.mercury.vpclient.shared.data.entity.FilterData
-import ru.mercury.vpclient.shared.data.entity.FilterRequestData
 import ru.mercury.vpclient.shared.data.entity.FilterValuesRequestData
 import ru.mercury.vpclient.shared.domain.interactor.FilterInteractor
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
@@ -20,10 +18,6 @@ class FilterInteractorImpl @Inject constructor(
     private val dispatchers: SharedDispatchers,
     private val filterRepository: FilterRepository
 ): FilterInteractor {
-
-    override fun filterDataFlow(data: FilterRequestData): Flow<FilterData> {
-        return filterRepository.filterDataFlow(data)
-    }
 
     override fun filterProductsPagingData(data: CatalogFilterProductsData): Flow<PagingData<CatalogFilterProductsEntity>> {
         return filterRepository.filterProductsPagingData(data)
@@ -41,16 +35,8 @@ class FilterInteractorImpl @Inject constructor(
         return filterRepository.filterValuesQuantityEntityFlow(chipId)
     }
 
-    override suspend fun loadCatalogFilters(data: CatalogFilterRequestData2) {
-        return withContext(dispatchers.io) { filterRepository.loadCatalogFilters(data) }
-    }
-
     override suspend fun loadCatalogFilterValues(data: FilterValuesRequestData) {
         withContext(dispatchers.io) { filterRepository.loadCatalogFilterValues(data) }
-    }
-
-    override suspend fun loadCatalogFiltersProductsQuantity(data: CatalogFilterRequestData2) {
-        return withContext(dispatchers.io) { filterRepository.loadCatalogFiltersProductsQuantity(data) }
     }
 
     override suspend fun loadCatalogFiltersProductsQuantity(chipId: String, data: CatalogFilterRequestData2) {

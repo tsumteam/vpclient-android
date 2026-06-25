@@ -6,8 +6,8 @@ import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import ru.mercury.vpclient.shared.data.network.entity.FilterDecimalRangeValueDto
-import ru.mercury.vpclient.shared.data.network.entity.FilterIdTreeValueDto
+import ru.mercury.vpclient.shared.data.network.response.FilterDecimalRangeValueResponse
+import ru.mercury.vpclient.shared.data.network.response.FilterIdTreeValueResponse
 import ru.mercury.vpclient.shared.data.network.response.FilterValuesValueResponse
 import ru.mercury.vpclient.shared.data.network.type.CatalogFilterValueType
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValueItemEntity
@@ -72,7 +72,7 @@ private fun JsonElement.toRegularFilterValue(chipId: String): FilterValueItemEnt
 }
 
 private fun JsonElement.toDecimalRangeFilterValue(chipId: String): FilterValueItemEntity? {
-    val response = runCatching { filterValuesJson.decodeFromJsonElement<FilterDecimalRangeValueDto>(this) }
+    val response = runCatching { filterValuesJson.decodeFromJsonElement<FilterDecimalRangeValueResponse>(this) }
         .getOrNull()
         ?: return null
     val labelValue = response.label.orEmpty()
@@ -96,13 +96,13 @@ private fun JsonElement.toTreeFilterValues(
     chipId: String,
     parentId: String?
 ): List<FilterValueItemEntity> {
-    val response = runCatching { filterValuesJson.decodeFromJsonElement<FilterIdTreeValueDto>(this) }
+    val response = runCatching { filterValuesJson.decodeFromJsonElement<FilterIdTreeValueResponse>(this) }
         .getOrNull()
         ?: return emptyList()
     return response.toTreeFilterValues(chipId, parentId)
 }
 
-private fun FilterIdTreeValueDto.toTreeFilterValues(
+private fun FilterIdTreeValueResponse.toTreeFilterValues(
     chipId: String,
     parentId: String?
 ): List<FilterValueItemEntity> {

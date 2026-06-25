@@ -47,8 +47,11 @@ import ru.mercury.vpclient.shared.domain.mapper.isFeminine
 import ru.mercury.vpclient.shared.domain.mapper.moveProductAfterDrag
 import ru.mercury.vpclient.shared.domain.mapper.withCenterLoading
 import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.FittingCountFlowUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.navigation.BackRoute
+
+private const val NO_AVAILABLE_COLORS_MESSAGE = "Для товара нет доступных цветов"
 
 @HiltViewModel(assistedFactory = CartViewModel.Factory::class)
 class CartViewModel @AssistedInject constructor(
@@ -56,12 +59,14 @@ class CartViewModel @AssistedInject constructor(
     private val authenticationInteractor: AuthenticationInteractor,
     private val cartInteractor: CartInteractor,
     private val employeeActiveFlowUseCase: EmployeeActiveFlowUseCase,
+    private val fittingCountFlowUseCase: FittingCountFlowUseCase,
     private val productInteractor: ProductInteractor
 ): ClientViewModel<CartIntent, CartModel, CartEvent>(CartModel()) {
 
     init {
         dispatch(CartIntent.CollectInitialPage)
         dispatch(CartIntent.CollectCart)
+        dispatch(CartIntent.CollectFittingCount)
         dispatch(CartIntent.CollectActiveEmployee)
         dispatch(CartIntent.LoadCurrentUser)
         dispatch(CartIntent.LoadCart)
@@ -85,6 +90,15 @@ class CartViewModel @AssistedInject constructor(
                     cartInteractor.cartProductsFlow.collectLatest { products ->
                         reduce { it.copy(products = products) }
                     }
+                }
+            }
+            is CartIntent.CollectFittingCount -> {
+                launch {
+                    fittingCountFlowUseCase(Unit)
+                        .distinctUntilChanged()
+                        .collectLatest { count ->
+                            reduce { it.copy(fittingCount = count) }
+                        }
                 }
             }
             is CartIntent.CollectActiveEmployee -> {
@@ -143,6 +157,7 @@ class CartViewModel @AssistedInject constructor(
             is CartIntent.CloseClick -> launch { MainEventManager.send(BackRoute) }
             is CartIntent.FittingClick -> reduce { it.copy(isFittingSheetVisible = true) }
             is CartIntent.FittingTabClick -> return
+            is CartIntent.SizeTableClick -> return
             is CartIntent.FittingDeliveryClick -> {
                 launch {
                     when {
@@ -290,7 +305,7 @@ class CartViewModel @AssistedInject constructor(
                 }
             }
             is CartIntent.ToggleSizePickerItem -> {
-                val sizeId = stateFlow.value.sizePickerSizes?.items?.getOrNull(intent.index)?.sizeId
+                val sizeId = stateFlow.value.visibleSizePickerItems.getOrNull(intent.index)?.sizeId
                 reduce { it.copy(sizePickerSelectedId = sizeId) }
             }
             is CartIntent.ConfirmSizePicker -> {
@@ -329,27 +344,20 @@ class CartViewModel @AssistedInject constructor(
                 }
             }
             is CartIntent.ShowColorPicker -> {
-                reduce {
-                    it.copy(
-                        fittingEditProduct = null,
-                        colorPickerProduct = intent.product,
-                        colorPickerColors = null,
-                        colorPickerSelectedId = null,
-                        colorPickerForFitting = intent.forFitting
-                    )
-                }
                 launch {
                     val colors = cartInteractor.loadAvailableColors(intent.product)
+                    if (colors.isEmpty()) {
+                        send(CartEvent.SnackbarErrorMessage(NO_AVAILABLE_COLORS_MESSAGE))
+                        return@launch
+                    }
                     reduce {
-                        when (it.colorPickerProduct?.id) {
-                            intent.product.id -> {
-                                it.copy(
-                                    colorPickerColors = colors,
-                                    colorPickerSelectedId = colors.firstOrNull { color -> color.selected }?.id
-                                )
-                            }
-                            else -> it
-                        }
+                        it.copy(
+                            fittingEditProduct = null,
+                            colorPickerProduct = intent.product,
+                            colorPickerColors = colors,
+                            colorPickerSelectedId = colors.firstOrNull { color -> color.selected }?.id,
+                            colorPickerForFitting = intent.forFitting
+                        )
                     }
                 }
             }
@@ -423,7 +431,7 @@ class CartViewModel @AssistedInject constructor(
             }
             is CartIntent.ConfirmQuantityPicker -> {
                 val product = stateFlow.value.quantityPickerProduct ?: return
-                val quantity = stateFlow.value.quantityPickerSelectedValue ?: return
+                val quantity = stateFlow.value.quantityPickerValues.firstOrNull { it.selected }?.value ?: return
                 if (quantity == product.quantity) {
                     dispatch(CartIntent.HideQuantityPicker)
                     return
@@ -503,7 +511,14 @@ class CartViewModel @AssistedInject constructor(
                     }
                 }
             }
-            is CartIntent.EditProductSwipeClick -> reduce { it.copy(editProduct = intent.product) }
+            is CartIntent.EditProductSwipeClick -> {
+                when {
+                    intent.product.sizeItems.size == 2 && !intent.product.isSold -> {
+                        dispatch(CartIntent.ShowQuantityPicker(intent.product))
+                    }
+                    else -> reduce { it.copy(editProduct = intent.product) }
+                }
+            }
             is CartIntent.HideEditProductSheet -> reduce { it.copy(editProduct = null) }
             is CartIntent.EditFittingProductSwipeClick -> {
                 reduce { it.copy(fittingEditProduct = intent.product) }
@@ -527,7 +542,12 @@ class CartViewModel @AssistedInject constructor(
                 }
             }
             is CartIntent.AddSizeClick -> {
-                dispatch(CartIntent.ShowSizePicker(intent.product, addSize = true))
+                when {
+                    intent.product.isSizeSelectionAvailable -> {
+                        dispatch(CartIntent.ShowSizePicker(intent.product, addSize = true))
+                    }
+                    else -> return
+                }
             }
             is CartIntent.ChangeColorClick -> return
             is CartIntent.ChangeQuantityClick -> {

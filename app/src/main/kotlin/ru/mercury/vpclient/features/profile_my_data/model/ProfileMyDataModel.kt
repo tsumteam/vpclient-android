@@ -2,16 +2,15 @@ package ru.mercury.vpclient.features.profile_my_data.model
 
 import kotlinx.coroutines.Job
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
-import ru.mercury.vpclient.shared.domain.mapper.fittingText
 import ru.mercury.vpclient.shared.domain.mapper.hasFittingBadge
-import ru.mercury.vpclient.shared.domain.mapper.hasFittingProducts
 import ru.mercury.vpclient.shared.domain.mapper.hasMessengerBadge
 import ru.mercury.vpclient.shared.mvi.Model
 
 data class ProfileMyDataModel(
     val deleteProfileJob: Job? = null,
-    val cartSize: Int = 0,
+    val cartCount: Int = 0,
     val cartBadge: Int = 0,
+    val fittingCount: Int = 0,
     val surname: String = "",
     val name: String = "",
     val phone: String = "",
@@ -25,22 +24,22 @@ data class ProfileMyDataModel(
 
     val cartText: String
         get() = when {
-            cartSize > 0 -> cartSize.toString()
+            cartCount > 0 -> cartCount.toString()
             else -> ""
         }
 
-    val showCartBadge: Boolean
+    val isCartBadgeVisible: Boolean
         get() = cartBadge > 0
 
     val fittingText: String
-        get() = activeEmployee.fittingText
+        get() = if (fittingCount > 0) fittingCount.toString() else ""
 
-    val showFittingButton: Boolean
-        get() = activeEmployee.hasFittingProducts
+    val isFittingButtonVisible: Boolean
+        get() = fittingCount > 0
 
-    val showFittingBadge: Boolean
+    val isFittingBadgeVisible: Boolean
         get() = activeEmployee.hasFittingBadge
 
-    val showMessengerBadge: Boolean
+    val isMessengerBadgeVisible: Boolean
         get() = activeEmployee.hasMessengerBadge
 }

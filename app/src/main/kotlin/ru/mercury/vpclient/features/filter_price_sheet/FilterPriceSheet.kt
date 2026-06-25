@@ -75,11 +75,7 @@ fun FilterPriceSheet(
                 title = {
                     Text(
                         text = state.title.uppercase(),
-                        style = MaterialTheme.typography.livretMedium18.copy(
-                            color = MaterialTheme.colorScheme.onBackground,
-                            lineHeight = 26.sp,
-                            letterSpacing = .2.sp
-                        )
+                        style = MaterialTheme.typography.livretMedium18
                     )
                 },
                 navigationIcon = {
@@ -89,8 +85,7 @@ fun FilterPriceSheet(
                         Icon(
                             imageVector = Close24,
                             contentDescription = null,
-                            modifier = Modifier.size(24.dp),
-                            tint = MaterialTheme.colorScheme.onBackground
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 },
@@ -104,15 +99,16 @@ fun FilterPriceSheet(
                         ) {
                             Text(
                                 text = stringResource(ClientStrings.CommonReset),
-                                style = MaterialTheme.typography.medium16.copy(
-                                    color = MaterialTheme.colorScheme.error
-                                )
+                                style = MaterialTheme.typography.medium16
                             )
                         }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
+                    containerColor = MaterialTheme.colorScheme.background,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground,
+                    actionIconContentColor = MaterialTheme.colorScheme.error
                 )
             )
 

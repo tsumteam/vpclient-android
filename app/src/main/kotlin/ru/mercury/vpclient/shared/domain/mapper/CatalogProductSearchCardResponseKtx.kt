@@ -21,7 +21,10 @@ fun CatalogProductSearchCardResponse.toCatalogFilterProductsEntity(
         urlBrandLogo = urlBrandLogo,
         imageUrl = imageUrl.orEmpty(),
         imageUrls = imageUrls.orEmpty(),
-        additionalColorPhotoUrls = emptyList(),
+        additionalColorPhotoUrls = additionalColors.orEmpty().mapNotNull { it.photoUrl },
+        actionLabels = actions.orEmpty()
+            .filter { action -> action.isCashDesk == true }
+            .mapNotNull { action -> action.name },
         position = position
     )
 }

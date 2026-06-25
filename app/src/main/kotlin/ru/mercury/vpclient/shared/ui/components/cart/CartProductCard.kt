@@ -57,6 +57,9 @@ data class CartProductCardState(
     val onShowAlternativesSwipeClick: () -> Unit = {},
     val onHideAlternativesSwipeClick: () -> Unit = {},
     val onReturnToBasketSwipeClick: () -> Unit = {},
+    val swipeKey: String? = null,
+    val openedSwipeKey: String? = null,
+    val onSwipeOpen: (String?) -> Unit = {},
     val useFittingSwipeActions: Boolean = false,
     val selectedAlternativeId: String? = null
 ) {
@@ -93,6 +96,9 @@ data class CartProductCardState(
     val isSingleSizeAvailabilityVisible: Boolean
         get() = isAvailabilityVisible && product.sizeItems.size <= 1
 
+    val isMultipleSizesAvailabilityVisible: Boolean
+        get() = isMultipleSizesVisible && product.sizeItems.any { it.isLastInStock }
+
     val isAlternativesVisible: Boolean
         get() = product.isAlternativesPaletteOpen && product.alternatives.isNotEmpty()
 
@@ -100,7 +106,7 @@ data class CartProductCardState(
         get() = product.isAlternativesPaletteOpen && product.alternatives.isEmpty()
 
     val isReturnOriginalSwipeActionVisible: Boolean
-        get() = product.isSwitchAlternativeBackToOriginalAvailable
+        get() = product.isSwitchAlternativeBackToOriginalAvailable || product.isAlternativeSelected
 
     val isShowAlternativesSwipeActionVisible: Boolean
         get() = product.isAlternativePaletteControlsAvailable && !product.isAlternativesPaletteOpen
@@ -187,7 +193,10 @@ fun CartProductCard(
                 }
             },
             leadingSwipeSize = (88 * state.leadingSwipeActionsCount).dp,
-            trailingSwipeSize = (88 * state.trailingSwipeActionsCount).dp
+            trailingSwipeSize = (88 * state.trailingSwipeActionsCount).dp,
+            swipeKey = state.swipeKey,
+            openedSwipeKey = state.openedSwipeKey,
+            onSwipeOpen = state.onSwipeOpen
         ) {
             ConstraintLayout(
                 modifier = Modifier
@@ -204,7 +213,6 @@ fun CartProductCard(
                     price,
                     size,
                     availability,
-                    quantity,
                     dateReceiptBadge
                 ) = createRefs()
                 val mainContentBottom = createGuidelineFromTop(178.dp)
@@ -311,19 +319,52 @@ fun CartProductCard(
                     )
                 )
 
-                CartPriceRow(
-                    product = product,
+                Row(
                     modifier = Modifier.constrainAs(price) {
                         start.linkTo(header.start)
-                        top.linkTo(article.bottom, if (state.isDateReceiptBadgeVisible) 3.dp else 17.dp)
-                        end.linkTo(quantity.start, 8.dp)
-                        if (state.isPriceVisible) {
-                            bottom.linkTo(mainContentBottom, if (state.isDateReceiptBadgeVisible) 57.dp else 27.dp)
-                            verticalBias = 0F
-                        }
+                        top.linkTo(
+                            anchor = when {
+                                state.isMultipleSizesAvailabilityVisible -> size.bottom
+                                else -> article.bottom
+                            },
+                            margin = when {
+                                state.isMultipleSizesAvailabilityVisible -> 8.dp
+                                state.isDateReceiptBadgeVisible -> 3.dp
+                                else -> 17.dp
+                            }
+                        )
+                        end.linkTo(parent.end, 16.dp)
+                        bottom.linkTo(
+                            anchor = when {
+                                state.isPriceVisible -> mainContentBottom
+                                else -> image.bottom
+                            },
+                            margin = when {
+                                state.isPriceVisible && state.isDateReceiptBadgeVisible -> 57.dp
+                                state.isPriceVisible -> 27.dp
+                                else -> 3.dp
+                            }
+                        )
+                        verticalBias = 0F
                         width = Dimension.fillToConstraints
-                    }
-                )
+                    },
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    CartPriceRow(
+                        product = product,
+                        modifier = Modifier.weight(1F)
+                    )
+
+                    Text(
+                        text = state.quantityText,
+                        style = MaterialTheme.typography.regular14.copy(
+                            color = MaterialTheme.colorScheme.onBackground,
+                            lineHeight = 18.sp,
+                            letterSpacing = .2.sp
+                        )
+                    )
+                }
 
                 if (state.isDateReceiptBadgeVisible) {
                     CartProductDateReceiptBadge(
@@ -447,40 +488,6 @@ fun CartProductCard(
                     )
                 }
 
-                Text(
-                    text = state.quantityText,
-                    modifier = Modifier.constrainAs(quantity) {
-                        top.linkTo(
-                            anchor = when {
-                                state.isSingleSizeAvailabilityVisible -> availability.bottom
-                                else -> price.top
-                            },
-                            margin = when {
-                                state.isSingleSizeAvailabilityVisible -> 8.dp
-                                else -> 0.dp
-                            }
-                        )
-                        when {
-                            state.isSelectSizeButtonVisible -> end.linkTo(size.start, 16.dp)
-                            else -> end.linkTo(parent.end, 16.dp)
-                        }
-                        bottom.linkTo(
-                            anchor = when {
-                                state.isPriceVisible -> price.bottom
-                                else -> image.bottom
-                            },
-                            margin = when {
-                                state.isPriceVisible -> 0.dp
-                                else -> 3.dp
-                            }
-                        )
-                    },
-                    style = MaterialTheme.typography.regular14.copy(
-                        color = MaterialTheme.colorScheme.onBackground,
-                        lineHeight = 18.sp,
-                        letterSpacing = .2.sp
-                    )
-                )
             }
         }
 

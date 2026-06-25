@@ -2,7 +2,7 @@ package ru.mercury.vpclient.shared.domain.usecase
 
 import ru.mercury.vpclient.shared.coroutines.SharedDispatchers
 import ru.mercury.vpclient.shared.data.FORMAT_PHONE_NUMBER
-import ru.mercury.vpclient.shared.data.error.ContinueLoginException
+import ru.mercury.vpclient.shared.data.error.ClientException
 import ru.mercury.vpclient.shared.data.network.NetworkService
 import ru.mercury.vpclient.shared.data.network.request.AuthenticationContinueLoginRequest
 import ru.mercury.vpclient.shared.data.persistence.database.dao.ClientDao
@@ -20,7 +20,7 @@ class AuthContinueLoginUseCase @Inject constructor(
 ): UseCase<String, Unit>(dispatchers.io) {
 
     override suspend fun execute(params: String) {
-        val clientEntity = clientDao.select()
+        val clientEntity = clientDao.selectNotNull()
         val formattedPhone = String.format(Locale.getDefault(), FORMAT_PHONE_NUMBER, clientEntity.phone)
 
         handleResponse(
@@ -42,7 +42,11 @@ class AuthContinueLoginUseCase @Inject constructor(
                 val activeEmployeeId = activeEmployee.data?.employeeId.orEmpty()
                 settingsDataStore.setValue(PreferenceKey.PairedUser, activeEmployeeId)
             },
-            onFailure = { error -> throw ContinueLoginException(error.message) }
+            onFailure = { error -> throw AuthContinueLoginException(error.message) }
         )
     }
+
+    data class AuthContinueLoginException(
+        override val message: String
+    ): ClientException(message)
 }

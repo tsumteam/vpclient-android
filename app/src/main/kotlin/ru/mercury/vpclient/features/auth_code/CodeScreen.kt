@@ -41,7 +41,6 @@ import androidx.compose.ui.autofill.ContentType
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -65,6 +64,7 @@ import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.auth_code.event.CodeEvents
 import ru.mercury.vpclient.features.auth_code.intent.CodeIntent
 import ru.mercury.vpclient.features.auth_code.model.CodeModel
+import ru.mercury.vpclient.shared.data.PREFIX_SPACE
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ClientEntity
 import ru.mercury.vpclient.shared.domain.mapper.formatCodeResendTime
 import ru.mercury.vpclient.shared.domain.mapper.formatPhoneForDisplay
@@ -139,7 +139,7 @@ private fun CodeScreenContent(
                 },
                 colors = TopAppBarDefaults.topAppBarColors().copy(
                     containerColor = MaterialTheme.colorScheme.background,
-                    titleContentColor = Color.Black
+                    titleContentColor = MaterialTheme.colorScheme.onBackground
                 )
             )
         },
@@ -273,7 +273,7 @@ private fun CodeScreenContent(
                         Text(
                             text = buildAnnotatedString {
                                 append(stringResource(ClientStrings.CodeResendCountdown))
-                                append(" ")
+                                append(PREFIX_SPACE)
                                 withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
                                     append(formatCodeResendTime(state.resendSecondsLeft))
                                 }

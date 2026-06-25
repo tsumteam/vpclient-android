@@ -13,7 +13,6 @@ import ru.mercury.vpclient.features.consultants.model.ConsultantsModel
 import ru.mercury.vpclient.features.fitting.navigation.FittingRoute
 import ru.mercury.vpclient.features.main.event.MainTabsEventManager
 import ru.mercury.vpclient.shared.data.error.ClientException
-import ru.mercury.vpclient.shared.data.error.MyEmployeesException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity.Companion.ID_CALL
@@ -24,6 +23,7 @@ import ru.mercury.vpclient.shared.domain.mapper.hasFittingProducts
 import ru.mercury.vpclient.shared.domain.usecase.EmployeePojosFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.MyEmployeeBadgesUseCase
 import ru.mercury.vpclient.shared.domain.usecase.MyEmployeesUseCase
+import ru.mercury.vpclient.shared.domain.usecase.MyEmployeesUseCase.MyEmployeesException
 import ru.mercury.vpclient.shared.domain.usecase.SetActiveEmployeeUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import javax.inject.Inject

@@ -8,7 +8,7 @@ data class DetailsWearWithSheetModel(
     val basketProductKeys: Set<String>
 ) {
     fun isProductInBasket(entity: CatalogFilterProductsEntity): Boolean {
-        return entity.id in basketProductIds ||
-            "${entity.itemId}:${entity.colorId}" in basketProductKeys
+        return "${entity.itemId}:${entity.colorId}:" in basketProductKeys ||
+            "${entity.itemId}:${entity.colorId}:NS" in basketProductKeys
     }
 }

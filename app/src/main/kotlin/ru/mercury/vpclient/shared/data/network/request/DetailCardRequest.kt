@@ -5,8 +5,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class DetailCardRequest(
-    @SerialName("itemId") val itemId: String? = null,
-    @SerialName("colorId") val colorId: String? = null,
+    @SerialName("itemId") val itemId: String,
+    @SerialName("colorId") val colorId: String,
     @SerialName("compilationLookProductId") val compilationLookProductId: Int? = null,
     @SerialName("fashionImageId") val fashionImageId: Int? = null
 )

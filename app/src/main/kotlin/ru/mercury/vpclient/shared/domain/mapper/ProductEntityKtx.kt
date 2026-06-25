@@ -10,10 +10,10 @@ import kotlin.math.roundToInt
 // fixme
 
 val ProductEntity.isDiscountPriceVisible: Boolean
-    get() = cardOldPrice != null && cardDiscountedPrice != null
+    get() = price != 0.0 && cardOldPrice != null && cardDiscountedPrice != null
 
 val ProductEntity.isDiscountLabelVisible: Boolean
-    get() = cardDiscountLabel != null
+    get() = price != 0.0 && cardDiscountLabel != null
 
 val ProductEntity.cardPrice: String
     get() = price.formattedPrice()
@@ -44,6 +44,7 @@ private fun Double?.formattedOldPrice(currentPrice: Double?): String? {
     return when {
         this == null -> null
         currentPrice == null -> null
+        currentPrice == 0.0 -> null
         this <= currentPrice -> null
         else -> formatPrice(this)
     }
@@ -53,6 +54,7 @@ private fun Double?.formattedDiscountedPrice(oldPrice: Double?): String? {
     return when {
         this == null -> null
         oldPrice == null -> null
+        this == 0.0 -> null
         oldPrice <= this -> null
         else -> formatPrice(this)
     }
@@ -62,6 +64,7 @@ private fun Double?.discountLabel(oldPrice: Double?): String? {
     return when {
         this == null -> null
         oldPrice == null -> null
+        this == 0.0 -> null
         oldPrice <= this -> null
         oldPrice == 0.0 -> null
         else -> {

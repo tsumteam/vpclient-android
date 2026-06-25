@@ -15,7 +15,10 @@ fun FilterRoute.includeDefaultCategory(): Boolean {
 }
 
 fun FilterRoute.requestFilterValueChipIds(selectedFilterValueChipIds: Set<String>): Set<String> {
-    return selectedFilterValueChipIds + hiddenFilterValueChipIds.toSet()
+    val actionFilterValueChipIds = actionId?.let { actionId ->
+        setOf("${CatalogFilterRequest.ACTION}_$actionId")
+    }.orEmpty()
+    return selectedFilterValueChipIds + hiddenFilterValueChipIds.toSet() + actionFilterValueChipIds
 }
 
 fun FilterRoute.topBarBrandId(): Int? {

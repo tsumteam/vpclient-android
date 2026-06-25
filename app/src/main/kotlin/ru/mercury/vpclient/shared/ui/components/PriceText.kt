@@ -4,6 +4,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
@@ -14,6 +15,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.sp
+import ru.mercury.vpclient.shared.data.PREFIX_SPACE
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
 import ru.mercury.vpclient.shared.domain.mapper.cardDiscountedPrice
@@ -21,9 +23,8 @@ import ru.mercury.vpclient.shared.domain.mapper.cardOldPrice
 import ru.mercury.vpclient.shared.domain.mapper.cardPrice
 import ru.mercury.vpclient.shared.domain.mapper.isDiscountPriceVisible
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
+import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.regular14
-
-// fixme
 
 @Composable
 fun PriceText(
@@ -33,6 +34,7 @@ fun PriceText(
 ) {
     PriceText(
         price = entity.cardPrice,
+        isSold = entity.price == 0.0,
         oldPrice = entity.cardOldPrice,
         discountedPrice = entity.cardDiscountedPrice,
         isDiscountPriceVisible = entity.isDiscountPriceVisible,
@@ -49,6 +51,7 @@ fun PriceText(
 ) {
     PriceText(
         price = entity.cardPrice,
+        isSold = entity.price == 0.0,
         oldPrice = entity.cardOldPrice,
         discountedPrice = entity.cardDiscountedPrice,
         isDiscountPriceVisible = entity.isDiscountPriceVisible,
@@ -60,6 +63,7 @@ fun PriceText(
 @Composable
 private fun PriceText(
     price: String,
+    isSold: Boolean,
     oldPrice: String?,
     discountedPrice: String?,
     isDiscountPriceVisible: Boolean,
@@ -67,6 +71,17 @@ private fun PriceText(
     textAlign: TextAlign = TextAlign.Center
 ) {
     when {
+        isSold -> {
+            Text(
+                text = stringResource(ClientStrings.DetailsSold),
+                modifier = modifier,
+                style = MaterialTheme.typography.regular14.copy(
+                    color = MaterialTheme.colorScheme.error,
+                    letterSpacing = .2.sp,
+                    textAlign = textAlign
+                )
+            )
+        }
         isDiscountPriceVisible -> {
             Text(
                 text = buildAnnotatedString {
@@ -76,7 +91,7 @@ private fun PriceText(
                             textDecoration = TextDecoration.LineThrough
                         )
                     ) { append(oldPrice.orEmpty()) }
-                    append(" ")
+                    append(PREFIX_SPACE)
                     withStyle(
                         style = SpanStyle(
                             color = MaterialTheme.colorScheme.error
@@ -151,6 +166,22 @@ private class PriceTextCatalogFilterProductsEntityProvider: PreviewParameterProv
             price = 32_700.0,
             priceWithoutDiscount = null,
             brand = "BRUNELLO CUCINELLI",
+            urlBrandLogo = null,
+            imageUrl = "",
+            imageUrls = listOf(""),
+            additionalColorPhotoUrls = emptyList()
+        ),
+        CatalogFilterProductsEntity(
+            categoryId = 1,
+            titleCategoryId = 11,
+            position = 2,
+            id = "preview-3",
+            itemId = "item-3",
+            colorId = "red",
+            name = "Шелковое платье",
+            price = 0.0,
+            priceWithoutDiscount = 159_900.0,
+            brand = "VALENTINO",
             urlBrandLogo = null,
             imageUrl = "",
             imageUrls = listOf(""),

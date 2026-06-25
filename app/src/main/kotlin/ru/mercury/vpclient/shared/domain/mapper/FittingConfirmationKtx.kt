@@ -4,11 +4,11 @@ import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationData
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationDeliveryGroup
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationDeliveryInterval
-import ru.mercury.vpclient.shared.data.network.entity.CheckOutAddressesDto
-import ru.mercury.vpclient.shared.data.network.entity.DeliveryTimeDto
-import ru.mercury.vpclient.shared.data.network.entity.FittingDeliveryTimeProductDto
-import ru.mercury.vpclient.shared.data.network.entity.FittingDeliveryTimeResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.GetDeliveryIntervalsForExistingFittingResponseDto
+import ru.mercury.vpclient.shared.data.network.response.CheckOutAddressesDtoResponse
+import ru.mercury.vpclient.shared.data.network.response.DeliveryTimeResponse
+import ru.mercury.vpclient.shared.data.network.response.FittingDeliveryTimeProductResponse
+import ru.mercury.vpclient.shared.data.network.response.FittingDeliveryTimeResponse
+import ru.mercury.vpclient.shared.data.network.response.GetDeliveryIntervalsForExistingFittingResponse
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
@@ -19,8 +19,8 @@ private val fittingLocale = Locale.forLanguageTag("ru")
 private val fittingDateFormatter = DateTimeFormatter.ofPattern("d MMMM", fittingLocale)
 private val fittingTimeFormatter = DateTimeFormatter.ofPattern("HH:mm", fittingLocale)
 
-fun FittingDeliveryTimeResponseDto.fittingConfirmationData(
-    addresses: CheckOutAddressesDto,
+fun FittingDeliveryTimeResponse.fittingConfirmationData(
+    addresses: CheckOutAddressesDtoResponse,
     selectedProducts: List<CartProduct>
 ): FittingConfirmationData {
     return FittingConfirmationData(
@@ -39,8 +39,8 @@ fun FittingDeliveryTimeResponseDto.fittingConfirmationData(
     )
 }
 
-fun GetDeliveryIntervalsForExistingFittingResponseDto.fittingConfirmationData(
-    addresses: CheckOutAddressesDto,
+fun GetDeliveryIntervalsForExistingFittingResponse.fittingConfirmationData(
+    addresses: CheckOutAddressesDtoResponse,
     deliveryId: String,
     selectedProducts: List<CartProduct>
 ): FittingConfirmationData {
@@ -61,7 +61,7 @@ fun GetDeliveryIntervalsForExistingFittingResponseDto.fittingConfirmationData(
     )
 }
 
-val DeliveryTimeDto.fittingConfirmationDeliveryInterval: FittingConfirmationDeliveryInterval
+val DeliveryTimeResponse.fittingConfirmationDeliveryInterval: FittingConfirmationDeliveryInterval
     get() {
         val fromDateTime = fromValue?.fittingLocalDateTime()
         val toDateTime = to?.fittingLocalDateTime()
@@ -91,13 +91,13 @@ val DeliveryTimeDto.fittingConfirmationDeliveryInterval: FittingConfirmationDeli
         )
     }
 
-val FittingConfirmationDeliveryInterval.deliveryTimeDto: DeliveryTimeDto
-    get() = DeliveryTimeDto(
+val FittingConfirmationDeliveryInterval.deliveryTimeDto: DeliveryTimeResponse
+    get() = DeliveryTimeResponse(
         fromValue = from,
         to = to
     )
 
-private fun List<FittingDeliveryTimeProductDto>.cartProducts(
+private fun List<FittingDeliveryTimeProductResponse>.cartProducts(
     selectedProducts: List<CartProduct>
 ): List<CartProduct> {
     val ids = mapNotNull { product ->

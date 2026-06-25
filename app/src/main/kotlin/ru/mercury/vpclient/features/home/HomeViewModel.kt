@@ -9,9 +9,13 @@ import ru.mercury.vpclient.features.cart.navigation.CartPage
 import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.features.home.intent.HomeIntent
 import ru.mercury.vpclient.features.home.model.HomeModel
+import ru.mercury.vpclient.shared.data.network.type.ActivityCounterType
 import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
 import ru.mercury.vpclient.shared.domain.mapper.isNotEmpty
+import ru.mercury.vpclient.shared.domain.usecase.ActivityCounterFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.CartCountFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.FittingCountFlowUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.mvi.Event
 import javax.inject.Inject
@@ -19,23 +23,37 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val cartInteractor: CartInteractor,
-    private val employeeActiveFlowUseCase: EmployeeActiveFlowUseCase
+    private val cartCountFlowUseCase: CartCountFlowUseCase,
+    private val fittingCountFlowUseCase: FittingCountFlowUseCase,
+    private val employeeActiveFlowUseCase: EmployeeActiveFlowUseCase,
+    private val activityCounterFlowUseCase: ActivityCounterFlowUseCase
 ): ClientViewModel<HomeIntent, HomeModel, Event>(HomeModel()) {
 
     init {
-        dispatch(HomeIntent.CollectCartSize)
+        dispatch(HomeIntent.CollectCartCount)
+        dispatch(HomeIntent.CollectFittingCount)
         dispatch(HomeIntent.CollectActiveEmployee)
+        dispatch(HomeIntent.CollectNotificationCount)
         dispatch(HomeIntent.LoadCartData)
     }
 
     override fun dispatch(intent: HomeIntent) {
         when (intent) {
-            is HomeIntent.CollectCartSize -> {
+            is HomeIntent.CollectCartCount -> {
                 launch {
-                    cartInteractor.cartSize
+                    cartCountFlowUseCase(Unit)
                         .distinctUntilChanged()
-                        .collectLatest { size ->
-                            reduce { it.copy(cartSize = size) }
+                        .collectLatest { count ->
+                            reduce { it.copy(cartCount = count) }
+                        }
+                }
+            }
+            is HomeIntent.CollectFittingCount -> {
+                launch {
+                    fittingCountFlowUseCase(Unit)
+                        .distinctUntilChanged()
+                        .collectLatest { count ->
+                            reduce { it.copy(fittingCount = count) }
                         }
                 }
             }
@@ -51,9 +69,19 @@ class HomeViewModel @Inject constructor(
                         }
                 }
             }
+            is HomeIntent.CollectNotificationCount -> {
+                launch {
+                    activityCounterFlowUseCase(ActivityCounterType.CLIENT_NOTIFICATION)
+                        .distinctUntilChanged()
+                        .collectLatest { counter ->
+                            reduce { it.copy(notificationCount = counter.value) }
+                        }
+                }
+            }
             is HomeIntent.LoadCartData -> {
                 launch {
                     runCatching { cartInteractor.loadBasket() }
+                    runCatching { cartInteractor.loadFitting() }
 
                     val badge = runCatching { cartInteractor.cartBadge() }.getOrDefault(0)
                     reduce { it.copy(cartBadge = badge) }
@@ -65,6 +93,7 @@ class HomeViewModel @Inject constructor(
             }
             is HomeIntent.MessengerClick -> return
             is HomeIntent.SearchClick -> return
+            is HomeIntent.NotificationClick -> return
         }
     }
 }

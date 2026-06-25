@@ -5,7 +5,8 @@ import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.mvi.Intent
 
 sealed interface FittingIntent: Intent {
-    data object CollectCartSize: FittingIntent
+    data object CollectCartCount: FittingIntent
+    data object CollectFittingCount: FittingIntent
     data object CollectCartProducts: FittingIntent
     data object CollectActiveEmployee: FittingIntent
     data object LoadCartData: FittingIntent

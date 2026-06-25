@@ -46,7 +46,7 @@ class CatalogFilterProductsRemoteMediator(
                 LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
                 LoadType.APPEND -> pagingKeyEntity?.limit ?: state.config.pageSize
             }
-            val categoryEntity = catalogCategoryDao.select(categoryId)
+            val categoryEntity = catalogCategoryDao.selectNotNull(categoryId)
             val viewType = data.viewTypeOverride ?: when {
                 categoryId == titleCategoryId -> CatalogViewType.CATALOG_LEVEL_5
                 titleCategoryId == categoryEntity.rootId -> CatalogViewType.CATALOG_LEVEL_3
@@ -77,7 +77,8 @@ class CatalogFilterProductsRemoteMediator(
                         categoryId = categoryId,
                         titleCategoryId = titleCategoryId,
                         offset = if (isEndOfPaginationReached) null else loadOffset + products.size,
-                        limit = state.config.pageSize
+                        limit = state.config.pageSize,
+                        paginationToken = null
                     )
                 )
                 catalogFilterProductsDao.upsert(

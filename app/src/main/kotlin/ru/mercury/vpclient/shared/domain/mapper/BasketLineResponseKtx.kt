@@ -4,23 +4,23 @@ import ru.mercury.vpclient.shared.data.FORMAT_RUB
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
 import ru.mercury.vpclient.shared.data.entity.CartProductSize
-import ru.mercury.vpclient.shared.data.network.entity.AlternativesPaletteStatusEnum
-import ru.mercury.vpclient.shared.data.network.entity.BasketAlternativeResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.BasketAlternativeType
-import ru.mercury.vpclient.shared.data.network.entity.BasketLineResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.BasketLookResponseDto
+import ru.mercury.vpclient.shared.data.network.response.BasketAlternativeResponse
+import ru.mercury.vpclient.shared.data.network.response.BasketLineResponse
+import ru.mercury.vpclient.shared.data.network.response.BasketLookResponse
+import ru.mercury.vpclient.shared.data.network.type.AlternativesPaletteStatus
+import ru.mercury.vpclient.shared.data.network.type.BasketAlternativeType
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
 
-val BasketLineResponseDto.cartProduct: CartProduct?
+val BasketLineResponse.cartProduct: CartProduct?
     get() {
         val basketProducts = products.orEmpty()
         val basketProduct = basketProducts.firstOrNull()
         val product = basketProduct?.product
         val id = lineId ?: basketProduct?.productId ?: product?.id ?: product?.itemId ?: product?.article ?: return null
         val detailId = basketProduct?.productId ?: product?.id ?: product?.itemId ?: id
-        val price = product?.price ?: product?.currentRetailPrice ?: .0
+        val price = product?.price ?: product?.currentRetailPrice.orEmpty
         val oldPrice = product?.priceWithoutDiscount
         val sizes = product?.sizes.orEmpty()
         val article = product?.article?.takeIf { it.isNotEmpty() } ?: product?.itemId.orEmpty()
@@ -41,7 +41,8 @@ val BasketLineResponseDto.cartProduct: CartProduct?
                     name = size.name.orEmpty().ifBlank { sizeId },
                     productId = item.productId ?: item.product?.id.orEmpty(),
                     catalogProductId = item.product?.id.orEmpty(),
-                    isLastInStock = size.isLastInStock == true || size.availableStockQuantity == 1.0
+                    isLastInStock = size.isLastInStock == true || size.availableStockQuantity == 1.0,
+                    availableStockQuantity = size.availableStockQuantity?.toInt().orEmpty
                 )
             }
         }.distinctBy { size -> "${size.productId}_${size.id}" }
@@ -66,20 +67,21 @@ val BasketLineResponseDto.cartProduct: CartProduct?
             isSold = sizes.any { it.inStock == false },
             isLastInStock = sizes.any { it.isLastInStock == true || it.availableStockQuantity == 1.0 },
             hasActions = product?.actions.orEmpty().isNotEmpty(),
-            isAlternativesPaletteOpen = controls?.alternativesPalette == AlternativesPaletteStatusEnum.OPEN,
+            isAlternativesPaletteOpen = controls?.alternativesPalette == AlternativesPaletteStatus.OPEN,
             isAlternativePaletteControlsAvailable = controls?.isAlternativePaletteControlsAvailable == true,
             isSwitchAlternativeBackToOriginalAvailable = controls?.isSwitchAlternativeBackToOriginalAvailable == true,
             alternatives = alternatives,
-            discountPercentage = product?.discountPercentage ?: 0,
+            discountPercentage = product?.discountPercentage.orEmpty,
             quantity = quantity ?: product?.quantity ?: 1,
             sizeCount = sizeItems.size.takeIf { it > 0 } ?: sizes.size.coerceAtLeast(1),
             priceValue = price,
             sizeId = sizeItems.firstOrNull()?.id ?: sizes.firstOrNull()?.id.orEmpty(),
-            sizeItems = sizeItems
+            sizeItems = sizeItems,
+            isOneSize = product?.oneSize == true
         )
     }
 
-fun BasketLineResponseDto.cartProductWithLook(looks: List<BasketLookResponseDto>): CartProduct? {
+fun BasketLineResponse.cartProductWithLook(looks: List<BasketLookResponse>): CartProduct? {
     val product = cartProduct ?: return null
     val look = looks.firstOrNull { it.lookId == product.lookId }
     return product.copy(
@@ -88,12 +90,12 @@ fun BasketLineResponseDto.cartProductWithLook(looks: List<BasketLookResponseDto>
     )
 }
 
-private val BasketAlternativeResponseDto.cartProductAlternative: CartProductAlternative?
+private val BasketAlternativeResponse.cartProductAlternative: CartProductAlternative?
     get() {
         val product = product ?: return null
         val id = alternativeId ?: product.id ?: product.itemId ?: product.article ?: return null
         val detailId = product.id ?: product.itemId ?: id
-        val price = product.price ?: product.currentRetailPrice ?: .0
+        val price = product.price ?: product.currentRetailPrice.orEmpty
         val imageUrls = product.imageUrls.orEmpty().filter { it.isNotEmpty() }
         val rawImageUrl = product.imageUrl.orEmpty()
         val imageUrl = when {

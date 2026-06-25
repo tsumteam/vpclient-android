@@ -15,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
@@ -56,10 +55,7 @@ private fun BrandsScreenContent(
                 title = {
                     Text(
                         text = stringResource(ClientStrings.MainTabBrands),
-                        style = MaterialTheme.typography.medium18.copy(
-                            color = MaterialTheme.colorScheme.onBackground,
-                            textAlign = TextAlign.Center
-                        )
+                        style = MaterialTheme.typography.medium18
                     )
                 },
                 navigationIcon = {
@@ -70,33 +66,34 @@ private fun BrandsScreenContent(
                         Icon(
                             imageVector = Search24,
                             contentDescription = null,
-                            modifier = Modifier.size(24.dp),
-                            tint = MaterialTheme.colorScheme.onBackground
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 },
                 actions = {
-                    if (state.showFittingButton) {
+                    if (state.isFittingButtonVisible) {
                         FittingIconButton(
                             text = state.fittingText,
-                            showBadge = state.showFittingBadge,
+                            showBadge = state.isFittingBadgeVisible,
                             onClick = { dispatch(BrandsIntent.FittingClick) }
                         )
                     }
 
                     CartIconButton(
                         text = state.cartText,
-                        showBadge = state.showCartBadge,
+                        showBadge = state.isCartBadgeVisible,
                         onClick = { dispatch(BrandsIntent.CartClick) }
                     )
 
                     MessengerIconButton(
-                        showBadge = state.showMessengerBadge,
+                        showBadge = state.isMessengerBadgeVisible,
                         onClick = { dispatch(BrandsIntent.MessengerClick) }
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors().copy(
-                    containerColor = MaterialTheme.colorScheme.background
+                    containerColor = MaterialTheme.colorScheme.background,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground
                 )
             )
         }

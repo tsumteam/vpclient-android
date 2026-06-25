@@ -13,7 +13,8 @@ import ru.mercury.vpclient.shared.data.entity.FittingConfirmationDeliveryInterva
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationResult
 import ru.mercury.vpclient.shared.data.entity.FittingData
 import ru.mercury.vpclient.shared.data.entity.ProductAvailableColor
-import ru.mercury.vpclient.shared.data.network.entity.FittingTypeDtoEnum
+import ru.mercury.vpclient.shared.data.network.type.FittingType
+import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductAvailableSizesEntity
 import ru.mercury.vpclient.shared.coroutines.SharedDispatchers
 import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
@@ -27,8 +28,6 @@ class CartInteractorImpl @Inject constructor(
 
     override val cartProductsFlow: Flow<List<CartProduct>> = cartRepository.cartProductsFlow
 
-    override val cartSize: Flow<Int> = cartRepository.cartSize
-
     override suspend fun changePaySwitch(product: CartProduct, paySwitch: Boolean) {
         withContext(dispatchers.io) { cartRepository.changePaySwitch(product, paySwitch) }
     }
@@ -39,6 +38,10 @@ class CartInteractorImpl @Inject constructor(
 
     override suspend fun addProductToBasket(productId: String, sizeId: String?) {
         withContext(dispatchers.io) { cartRepository.addProductToBasket(productId, sizeId) }
+    }
+
+    override suspend fun addProductToBasket(product: CatalogFilterProductsEntity, sizeId: String?) {
+        withContext(dispatchers.io) { cartRepository.addProductToBasket(product, sizeId) }
     }
 
     override suspend fun setProductSize(product: CartProduct, sizeId: String) {
@@ -127,7 +130,7 @@ class CartInteractorImpl @Inject constructor(
 
     override suspend fun loadFittingConfirmationData(
         products: List<CartProduct>,
-        fittingType: FittingTypeDtoEnum,
+        fittingType: FittingType,
         clientAddress: ClientDeliveryAddress?
     ): FittingConfirmationData {
         return withContext(dispatchers.io) {
@@ -138,7 +141,7 @@ class CartInteractorImpl @Inject constructor(
     override suspend fun loadExistingFittingConfirmationData(
         products: List<CartProduct>,
         deliveryId: String,
-        fittingType: FittingTypeDtoEnum,
+        fittingType: FittingType,
         clientAddress: ClientDeliveryAddress?
     ): FittingConfirmationData {
         return withContext(dispatchers.io) {
@@ -153,7 +156,7 @@ class CartInteractorImpl @Inject constructor(
 
     override suspend fun confirmFitting(
         products: List<CartProduct>,
-        fittingType: FittingTypeDtoEnum,
+        fittingType: FittingType,
         clientAddress: ClientDeliveryAddress?,
         singleInterval: FittingConfirmationDeliveryInterval?,
         deliveryGroups: List<FittingConfirmationDeliveryGroup>,

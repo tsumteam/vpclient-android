@@ -3,7 +3,8 @@ package ru.mercury.vpclient.features.profile_orders.intent
 import ru.mercury.vpclient.shared.mvi.Intent
 
 sealed interface ProfileOrdersIntent: Intent {
-    data object CollectCartSize: ProfileOrdersIntent
+    data object CollectCartCount: ProfileOrdersIntent
+    data object CollectFittingCount: ProfileOrdersIntent
     data object CollectActiveEmployee: ProfileOrdersIntent
     data object LoadCartData: ProfileOrdersIntent
     data object PullToRefresh: ProfileOrdersIntent

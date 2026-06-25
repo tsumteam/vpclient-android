@@ -4,6 +4,9 @@ import ru.mercury.vpclient.shared.data.CODE_RESEND_MAX_TIME
 import ru.mercury.vpclient.shared.data.CODE_RESEND_TIMER_DELAY
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ClientEntity
 
+val ClientEntity?.orEmpty: ClientEntity
+    get() = this ?: ClientEntity.Empty
+
 fun ClientEntity.resendCodeTimerSec(
     now: Long = System.currentTimeMillis()
 ): Int {

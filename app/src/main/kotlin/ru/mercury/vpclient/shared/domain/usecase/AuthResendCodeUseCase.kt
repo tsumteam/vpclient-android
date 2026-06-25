@@ -19,7 +19,7 @@ class AuthResendCodeUseCase @Inject constructor(
 ): UseCase<Unit, Unit>(dispatchers.io) {
 
     override suspend fun execute(params: Unit) {
-        val clientEntity = clientDao.select()
+        val clientEntity = clientDao.selectNotNull()
         val formattedPhone = String.format(Locale.getDefault(), FORMAT_PHONE_NUMBER, clientEntity.phone)
 
         when {

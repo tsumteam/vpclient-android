@@ -54,7 +54,7 @@ class ProfileOrderViewModel @AssistedInject constructor(
                                 amount = details.amount.ifBlank { route.amount },
                                 creationDate = details.creationDate,
                                 isLoading = false,
-                                showPaymentAlert = details.showPaymentAlert,
+                                isPaymentAlertVisible = details.isPaymentAlertVisible,
                                 paymentAlertRemainingMinutes = details.paymentAlertRemainingMinutes,
                                 deliveryGroups = details.deliveries.map { delivery ->
                                     ProfileOrderDeliveryGroupState(

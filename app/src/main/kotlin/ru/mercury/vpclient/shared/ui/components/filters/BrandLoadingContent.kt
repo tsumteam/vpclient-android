@@ -136,19 +136,21 @@ fun BrandLoadingContent(
             }
         }
 
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(horizontal = 16.dp)
-                .fillMaxWidth()
-                .height(52.dp)
-                .placeholder(
-                    visible = true,
-                    highlight = PlaceholderHighlight.shimmer(),
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    shape = RoundedCornerShape(8.dp)
-                )
-        )
+        if (showButton) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth()
+                    .height(52.dp)
+                    .placeholder(
+                        visible = true,
+                        highlight = PlaceholderHighlight.shimmer(),
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        shape = RoundedCornerShape(8.dp)
+                    )
+            )
+        }
     }
 }
 

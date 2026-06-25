@@ -5,5 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CatalogProductSearchCardDtoItemsResponse(
-    @SerialName("items") val items: List<CatalogProductSearchCardResponse>? = null
+    @SerialName("items") val items: List<CatalogProductSearchCardResponse>? = null,
+    @SerialName("paginationToken") val paginationToken: String? = null
 )

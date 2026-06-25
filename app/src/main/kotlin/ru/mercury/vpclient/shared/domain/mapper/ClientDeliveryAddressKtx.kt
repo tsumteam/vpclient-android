@@ -2,13 +2,13 @@ package ru.mercury.vpclient.shared.domain.mapper
 
 import ru.mercury.vpclient.shared.data.entity.ClientDeliveryAddress
 import ru.mercury.vpclient.shared.data.entity.ClientDeliveryAddressSuggestion
-import ru.mercury.vpclient.shared.data.network.entity.AddressSuggestionDto
-import ru.mercury.vpclient.shared.data.network.entity.ClientAddressBaseDto
-import ru.mercury.vpclient.shared.data.network.entity.ClientAddressDto
-import ru.mercury.vpclient.shared.data.network.entity.ClientAddressWithCoordinateDto
-import ru.mercury.vpclient.shared.data.network.entity.CoordinateDto
+import ru.mercury.vpclient.shared.data.network.response.AddressSuggestionResponse
+import ru.mercury.vpclient.shared.data.network.response.ClientAddressBaseResponse
+import ru.mercury.vpclient.shared.data.network.response.ClientAddressDtoResponse
+import ru.mercury.vpclient.shared.data.network.response.ClientAddressWithCoordinateResponse
+import ru.mercury.vpclient.shared.data.network.response.CoordinateResponse
 
-val ClientAddressWithCoordinateDto.clientDeliveryAddress: ClientDeliveryAddress?
+val ClientAddressWithCoordinateResponse.clientDeliveryAddress: ClientDeliveryAddress?
     get() {
         val id = addressId ?: return null
         val addressValue = address.orEmpty()
@@ -29,8 +29,8 @@ val ClientAddressWithCoordinateDto.clientDeliveryAddress: ClientDeliveryAddress?
         )
     }
 
-val ClientDeliveryAddress.clientAddressBaseDto: ClientAddressBaseDto
-    get() = ClientAddressBaseDto(
+val ClientDeliveryAddress.clientAddressBaseDto: ClientAddressBaseResponse
+    get() = ClientAddressBaseResponse(
         address = address,
         flat = flat,
         entrance = entrance,
@@ -39,8 +39,8 @@ val ClientDeliveryAddress.clientAddressBaseDto: ClientAddressBaseDto
         comment = comment
     )
 
-val ClientDeliveryAddress.clientAddressDto: ClientAddressDto
-    get() = ClientAddressDto(
+val ClientDeliveryAddress.clientAddressDto: ClientAddressDtoResponse
+    get() = ClientAddressDtoResponse(
         addressId = id,
         address = address,
         flat = flat,
@@ -50,7 +50,7 @@ val ClientDeliveryAddress.clientAddressDto: ClientAddressDto
         comment = comment
     )
 
-fun ClientAddressDto.clientDeliveryAddress(
+fun ClientAddressDtoResponse.clientDeliveryAddress(
     fallback: ClientDeliveryAddress
 ): ClientDeliveryAddress {
     return ClientDeliveryAddress(
@@ -66,16 +66,16 @@ fun ClientAddressDto.clientDeliveryAddress(
     )
 }
 
-val ClientDeliveryAddress.coordinateDto: CoordinateDto?
+val ClientDeliveryAddress.coordinateDto: CoordinateResponse?
     get() = when {
-        latitude != null && longitude != null -> CoordinateDto(
+        latitude != null && longitude != null -> CoordinateResponse(
             latitude = latitude,
             longitude = longitude
         )
         else -> null
     }
 
-val AddressSuggestionDto.clientDeliveryAddressSuggestion: ClientDeliveryAddressSuggestion?
+val AddressSuggestionResponse.clientDeliveryAddressSuggestion: ClientDeliveryAddressSuggestion?
     get() {
         val titleValue = title.orEmpty()
         if (titleValue.isBlank()) {

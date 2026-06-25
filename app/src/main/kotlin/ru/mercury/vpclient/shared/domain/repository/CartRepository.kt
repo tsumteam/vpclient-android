@@ -12,20 +12,21 @@ import ru.mercury.vpclient.shared.data.entity.FittingConfirmationDeliveryInterva
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationResult
 import ru.mercury.vpclient.shared.data.entity.FittingData
 import ru.mercury.vpclient.shared.data.entity.ProductAvailableColor
-import ru.mercury.vpclient.shared.data.network.entity.FittingTypeDtoEnum
+import ru.mercury.vpclient.shared.data.network.type.FittingType
+import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductAvailableSizesEntity
 
 interface CartRepository {
 
     val cartProductsFlow: Flow<List<CartProduct>>
 
-    val cartSize: Flow<Int>
-
     suspend fun changePaySwitch(product: CartProduct, paySwitch: Boolean)
 
     suspend fun changeFittingPaySwitch(product: CartProduct, paySwitch: Boolean)
 
     suspend fun addProductToBasket(productId: String, sizeId: String?)
+
+    suspend fun addProductToBasket(product: CatalogFilterProductsEntity, sizeId: String?)
 
     suspend fun setProductSize(product: CartProduct, sizeId: String)
 
@@ -71,20 +72,20 @@ interface CartRepository {
 
     suspend fun loadFittingConfirmationData(
         products: List<CartProduct>,
-        fittingType: FittingTypeDtoEnum,
+        fittingType: FittingType,
         clientAddress: ClientDeliveryAddress?
     ): FittingConfirmationData
 
     suspend fun loadExistingFittingConfirmationData(
         products: List<CartProduct>,
         deliveryId: String,
-        fittingType: FittingTypeDtoEnum,
+        fittingType: FittingType,
         clientAddress: ClientDeliveryAddress?
     ): FittingConfirmationData
 
     suspend fun confirmFitting(
         products: List<CartProduct>,
-        fittingType: FittingTypeDtoEnum,
+        fittingType: FittingType,
         clientAddress: ClientDeliveryAddress?,
         singleInterval: FittingConfirmationDeliveryInterval?,
         deliveryGroups: List<FittingConfirmationDeliveryGroup>,

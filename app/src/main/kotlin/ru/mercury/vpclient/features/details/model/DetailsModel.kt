@@ -4,17 +4,14 @@ import ru.mercury.vpclient.shared.data.entity.DetailsField
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
-import ru.mercury.vpclient.shared.domain.mapper.fittingText
 import ru.mercury.vpclient.shared.domain.mapper.hasFittingBadge
-import ru.mercury.vpclient.shared.domain.mapper.hasFittingProducts
 import ru.mercury.vpclient.shared.domain.mapper.hasMessengerBadge
 import ru.mercury.vpclient.shared.domain.mapper.toCatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.domain.mapper.toField
 import ru.mercury.vpclient.shared.mvi.Model
 import ru.mercury.vpclient.shared.ui.components.details.SizeSelectorState
 import ru.mercury.vpclient.shared.ui.components.details.SizeState
-
-// fixme
+import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 
 data class DetailsModel(
     val productEntity: ProductEntity = ProductEntity.Empty,
@@ -26,8 +23,9 @@ data class DetailsModel(
     val isCartAddedSheetVisible: Boolean = false,
     val basketProductIds: Set<String> = emptySet(),
     val basketProductKeys: Set<String> = emptySet(),
-    val cartSize: Int = 0,
+    val cartCount: Int = 0,
     val cartBadge: Int = 0,
+    val fittingCount: Int = 0,
     val activeEmployee: EmployeeEntity = EmployeeEntity.Empty
 ): Model {
 
@@ -58,30 +56,56 @@ data class DetailsModel(
 
     val cartText: String
         get() = when {
-            cartSize > 0 -> cartSize.toString()
+            cartCount > 0 -> cartCount.toString()
             else -> ""
         }
 
-    val showCartBadge: Boolean
+    val isCartBadgeVisible: Boolean
         get() = cartBadge > 0
 
     val fittingText: String
-        get() = activeEmployee.fittingText
+        get() = if (fittingCount > 0) fittingCount.toString() else ""
 
-    val showFittingButton: Boolean
-        get() = activeEmployee.hasFittingProducts
+    val isFittingButtonVisible: Boolean
+        get() = fittingCount > 0
 
-    val showFittingBadge: Boolean
+    val isFittingBadgeVisible: Boolean
         get() = activeEmployee.hasFittingBadge
 
-    val showMessengerBadge: Boolean
+    val isMessengerBadgeVisible: Boolean
         get() = activeEmployee.hasMessengerBadge
 
     val hasVideo: Boolean
         get() = selectedColorVideoUrl != null
 
+    val isNoSizeProduct: Boolean
+        get() {
+            val items = productEntity.availableSizes?.items.orEmpty()
+            return items.size == 1 &&
+                items.first().sizeId.equals(NO_SIZE_VALUE, ignoreCase = true) &&
+                items.first().russianSize.equals(NO_SIZE_VALUE, ignoreCase = true)
+        }
+
     val isSizePickerVisible: Boolean
-        get() = productEntity.availableSizes?.items?.isNotEmpty() == true
+        get() = productEntity.availableSizes?.items?.isNotEmpty() == true && !isNoSizeProduct
+
+    val isNoSizeProductInStock: Boolean
+        get() = isNoSizeProduct && productEntity.availableSizes?.items?.firstOrNull()?.inStock == true
+
+    val noSizeAvailabilityText: Int?
+        get() = when {
+            !isNoSizeProduct -> null
+            isNoSizeProductInStock -> ClientStrings.DetailsSizeInStock
+            else -> ClientStrings.DetailsSold
+        }
+
+    val addToBasketButtonText: Int
+        get() = when {
+            isNoSizeProductInStock -> ClientStrings.DetailsAddToBasket
+            isNoSizeProduct -> ClientStrings.DetailsPickAlternativeInBasket
+            sizePickerState.selectedSize?.enabled == false -> ClientStrings.DetailsPickAlternativeInBasket
+            else -> ClientStrings.DetailsAddToBasket
+        }
 
     val isProductColorImagesBoxVisible: Boolean
         get() = productEntity.otherColors.isNotEmpty()
@@ -120,8 +144,8 @@ data class DetailsModel(
         get() = productEntity.completeSetProducts.mapIndexed { index, item -> item.toCatalogFilterProductsEntity(index) }
 
     fun isProductInBasket(entity: CatalogFilterProductsEntity): Boolean {
-        return entity.id in basketProductIds ||
-            "${entity.itemId}:${entity.colorId}" in basketProductKeys
+        return "${entity.itemId}:${entity.colorId}:" in basketProductKeys ||
+            "${entity.itemId}:${entity.colorId}:NS" in basketProductKeys
     }
 
     val sizePickerState: SizeSelectorState
@@ -143,3 +167,5 @@ data class DetailsModel(
             )
         }
 }
+
+private const val NO_SIZE_VALUE = "NS"

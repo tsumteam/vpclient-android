@@ -5,12 +5,12 @@ import ru.mercury.vpclient.shared.data.entity.ProfileOrder
 import ru.mercury.vpclient.shared.data.entity.ProfileOrderDelivery
 import ru.mercury.vpclient.shared.data.entity.ProfileOrderDetails
 import ru.mercury.vpclient.shared.data.entity.ProfileOrderDetailsProduct
-import ru.mercury.vpclient.shared.data.network.entity.DeliveryTimeDto
-import ru.mercury.vpclient.shared.data.network.entity.OrderDeliveryResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.OrderPaymentStatusEnumDto
-import ru.mercury.vpclient.shared.data.network.entity.OrderProductResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.OrderResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.OrderResponseWithBadgeDto
+import ru.mercury.vpclient.shared.data.network.response.DeliveryTimeResponse
+import ru.mercury.vpclient.shared.data.network.response.OrderDeliveryResponse
+import ru.mercury.vpclient.shared.data.network.type.OrderPaymentStatus
+import ru.mercury.vpclient.shared.data.network.response.OrderProductResponse
+import ru.mercury.vpclient.shared.data.network.response.OrderResponse
+import ru.mercury.vpclient.shared.data.network.response.OrderResponseWithBadgeDtoResponse
 import ru.mercury.vpclient.shared.data.network.response.ProfileOrdersSaleItemResponse
 import java.time.Duration
 import java.time.Instant
@@ -66,18 +66,18 @@ fun ProfileOrdersSaleItemResponse.toProfileOrder(): ProfileOrder? {
     )
 }
 
-fun OrderResponseWithBadgeDto.toProfileOrderDetails(): ProfileOrderDetails {
+fun OrderResponseWithBadgeDtoResponse.toProfileOrderDetails(): ProfileOrderDetails {
     return order?.toProfileOrderDetails() ?: ProfileOrderDetails(
         orderNumber = "",
         amount = "",
         creationDate = "",
-        showPaymentAlert = false,
+        isPaymentAlertVisible = false,
         paymentAlertRemainingMinutes = 0,
         deliveries = emptyList()
     )
 }
 
-fun OrderResponseDto.toProfileOrderDetails(): ProfileOrderDetails {
+fun OrderResponse.toProfileOrderDetails(): ProfileOrderDetails {
     val paymentAlertRemainingMinutes = creationDate.profileOrderPaymentAlertRemainingMinutes
 
     return ProfileOrderDetails(
@@ -87,7 +87,7 @@ fun OrderResponseDto.toProfileOrderDetails(): ProfileOrderDetails {
             else -> ""
         },
         creationDate = creationDate.profileOrderCreationDate,
-        showPaymentAlert = controls?.isOnlinePayAvailable == true && paymentAlertRemainingMinutes > 0,
+        isPaymentAlertVisible = controls?.isOnlinePayAvailable == true && paymentAlertRemainingMinutes > 0,
         paymentAlertRemainingMinutes = paymentAlertRemainingMinutes,
         deliveries = deliveries.orEmpty().mapIndexed { index, delivery ->
             delivery.toProfileOrderDelivery(
@@ -99,9 +99,9 @@ fun OrderResponseDto.toProfileOrderDetails(): ProfileOrderDetails {
     )
 }
 
-private fun OrderDeliveryResponseDto.toProfileOrderDelivery(
+private fun OrderDeliveryResponse.toProfileOrderDelivery(
     index: Int,
-    paymentStatus: OrderPaymentStatusEnumDto?,
+    paymentStatus: OrderPaymentStatus?,
     paymentStatusAsString: String
 ): ProfileOrderDelivery {
     return ProfileOrderDelivery(
@@ -118,9 +118,9 @@ private fun OrderDeliveryResponseDto.toProfileOrderDelivery(
     )
 }
 
-private fun OrderProductResponseDto.toProfileOrderDetailsProduct(
+private fun OrderProductResponse.toProfileOrderDetailsProduct(
     index: Int,
-    paymentStatus: OrderPaymentStatusEnumDto?,
+    paymentStatus: OrderPaymentStatus?,
     paymentStatusAsString: String
 ): ProfileOrderDetailsProduct {
     val product = product
@@ -145,7 +145,7 @@ private fun OrderProductResponseDto.toProfileOrderDetailsProduct(
             .mapNotNull { size -> size.name?.takeIf { it.isNotBlank() } }
             .joinToString(separator = " | "),
         status = when (paymentStatus) {
-            OrderPaymentStatusEnumDto.NOT_PAID -> paymentStatusAsString
+            OrderPaymentStatus.NOT_PAID -> paymentStatusAsString
             else -> logisticStatusAsStringForClient.orEmpty()
         },
         quantity = product?.quantity?.takeIf { it > 0 } ?: 1
@@ -159,7 +159,7 @@ private val String?.profileOrderCreationDate: String
         return date.format(profileOrderCreationDateFormatter)
     }
 
-private val DeliveryTimeDto?.profileOrderDeliveryDate: String
+private val DeliveryTimeResponse?.profileOrderDeliveryDate: String
     get() {
         val fromDateTime = this?.fromValue?.profileOrderLocalDateTime()
         val toDateTime = this?.to?.profileOrderLocalDateTime()

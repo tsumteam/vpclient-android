@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -41,6 +42,9 @@ fun CartProductSwipeableCard(
     modifier: Modifier = Modifier,
     leadingSwipeSize: Dp = 0.dp,
     trailingSwipeSize: Dp = 0.dp,
+    swipeKey: String? = null,
+    openedSwipeKey: String? = null,
+    onSwipeOpen: (String?) -> Unit = {},
     content: @Composable () -> Unit
 ) {
     val leadingSizePx = with(LocalDensity.current) { leadingSwipeSize.toPx() }
@@ -53,7 +57,17 @@ fun CartProductSwipeableCard(
                 targetValue = 0F,
                 animationSpec = tween(durationMillis = SWIPE_ACTION_RETURN_DURATION)
             )
+            onSwipeOpen(null)
             action()
+        }
+    }
+
+    LaunchedEffect(openedSwipeKey, swipeKey) {
+        if (openedSwipeKey != null && swipeKey != null && openedSwipeKey != swipeKey && offsetX.value != 0F) {
+            offsetX.animateTo(
+                targetValue = 0F,
+                animationSpec = tween(durationMillis = SWIPE_ACTION_RETURN_DURATION)
+            )
         }
     }
     val leadingSwipeProgress = when {
@@ -89,8 +103,11 @@ fun CartProductSwipeableCard(
                 .offset { IntOffset(offsetX.value.toInt(), 0) }
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.background)
-                .pointerInput(leadingSizePx, trailingSizePx) {
+                .pointerInput(leadingSizePx, trailingSizePx, swipeKey) {
                     detectHorizontalDragGestures(
+                        onDragStart = {
+                            swipeKey?.let(onSwipeOpen)
+                        },
                         onHorizontalDrag = { _, dragAmount ->
                             val newOffsetX = (offsetX.value + dragAmount).coerceIn(-trailingSizePx, leadingSizePx)
                             scope.launch { offsetX.snapTo(newOffsetX) }
@@ -101,7 +118,12 @@ fun CartProductSwipeableCard(
                                 offsetX.value < -trailingSizePx * .3F -> -trailingSizePx
                                 else -> 0F
                             }
-                            scope.launch { offsetX.animateTo(endOffsetX) }
+                            scope.launch {
+                                offsetX.animateTo(endOffsetX)
+                                if (endOffsetX == 0F) {
+                                    onSwipeOpen(null)
+                                }
+                            }
                         }
                     )
                 }

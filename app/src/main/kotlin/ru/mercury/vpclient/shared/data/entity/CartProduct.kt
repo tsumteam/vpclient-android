@@ -32,6 +32,19 @@ data class CartProduct(
     val priceValue: Double = .0,
     val sizeId: String = "",
     val sizeItems: List<CartProductSize> = emptyList(),
+    val isOneSize: Boolean = false,
     val dateReceipt: String? = null,
     val isDateReceiptOverdue: Boolean = false
-)
+) {
+    val isSizeSelectionAvailable: Boolean
+        get() = !isOneSize &&
+            !sizeId.equals(NS_SIZE_ID, ignoreCase = true) &&
+            sizeItems.none { size -> size.id.equals(NS_SIZE_ID, ignoreCase = true) }
+
+    val isAlternativeSelected: Boolean
+        get() = alternatives.any { alternative ->
+            alternative.isOriginal && alternative.detailId != detailId
+        }
+}
+
+private const val NS_SIZE_ID = "NS"

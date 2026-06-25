@@ -7,8 +7,7 @@ data class ProfileLoyaltyAddCardModel(
     val phone: String = "",
     val cardNumber: String = "",
     val isLoading: Boolean = false,
-    val isPhoneErrorVisible: Boolean = false,
-    val isCardErrorVisible: Boolean = false
+    val isPhoneErrorVisible: Boolean = false
 ): Model {
 
     val isConfirmEnabled: Boolean

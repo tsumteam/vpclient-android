@@ -14,4 +14,7 @@ interface CatalogFilterProductsQuantityDao {
 
     @Upsert
     suspend fun upsert(entity: CatalogFilterProductsQuantityEntity)
+
+    @Query("DELETE FROM CatalogFilterProductsQuantity WHERE categoryId = :categoryId AND titleCategoryId = :titleCategoryId")
+    suspend fun delete(categoryId: Int, titleCategoryId: Int)
 }

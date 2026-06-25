@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.features.cart.navigation.CartPage
 import ru.mercury.vpclient.features.cart.navigation.CartRoute
-import ru.mercury.vpclient.features.catalog_root.event.CatalogStackEventManager
+import ru.mercury.vpclient.features.catalog_root.event.CatalogRootEventManager
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.features.filter.event.FilterEvent
 import ru.mercury.vpclient.features.filter.intent.FilterIntent
@@ -37,7 +37,6 @@ import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
 import ru.mercury.vpclient.shared.domain.interactor.FilterInteractor
 import ru.mercury.vpclient.shared.domain.mapper.includeDefaultCategory
 import ru.mercury.vpclient.shared.domain.mapper.isEmpty
-import ru.mercury.vpclient.shared.domain.mapper.isNotEmpty
 import ru.mercury.vpclient.shared.domain.mapper.isRequestAffectingCatalogFilterValueChipId
 import ru.mercury.vpclient.shared.domain.mapper.onlyDigits
 import ru.mercury.vpclient.shared.domain.mapper.priceFilterChip
@@ -47,7 +46,13 @@ import ru.mercury.vpclient.shared.domain.mapper.toPriceRangeChipData
 import ru.mercury.vpclient.shared.domain.mapper.topBarBrandChipId
 import ru.mercury.vpclient.shared.domain.mapper.topBarBrandId
 import ru.mercury.vpclient.shared.domain.mapper.values
+import ru.mercury.vpclient.shared.domain.usecase.CartCountFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.CatalogFilterProductQuantityUseCase
+import ru.mercury.vpclient.shared.domain.usecase.CatalogFiltersUseCase
 import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.FilterDataFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.FittingCountFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.ToggleBasketProductUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.navigation.BackRoute
 
@@ -55,7 +60,13 @@ import ru.mercury.vpclient.shared.navigation.BackRoute
 class FilterViewModel @AssistedInject constructor(
     @Assisted private val route: FilterRoute,
     private val cartInteractor: CartInteractor,
+    private val filterDataFlowUseCase: FilterDataFlowUseCase,
+    private val catalogFiltersUseCase: CatalogFiltersUseCase,
+    private val catalogFilterProductQuantityUseCase: CatalogFilterProductQuantityUseCase,
+    private val cartCountFlowUseCase: CartCountFlowUseCase,
+    private val fittingCountFlowUseCase: FittingCountFlowUseCase,
     private val employeeActiveFlowUseCase: EmployeeActiveFlowUseCase,
+    private val toggleBasketProductUseCase: ToggleBasketProductUseCase,
     private val filterInteractor: FilterInteractor
 ): ClientViewModel<FilterIntent, FilterModel, FilterEvent>(FilterModel()) {
 
@@ -75,11 +86,12 @@ class FilterViewModel @AssistedInject constructor(
         .cachedIn(this)
 
     init {
-        dispatch(FilterIntent.InitializeState)
+        dispatch(FilterIntent.CollectRoute)
         dispatch(FilterIntent.CollectFilterData)
-        dispatch(FilterIntent.CollectCartSize)
+        dispatch(FilterIntent.CollectCartCount)
+        dispatch(FilterIntent.CollectCartProducts)
+        dispatch(FilterIntent.CollectFittingCount)
         dispatch(FilterIntent.CollectActiveEmployee)
-        dispatch(FilterIntent.LoadCartData)
         dispatch(FilterIntent.LoadCatalogFilters)
         dispatch(FilterIntent.LoadProductsQuantity)
         dispatch(FilterIntent.InitializeBrandFavoriteStatus)
@@ -87,16 +99,18 @@ class FilterViewModel @AssistedInject constructor(
 
     override fun dispatch(intent: FilterIntent) {
         when (intent) {
-            is FilterIntent.InitializeState -> reduce {
-                it.copy(
-                    selectedFilterValueChips = route.initialSelectedFilterValueChips,
-                    brandEntity = route.brandEntity,
-                    isSingleLineTitle = route.isSingleLineTitle
-                )
+            is FilterIntent.CollectRoute -> {
+                reduce {
+                    it.copy(
+                        selectedFilterValueChips = route.initialSelectedFilterValueChips,
+                        brandEntity = route.brandEntity,
+                        isSingleLineTitle = route.isSingleLineTitle
+                    )
+                }
             }
             is FilterIntent.CollectFilterData -> {
                 launch {
-                    filterInteractor.filterDataFlow(
+                    filterDataFlowUseCase(
                         FilterRequestData(
                             categoryId = route.categoryId,
                             titleCategoryId = route.titleCategoryId,
@@ -109,14 +123,14 @@ class FilterViewModel @AssistedInject constructor(
                     }
                 }
             }
-            is FilterIntent.CollectCartSize -> {
+            is FilterIntent.CollectCartCount -> {
                 launch {
-                    cartInteractor.cartSize
+                    cartCountFlowUseCase(Unit)
                         .distinctUntilChanged()
-                        .collectLatest { size ->
-                            reduce { it.copy(cartSize = size) }
-                        }
+                        .collectLatest { count -> reduce { it.copy(cartCount = count) } }
                 }
+            }
+            is FilterIntent.CollectCartProducts -> {
                 launch {
                     cartInteractor.cartProductsFlow.collectLatest { products ->
                         reduce {
@@ -126,11 +140,18 @@ class FilterViewModel @AssistedInject constructor(
                                     .toSet(),
                                 basketProductKeys = products
                                     .filter { product -> product.itemId.isNotEmpty() && product.colorId.isNotEmpty() }
-                                    .map { product -> "${product.itemId}:${product.colorId}" }
+                                    .map { product -> "${product.itemId}:${product.colorId}:${product.sizeId}" }
                                     .toSet()
                             )
                         }
                     }
+                }
+            }
+            is FilterIntent.CollectFittingCount -> {
+                launch {
+                    fittingCountFlowUseCase(Unit)
+                        .distinctUntilChanged()
+                        .collectLatest { count -> reduce { it.copy(fittingCount = count) } }
                 }
             }
             is FilterIntent.CollectActiveEmployee -> {
@@ -139,23 +160,12 @@ class FilterViewModel @AssistedInject constructor(
                         .distinctUntilChanged()
                         .collectLatest { employee ->
                             reduce { it.copy(activeEmployee = employee) }
-                            when {
-                                employee.isNotEmpty -> dispatch(FilterIntent.LoadCartData)
-                            }
                         }
-                }
-            }
-            is FilterIntent.LoadCartData -> {
-                launch {
-                    runCatching { cartInteractor.loadBasket() }
-
-                    val badge = runCatching { cartInteractor.cartBadge() }.getOrDefault(0)
-                    reduce { it.copy(cartBadge = badge) }
                 }
             }
             is FilterIntent.LoadCatalogFilters -> {
                 launch {
-                    filterInteractor.loadCatalogFilters(
+                    catalogFiltersUseCase(
                         CatalogFilterRequestData2(
                             categoryId = route.categoryId,
                             titleCategoryId = route.titleCategoryId,
@@ -163,13 +173,13 @@ class FilterViewModel @AssistedInject constructor(
                             includeDefaultCategory = route.includeDefaultCategory(),
                             viewTypeOverride = route.viewTypeOverride
                         )
-                    )
+                    ).getOrThrow()
                 }
             }
             is FilterIntent.LoadProductsQuantity -> {
                 stateFlow.value.loadProductsQuantityJob?.cancel()
                 val job = launch {
-                    filterInteractor.loadCatalogFiltersProductsQuantity(
+                    catalogFilterProductQuantityUseCase(
                         CatalogFilterRequestData2(
                             categoryId = route.categoryId,
                             titleCategoryId = route.titleCategoryId,
@@ -177,7 +187,7 @@ class FilterViewModel @AssistedInject constructor(
                             includeDefaultCategory = route.includeDefaultCategory(),
                             viewTypeOverride = route.viewTypeOverride
                         )
-                    )
+                    ).getOrThrow()
                 }.also { launchedJob ->
                     launchedJob.invokeOnCompletion { reduce { it.copy(loadProductsQuantityJob = null) } }
                 }
@@ -189,14 +199,17 @@ class FilterViewModel @AssistedInject constructor(
                 launch { send(FilterEvent.RefreshProducts) }
             }
             is FilterIntent.RefreshCompleted -> reduce { it.copy(isRefreshing = false) }
-            is FilterIntent.BackClick -> launch { CatalogStackEventManager.send(BackRoute) }
+            is FilterIntent.BackClick -> launch { CatalogRootEventManager.send(BackRoute) }
             is FilterIntent.CartClick -> launch { MainEventManager.send(CartRoute()) }
-            is FilterIntent.FittingClick -> launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
+            is FilterIntent.FittingClick -> {
+                launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
+            }
             is FilterIntent.MessengerClick -> return
-            is FilterIntent.ProductClick -> launch { CatalogStackEventManager.send(DetailsRoute(intent.id)) }
-            is FilterIntent.ProductBasketClick -> launch {
-                cartInteractor.addProductToBasket(intent.id, null)
-                dispatch(FilterIntent.LoadCartData)
+            is FilterIntent.ProductClick -> {
+                launch { CatalogRootEventManager.send(DetailsRoute(intent.id)) }
+            }
+            is FilterIntent.ProductBasketClick -> {
+                launch { toggleBasketProductUseCase(intent.product).getOrThrow() }
             }
             is FilterIntent.ShowSortDialog -> reduce { it.copy(isSortDialogVisible = true) }
             is FilterIntent.HideSortDialog -> reduce { it.copy(isSortDialogVisible = false) }

@@ -34,5 +34,6 @@ data class CatalogProductSearchCardResponse(
     @SerialName("breadcrumbs") val breadcrumbs: List<String>? = null,
     @SerialName("compilationLookProductId") val compilationLookProductId: Int? = null,
     @SerialName("isGiftCard") val isGiftCard: Boolean? = null,
-    @SerialName("discountPercentage") val discountPercentage: Int? = null
+    @SerialName("discountPercentage") val discountPercentage: Int? = null,
+    @SerialName("additionalColors") val additionalColors: List<CatalogProductSearchCardV2AdditionalColorResponse>? = null
 )

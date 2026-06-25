@@ -101,13 +101,11 @@ fun FittingConfirmationScreen(
         )
 
         LoadingBox(
-            isVisible = state.isConfirmLoading ||
-                state.isAddressSaving ||
-                (state.isIntervalsLoading && !state.isInitialIntervalsLoading)
+            isVisible = state.isConfirmLoading || state.isAddressSaving || (state.isIntervalsLoading && !state.isInitialIntervalsLoading)
         )
     }
 
-    if (state.addressActionAddress != null) {
+    if (state.isAddressActionsSheetVisible) {
         FittingAddressActionsSheet(
             dispatch = { intent ->
                 when (intent) {
@@ -175,7 +173,8 @@ fun FittingConfirmationScreen(
         )
     }
 
-    state.deleteAddress?.let { address ->
+    if (state.isAddressDeleteDialogVisible) {
+        val address = requireNotNull(state.deleteAddress)
         FittingAddressDeleteDialog(
             state = FittingAddressDeleteDialogModel(
                 address = address.title
@@ -223,13 +222,13 @@ private fun FittingConfirmationMainContent(
                         Icon(
                             imageVector = Close24,
                             contentDescription = null,
-                            modifier = Modifier.size(24.dp),
-                            tint = MaterialTheme.colorScheme.onBackground
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
+                    containerColor = MaterialTheme.colorScheme.background,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground
                 )
             )
         },

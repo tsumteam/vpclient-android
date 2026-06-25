@@ -50,8 +50,8 @@ class DebugViewModel @Inject constructor(
                     }.collectLatest { model -> reduce { model } }
                 }
             }
-            is DebugIntent.EnvironmentClick -> reduce { it.copy(environmentDialog = true) }
-            is DebugIntent.DismissEnvironmentDialog -> reduce { it.copy(environmentDialog = false) }
+            is DebugIntent.EnvironmentClick -> reduce { it.copy(isEnvironmentDialogVisible = true) }
+            is DebugIntent.DismissEnvironmentDialog -> reduce { it.copy(isEnvironmentDialogVisible = false) }
             is DebugIntent.ToggleRequestDelay -> {
                 launch { settingsDataStore.get().setValue(PreferenceKey.RequestDelay, if (intent.enabled) 5_000L else 0L) }
             }

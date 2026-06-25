@@ -1,9 +1,9 @@
 package ru.mercury.vpclient.shared.ui.components.fitting
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -15,6 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.features.fitting_success.navigation.FittingSuccessDeliveryLine
+import ru.mercury.vpclient.shared.data.PREFIX_SPACE
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.regular14
@@ -47,7 +48,7 @@ fun FittingSuccessDeliveryText(
             }
             append("\n")
             append(stringResource(ClientStrings.FittingSuccessDeliveryAddressPrefix).trimEnd())
-            append(" ")
+            append(PREFIX_SPACE)
             withStyle(SpanStyle(color = accentColor)) {
                 append(address)
             }

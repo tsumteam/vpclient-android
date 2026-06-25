@@ -63,6 +63,12 @@ data class FittingConfirmationModel(
     val deleteAddress: ClientDeliveryAddress?
         get() = clientAddresses.firstOrNull { address -> address.id == deleteAddressId }
 
+    val isAddressActionsSheetVisible: Boolean
+        get() = addressActionAddress != null
+
+    val isAddressDeleteDialogVisible: Boolean
+        get() = deleteAddress != null
+
     val displayedClientAddress: String?
         get() = selectedClientAddress?.title ?: clientAddress
 

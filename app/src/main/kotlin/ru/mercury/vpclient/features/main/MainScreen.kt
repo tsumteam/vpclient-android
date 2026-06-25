@@ -36,8 +36,8 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import ru.mercury.vpclient.features.brands.BrandsScreen
 import ru.mercury.vpclient.features.brands.navigation.BrandsRoute
 import ru.mercury.vpclient.features.catalog.navigation.CatalogRoute
-import ru.mercury.vpclient.features.catalog_root.CatalogStackScreen
-import ru.mercury.vpclient.features.catalog_root.navigation.CatalogStackRoute
+import ru.mercury.vpclient.features.catalog_root.CatalogRootScreen
+import ru.mercury.vpclient.features.catalog_root.navigation.CatalogRootRoute
 import ru.mercury.vpclient.features.consultants.ConsultantsScreen
 import ru.mercury.vpclient.features.consultants.navigation.ConsultantsRoute
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
@@ -81,7 +81,7 @@ fun MainScreen(
 
     LaunchedEffect(route.selectedTab) {
         when (route.selectedTab) {
-            MainRoute.CATALOG_TAB -> viewModel.dispatch(MainIntent.SelectTab(CatalogStackRoute))
+            MainRoute.CATALOG_TAB -> viewModel.dispatch(MainIntent.SelectTab(CatalogRootRoute))
             MainRoute.FITTING_TAB -> viewModel.dispatch(MainIntent.SelectTab(FittingRoute))
         }
     }
@@ -116,7 +116,7 @@ private fun MainScreenContent(
     val isBottomBarVisible by remember(state.selectedRoute, catalogNavBackStack) {
         derivedStateOf {
             when {
-                state.selectedRoute != CatalogStackRoute -> true
+                state.selectedRoute != CatalogRootRoute -> true
                 else -> catalogNavBackStack.lastOrNull() !is DetailsRoute
             }
         }
@@ -228,11 +228,11 @@ private fun MainScreenContent(
                 )
 
                 NavigationBarItem(
-                    selected = state.selectedRoute == CatalogStackRoute,
+                    selected = state.selectedRoute == CatalogRootRoute,
                     onClick = {
                         when {
-                            state.selectedRoute != CatalogStackRoute -> {
-                                dispatch(MainIntent.SelectTab(CatalogStackRoute))
+                            state.selectedRoute != CatalogRootRoute -> {
+                                dispatch(MainIntent.SelectTab(CatalogRootRoute))
                             }
                             else -> {
                                 navBackStack.clear()
@@ -414,7 +414,7 @@ private fun MainScreenContent(
             entryProvider = entryProvider {
                 entry<HomeRoute> { HomeScreen() }
                 entry<BrandsRoute> { BrandsScreen() }
-                entry<CatalogStackRoute> { CatalogStackScreen(navBackStack = catalogNavBackStack) }
+                entry<CatalogRootRoute> { CatalogRootScreen(navBackStack = catalogNavBackStack) }
                 entry<FittingRoute> { FittingScreen() }
                 entry<ConsultantsRoute> { ConsultantsScreen() }
                 entry<ProfileStackRoute> { ProfileStackScreen(navBackStack = profileNavBackStack) }

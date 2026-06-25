@@ -10,40 +10,50 @@ import kotlinx.coroutines.launch
 import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.features.cart.navigation.CartPage
 import ru.mercury.vpclient.features.cart.navigation.CartRoute
-import ru.mercury.vpclient.features.catalog_root.event.CatalogStackEventManager
+import ru.mercury.vpclient.features.catalog_root.event.CatalogRootEventManager
 import ru.mercury.vpclient.features.details.event.DetailsEvent
 import ru.mercury.vpclient.features.details.intent.DetailsIntent
 import ru.mercury.vpclient.features.details.model.DetailsModel
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
+import ru.mercury.vpclient.features.filter.navigation.FilterRoute
 import ru.mercury.vpclient.features.media.navigation.MediaRoute
 import ru.mercury.vpclient.features.video.navigation.VideoRoute
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
+import ru.mercury.vpclient.shared.data.entity.DetailsField
 import ru.mercury.vpclient.shared.data.error.AddProductToBasketException
 import ru.mercury.vpclient.shared.data.network.type.CatalogViewType
 import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
-import ru.mercury.vpclient.shared.domain.interactor.CatalogInteractor
 import ru.mercury.vpclient.shared.domain.interactor.ProductInteractor
+import ru.mercury.vpclient.shared.domain.mapper.filterRoute
 import ru.mercury.vpclient.shared.domain.mapper.isNotEmpty
 import ru.mercury.vpclient.shared.domain.mapper.toCatalogLinkData
-import ru.mercury.vpclient.shared.domain.mapper.toFilterRoute
 import ru.mercury.vpclient.shared.domain.mapper.withCenterLoading
+import ru.mercury.vpclient.shared.domain.usecase.CartCountFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.CatalogCategoryUseCase
 import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.FittingCountFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.SetLastCatalogRootIdUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.navigation.BackRoute
+import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 
 @HiltViewModel(assistedFactory = DetailsViewModel.Factory::class)
 class DetailsViewModel @AssistedInject constructor(
     @Assisted private val route: DetailsRoute,
     private val cartInteractor: CartInteractor,
-    private val catalogInteractor: CatalogInteractor,
+    private val catalogCategoryUseCase: CatalogCategoryUseCase,
+    private val cartCountFlowUseCase: CartCountFlowUseCase,
+    private val fittingCountFlowUseCase: FittingCountFlowUseCase,
     private val employeeActiveFlowUseCase: EmployeeActiveFlowUseCase,
+    private val setLastCatalogRootIdUseCase: SetLastCatalogRootIdUseCase,
     private val productInteractor: ProductInteractor
 ): ClientViewModel<DetailsIntent, DetailsModel, DetailsEvent>(DetailsModel()) {
 
     init {
         dispatch(DetailsIntent.CollectProduct)
         dispatch(DetailsIntent.CollectCartProducts)
-        dispatch(DetailsIntent.CollectCartSize)
+        dispatch(DetailsIntent.CollectCartCount)
+        dispatch(DetailsIntent.CollectFittingCount)
         dispatch(DetailsIntent.CollectActiveEmployee)
         dispatch(DetailsIntent.LoadCartData)
         dispatch(DetailsIntent.LoadProduct)
@@ -65,18 +75,27 @@ class DetailsViewModel @AssistedInject constructor(
                                 .toSet(),
                             basketProductKeys = products
                                 .filter { product -> product.itemId.isNotEmpty() && product.colorId.isNotEmpty() }
-                                .map { product -> "${product.itemId}:${product.colorId}" }
+                                .map { product -> "${product.itemId}:${product.colorId}:${product.sizeId}" }
                                 .toSet()
                         )
                     }
                 }
             }
-            is DetailsIntent.CollectCartSize -> {
+            is DetailsIntent.CollectCartCount -> {
                 launch {
-                    cartInteractor.cartSize
+                    cartCountFlowUseCase(Unit)
                         .distinctUntilChanged()
-                        .collectLatest { size ->
-                            reduce { it.copy(cartSize = size) }
+                        .collectLatest { count ->
+                            reduce { it.copy(cartCount = count) }
+                        }
+                }
+            }
+            is DetailsIntent.CollectFittingCount -> {
+                launch {
+                    fittingCountFlowUseCase(Unit)
+                        .distinctUntilChanged()
+                        .collectLatest { count ->
+                            reduce { it.copy(fittingCount = count) }
                         }
                 }
             }
@@ -95,6 +114,7 @@ class DetailsViewModel @AssistedInject constructor(
             is DetailsIntent.LoadCartData -> {
                 launch {
                     runCatching { cartInteractor.loadBasket() }
+                    runCatching { cartInteractor.loadFitting() }
 
                     val badge = runCatching { cartInteractor.cartBadge() }.getOrDefault(0)
                     reduce { it.copy(cartBadge = badge) }
@@ -104,7 +124,7 @@ class DetailsViewModel @AssistedInject constructor(
             is DetailsIntent.BackClick -> launch {
                 when {
                     route.openedFromCart -> MainEventManager.send(BackRoute)
-                    else -> CatalogStackEventManager.send(BackRoute)
+                    else -> CatalogRootEventManager.send(BackRoute)
                 }
             }
             is DetailsIntent.CartClick -> launch { MainEventManager.send(CartRoute()) }
@@ -177,35 +197,38 @@ class DetailsViewModel @AssistedInject constructor(
                         }
                         else -> null
                     }
-                    val route = catalogInteractor.catalogCategory(categoryId)?.toFilterRoute(brandEntity) ?: return@launch
-                    val resolvedRoute = when {
-                        catalogLinkData.viewType == CatalogViewType.BRAND -> {
-                            route.copy(
-                                initialSelectedFilterValueChips = emptyList(),
-                                hiddenFilterValueChipIds = catalogLinkData.selectedFilterValueChipIds,
-                                viewTypeOverride = CatalogViewType.BRAND
-                            )
+                    val catalogCategoryEntity = catalogCategoryUseCase(categoryId).getOrThrow()
+                    if (brandEntity != null && catalogCategoryEntity != null) {
+                        val filterRoute: FilterRoute = catalogCategoryEntity.filterRoute(brandEntity)
+                        val resolvedRoute = when {
+                            catalogLinkData.viewType == CatalogViewType.BRAND -> {
+                                filterRoute.copy(
+                                    initialSelectedFilterValueChips = emptyList(),
+                                    hiddenFilterValueChipIds = catalogLinkData.selectedFilterValueChipIds,
+                                    viewTypeOverride = CatalogViewType.BRAND
+                                )
+                            }
+                            else -> {
+                                filterRoute.copy(
+                                    isSingleLineTitle = true,
+                                    initialSelectedFilterValueChips = catalogLinkData.selectedFilterValueChips
+                                )
+                            }
                         }
-                        else -> {
-                            route.copy(
-                                isSingleLineTitle = true,
-                                initialSelectedFilterValueChips = catalogLinkData.selectedFilterValueChips
-                            )
+                        catalogLinkData.rootCategoryId?.let { rootCategoryId ->
+                            setLastCatalogRootIdUseCase(rootCategoryId).getOrThrow()
                         }
+                        CatalogRootEventManager.send(resolvedRoute)
                     }
-                    catalogLinkData.rootCategoryId?.let { rootCategoryId ->
-                        catalogInteractor.setLastCatalogRootId(rootCategoryId)
-                    }
-                    CatalogStackEventManager.send(resolvedRoute)
                 }
             }
             is DetailsIntent.ProductClick -> launch {
                 when {
                     route.openedFromCart -> MainEventManager.send(DetailsRoute(intent.id, openedFromCart = true))
-                    else -> CatalogStackEventManager.send(DetailsRoute(intent.id))
+                    else -> CatalogRootEventManager.send(DetailsRoute(intent.id))
                 }
             }
-            is DetailsIntent.ProductBasketClick -> launch { cartInteractor.addProductToBasket(intent.id, null) }
+            is DetailsIntent.ProductBasketClick -> launch { cartInteractor.addProductToBasket(intent.product, null) }
             is DetailsIntent.OpenVideo -> launch {
                 val videoUrl = stateFlow.value.selectedColorVideoUrl ?: return@launch
                 MainEventManager.send(VideoRoute(videoUrl))
@@ -221,6 +244,17 @@ class DetailsViewModel @AssistedInject constructor(
                             initialPage = intent.initialPage.coerceIn(0, totalCount - 1)
                         )
                     )
+                }
+            }
+            is DetailsIntent.FieldCopyClick -> {
+                when (intent.field) {
+                    is DetailsField.ItemId -> launch {
+                        send(DetailsEvent.SnackbarMessage(ClientStrings.DetailsArticleCopied))
+                    }
+                    is DetailsField.Article -> launch {
+                        send(DetailsEvent.SnackbarMessage(ClientStrings.DetailsManufacturerArticleCopied))
+                    }
+                    else -> Unit
                 }
             }
         }

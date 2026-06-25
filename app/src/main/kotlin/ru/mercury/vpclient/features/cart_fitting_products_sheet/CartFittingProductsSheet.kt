@@ -105,11 +105,7 @@ fun CartFittingProductsSheet(
                     title = {
                         Text(
                             text = stringResource(ClientStrings.CartFittingProductsSheetTitle),
-                            style = MaterialTheme.typography.livretMedium18.copy(
-                                textAlign = TextAlign.Center,
-                                lineHeight = 26.sp,
-                                letterSpacing = .2.sp
-                            )
+                            style = MaterialTheme.typography.livretMedium18
                         )
                     },
                     navigationIcon = {

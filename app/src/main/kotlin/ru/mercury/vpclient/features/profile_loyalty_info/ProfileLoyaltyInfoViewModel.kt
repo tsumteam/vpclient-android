@@ -1,6 +1,7 @@
 package ru.mercury.vpclient.features.profile_loyalty_info
 
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.features.profile_loyalty_info.intent.ProfileLoyaltyInfoIntent
@@ -9,6 +10,8 @@ import ru.mercury.vpclient.features.profile_loyalty_qr.navigation.ProfileLoyalty
 import ru.mercury.vpclient.features.profile_loyalty_terms.navigation.ProfileLoyaltyTermsRoute
 import ru.mercury.vpclient.shared.domain.interactor.AuthenticationInteractor
 import ru.mercury.vpclient.shared.domain.interactor.LoyaltyInteractor
+import ru.mercury.vpclient.shared.domain.usecase.LoyaltyCardInfoFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.LoyaltyCardInfoUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.mvi.Event
 import ru.mercury.vpclient.shared.navigation.BackRoute
@@ -17,6 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileLoyaltyInfoViewModel @Inject constructor(
     private val authenticationInteractor: AuthenticationInteractor,
+    private val loyaltyCardInfoUseCase: LoyaltyCardInfoUseCase,
+    private val loyaltyCardInfoFlowUseCase: LoyaltyCardInfoFlowUseCase,
     private val loyaltyInteractor: LoyaltyInteractor
 ): ClientViewModel<ProfileLoyaltyInfoIntent, ProfileLoyaltyInfoModel, Event>(ProfileLoyaltyInfoModel()) {
 
@@ -30,14 +35,15 @@ class ProfileLoyaltyInfoViewModel @Inject constructor(
                 launch {
                     reduce { it.copy(isLoading = true) }
                     runCatching {
-                        val cardInfo = loyaltyInteractor.loyaltyCardInfo()
+                        loyaltyCardInfoUseCase(Unit).getOrThrow()
+                        val cardInfo = loyaltyCardInfoFlowUseCase(Unit).first()
                         val cardTypes = loyaltyInteractor.loyaltyCardTypes()
                         cardInfo to cardTypes
                     }.onSuccess { result ->
                         reduce {
                             it.copy(
                                 isLoading = false,
-                                cardInfo = result.first,
+                                loyaltyCardInfoEntity = result.first,
                                 cardTypes = result.second,
                                 selectedCardType = result.first.typeCard
                             )
@@ -49,7 +55,7 @@ class ProfileLoyaltyInfoViewModel @Inject constructor(
             }
             is ProfileLoyaltyInfoIntent.BackClick -> launch { MainEventManager.send(BackRoute) }
             is ProfileLoyaltyInfoIntent.QrClick -> {
-                val qrCode = stateFlow.value.cardInfo.qrCode
+                val qrCode = stateFlow.value.loyaltyCardInfoEntity.qrCode
                 if (qrCode.isNotBlank()) {
                     launch { MainEventManager.send(ProfileLoyaltyQrRoute(qrCode = qrCode)) }
                 }
@@ -63,7 +69,7 @@ class ProfileLoyaltyInfoViewModel @Inject constructor(
             is ProfileLoyaltyInfoIntent.UnlinkClick -> reduce { it.copy(isUnlinkDialogVisible = true) }
             is ProfileLoyaltyInfoIntent.DismissUnlinkDialog -> reduce { it.copy(isUnlinkDialogVisible = false) }
             is ProfileLoyaltyInfoIntent.ConfirmUnlinkClick -> {
-                val cardNumber = stateFlow.value.cardInfo.loyaltyCardNumber
+                val cardNumber = stateFlow.value.loyaltyCardInfoEntity.loyaltyCardNumber
                 if (cardNumber.isBlank()) return
 
                 launch {

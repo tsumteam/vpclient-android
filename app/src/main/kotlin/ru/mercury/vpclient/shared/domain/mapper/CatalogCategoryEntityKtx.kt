@@ -25,31 +25,39 @@ fun CatalogCategoryEntity.viewType(categoryId: Int, titleCategoryId: Int): Catal
     }
 }
 
-fun CatalogCategoryEntity.toFilterRoute(brandEntity: BrandEntity?): FilterRoute? {
+fun CatalogCategoryEntity.filterRoute(brandEntity: BrandEntity?): FilterRoute {
     return when {
-        parentId == null -> FilterRoute(
-            categoryId = id,
-            titleCategoryId = id,
-            subtitleCategoryId = id,
-            brandEntity = brandEntity
-        )
-        level == CatalogCategoryEntity.LEVEL_TOP -> FilterRoute(
-            categoryId = id,
-            titleCategoryId = rootId,
-            subtitleCategoryId = id,
-            brandEntity = brandEntity
-        )
-        level == CatalogCategoryEntity.LEVEL_BOTTOM -> FilterRoute(
-            categoryId = id,
-            titleCategoryId = parentId,
-            subtitleCategoryId = id,
-            brandEntity = brandEntity
-        )
-        else -> FilterRoute(
-            categoryId = id,
-            titleCategoryId = id,
-            subtitleCategoryId = parentId,
-            brandEntity = brandEntity
-        )
+        parentId == null -> {
+            FilterRoute(
+                categoryId = id,
+                titleCategoryId = id,
+                subtitleCategoryId = id,
+                brandEntity = brandEntity
+            )
+        }
+        level == CatalogCategoryEntity.LEVEL_TOP -> {
+            FilterRoute(
+                categoryId = id,
+                titleCategoryId = rootId,
+                subtitleCategoryId = id,
+                brandEntity = brandEntity
+            )
+        }
+        level == CatalogCategoryEntity.LEVEL_BOTTOM -> {
+            FilterRoute(
+                categoryId = id,
+                titleCategoryId = parentId,
+                subtitleCategoryId = id,
+                brandEntity = brandEntity
+            )
+        }
+        else -> {
+            FilterRoute(
+                categoryId = id,
+                titleCategoryId = id,
+                subtitleCategoryId = parentId,
+                brandEntity = brandEntity
+            )
+        }
     }
 }

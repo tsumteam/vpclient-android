@@ -12,23 +12,21 @@ import ru.mercury.vpclient.shared.data.entity.FilterChip
 import ru.mercury.vpclient.shared.data.entity.FilterData
 import ru.mercury.vpclient.shared.data.entity.FilterTreeValue
 import ru.mercury.vpclient.shared.data.entity.SortType
-import ru.mercury.vpclient.shared.domain.mapper.isFilterValuesDialogChipId
-import ru.mercury.vpclient.shared.domain.mapper.isEmpty
-import ru.mercury.vpclient.shared.domain.mapper.isRequestAffectingCatalogFilterValueChipId
-import ru.mercury.vpclient.shared.mvi.Model
 import ru.mercury.vpclient.shared.data.network.request.CatalogFilterRequest
 import ru.mercury.vpclient.shared.data.network.type.CatalogFilterValueType
+import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesQuantityEntity
 import ru.mercury.vpclient.shared.domain.mapper.brandValues
+import ru.mercury.vpclient.shared.domain.mapper.hasFittingBadge
+import ru.mercury.vpclient.shared.domain.mapper.hasMessengerBadge
+import ru.mercury.vpclient.shared.domain.mapper.isEmpty
+import ru.mercury.vpclient.shared.domain.mapper.isFilterValuesDialogChipId
+import ru.mercury.vpclient.shared.domain.mapper.isRequestAffectingCatalogFilterValueChipId
 import ru.mercury.vpclient.shared.domain.mapper.toPriceRangeChipData
 import ru.mercury.vpclient.shared.domain.mapper.values
-import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
-import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
-import ru.mercury.vpclient.shared.domain.mapper.fittingText
-import ru.mercury.vpclient.shared.domain.mapper.hasFittingBadge
-import ru.mercury.vpclient.shared.domain.mapper.hasFittingProducts
-import ru.mercury.vpclient.shared.domain.mapper.hasMessengerBadge
+import ru.mercury.vpclient.shared.mvi.Model
 
 data class FilterModel(
     val filterData: FilterData = FilterData.Empty,
@@ -53,32 +51,31 @@ data class FilterModel(
     val loadProductsQuantityJob: Job? = null,
     val basketProductIds: Set<String> = emptySet(),
     val basketProductKeys: Set<String> = emptySet(),
-    val cartSize: Int = 0,
+    val cartCount: Int = 0,
     val cartBadge: Int = 0,
+    val fittingCount: Int = 0,
     val activeEmployee: EmployeeEntity = EmployeeEntity.Empty
 ): Model {
 
-    // fixme
-
     val cartText: String
         get() = when {
-            cartSize > 0 -> cartSize.toString()
+            cartCount > 0 -> cartCount.toString()
             else -> ""
         }
 
-    val showCartBadge: Boolean
+    val isCartBadgeVisible: Boolean
         get() = cartBadge > 0
 
     val fittingText: String
-        get() = activeEmployee.fittingText
+        get() = if (fittingCount > 0) fittingCount.toString() else ""
 
-    val showFittingButton: Boolean
-        get() = activeEmployee.hasFittingProducts
+    val isFittingButtonVisible: Boolean
+        get() = fittingCount > 0
 
-    val showFittingBadge: Boolean
+    val isFittingBadgeVisible: Boolean
         get() = activeEmployee.hasFittingBadge
 
-    val showMessengerBadge: Boolean
+    val isMessengerBadgeVisible: Boolean
         get() = activeEmployee.hasMessengerBadge
 
     val selectedFilterValueChipIds: Set<String>
@@ -235,8 +232,8 @@ data class FilterModel(
     }
 
     fun isProductInBasket(entity: CatalogFilterProductsEntity): Boolean {
-        return entity.id in basketProductIds ||
-            "${entity.itemId}:${entity.colorId}" in basketProductKeys
+        val productKeyPrefix = "${entity.itemId}:${entity.colorId}:"
+        return basketProductKeys.any { key -> key.startsWith(productKeyPrefix) }
     }
 
     fun currentDialogSelectedFilterValueChipIds(): Set<String> {

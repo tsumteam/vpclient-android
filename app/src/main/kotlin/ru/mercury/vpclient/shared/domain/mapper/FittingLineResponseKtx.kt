@@ -3,20 +3,20 @@ package ru.mercury.vpclient.shared.domain.mapper
 import ru.mercury.vpclient.shared.data.FORMAT_RUB
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductSize
-import ru.mercury.vpclient.shared.data.network.entity.DateReceiptExpiredStatusDto
-import ru.mercury.vpclient.shared.data.network.entity.FittingDeliveryResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.FittingLineResponseDto
+import ru.mercury.vpclient.shared.data.network.response.FittingDeliveryResponse
+import ru.mercury.vpclient.shared.data.network.response.FittingLineResponse
+import ru.mercury.vpclient.shared.data.network.type.DateReceiptExpiredStatus
 import ru.mercury.vpclient.shared.ui.components.fitting.FittingDeliveryHeaderState
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
 
-val FittingLineResponseDto.cartProduct: CartProduct?
+val FittingLineResponse.cartProduct: CartProduct?
     get() {
         val product = product ?: return null
         val id = lineId ?: product.id ?: product.itemId ?: product.article ?: return null
         val detailId = product.id ?: product.itemId ?: id
-        val price = product.price ?: product.currentRetailPrice ?: .0
+        val price = product.price ?: product.currentRetailPrice.orEmpty
         val oldPrice = product.priceWithoutDiscount
         val sizes = product.sizes.orEmpty()
         val article = product.article?.takeIf { it.isNotEmpty() } ?: product.itemId.orEmpty()
@@ -34,7 +34,8 @@ val FittingLineResponseDto.cartProduct: CartProduct?
                 name = size.name.orEmpty().ifBlank { sizeId },
                 productId = product.id ?: product.itemId.orEmpty(),
                 catalogProductId = product.id.orEmpty(),
-                isLastInStock = size.isLastInStock == true || size.availableStockQuantity == 1.0
+                isLastInStock = size.isLastInStock == true || size.availableStockQuantity == 1.0,
+                availableStockQuantity = size.availableStockQuantity?.toInt().orEmpty
             )
         }
 
@@ -57,19 +58,20 @@ val FittingLineResponseDto.cartProduct: CartProduct?
             isSold = false,
             isLastInStock = sizes.any { it.isLastInStock == true || it.availableStockQuantity == 1.0 },
             hasActions = product.actions.orEmpty().isNotEmpty(),
-            discountPercentage = product.discountPercentage ?: 0,
+            discountPercentage = product.discountPercentage.orEmpty,
             quantity = 1,
             sizeCount = sizeItems.size.takeIf { it > 0 } ?: sizes.size.coerceAtLeast(1),
             priceValue = price,
             sizeId = sizeItems.firstOrNull()?.id ?: sizes.firstOrNull()?.id.orEmpty(),
             sizeItems = sizeItems,
+            isOneSize = product.oneSize == true,
             dateReceipt = dateOfExpiration?.takeIf { it.isNotBlank() }
                 ?: dateReceiptAsString?.takeIf { it.isNotBlank() },
-            isDateReceiptOverdue = dateReceiptExpiredStatus == DateReceiptExpiredStatusDto.OVERDUE
+            isDateReceiptOverdue = dateReceiptExpiredStatus == DateReceiptExpiredStatus.OVERDUE
         )
     }
 
-val FittingDeliveryResponseDto.fittingDeliveryHeader: FittingDeliveryHeaderState
+val FittingDeliveryResponse.fittingDeliveryHeader: FittingDeliveryHeaderState
     get() = FittingDeliveryHeaderState(
         status = deliveryStatusAsString.orEmpty(),
         date = deliveryDateAsString.orEmpty(),

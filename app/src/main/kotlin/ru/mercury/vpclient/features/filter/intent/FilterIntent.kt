@@ -1,16 +1,18 @@
 package ru.mercury.vpclient.features.filter.intent
 
 import ru.mercury.vpclient.shared.data.entity.SortType
+import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.mvi.Intent
 
 sealed interface FilterIntent: Intent {
+    data object CollectRoute: FilterIntent
     data object CollectFilterData: FilterIntent
-    data object CollectCartSize: FilterIntent
+    data object CollectCartCount: FilterIntent
+    data object CollectCartProducts: FilterIntent
+    data object CollectFittingCount: FilterIntent
     data object CollectActiveEmployee: FilterIntent
-    data object LoadCartData: FilterIntent
     data object LoadCatalogFilters: FilterIntent
     data object LoadProductsQuantity: FilterIntent
-    data object InitializeState: FilterIntent
     data object PullToRefresh: FilterIntent
     data object RefreshCompleted: FilterIntent
     data object BackClick: FilterIntent
@@ -28,7 +30,7 @@ sealed interface FilterIntent: Intent {
     data object ToggleBrandFavorited: FilterIntent
     data object InitializeBrandFavoriteStatus: FilterIntent
     data class ProductClick(val id: String): FilterIntent
-    data class ProductBasketClick(val id: String): FilterIntent
+    data class ProductBasketClick(val product: CatalogFilterProductsEntity): FilterIntent
     data class ConfirmSort(val sortType: SortType): FilterIntent
     data class ShowFilterValuesDialog(val chipId: String): FilterIntent
     data class UpdateFilterValuesSelection(val selectedValueIds: Set<String>): FilterIntent

@@ -54,6 +54,9 @@ fun CartLookCard(
     onDisassembleLookSwipeClick: () -> Unit = {},
     onDeleteLookSwipeClick: () -> Unit = {},
     productModifier: (CartProduct) -> Modifier = { Modifier },
+    swipeKey: String? = null,
+    openedSwipeKey: String? = null,
+    onSwipeOpen: (String?) -> Unit = {},
     selectedAlternativeId: String? = null,
     modifier: Modifier = Modifier
 ) {
@@ -101,7 +104,10 @@ fun CartLookCard(
                     )
                 }
             },
-            trailingSwipeSize = 176.dp
+            trailingSwipeSize = 176.dp,
+            swipeKey = swipeKey,
+            openedSwipeKey = openedSwipeKey,
+            onSwipeOpen = onSwipeOpen
         ) {
             CartLookHeader(
                 name = lookName,
@@ -130,6 +136,9 @@ fun CartLookCard(
                     onShowAlternativesSwipeClick = { onShowAlternativesSwipeClick(product) },
                     onHideAlternativesSwipeClick = { onHideAlternativesSwipeClick(product) },
                     onReturnToBasketSwipeClick = { onReturnToBasketSwipeClick(product) },
+                    swipeKey = "product_${product.id}",
+                    openedSwipeKey = openedSwipeKey,
+                    onSwipeOpen = onSwipeOpen,
                     useFittingSwipeActions = useFittingProductSwipeActions,
                     selectedAlternativeId = selectedAlternativeId
                 ),

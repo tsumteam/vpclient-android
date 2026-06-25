@@ -41,31 +41,33 @@ import ru.mercury.vpclient.shared.data.error.SetProductSizeException
 import ru.mercury.vpclient.shared.data.error.SwitchProductWithAlternativeException
 import ru.mercury.vpclient.shared.data.error.FittingReturnProductException
 import ru.mercury.vpclient.shared.data.network.NetworkService
-import ru.mercury.vpclient.shared.data.network.entity.AvailableColorsRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.AvailableSizesRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.BasketGetDeliveryTimesForFittingRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.ClientAddressDto
-import ru.mercury.vpclient.shared.data.network.entity.DeliveryTypeDto
-import ru.mercury.vpclient.shared.data.network.entity.CreateClientAddressRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.DeleteClientAddressRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.FittingChangeLineColorOperationRequestItemDto
-import ru.mercury.vpclient.shared.data.network.entity.FittingChangeLineSizeOperationRequestItemDto
-import ru.mercury.vpclient.shared.data.network.entity.FittingDeliveryResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.FittingTypeDtoEnum
-import ru.mercury.vpclient.shared.data.network.entity.GetDeliveryIntervalsForExistingFittingRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.GetListClientAddressForCheckoutRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.GetListClientAddressRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.KittingTypeDto
-import ru.mercury.vpclient.shared.data.network.entity.FittingOperationRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.FittingOperationRequestTypeDto
-import ru.mercury.vpclient.shared.data.network.entity.FittingReturnProductOperationRequestItemDto
-import ru.mercury.vpclient.shared.data.network.entity.TransferBasketToFittingLineDto
-import ru.mercury.vpclient.shared.data.network.entity.TransferBasketToFittingRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.UpdateClientAddressRequestDto
+import ru.mercury.vpclient.shared.data.network.request.AvailableColorsRequest
+import ru.mercury.vpclient.shared.data.network.request.AvailableSizesRequest
+import ru.mercury.vpclient.shared.data.network.request.BasketGetDeliveryTimesForFittingRequest
+import ru.mercury.vpclient.shared.data.network.type.DeliveryType
+import ru.mercury.vpclient.shared.data.network.request.CreateClientAddressRequest
+import ru.mercury.vpclient.shared.data.network.request.DeleteClientAddressRequest
+import ru.mercury.vpclient.shared.data.network.response.FittingChangeLineColorOperationRequestItemResponse
+import ru.mercury.vpclient.shared.data.network.response.FittingChangeLineSizeOperationRequestItemResponse
+import ru.mercury.vpclient.shared.data.network.response.FittingDeliveryResponse
+import ru.mercury.vpclient.shared.data.network.type.FittingType
+import ru.mercury.vpclient.shared.data.network.request.GetDeliveryIntervalsForExistingFittingRequest
+import ru.mercury.vpclient.shared.data.network.request.GetListClientAddressForCheckoutRequest
+import ru.mercury.vpclient.shared.data.network.request.GetListClientAddressRequest
+import ru.mercury.vpclient.shared.data.network.type.KittingType
+import ru.mercury.vpclient.shared.data.network.request.FittingOperationRequest
+import ru.mercury.vpclient.shared.data.network.type.FittingOperationRequestType
+import ru.mercury.vpclient.shared.data.network.response.FittingReturnProductOperationRequestItemResponse
+import ru.mercury.vpclient.shared.data.network.response.TransferBasketToFittingLineResponse
+import ru.mercury.vpclient.shared.data.network.request.TransferBasketToFittingRequest
+import ru.mercury.vpclient.shared.data.network.request.UpdateClientAddressRequest
 import ru.mercury.vpclient.shared.data.network.type.ActivityCounterType
 import ru.mercury.vpclient.shared.data.persistence.database.AppDatabase
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CartProductDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogFilterProductsDao
+import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogViewHistoryProductDao
+import ru.mercury.vpclient.shared.data.persistence.database.dao.FittingProductDao
+import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductAvailableSizeEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductAvailableSizesEntity
 import ru.mercury.vpclient.shared.data.persistence.datastore.PreferenceKey
@@ -86,13 +88,13 @@ import ru.mercury.vpclient.shared.domain.mapper.deleteLookRequest
 import ru.mercury.vpclient.shared.domain.mapper.deleteProductRequest
 import ru.mercury.vpclient.shared.domain.mapper.disassembleLookRequest
 import ru.mercury.vpclient.shared.domain.mapper.entity
+import ru.mercury.vpclient.shared.domain.mapper.fittingEntity
 import ru.mercury.vpclient.shared.domain.mapper.fittingPaySwitchRequest
 import ru.mercury.vpclient.shared.domain.mapper.fittingDeliveryHeader
 import ru.mercury.vpclient.shared.domain.mapper.fittingConfirmationData
 import ru.mercury.vpclient.shared.domain.mapper.deliveryTimeDto
 import ru.mercury.vpclient.shared.domain.mapper.handleResponse
 import ru.mercury.vpclient.shared.domain.mapper.handleResponseResult
-import ru.mercury.vpclient.shared.domain.mapper.cartProduct
 import ru.mercury.vpclient.shared.domain.mapper.clientAddressBaseDto
 import ru.mercury.vpclient.shared.domain.mapper.clientAddressDto
 import ru.mercury.vpclient.shared.domain.mapper.clientDeliveryAddress
@@ -115,14 +117,14 @@ class CartRepositoryImpl @Inject constructor(
     private val networkService: NetworkService,
     private val appDatabase: AppDatabase,
     private val cartProductDao: CartProductDao,
+    private val fittingProductDao: FittingProductDao,
     private val catalogFilterProductsDao: CatalogFilterProductsDao,
+    private val catalogViewHistoryProductDao: CatalogViewHistoryProductDao,
     private val settingsDataStore: SettingsDataStore
 ): CartRepository {
 
     override val cartProductsFlow: Flow<List<CartProduct>> = cartProductDao.selectAllFlow()
         .map { entities -> entities.map { it.cartProduct } }
-
-    override val cartSize: Flow<Int> = cartProductDao.cartSizeFlow()
 
     override suspend fun loadBasket() {
         val pairedUserId = settingsDataStore.getValue(PreferenceKey.PairedUser).orEmpty()
@@ -157,6 +159,7 @@ class CartRepositoryImpl @Inject constructor(
     override suspend fun loadFitting(): FittingData {
         val pairedUserId = settingsDataStore.getValue(PreferenceKey.PairedUser).orEmpty()
         if (pairedUserId.isEmpty()) {
+            fittingProductDao.delete()
             return FittingData()
         }
 
@@ -167,12 +170,25 @@ class CartRepositoryImpl @Inject constructor(
         val fittingDeliveries = deliveries.map { delivery ->
             FittingDeliveryData(
                 id = delivery.deliveryId.orEmpty(),
-                fittingType = delivery.fittingType ?: FittingTypeDtoEnum.IN_THE_STORE,
+                fittingType = delivery.fittingType ?: FittingType.IN_THE_STORE,
                 header = delivery.fittingDeliveryHeader,
                 products = delivery.lines.orEmpty()
                     .sortedBy { it.order ?: Int.MAX_VALUE }
                     .mapNotNull { it.cartProduct }
             )
+        }
+        val fittingProductEntities = fittingDeliveries.flatMapIndexed { deliveryIndex, delivery ->
+            delivery.products.mapIndexed { productIndex, product ->
+                product.fittingEntity(
+                    deliveryId = delivery.id,
+                    deliveryPosition = deliveryIndex,
+                    position = productIndex
+                )
+            }
+        }
+        appDatabase.withTransaction {
+            fittingProductDao.delete()
+            fittingProductDao.upsert(fittingProductEntities)
         }
 
         return FittingData(
@@ -182,7 +198,7 @@ class CartRepositoryImpl @Inject constructor(
 
     override suspend fun loadFittingConfirmationData(
         products: List<CartProduct>,
-        fittingType: FittingTypeDtoEnum,
+        fittingType: FittingType,
         clientAddress: ClientDeliveryAddress?
     ): FittingConfirmationData {
         val pairedUserId = settingsDataStore.getValue(PreferenceKey.PairedUser).orEmpty()
@@ -190,26 +206,28 @@ class CartRepositoryImpl @Inject constructor(
             return FittingConfirmationData()
         }
 
-        val addressRequest = GetListClientAddressForCheckoutRequestDto(
+        val addressRequest = GetListClientAddressForCheckoutRequest(
             pairedUserId = pairedUserId
         )
         val addresses = handleResponseResult {
             networkService.clientAddressCheckout(addressRequest)
         }.getOrThrow()
         val address = when (fittingType) {
-            FittingTypeDtoEnum.IN_THE_STORE -> addresses.boutiqueAddress?.address
-            FittingTypeDtoEnum.AT_HOME -> clientAddress?.address ?: addresses.clientAddress?.address
+            FittingType.NONE -> addresses.boutiqueAddress?.address
+            FittingType.IN_THE_STORE -> addresses.boutiqueAddress?.address
+            FittingType.AT_HOME -> clientAddress?.address ?: addresses.clientAddress?.address
         }
         val addressComment = when (fittingType) {
-            FittingTypeDtoEnum.IN_THE_STORE -> ""
-            FittingTypeDtoEnum.AT_HOME -> clientAddress?.comment ?: addresses.clientAddress?.comment.orEmpty()
+            FittingType.NONE -> ""
+            FittingType.IN_THE_STORE -> ""
+            FittingType.AT_HOME -> clientAddress?.comment ?: addresses.clientAddress?.comment.orEmpty()
         }
-        val deliveryTimesRequest = BasketGetDeliveryTimesForFittingRequestDto(
+        val deliveryTimesRequest = BasketGetDeliveryTimesForFittingRequest(
             pairedUserId = pairedUserId,
             basketLineIds = products.map { it.id },
             fittingType = fittingType,
-            kittingType = KittingTypeDto.LOGISTIC,
-            deliveryType = DeliveryTypeDto.LOGISTIC,
+            kittingType = KittingType.LOGISTIC,
+            deliveryType = DeliveryType.LOGISTIC,
             address = address,
             addressComment = addressComment
         )
@@ -226,7 +244,7 @@ class CartRepositoryImpl @Inject constructor(
     override suspend fun loadExistingFittingConfirmationData(
         products: List<CartProduct>,
         deliveryId: String,
-        fittingType: FittingTypeDtoEnum,
+        fittingType: FittingType,
         clientAddress: ClientDeliveryAddress?
     ): FittingConfirmationData {
         val pairedUserId = settingsDataStore.getValue(PreferenceKey.PairedUser).orEmpty()
@@ -234,27 +252,29 @@ class CartRepositoryImpl @Inject constructor(
             return FittingConfirmationData()
         }
 
-        val addressRequest = GetListClientAddressForCheckoutRequestDto(
+        val addressRequest = GetListClientAddressForCheckoutRequest(
             pairedUserId = pairedUserId
         )
         val addresses = handleResponseResult {
             networkService.clientAddressCheckout(addressRequest)
         }.getOrThrow()
         val address = when (fittingType) {
-            FittingTypeDtoEnum.IN_THE_STORE -> addresses.boutiqueAddress?.address
-            FittingTypeDtoEnum.AT_HOME -> clientAddress?.address ?: addresses.clientAddress?.address
+            FittingType.NONE -> addresses.boutiqueAddress?.address
+            FittingType.IN_THE_STORE -> addresses.boutiqueAddress?.address
+            FittingType.AT_HOME -> clientAddress?.address ?: addresses.clientAddress?.address
         }
         val addressComment = when (fittingType) {
-            FittingTypeDtoEnum.IN_THE_STORE -> ""
-            FittingTypeDtoEnum.AT_HOME -> clientAddress?.comment ?: addresses.clientAddress?.comment.orEmpty()
+            FittingType.NONE -> ""
+            FittingType.IN_THE_STORE -> ""
+            FittingType.AT_HOME -> clientAddress?.comment ?: addresses.clientAddress?.comment.orEmpty()
         }
-        val deliveryTimesRequest = GetDeliveryIntervalsForExistingFittingRequestDto(
+        val deliveryTimesRequest = GetDeliveryIntervalsForExistingFittingRequest(
             pairedUserId = pairedUserId,
             deliveryId = deliveryId,
             fittingLineIds = products.map { product -> product.id },
             fittingType = fittingType,
-            kittingType = KittingTypeDto.LOGISTIC,
-            deliveryType = DeliveryTypeDto.LOGISTIC,
+            kittingType = KittingType.LOGISTIC,
+            deliveryType = DeliveryType.LOGISTIC,
             address = address,
             addressComment = addressComment
         )
@@ -271,7 +291,7 @@ class CartRepositoryImpl @Inject constructor(
 
     override suspend fun confirmFitting(
         products: List<CartProduct>,
-        fittingType: FittingTypeDtoEnum,
+        fittingType: FittingType,
         clientAddress: ClientDeliveryAddress?,
         singleInterval: FittingConfirmationDeliveryInterval?,
         deliveryGroups: List<FittingConfirmationDeliveryGroup>,
@@ -283,24 +303,26 @@ class CartRepositoryImpl @Inject constructor(
             throw ConfirmFittingException("Не удалось определить клиента")
         }
 
-        val addressRequest = GetListClientAddressForCheckoutRequestDto(
+        val addressRequest = GetListClientAddressForCheckoutRequest(
             pairedUserId = pairedUserId
         )
         val addresses = handleResponseResult {
             networkService.clientAddressCheckout(addressRequest)
         }.getOrThrow()
         val address = when (fittingType) {
-            FittingTypeDtoEnum.IN_THE_STORE -> addresses.boutiqueAddress?.address
-            FittingTypeDtoEnum.AT_HOME -> clientAddress?.address ?: addresses.clientAddress?.address
+            FittingType.NONE -> addresses.boutiqueAddress?.address
+            FittingType.IN_THE_STORE -> addresses.boutiqueAddress?.address
+            FittingType.AT_HOME -> clientAddress?.address ?: addresses.clientAddress?.address
         }.orEmpty()
         val addressComment = when (fittingType) {
-            FittingTypeDtoEnum.IN_THE_STORE -> ""
-            FittingTypeDtoEnum.AT_HOME -> clientAddress?.comment ?: addresses.clientAddress?.comment.orEmpty()
+            FittingType.NONE -> ""
+            FittingType.IN_THE_STORE -> ""
+            FittingType.AT_HOME -> clientAddress?.comment ?: addresses.clientAddress?.comment.orEmpty()
         }
         val lines = when {
             useSingleDelivery -> {
                 products.map { product ->
-                    TransferBasketToFittingLineDto(
+                    TransferBasketToFittingLineResponse(
                         lineId = product.id,
                         deliveryTime = singleInterval?.deliveryTimeDto
                     )
@@ -312,7 +334,7 @@ class CartRepositoryImpl @Inject constructor(
                         interval.id == selectedDeliveryIntervalIds[group.id]
                     }
                     group.products.map { product ->
-                        TransferBasketToFittingLineDto(
+                        TransferBasketToFittingLineResponse(
                             lineId = product.id,
                             deliveryTime = interval?.deliveryTimeDto
                         )
@@ -320,14 +342,14 @@ class CartRepositoryImpl @Inject constructor(
                 }
             }
         }
-        val request = TransferBasketToFittingRequestDto(
+        val request = TransferBasketToFittingRequest(
             pairedUserId = pairedUserId,
             lines = lines,
             address = address,
             addressComment = addressComment,
             fittingType = fittingType,
-            deliveryType = DeliveryTypeDto.LOGISTIC,
-            kittingType = KittingTypeDto.LOGISTIC
+            deliveryType = DeliveryType.LOGISTIC,
+            kittingType = KittingType.LOGISTIC
         )
         val result = FittingConfirmationResult(
             deliveryLines = when {
@@ -370,7 +392,7 @@ class CartRepositoryImpl @Inject constructor(
             return emptyList()
         }
 
-        val request = GetListClientAddressRequestDto(
+        val request = GetListClientAddressRequest(
             clientId = clientId
         )
         val result = handleResponseResult {
@@ -407,7 +429,7 @@ class CartRepositoryImpl @Inject constructor(
             throw ClientAddressException("Не удалось определить клиента")
         }
 
-        val request = CreateClientAddressRequestDto(
+        val request = CreateClientAddressRequest(
             clientId = clientId,
             address = address.clientAddressBaseDto,
             coordinate = address.coordinateDto
@@ -427,7 +449,7 @@ class CartRepositoryImpl @Inject constructor(
             throw ClientAddressException("Не удалось определить клиента")
         }
 
-        val request = UpdateClientAddressRequestDto(
+        val request = UpdateClientAddressRequest(
             clientId = clientId,
             address = address.clientAddressDto,
             coordinate = address.coordinateDto
@@ -445,7 +467,7 @@ class CartRepositoryImpl @Inject constructor(
             throw ClientAddressException("Не удалось определить клиента")
         }
 
-        val request = DeleteClientAddressRequestDto(
+        val request = DeleteClientAddressRequest(
             clientId = clientId,
             addressId = addressId
         )
@@ -495,7 +517,23 @@ class CartRepositoryImpl @Inject constructor(
         if (pairedUserId.isEmpty()) return
 
         val product = catalogFilterProductsDao.select(productId)
+            ?: catalogViewHistoryProductDao.selectCatalogProduct(productId)
             ?: throw AddProductToBasketException(ADD_PRODUCT_TO_BASKET_ERROR_MESSAGE)
+
+        handleResponse(
+            request = {
+                val request = product.addProductToBasketRequest(pairedUserId, sizeId)
+                networkService.basket(request)
+            },
+            onSuccess = { loadBasket() },
+            onEmpty = { loadBasket() },
+            onFailure = { error -> throw AddProductToBasketException(error.message) }
+        )
+    }
+
+    override suspend fun addProductToBasket(product: CatalogFilterProductsEntity, sizeId: String?) {
+        val pairedUserId = settingsDataStore.getValue(PreferenceKey.PairedUser).orEmpty()
+        if (pairedUserId.isEmpty()) return
 
         handleResponse(
             request = {
@@ -589,12 +627,12 @@ class CartRepositoryImpl @Inject constructor(
 
         handleResponse(
             request = {
-                val request = FittingOperationRequestDto(
+                val request = FittingOperationRequest(
                     pairedUserId = pairedUserId,
                     items = listOf(
                         fittingOperationJson.encodeToJsonElement(
-                            FittingReturnProductOperationRequestItemDto(
-                                operationType = FittingOperationRequestTypeDto.RETURN_PRODUCT,
+                            FittingReturnProductOperationRequestItemResponse(
+                                operationType = FittingOperationRequestType.RETURN_PRODUCT,
                                 operationOrder = 0,
                                 lineId = product.id
                             )
@@ -615,12 +653,12 @@ class CartRepositoryImpl @Inject constructor(
         handleResponse(
             request = {
                 val delivery = fittingDeliveryForProduct(pairedUserId, product)
-                val request = FittingOperationRequestDto(
+                val request = FittingOperationRequest(
                     pairedUserId = pairedUserId,
                     items = listOf(
                         fittingOperationJson.encodeToJsonElement(
-                            FittingChangeLineSizeOperationRequestItemDto(
-                                operationType = FittingOperationRequestTypeDto.CHANGE_LINE_SIZE,
+                            FittingChangeLineSizeOperationRequestItemResponse(
+                                operationType = FittingOperationRequestType.CHANGE_LINE_SIZE,
                                 operationOrder = 0,
                                 lineId = product.id,
                                 sizeId = sizeId,
@@ -653,12 +691,12 @@ class CartRepositoryImpl @Inject constructor(
         handleResponse(
             request = {
                 val delivery = fittingDeliveryForProduct(pairedUserId, product)
-                val request = FittingOperationRequestDto(
+                val request = FittingOperationRequest(
                     pairedUserId = pairedUserId,
                     items = listOf(
                         fittingOperationJson.encodeToJsonElement(
-                            FittingChangeLineColorOperationRequestItemDto(
-                                operationType = FittingOperationRequestTypeDto.CHANGE_LINE_COLOR,
+                            FittingChangeLineColorOperationRequestItemResponse(
+                                operationType = FittingOperationRequestType.CHANGE_LINE_COLOR,
                                 operationOrder = 0,
                                 lineId = product.id,
                                 colorId = colorId,
@@ -687,7 +725,7 @@ class CartRepositoryImpl @Inject constructor(
     private suspend fun fittingDeliveryForProduct(
         pairedUserId: String,
         product: CartProduct
-    ): FittingDeliveryResponseDto? {
+    ): FittingDeliveryResponse? {
         return handleResponseResult {
             networkService.fittingsByPairedUserId(pairedUserId)
         }.getOrNull()
@@ -712,7 +750,7 @@ class CartRepositoryImpl @Inject constructor(
 
         val response = handleResponseResult {
             networkService.catalogAvailableSizes(
-                AvailableSizesRequestDto(
+                AvailableSizesRequest(
                     itemId = product.itemId,
                     colorId = product.colorId
                 )
@@ -742,7 +780,7 @@ class CartRepositoryImpl @Inject constructor(
 
         val response = handleResponseResult {
             networkService.catalogAvailableColors(
-                AvailableColorsRequestDto(
+                AvailableColorsRequest(
                     itemId = product.itemId,
                     sizeId = product.sizeId
                 )

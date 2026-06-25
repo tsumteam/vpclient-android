@@ -4,24 +4,24 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.encodeToJsonElement
 import ru.mercury.vpclient.shared.data.entity.CartProduct
-import ru.mercury.vpclient.shared.data.network.entity.BasketChangeLineLookOperationRequestItemDto
-import ru.mercury.vpclient.shared.data.network.entity.BasketChangeLineOrderOperationRequestItemDto
-import ru.mercury.vpclient.shared.data.network.entity.BasketOperationRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.BasketOperationRequestTypeEnum
+import ru.mercury.vpclient.shared.data.network.response.BasketChangeLineLookOperationRequestItemResponse
+import ru.mercury.vpclient.shared.data.network.response.BasketChangeLineOrderOperationRequestItemResponse
+import ru.mercury.vpclient.shared.data.network.request.BasketOperationRequest
+import ru.mercury.vpclient.shared.data.network.type.BasketOperationRequestType
 
 fun cartProductsAfterDragRequest(
     products: List<CartProduct>,
     changedLookProducts: List<CartProduct>,
     pairedUserId: String
-): BasketOperationRequestDto {
+): BasketOperationRequest {
     var operationOrder = 0
     val items = mutableListOf<JsonElement>()
 
     changedLookProducts.forEach { product ->
         items.add(
             cartProductDragJson.encodeToJsonElement(
-                BasketChangeLineLookOperationRequestItemDto(
-                    operationType = BasketOperationRequestTypeEnum.CHANGE_LINE_LOOK,
+                BasketChangeLineLookOperationRequestItemResponse(
+                    operationType = BasketOperationRequestType.CHANGE_LINE_LOOK,
                     operationOrder = operationOrder,
                     lineId = product.id,
                     lookId = product.lookId
@@ -34,8 +34,8 @@ fun cartProductsAfterDragRequest(
     products.forEachIndexed { index, product ->
         items.add(
             cartProductDragJson.encodeToJsonElement(
-                BasketChangeLineOrderOperationRequestItemDto(
-                    operationType = BasketOperationRequestTypeEnum.CHANGE_LINE_ORDER,
+                BasketChangeLineOrderOperationRequestItemResponse(
+                    operationType = BasketOperationRequestType.CHANGE_LINE_ORDER,
                     operationOrder = operationOrder,
                     lineId = product.id,
                     order = index
@@ -45,7 +45,7 @@ fun cartProductsAfterDragRequest(
         operationOrder += 1
     }
 
-    return BasketOperationRequestDto(
+    return BasketOperationRequest(
         pairedUserId = pairedUserId,
         items = items
     )

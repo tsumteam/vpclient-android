@@ -33,7 +33,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -46,10 +45,10 @@ import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.catalog.event.CatalogEvent
 import ru.mercury.vpclient.features.catalog.intent.CatalogIntent
 import ru.mercury.vpclient.features.catalog.model.CatalogModel
-import ru.mercury.vpclient.shared.data.entity.CatalogData
 import ru.mercury.vpclient.shared.data.entity.CatalogTabData
 import ru.mercury.vpclient.shared.data.network.type.CatalogCategoryType
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogCategoryEntity
+import ru.mercury.vpclient.shared.domain.usecase.CatalogDataFlowUseCase.CatalogData
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
@@ -128,10 +127,7 @@ private fun CatalogScreenContent(
                     title = {
                         Text(
                             text = stringResource(ClientStrings.MainTabCatalog),
-                            style = MaterialTheme.typography.medium18.copy(
-                                color = MaterialTheme.colorScheme.onBackground,
-                                textAlign = TextAlign.Center
-                            )
+                            style = MaterialTheme.typography.medium18
                         )
                     },
                     navigationIcon = {
@@ -144,33 +140,34 @@ private fun CatalogScreenContent(
                             Icon(
                                 imageVector = Search24,
                                 contentDescription = null,
-                                modifier = Modifier.size(24.dp),
-                                tint = MaterialTheme.colorScheme.onBackground
+                                modifier = Modifier.size(24.dp)
                             )
                         }
                     },
                     actions = {
-                        if (state.showFittingButton) {
+                        if (state.isFittingButtonVisible) {
                             FittingIconButton(
                                 text = state.fittingText,
-                                showBadge = state.showFittingBadge,
+                                showBadge = state.isFittingBadgeVisible,
                                 onClick = { dispatch(CatalogIntent.FittingClick) }
                             )
                         }
 
                         CartIconButton(
                             text = state.cartText,
-                            showBadge = state.showCartBadge,
+                            showBadge = state.isCartBadgeVisible,
                             onClick = { dispatch(CatalogIntent.CartClick) }
                         )
 
                         MessengerIconButton(
-                            showBadge = state.showMessengerBadge,
+                            showBadge = state.isMessengerBadgeVisible,
                             onClick = { dispatch(CatalogIntent.MessengerClick) }
                         )
                     },
                     colors = TopAppBarDefaults.topAppBarColors().copy(
-                        containerColor = MaterialTheme.colorScheme.background
+                        containerColor = MaterialTheme.colorScheme.background,
+                        navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
+                        titleContentColor = MaterialTheme.colorScheme.onBackground
                     )
                 )
 
@@ -226,7 +223,7 @@ private fun CatalogScreenContent(
                             CatalogClothingCard(
                                 entity = entity,
                                 modifier = Modifier.clickable {
-                                    dispatch(CatalogIntent.CategoryClick(entity.id))
+                                    dispatch(CatalogIntent.CategoryClick(entity))
                                 }
                             )
 

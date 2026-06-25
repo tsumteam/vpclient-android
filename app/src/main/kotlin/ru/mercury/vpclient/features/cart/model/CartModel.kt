@@ -4,6 +4,7 @@ import kotlinx.coroutines.Job
 import ru.mercury.vpclient.features.cart_quantity_sheet.model.CartQuantityItem
 import ru.mercury.vpclient.shared.data.CART_DRAG_AND_DROP_ENABLED
 import ru.mercury.vpclient.shared.data.FORMAT_RUB
+import ru.mercury.vpclient.shared.data.PREFIX_SPACE
 import ru.mercury.vpclient.shared.data.entity.CartFittingDeliveryGroup
 import ru.mercury.vpclient.shared.data.entity.CartPayMode
 import ru.mercury.vpclient.shared.data.entity.CartProduct
@@ -11,8 +12,8 @@ import ru.mercury.vpclient.shared.data.entity.CartProductGroup
 import ru.mercury.vpclient.shared.data.entity.FittingDeliveryData
 import ru.mercury.vpclient.shared.data.entity.ProductAvailableColor
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductAvailableSizeEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductAvailableSizesEntity
-import ru.mercury.vpclient.shared.domain.mapper.hasFittingProducts
 import ru.mercury.vpclient.shared.domain.mapper.thousandsSeparator
 import ru.mercury.vpclient.shared.mvi.Model
 import ru.mercury.vpclient.shared.ui.components.details.SizeSelectorState
@@ -25,6 +26,7 @@ data class CartModel(
     val isRefreshing: Boolean = false,
     val activeEmployee: EmployeeEntity = EmployeeEntity.Empty,
     val products: List<CartProduct> = emptyList(),
+    val fittingCount: Int = 0,
     val apiFittingProducts: List<CartProduct> = emptyList(),
     val apiFittingDeliveries: List<FittingDeliveryData> = emptyList(),
     val editProduct: CartProduct? = null,
@@ -48,12 +50,36 @@ data class CartModel(
     val fittingSheetClientName: String = "",
     val isFittingSheetClientFeminine: Boolean = false
 ): Model {
+    val isEditProductSheetVisible: Boolean
+        get() = editProduct != null
+
+    val isFittingEditProductSheetVisible: Boolean
+        get() = fittingEditProduct != null
+
+    val isSizePickerSheetVisible: Boolean
+        get() = sizePickerProduct != null
+
+    val isColorPickerSheetVisible: Boolean
+        get() = colorPickerProduct != null
+
+    val isQuantityPickerSheetVisible: Boolean
+        get() = quantityPickerProduct != null
+
+    val visibleSizePickerItems: List<ProductAvailableSizeEntity>
+        get() {
+            val sizes = sizePickerSizes ?: return emptyList()
+            val product = sizePickerProduct ?: return emptyList()
+            return sizes.items.filterNot { size ->
+                product.sizeItems.any { item -> item.id == size.sizeId }
+            }
+        }
+
     val sizePickerState: SizeSelectorState
         get() {
             val sizes = sizePickerSizes ?: return SizeSelectorState.Empty
-            val product = sizePickerProduct ?: return SizeSelectorState.Empty
+            if (sizePickerProduct == null) return SizeSelectorState.Empty
             return SizeSelectorState(
-                sizes = sizes.items.map { size ->
+                sizes = visibleSizePickerItems.map { size ->
                     val displayText = size.sizeFullName.orEmpty().ifBlank { size.sizeId }
                     val displayParts = displayText.split("|")
                     SizeState(
@@ -62,12 +88,12 @@ data class CartModel(
                             ?: displayParts.getOrNull(1)?.shortSizeText()
                             ?: "-",
                         selected = size.sizeId == sizePickerSelectedId,
-                        enabled = size.inStock && !product.sizeItems.any { item -> item.id == size.sizeId }
+                        enabled = size.inStock
                     )
                 },
                 topText = sizes.countryCode.orEmpty(),
                 bottomText = "RU",
-                isSizeTableVisible = false
+                isSizeTableVisible = !sizes.sizeTableTitle.isNullOrEmpty() && !sizes.sizeTableUrl.isNullOrEmpty()
             )
         }
 
@@ -82,8 +108,13 @@ data class CartModel(
     val quantityPickerValues: List<CartQuantityItem>
         get() {
             val product = quantityPickerProduct ?: return emptyList()
-            val selectedValue = quantityPickerSelectedValue ?: product.quantity
-            return (1..maxOf(10, product.quantity)).map { value ->
+            val maxAvailableQuantity = product.sizeItems
+                .map { size -> size.availableStockQuantity }
+                .filter { quantity -> quantity > 0 }
+                .minOrNull()
+            val maxValue = maxOf(maxAvailableQuantity ?: product.quantity, product.quantity)
+            val selectedValue = (quantityPickerSelectedValue ?: product.quantity).coerceIn(1, maxValue)
+            return (1..maxValue).map { value ->
                 CartQuantityItem(
                     value = value,
                     selected = value == selectedValue
@@ -165,7 +196,7 @@ data class CartModel(
         get() = products.any { it.size.isBlank() && !it.isSold }
 
     val hasFittingProducts: Boolean
-        get() = activeEmployee.hasFittingProducts
+        get() = fittingCount > 0
 
     val dragEnabled: Boolean
         get() = CART_DRAG_AND_DROP_ENABLED && payMode == CartPayMode.All && !isRefreshing
@@ -200,7 +231,7 @@ data class CartModel(
             .substringAfterLast("—")
             .substringAfterLast("-")
             .trim()
-        return sizeText.split(" ").lastOrNull { it.isNotBlank() } ?: sizeText
+        return sizeText.split(PREFIX_SPACE).lastOrNull { it.isNotBlank() } ?: sizeText
     }
 
     private fun List<CartProduct>.toProductGroups(): List<CartProductGroup> {

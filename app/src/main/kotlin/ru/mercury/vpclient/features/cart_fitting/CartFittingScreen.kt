@@ -22,6 +22,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
@@ -73,6 +77,7 @@ private fun CartFittingScreenContent(
     dispatch: (CartIntent) -> Unit
 ) {
     val pullToRefreshState = rememberPullToRefreshState()
+    var openedSwipeKey by remember { mutableStateOf<String?>(null) }
 
     SharedScaffold(
         topBar = {
@@ -263,6 +268,9 @@ private fun CartFittingScreenContent(
                                                 dispatch(CartIntent.DeleteLookSwipeClick(group.lookId.orEmpty()))
                                             },
                                             productModifier = { Modifier },
+                                            swipeKey = "fitting_look_${deliveryIndex}_${group.key}",
+                                            openedSwipeKey = openedSwipeKey,
+                                            onSwipeOpen = { key -> openedSwipeKey = key },
                                             selectedAlternativeId = state.selectedAlternativeId
                                         )
                                     }
@@ -307,6 +315,9 @@ private fun CartFittingScreenContent(
                                                 onReturnToBasketSwipeClick = {
                                                     dispatch(CartIntent.ReturnFittingProductToBasketSwipeClick(product))
                                                 },
+                                                swipeKey = "fitting_product_${product.id}",
+                                                openedSwipeKey = openedSwipeKey,
+                                                onSwipeOpen = { key -> openedSwipeKey = key },
                                                 useFittingSwipeActions = true,
                                                 selectedAlternativeId = state.selectedAlternativeId
                                             )

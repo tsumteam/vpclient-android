@@ -23,7 +23,7 @@ import ru.mercury.vpclient.shared.data.error.ClientException
 import ru.mercury.vpclient.shared.data.error.ConfirmFittingException
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationDeliveryGroup
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationDeliveryInterval
-import ru.mercury.vpclient.shared.data.network.entity.FittingTypeDtoEnum
+import ru.mercury.vpclient.shared.data.network.type.FittingType
 import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
 import ru.mercury.vpclient.shared.domain.mapper.clientDeliveryAddress
 import ru.mercury.vpclient.shared.domain.mapper.fittingAddressModel
@@ -458,17 +458,18 @@ class FittingConfirmationViewModel @AssistedInject constructor(
     }
 }
 
-private val FittingConfirmationPlaceType.fittingTypeDto: FittingTypeDtoEnum
+private val FittingConfirmationPlaceType.fittingTypeDto: FittingType
     get() = when (this) {
-        FittingConfirmationPlaceType.Boutique -> FittingTypeDtoEnum.IN_THE_STORE
-        FittingConfirmationPlaceType.Home -> FittingTypeDtoEnum.AT_HOME
-        FittingConfirmationPlaceType.Other -> FittingTypeDtoEnum.AT_HOME
+        FittingConfirmationPlaceType.Boutique -> FittingType.IN_THE_STORE
+        FittingConfirmationPlaceType.Home -> FittingType.AT_HOME
+        FittingConfirmationPlaceType.Other -> FittingType.AT_HOME
     }
 
-private val FittingTypeDtoEnum.fittingConfirmationPlaceType: FittingConfirmationPlaceType
+private val FittingType.fittingConfirmationPlaceType: FittingConfirmationPlaceType
     get() = when (this) {
-        FittingTypeDtoEnum.IN_THE_STORE -> FittingConfirmationPlaceType.Boutique
-        FittingTypeDtoEnum.AT_HOME -> FittingConfirmationPlaceType.Home
+        FittingType.NONE -> FittingConfirmationPlaceType.Boutique
+        FittingType.IN_THE_STORE -> FittingConfirmationPlaceType.Boutique
+        FittingType.AT_HOME -> FittingConfirmationPlaceType.Home
     }
 
 private fun FittingConfirmationDeliveryMode.updatedFor(

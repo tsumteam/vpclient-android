@@ -10,33 +10,42 @@ import kotlinx.coroutines.launch
 import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.features.cart.navigation.CartPage
 import ru.mercury.vpclient.features.cart.navigation.CartRoute
-import ru.mercury.vpclient.features.catalog_root.event.CatalogStackEventManager
+import ru.mercury.vpclient.features.catalog_root.event.CatalogRootEventManager
+import ru.mercury.vpclient.features.category.event.CategoryEvent
 import ru.mercury.vpclient.features.category.intent.CategoryIntent
 import ru.mercury.vpclient.features.category.model.CategoryModel
 import ru.mercury.vpclient.features.category.navigation.CategoryRoute
 import ru.mercury.vpclient.features.filter.navigation.FilterRoute
-import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
-import ru.mercury.vpclient.shared.domain.interactor.CatalogInteractor
-import ru.mercury.vpclient.shared.domain.mapper.isNotEmpty
+import ru.mercury.vpclient.shared.data.error.ClientException
+import ru.mercury.vpclient.shared.data.persistence.database.RoomException
+import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
+import ru.mercury.vpclient.shared.domain.usecase.CartCountFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.CatalogCategoriesBottomUseCase
+import ru.mercury.vpclient.shared.domain.usecase.CatalogCategoriesBottomUseCase.CatalogCategoriesBottomException
+import ru.mercury.vpclient.shared.domain.usecase.CatalogCategoryFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.CatalogSubcategoryPojosFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.FittingCountFlowUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
-import ru.mercury.vpclient.shared.mvi.Event
 import ru.mercury.vpclient.shared.navigation.BackRoute
 
 @HiltViewModel(assistedFactory = CategoryViewModel.Factory::class)
 class CategoryViewModel @AssistedInject constructor(
     @Assisted private val route: CategoryRoute,
-    private val catalogInteractor: CatalogInteractor,
-    private val cartInteractor: CartInteractor,
+    private val catalogCategoryFlowUseCase: CatalogCategoryFlowUseCase,
+    private val catalogCategoriesBottomUseCase: CatalogCategoriesBottomUseCase,
+    private val catalogSubcategoryPojosFlowUseCase: CatalogSubcategoryPojosFlowUseCase,
+    private val cartCountFlowUseCase: CartCountFlowUseCase,
+    private val fittingCountFlowUseCase: FittingCountFlowUseCase,
     private val employeeActiveFlowUseCase: EmployeeActiveFlowUseCase
-): ClientViewModel<CategoryIntent, CategoryModel, Event>(CategoryModel()) {
+): ClientViewModel<CategoryIntent, CategoryModel, CategoryEvent>(CategoryModel()) {
 
     init {
         dispatch(CategoryIntent.CollectCategoryEntity)
-        dispatch(CategoryIntent.CollectCategoryPojos)
-        dispatch(CategoryIntent.CollectCartSize)
+        dispatch(CategoryIntent.CollectSubcategoryPojos)
+        dispatch(CategoryIntent.CollectCartCount)
+        dispatch(CategoryIntent.CollectFittingCount)
         dispatch(CategoryIntent.CollectActiveEmployee)
-        dispatch(CategoryIntent.LoadCartData)
         dispatch(CategoryIntent.LoadCatalogCategoriesBottom)
     }
 
@@ -44,24 +53,33 @@ class CategoryViewModel @AssistedInject constructor(
         when (intent) {
             is CategoryIntent.CollectCategoryEntity -> {
                 launch {
-                    catalogInteractor.catalogCategoryFlow(route.categoryId).collectLatest { entity ->
-                        reduce { it.copy(entity = entity) }
+                    catalogCategoryFlowUseCase(route.categoryId).collectLatest { entity ->
+                        reduce { it.copy(catalogCategoryEntity = entity) }
                     }
                 }
             }
-            is CategoryIntent.CollectCategoryPojos -> {
+            is CategoryIntent.CollectSubcategoryPojos -> {
                 launch {
-                    catalogInteractor.subcategoryPojosFlow(route.categoryId).collectLatest { pojos ->
-                        reduce { it.copy(pojos = pojos.sortedBy { pojo -> pojo.entity.position }) }
+                    catalogSubcategoryPojosFlowUseCase(route.categoryId).collectLatest { pojos ->
+                        reduce { it.copy(subcategoryPojos = pojos) }
                     }
                 }
             }
-            is CategoryIntent.CollectCartSize -> {
+            is CategoryIntent.CollectCartCount -> {
                 launch {
-                    cartInteractor.cartSize
+                    cartCountFlowUseCase(Unit)
                         .distinctUntilChanged()
-                        .collectLatest { size ->
-                            reduce { it.copy(cartSize = size) }
+                        .collectLatest { count ->
+                            reduce { it.copy(cartCount = count) }
+                        }
+                }
+            }
+            is CategoryIntent.CollectFittingCount -> {
+                launch {
+                    fittingCountFlowUseCase(Unit)
+                        .distinctUntilChanged()
+                        .collectLatest { count ->
+                            reduce { it.copy(fittingCount = count) }
                         }
                 }
             }
@@ -71,24 +89,13 @@ class CategoryViewModel @AssistedInject constructor(
                         .distinctUntilChanged()
                         .collectLatest { employee ->
                             reduce { it.copy(activeEmployee = employee) }
-                            if (employee.isNotEmpty) {
-                                dispatch(CategoryIntent.LoadCartData)
-                            }
                         }
                 }
             }
-            is CategoryIntent.LoadCartData -> {
-                launch {
-                    runCatching { cartInteractor.loadBasket() }
-
-                    val badge = runCatching { cartInteractor.cartBadge() }.getOrDefault(0)
-                    reduce { it.copy(cartBadge = badge) }
-                }
-            }
             is CategoryIntent.LoadCatalogCategoriesBottom -> {
-                launch { catalogInteractor.loadCatalogCategoriesBottom(route.categoryId) }
+                launch { catalogCategoriesBottomUseCase(route.categoryId).getOrThrow() }
             }
-            is CategoryIntent.BackClick -> launch { CatalogStackEventManager.send(BackRoute) }
+            is CategoryIntent.BackClick -> launch { CatalogRootEventManager.send(BackRoute) }
             is CategoryIntent.CartClick -> launch { MainEventManager.send(CartRoute()) }
             is CategoryIntent.FittingClick -> {
                 launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
@@ -96,7 +103,7 @@ class CategoryViewModel @AssistedInject constructor(
             is CategoryIntent.MessengerClick -> return
             is CategoryIntent.FilterClick -> {
                 val entity = intent.entity
-                val currentEntity = stateFlow.value.entity
+                val currentEntity = stateFlow.value.catalogCategoryEntity
                 val titleCategoryId = when {
                     entity.id == currentEntity.id -> entity.rootId
                     entity.parentId == currentEntity.id -> currentEntity.id
@@ -108,7 +115,7 @@ class CategoryViewModel @AssistedInject constructor(
                     else -> entity.parentId ?: entity.id
                 }
                 launch {
-                    CatalogStackEventManager.send(
+                    CatalogRootEventManager.send(
                         FilterRoute(
                             categoryId = entity.id,
                             titleCategoryId = titleCategoryId,
@@ -117,6 +124,19 @@ class CategoryViewModel @AssistedInject constructor(
                     )
                 }
             }
+        }
+    }
+
+    override fun catch(throwable: Throwable) {
+        when (throwable) {
+            is CatalogCategoriesBottomException -> {
+                launch { send(CategoryEvent.SnackbarErrorMessage(throwable.message)) }
+            }
+            is ClientException -> launch { send(CategoryEvent.SnackbarErrorMessage(throwable.message)) }
+            is RoomException, is RoomSQLiteException -> {
+                launch { send(CategoryEvent.SnackbarErrorMessage(throwable.message.orEmpty())) }
+            }
+            else -> super.catch(throwable)
         }
     }
 

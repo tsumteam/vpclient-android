@@ -14,22 +14,19 @@ import ru.mercury.vpclient.features.profile.event.ProfileEvent
 import ru.mercury.vpclient.features.profile.intent.ProfileIntent
 import ru.mercury.vpclient.features.profile.model.ProfileModel
 import ru.mercury.vpclient.features.profile_info.navigation.ProfileInfoRoute
-import ru.mercury.vpclient.features.profile_loyalty_add_card_sheet.intent.ProfileLoyaltyAddCardIntent
 import ru.mercury.vpclient.features.profile_loyalty_add_card_sheet.model.ProfileLoyaltyAddCardMode
-import ru.mercury.vpclient.features.profile_loyalty_add_card_sheet.model.ProfileLoyaltyAddCardModel
-import ru.mercury.vpclient.features.profile_loyalty_code_sheet.intent.ProfileLoyaltyCodeIntent
-import ru.mercury.vpclient.features.profile_loyalty_code_sheet.model.ProfileLoyaltyCodeModel
 import ru.mercury.vpclient.features.profile_loyalty_info.navigation.ProfileLoyaltyInfoRoute
 import ru.mercury.vpclient.features.profile_loyalty_qr.navigation.ProfileLoyaltyQrRoute
 import ru.mercury.vpclient.features.profile_my_data.navigation.ProfileMyDataRoute
 import ru.mercury.vpclient.features.profile_orders.navigation.ProfileOrdersRoute
-import ru.mercury.vpclient.features.profile_privileges_sheet.intent.ProfilePrivilegeIntent
-import ru.mercury.vpclient.features.profile_privileges_sheet.model.ProfilePrivilegesModel
 import ru.mercury.vpclient.features.profile_qr.navigation.ProfileQrRoute
 import ru.mercury.vpclient.features.profile_stack.event.ProfileStackEventManager
+import ru.mercury.vpclient.features.profile_view_history.navigation.ProfileViewHistoryRoute
 import ru.mercury.vpclient.shared.data.CODE_RESEND_TIMER_DELAY
-import ru.mercury.vpclient.shared.data.entity.LoyaltyCardInfo
 import ru.mercury.vpclient.shared.data.entity.LoyaltyCardType
+import ru.mercury.vpclient.shared.data.network.type.ActivityCounterType
+import ru.mercury.vpclient.shared.data.persistence.database.RoomException
+import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
 import ru.mercury.vpclient.shared.data.persistence.datastore.PreferenceKey
 import ru.mercury.vpclient.shared.data.persistence.datastore.SettingsDataStore
 import ru.mercury.vpclient.shared.domain.interactor.AuthenticationInteractor
@@ -40,9 +37,22 @@ import ru.mercury.vpclient.shared.domain.mapper.codeResendSecondsLeft
 import ru.mercury.vpclient.shared.domain.mapper.formatPhoneForDisplay
 import ru.mercury.vpclient.shared.domain.mapper.isNotEmpty
 import ru.mercury.vpclient.shared.domain.mapper.normalizePhoneInput
+import ru.mercury.vpclient.shared.domain.mapper.orEmpty
+import ru.mercury.vpclient.shared.domain.usecase.ActivityCounterFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.ActivityCountersUseCase
+import ru.mercury.vpclient.shared.domain.usecase.CatalogViewHistoryUseCase.CatalogViewHistoryException
+import ru.mercury.vpclient.shared.domain.usecase.LoyaltyCardInfoUseCase.LoyaltyCardInfoException
+import ru.mercury.vpclient.shared.domain.usecase.LoyaltyLinkUseCase.LoyaltyLinkException
 import ru.mercury.vpclient.shared.domain.usecase.AuthValidateCodeUseCase.Companion.CODE_LENGTH
+import ru.mercury.vpclient.shared.domain.usecase.CartCountFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.CatalogViewHistoryUseCase
 import ru.mercury.vpclient.shared.domain.usecase.ClientEntityFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.FittingCountFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.LoyaltyCardInfoFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.LoyaltyCardInfoFlowUseCase.Companion.ALPHA_BANK_DISCLAIMER_HIDE_DURATION_MILLIS
+import ru.mercury.vpclient.shared.domain.usecase.LoyaltyCardInfoUseCase
+import ru.mercury.vpclient.shared.domain.usecase.LoyaltyLinkUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
@@ -52,30 +62,52 @@ class ProfileViewModel @Inject constructor(
     private val authenticationInteractor: AuthenticationInteractor,
     private val clientEntityFlowUseCase: ClientEntityFlowUseCase,
     private val cartInteractor: CartInteractor,
+    private val cartCountFlowUseCase: CartCountFlowUseCase,
+    private val fittingCountFlowUseCase: FittingCountFlowUseCase,
     private val employeeActiveFlowUseCase: EmployeeActiveFlowUseCase,
+    private val activityCounterFlowUseCase: ActivityCounterFlowUseCase,
+    private val activityCountersUseCase: ActivityCountersUseCase,
+    private val catalogViewHistoryUseCase: CatalogViewHistoryUseCase,
+    private val loyaltyCardInfoUseCase: LoyaltyCardInfoUseCase,
+    private val loyaltyCardInfoFlowUseCase: LoyaltyCardInfoFlowUseCase,
+    private val loyaltyLinkUseCase: LoyaltyLinkUseCase,
     private val loyaltyInteractor: LoyaltyInteractor,
     private val productInteractor: ProductInteractor,
     private val settingsDataStore: SettingsDataStore
 ): ClientViewModel<ProfileIntent, ProfileModel, ProfileEvent>(ProfileModel()) {
 
     init {
-        dispatch(ProfileIntent.CollectCartSize)
+        dispatch(ProfileIntent.CollectCartCount)
+        dispatch(ProfileIntent.CollectFittingCount)
         dispatch(ProfileIntent.CollectClientEntity)
         dispatch(ProfileIntent.CollectActiveEmployee)
+        dispatch(ProfileIntent.CollectNotificationCount)
+        dispatch(ProfileIntent.CollectOrderCount)
+        dispatch(ProfileIntent.CollectLoyaltyCardInfoEntity)
         dispatch(ProfileIntent.CollectViewHistoryProducts)
         dispatch(ProfileIntent.LoadCartData)
-        dispatch(ProfileIntent.LoadViewHistoryProducts)
+        dispatch(ProfileIntent.LoadActivityCounters)
+        dispatch(ProfileIntent.LoadCatalogViewHistory)
         dispatch(ProfileIntent.LoadLoyaltyCardInfo)
     }
 
     override fun dispatch(intent: ProfileIntent) {
         when (intent) {
-            is ProfileIntent.CollectCartSize -> {
+            is ProfileIntent.CollectCartCount -> {
                 launch {
-                    cartInteractor.cartSize
+                    cartCountFlowUseCase(Unit)
                         .distinctUntilChanged()
-                        .collectLatest { size ->
-                            reduce { it.copy(cartSize = size) }
+                        .collectLatest { count ->
+                            reduce { it.copy(cartCount = count) }
+                        }
+                }
+            }
+            is ProfileIntent.CollectFittingCount -> {
+                launch {
+                    fittingCountFlowUseCase(Unit)
+                        .distinctUntilChanged()
+                        .collectLatest { count ->
+                            reduce { it.copy(fittingCount = count) }
                         }
                 }
             }
@@ -84,7 +116,20 @@ class ProfileViewModel @Inject constructor(
                     clientEntityFlowUseCase(Unit)
                         .distinctUntilChanged()
                         .collectLatest { clientEntity ->
-                            reduce { it.copy(clientEntity = clientEntity) }
+                            reduce { state ->
+                                state.copy(
+                                    clientEntity = clientEntity,
+                                    loyaltyAddCardPhone = when {
+                                        state.isLoyaltyAddCardSheetVisible &&
+                                            state.loyaltyAddCardPhone.isBlank() -> {
+                                            formatPhoneForDisplay(
+                                                normalizePhoneInput(clientEntity.phone, maxDigits = 11)
+                                            )
+                                        }
+                                        else -> state.loyaltyAddCardPhone
+                                    }
+                                )
+                            }
                         }
                 }
             }
@@ -100,6 +145,24 @@ class ProfileViewModel @Inject constructor(
                         }
                 }
             }
+            is ProfileIntent.CollectNotificationCount -> {
+                launch {
+                    activityCounterFlowUseCase(ActivityCounterType.CLIENT_NOTIFICATION)
+                        .distinctUntilChanged()
+                        .collectLatest { counter ->
+                            reduce { it.copy(notificationCount = counter.value) }
+                        }
+                }
+            }
+            is ProfileIntent.CollectOrderCount -> {
+                launch {
+                    activityCounterFlowUseCase(ActivityCounterType.ORDER)
+                        .distinctUntilChanged()
+                        .collectLatest { counter ->
+                            reduce { it.copy(orderCount = counter.value) }
+                        }
+                }
+            }
             is ProfileIntent.CollectViewHistoryProducts -> {
                 launch {
                     productInteractor.viewHistoryProductsFlow()
@@ -109,66 +172,78 @@ class ProfileViewModel @Inject constructor(
                         }
                 }
             }
+            is ProfileIntent.CollectLoyaltyCardInfoEntity -> {
+                launch {
+                    loyaltyCardInfoFlowUseCase(Unit)
+                        .distinctUntilChanged()
+                        .collectLatest { loyaltyCardInfo ->
+                            val cardType = loyaltyCardInfo.typeCard.takeIf {
+                                loyaltyCardInfo.loyaltyCardNumber.isNotBlank()
+                            }
+                            val availableCardType = when (cardType) {
+                                LoyaltyCardType.Black,
+                                LoyaltyCardType.Gold -> cardType
+                                LoyaltyCardType.Silver,
+                                null -> null
+                            }
+                            val closeTimestamp = settingsDataStore
+                                .getValue(PreferenceKey.DisclaimerCloseTimestamp).orEmpty
+                            val isAlphaBankBannerVisible = availableCardType != null &&
+                                System.currentTimeMillis() - closeTimestamp >= ALPHA_BANK_DISCLAIMER_HIDE_DURATION_MILLIS
+
+                            reduce {
+                                it.copy(
+                                    loyaltyCardInfoEntity = loyaltyCardInfo,
+                                    alphaBankBannerCardType = availableCardType.takeIf { isAlphaBankBannerVisible },
+                                    isProfilePrivilegesSheetVisible = it.isProfilePrivilegesSheetVisible && isAlphaBankBannerVisible
+                                )
+                            }
+                        }
+                }
+            }
             is ProfileIntent.LoadCartData -> {
                 launch {
                     runCatching { cartInteractor.loadBasket() }
+                    runCatching { cartInteractor.loadFitting() }
 
                     val badge = runCatching { cartInteractor.cartBadge() }.getOrDefault(0)
                     reduce { it.copy(cartBadge = badge) }
                 }
             }
-            is ProfileIntent.LoadViewHistoryProducts -> {
-                launch {
-                    reduce { it.copy(isViewHistoryLoading = true) }
-                    runCatching {
-                        productInteractor.loadViewHistoryProducts(11)
-                    }
-                    reduce { it.copy(isViewHistoryLoading = false) }
+            is ProfileIntent.LoadActivityCounters -> launch { activityCountersUseCase(Unit) }
+            is ProfileIntent.LoadCatalogViewHistory -> {
+                val job = launch {
+                    catalogViewHistoryUseCase(Unit).getOrThrow()
+                }.also { launchedJob ->
+                    launchedJob.invokeOnCompletion { reduce { it.copy(viewHistoryJob = null) } }
                 }
+                reduce { it.copy(viewHistoryJob = job) }
             }
             is ProfileIntent.LoadLoyaltyCardInfo -> {
-                launch {
-                    reduce { it.copy(isLoyaltyCardLoading = true) }
-                    runCatching { loyaltyInteractor.loyaltyCardInfo() }
-                        .onSuccess { loyaltyCardInfo ->
-                            val visibleLoyaltyCardInfo = loyaltyCardInfo.takeIf { info ->
-                                info.loyaltyCardNumber.isNotBlank()
-                            }
-                            reduce {
-                                it.copy(
-                                    loyaltyCardInfo = visibleLoyaltyCardInfo,
-                                    isLoyaltyCardLoading = false
-                                )
-                            }
-                            updateAlphaBankBanner(visibleLoyaltyCardInfo)
-                        }
-                        .onFailure {
-                            reduce {
-                                it.copy(
-                                    loyaltyCardInfo = null,
-                                    alphaBankBannerCardType = null,
-                                    profilePrivilegesSheet = null,
-                                    isLoyaltyCardLoading = false
-                                )
-                            }
-                        }
+                val job = launch {
+                    loyaltyCardInfoUseCase(Unit).getOrThrow()
+                }.also { launchedJob ->
+                    launchedJob.invokeOnCompletion { reduce { it.copy(loyaltyCardInfoJob = null) } }
                 }
+                reduce { it.copy(loyaltyCardInfoJob = job) }
             }
             is ProfileIntent.NotificationClick -> return
             is ProfileIntent.AddLoyaltyCardClick -> {
                 reduce {
                     it.copy(
-                        loyaltyAddCardSheet = ProfileLoyaltyAddCardModel(
-                            phone = formatPhoneForDisplay(it.clientEntity.phone)
-                        )
+                        isLoyaltyAddCardSheetVisible = true,
+                        loyaltyAddCardMode = ProfileLoyaltyAddCardMode.Phone,
+                        loyaltyAddCardPhone = formatPhoneForDisplay(
+                            normalizePhoneInput(it.clientEntity.phone, maxDigits = 11)
+                        ),
+                        loyaltyAddCardCardNumber = "",
+                        isLoyaltyAddCardPhoneErrorVisible = false
                     )
                 }
             }
             is ProfileIntent.LoyaltyCardQrClick -> {
-                val qrCode = stateFlow.value.loyaltyCardInfo?.qrCode.orEmpty()
-                if (qrCode.isNotBlank()) {
-                    launch { MainEventManager.send(ProfileLoyaltyQrRoute(qrCode = qrCode)) }
-                }
+                val qrCode = stateFlow.value.loyaltyCardInfoEntity.qrCode
+                launch { MainEventManager.send(ProfileLoyaltyQrRoute(qrCode)) }
             }
             is ProfileIntent.LoyaltyCardMoreClick -> {
                 launch { MainEventManager.send(ProfileLoyaltyInfoRoute) }
@@ -182,33 +257,27 @@ class ProfileViewModel @Inject constructor(
                     reduce {
                         it.copy(
                             alphaBankBannerCardType = null,
-                            profilePrivilegesSheet = null
+                            isProfilePrivilegesSheetVisible = false
                         )
                     }
                 }
             }
             is ProfileIntent.AlphaBankBannerMoreClick -> {
                 reduce {
-                    it.copy(
-                        profilePrivilegesSheet = it.alphaBankBannerCardType?.let { cardType ->
-                            ProfilePrivilegesModel(cardType = cardType)
-                        }
-                    )
+                    it.copy(isProfilePrivilegesSheetVisible = it.alphaBankBannerCardType != null)
                 }
             }
             is ProfileIntent.DismissAlphaBankPrivilegesSheet -> {
-                reduce { it.copy(profilePrivilegesSheet = null) }
-            }
-            is ProfileIntent.ProfilePrivilegesSheetIntent -> when (intent.intent) {
-                is ProfilePrivilegeIntent.DismissRequest -> {
-                    reduce { it.copy(profilePrivilegesSheet = null) }
-                }
+                reduce { it.copy(isProfilePrivilegesSheetVisible = false) }
             }
             is ProfileIntent.MyDataClick -> launch { ProfileStackEventManager.send(ProfileMyDataRoute) }
             is ProfileIntent.PurchasesClick -> launch { ProfileStackEventManager.send(ProfileOrdersRoute) }
             is ProfileIntent.InformationClick -> launch { ProfileStackEventManager.send(ProfileInfoRoute) }
             is ProfileIntent.QrCodeClick -> launch { MainEventManager.send(ProfileQrRoute) }
-            is ProfileIntent.ViewHistoryViewMoreClick -> return
+            is ProfileIntent.FavoriteBrandsClick -> return
+            is ProfileIntent.ViewHistoryViewMoreClick -> {
+                launch { ProfileStackEventManager.send(ProfileViewHistoryRoute) }
+            }
             is ProfileIntent.ViewHistoryProductClick -> {
                 launch { MainEventManager.send(DetailsRoute(intent.productId, openedFromCart = true)) }
             }
@@ -225,279 +294,234 @@ class ProfileViewModel @Inject constructor(
                 reduce { it.copy(logoutJob = job) }
             }
             is ProfileIntent.CartClick -> launch { MainEventManager.send(CartRoute()) }
-            is ProfileIntent.FittingClick -> launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
+            is ProfileIntent.FittingClick -> {
+                launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
+            }
             is ProfileIntent.MessengerClick -> return
-            is ProfileIntent.LoyaltyAddCardSheetIntent -> {
-                when (val sheetIntent = intent.intent) {
-                    is ProfileLoyaltyAddCardIntent.DismissRequest -> {
-                        reduce { it.copy(loyaltyAddCardSheet = null) }
-                    }
-                    is ProfileLoyaltyAddCardIntent.ModeClick -> {
-                        reduce { state ->
-                            state.copy(
-                                loyaltyAddCardSheet = state.loyaltyAddCardSheet?.copy(
-                                    mode = sheetIntent.mode,
-                                    isPhoneErrorVisible = false,
-                                    isCardErrorVisible = false
-                                )
-                            )
-                        }
-                    }
-                    is ProfileLoyaltyAddCardIntent.PhoneChange -> {
-                        reduce { state ->
-                            state.copy(
-                                loyaltyAddCardSheet = state.loyaltyAddCardSheet?.copy(
-                                    phone = formatPhoneForDisplay(normalizePhoneInput(sheetIntent.phone, maxDigits = 11)),
-                                    isPhoneErrorVisible = false
-                                )
-                            )
-                        }
-                    }
-                    is ProfileLoyaltyAddCardIntent.CardNumberChange -> {
-                        reduce { state ->
-                            state.copy(
-                                loyaltyAddCardSheet = state.loyaltyAddCardSheet?.copy(
-                                    cardNumber = sheetIntent.cardNumber.filter(Char::isDigit),
-                                    isCardErrorVisible = false
-                                )
-                            )
-                        }
-                    }
-                    is ProfileLoyaltyAddCardIntent.ConfirmClick -> {
-                        val sheet = stateFlow.value.loyaltyAddCardSheet
-                        if (sheet != null) {
-                            when (sheet.mode) {
-                                ProfileLoyaltyAddCardMode.Phone -> {
-                                    val phone = normalizePhoneInput(sheet.phone, maxDigits = 11)
-                                    if (phone.length != 11) {
-                                        reduce { state ->
-                                            state.copy(loyaltyAddCardSheet = state.loyaltyAddCardSheet?.copy(isPhoneErrorVisible = true))
-                                        }
-                                    } else {
-                                        launch {
-                                            reduce { state ->
-                                                state.copy(loyaltyAddCardSheet = state.loyaltyAddCardSheet?.copy(isLoading = true))
-                                            }
-                                            runCatching { loyaltyInteractor.linkLoyaltyCardByPhone(phone = phone) }
-                                                .onSuccess { isNeedVerification ->
-                                                    when {
-                                                        isNeedVerification -> {
-                                                            val startedAt = System.currentTimeMillis()
-                                                            stateFlow.value.loyaltyCodeSheet?.resendTimerJob?.cancel()
-                                                            reduce {
-                                                                it.copy(
-                                                                    loyaltyAddCardSheet = null,
-                                                                    loyaltyCodeSheet = ProfileLoyaltyCodeModel(
-                                                                        mode = ProfileLoyaltyAddCardMode.Phone,
-                                                                        phone = phone,
-                                                                        cardNumber = "",
-                                                                        resendTimerStartedAt = startedAt,
-                                                                        resendSecondsLeft = codeResendSecondsLeft(startedAt)
-                                                                    )
-                                                                )
-                                                            }
-                                                            dispatch(ProfileIntent.LoyaltyCodeSheetIntent(ProfileLoyaltyCodeIntent.StartResendTimerTicker))
-                                                        }
-                                                        else -> {
-                                                            authenticationInteractor.currentUser()
-                                                            reduce { it.copy(loyaltyAddCardSheet = null, loyaltyCodeSheet = null) }
-                                                            dispatch(ProfileIntent.LoadLoyaltyCardInfo)
-                                                        }
-                                                    }
-                                                }
-                                                .onFailure { throwable ->
-                                                    reduce { state ->
-                                                        state.copy(
-                                                            loyaltyAddCardSheet = state.loyaltyAddCardSheet?.copy(
-                                                                isLoading = false,
-                                                                isPhoneErrorVisible = false
-                                                            )
-                                                        )
-                                                    }
-                                                    throwable.message
-                                                        ?.takeIf(String::isNotBlank)
-                                                        ?.let { message -> launch { send(ProfileEvent.SnackbarMessage(message)) } }
-                                                }
-                                        }
-                                    }
-                                }
-                                ProfileLoyaltyAddCardMode.CardNumber -> {
-                                    val cardNumber = sheet.cardNumber.trim()
-                                    if (cardNumber.isNotEmpty()) {
-                                        launch {
-                                            reduce { state ->
-                                                state.copy(loyaltyAddCardSheet = state.loyaltyAddCardSheet?.copy(isLoading = true))
-                                            }
-                                            runCatching { loyaltyInteractor.linkLoyaltyCard(cardNumber = cardNumber) }
-                                                .onSuccess {
-                                                    val startedAt = System.currentTimeMillis()
-                                                    stateFlow.value.loyaltyCodeSheet?.resendTimerJob?.cancel()
-                                                    reduce {
-                                                        it.copy(
-                                                            loyaltyAddCardSheet = null,
-                                                            loyaltyCodeSheet = ProfileLoyaltyCodeModel(
-                                                                mode = ProfileLoyaltyAddCardMode.CardNumber,
-                                                                phone = "",
-                                                                cardNumber = cardNumber,
-                                                                resendTimerStartedAt = startedAt,
-                                                                resendSecondsLeft = codeResendSecondsLeft(startedAt)
-                                                            )
-                                                        )
-                                                    }
-                                                    dispatch(ProfileIntent.LoyaltyCodeSheetIntent(ProfileLoyaltyCodeIntent.StartResendTimerTicker))
-                                                }
-                                                .onFailure {
-                                                    reduce { state ->
-                                                        state.copy(
-                                                            loyaltyAddCardSheet = state.loyaltyAddCardSheet?.copy(
-                                                                isLoading = false,
-                                                                isCardErrorVisible = true
-                                                            )
-                                                        )
-                                                    }
-                                                }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+            is ProfileIntent.DismissLoyaltyAddCardSheet -> {
+                reduce { it.copy(isLoyaltyAddCardSheetVisible = false) }
+            }
+            is ProfileIntent.LoyaltyAddCardModeClick -> {
+                reduce { state ->
+                    state.copy(
+                        loyaltyAddCardMode = intent.mode,
+                        isLoyaltyAddCardPhoneErrorVisible = false
+                    )
                 }
             }
-            is ProfileIntent.LoyaltyCodeSheetIntent -> {
-                when (val sheetIntent = intent.intent) {
-                    is ProfileLoyaltyCodeIntent.DismissRequest -> {
-                        stateFlow.value.loyaltyCodeSheet?.resendTimerJob?.cancel()
-                        reduce { it.copy(loyaltyCodeSheet = null) }
-                    }
-                    is ProfileLoyaltyCodeIntent.StartResendTimerTicker -> {
-                        stateFlow.value.loyaltyCodeSheet?.resendTimerJob?.cancel()
+            is ProfileIntent.LoyaltyAddCardPhoneChange -> {
+                reduce { state ->
+                    state.copy(
+                        loyaltyAddCardPhone = formatPhoneForDisplay(normalizePhoneInput(intent.phone, maxDigits = 11)),
+                        isLoyaltyAddCardPhoneErrorVisible = false
+                    )
+                }
+            }
+            is ProfileIntent.LoyaltyAddCardCardNumberChange -> {
+                reduce { state ->
+                    state.copy(
+                        loyaltyAddCardCardNumber = intent.cardNumber.filter(Char::isDigit)
+                    )
+                }
+            }
+            is ProfileIntent.LoyaltyAddCardPhoneConfirmClick -> {
+                val sheet = stateFlow.value
+                if (sheet.isLoyaltyAddCardSheetVisible) {
+                    val phone = normalizePhoneInput(sheet.loyaltyAddCardPhone, maxDigits = 11)
+                    if (phone.length != 11) {
+                        reduce { state -> state.copy(isLoyaltyAddCardPhoneErrorVisible = true) }
+                    } else {
                         val job = launch {
-                            while (true) {
-                                delay(CODE_RESEND_TIMER_DELAY.milliseconds)
-                                val sheet = stateFlow.value.loyaltyCodeSheet ?: break
-                                val resendSecondsLeft = codeResendSecondsLeft(sheet.resendTimerStartedAt)
-                                if (resendSecondsLeft != sheet.resendSecondsLeft) {
-                                    reduce { state ->
-                                        state.copy(
-                                            loyaltyCodeSheet = state.loyaltyCodeSheet?.copy(
-                                                resendSecondsLeft = resendSecondsLeft
-                                            )
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                        reduce { state ->
-                            state.copy(loyaltyCodeSheet = state.loyaltyCodeSheet?.copy(resendTimerJob = job))
-                        }
-                    }
-                    is ProfileLoyaltyCodeIntent.CodeChange -> {
-                        reduce { state ->
-                            state.copy(
-                                loyaltyCodeSheet = state.loyaltyCodeSheet?.copy(
-                                    code = sheetIntent.code.filter(Char::isDigit).take(CODE_LENGTH),
-                                    isCodeErrorVisible = false
-                                )
-                            )
-                        }
-                    }
-                    is ProfileLoyaltyCodeIntent.ConfirmClick -> {
-                        val sheet = stateFlow.value.loyaltyCodeSheet
-                        if (sheet != null && sheet.isConfirmEnabled) {
-                            launch {
-                                reduce { state ->
-                                    state.copy(
-                                        loyaltyCodeSheet = state.loyaltyCodeSheet?.copy(
-                                            isLoading = true,
-                                            isCodeErrorVisible = false
-                                        )
-                                    )
-                                }
-                                runCatching {
-                                    when (sheet.mode) {
-                                        ProfileLoyaltyAddCardMode.Phone -> {
-                                            loyaltyInteractor.verifyLoyaltyCardByPhone(
-                                                phone = sheet.phone,
-                                                code = sheet.code
-                                            )
-                                        }
-                                        ProfileLoyaltyAddCardMode.CardNumber -> {
-                                            loyaltyInteractor.verifyLoyaltyCard(
-                                                cardNumber = sheet.cardNumber,
-                                                code = sheet.code
-                                            )
-                                        }
-                                    }
-                                    authenticationInteractor.currentUser()
-                                }.onSuccess {
-                                    stateFlow.value.loyaltyCodeSheet?.resendTimerJob?.cancel()
-                                    reduce { it.copy(loyaltyCodeSheet = null) }
-                                    dispatch(ProfileIntent.LoadLoyaltyCardInfo)
-                                }.onFailure {
-                                    reduce { state ->
-                                        state.copy(
-                                            loyaltyCodeSheet = state.loyaltyCodeSheet?.copy(
-                                                isLoading = false,
-                                                isCodeErrorVisible = true
-                                            )
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    is ProfileLoyaltyCodeIntent.ResendCodeClick -> {
-                        val sheet = stateFlow.value.loyaltyCodeSheet
-                        if (sheet != null && sheet.resendSecondsLeft <= 0 && !sheet.isResendLoading) {
-                            launch {
-                                reduce { state ->
-                                    state.copy(loyaltyCodeSheet = state.loyaltyCodeSheet?.copy(isResendLoading = true))
-                                }
-                                runCatching {
-                                    when (sheet.mode) {
-                                        ProfileLoyaltyAddCardMode.Phone -> loyaltyInteractor.linkLoyaltyCardByPhone(phone = sheet.phone)
-                                        ProfileLoyaltyAddCardMode.CardNumber -> {
-                                            loyaltyInteractor.linkLoyaltyCard(cardNumber = sheet.cardNumber)
-                                            true
-                                        }
-                                    }
-                                }.onSuccess { isNeedVerification ->
+                            runCatching { loyaltyInteractor.linkLoyaltyCardByPhone(phone = phone) }
+                                .onSuccess { isNeedVerification ->
                                     when {
                                         isNeedVerification -> {
                                             val startedAt = System.currentTimeMillis()
-                                            reduce { state ->
-                                                state.copy(
-                                                    loyaltyCodeSheet = state.loyaltyCodeSheet?.copy(
-                                                        isResendLoading = false,
-                                                        resendTimerStartedAt = startedAt,
-                                                        resendSecondsLeft = codeResendSecondsLeft(startedAt)
-                                                    )
+                                            stateFlow.value.loyaltyCodeResendTimerJob?.cancel()
+                                            reduce {
+                                                it.copy(
+                                                    isLoyaltyAddCardSheetVisible = false,
+                                                    isLoyaltyCodeSheetVisible = true,
+                                                    loyaltyCodeMode = ProfileLoyaltyAddCardMode.Phone,
+                                                    loyaltyCodePhone = phone,
+                                                    loyaltyCodeCardNumber = "",
+                                                    loyaltyCode = "",
+                                                    isLoyaltyCodeLoading = false,
+                                                    isLoyaltyCodeResendLoading = false,
+                                                    isLoyaltyCodeErrorVisible = false,
+                                                    loyaltyCodeResendTimerStartedAt = startedAt,
+                                                    loyaltyCodeResendSecondsLeft = codeResendSecondsLeft(startedAt)
                                                 )
                                             }
-                                            dispatch(ProfileIntent.LoyaltyCodeSheetIntent(ProfileLoyaltyCodeIntent.StartResendTimerTicker))
+                                            dispatch(ProfileIntent.StartLoyaltyCodeResendTimerTicker)
                                         }
                                         else -> {
                                             authenticationInteractor.currentUser()
-                                            reduce { it.copy(loyaltyCodeSheet = null) }
+                                            stateFlow.value.loyaltyCodeResendTimerJob?.cancel()
+                                            reduce { it.copy(isLoyaltyAddCardSheetVisible = false, isLoyaltyCodeSheetVisible = false) }
                                             dispatch(ProfileIntent.LoadLoyaltyCardInfo)
                                         }
                                     }
-                                }.onFailure { throwable ->
-                                    if (sheet.mode == ProfileLoyaltyAddCardMode.Phone) {
-                                        throwable.message
-                                            ?.takeIf(String::isNotBlank)
-                                            ?.let { message -> launch { send(ProfileEvent.SnackbarMessage(message)) } }
-                                    }
+                                }
+                                .onFailure { throwable ->
                                     reduce { state ->
                                         state.copy(
-                                            loyaltyCodeSheet = state.loyaltyCodeSheet?.copy(
-                                                isResendLoading = false,
-                                                isCodeErrorVisible = sheet.mode != ProfileLoyaltyAddCardMode.Phone
-                                            )
+                                            isLoyaltyAddCardPhoneErrorVisible = false
                                         )
                                     }
+                                    throwable.message
+                                        ?.takeIf(String::isNotBlank)
+                                        ?.let { message -> launch { send(ProfileEvent.SnackbarErrorMessage(message)) } }
                                 }
+                        }.also { launchedJob ->
+                            launchedJob.invokeOnCompletion { reduce { it.copy(loyaltyAddCardJob = null) } }
+                        }
+                        reduce { it.copy(loyaltyAddCardJob = job) }
+                    }
+                }
+            }
+            is ProfileIntent.LoyaltyAddCardCardNumberConfirmClick -> {
+                val sheet = stateFlow.value
+                if (sheet.isLoyaltyAddCardSheetVisible) {
+                    val cardNumber = sheet.loyaltyAddCardCardNumber.trim().takeIf(String::isNotEmpty) ?: return
+                    val job = launch {
+                        loyaltyLinkUseCase(cardNumber).getOrThrow()
+                        val startedAt = System.currentTimeMillis()
+                        stateFlow.value.loyaltyCodeResendTimerJob?.cancel()
+                        reduce {
+                            it.copy(
+                                isLoyaltyAddCardSheetVisible = false,
+                                isLoyaltyCodeSheetVisible = true,
+                                loyaltyCodeMode = ProfileLoyaltyAddCardMode.CardNumber,
+                                loyaltyCodePhone = "",
+                                loyaltyCodeCardNumber = cardNumber,
+                                loyaltyCode = "",
+                                isLoyaltyCodeLoading = false,
+                                isLoyaltyCodeResendLoading = false,
+                                isLoyaltyCodeErrorVisible = false,
+                                loyaltyCodeResendTimerStartedAt = startedAt,
+                                loyaltyCodeResendSecondsLeft = codeResendSecondsLeft(startedAt)
+                            )
+                        }
+                        dispatch(ProfileIntent.StartLoyaltyCodeResendTimerTicker)
+                    }.also { launchedJob ->
+                        launchedJob.invokeOnCompletion { reduce { it.copy(loyaltyAddCardJob = null) } }
+                    }
+                    reduce { it.copy(loyaltyAddCardJob = job) }
+                }
+            }
+            is ProfileIntent.DismissLoyaltyCodeSheet -> {
+                stateFlow.value.loyaltyCodeResendTimerJob?.cancel()
+                reduce { it.copy(isLoyaltyCodeSheetVisible = false, loyaltyCodeResendTimerJob = null) }
+            }
+            is ProfileIntent.StartLoyaltyCodeResendTimerTicker -> {
+                stateFlow.value.loyaltyCodeResendTimerJob?.cancel()
+                val job = launch {
+                    while (true) {
+                        delay(CODE_RESEND_TIMER_DELAY.milliseconds)
+                        val sheet = stateFlow.value
+                        if (!sheet.isLoyaltyCodeSheetVisible) break
+                        val resendSecondsLeft = codeResendSecondsLeft(sheet.loyaltyCodeResendTimerStartedAt)
+                        if (resendSecondsLeft != sheet.loyaltyCodeResendSecondsLeft) {
+                            reduce { state -> state.copy(loyaltyCodeResendSecondsLeft = resendSecondsLeft) }
+                        }
+                    }
+                }
+                reduce { state -> state.copy(loyaltyCodeResendTimerJob = job) }
+            }
+            is ProfileIntent.LoyaltyCodeChange -> {
+                reduce { state ->
+                    state.copy(
+                        loyaltyCode = intent.code.filter(Char::isDigit).take(CODE_LENGTH),
+                        isLoyaltyCodeErrorVisible = false
+                    )
+                }
+            }
+            is ProfileIntent.LoyaltyCodeConfirmClick -> {
+                val sheet = stateFlow.value
+                if (sheet.isLoyaltyCodeSheetVisible && sheet.loyaltyCode.length == CODE_LENGTH) {
+                    launch {
+                        reduce { state ->
+                            state.copy(
+                                isLoyaltyCodeLoading = true,
+                                isLoyaltyCodeErrorVisible = false
+                            )
+                        }
+                        runCatching {
+                            when (sheet.loyaltyCodeMode) {
+                                ProfileLoyaltyAddCardMode.Phone -> {
+                                    loyaltyInteractor.verifyLoyaltyCardByPhone(
+                                        phone = sheet.loyaltyCodePhone,
+                                        code = sheet.loyaltyCode
+                                    )
+                                }
+                                ProfileLoyaltyAddCardMode.CardNumber -> {
+                                    loyaltyInteractor.verifyLoyaltyCard(
+                                        cardNumber = sheet.loyaltyCodeCardNumber,
+                                        code = sheet.loyaltyCode
+                                    )
+                                }
+                            }
+                            authenticationInteractor.currentUser()
+                        }.onSuccess {
+                            stateFlow.value.loyaltyCodeResendTimerJob?.cancel()
+                            reduce { it.copy(isLoyaltyCodeSheetVisible = false, isLoyaltyCodeLoading = false, loyaltyCodeResendTimerJob = null) }
+                            dispatch(ProfileIntent.LoadLoyaltyCardInfo)
+                        }.onFailure {
+                            reduce { state ->
+                                state.copy(
+                                    isLoyaltyCodeLoading = false,
+                                    isLoyaltyCodeErrorVisible = true
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+            is ProfileIntent.LoyaltyCodeResendCodeClick -> {
+                val sheet = stateFlow.value
+                if (sheet.isLoyaltyCodeSheetVisible && sheet.loyaltyCodeResendSecondsLeft <= 0 && !sheet.isLoyaltyCodeResendLoading) {
+                    launch {
+                        reduce { state -> state.copy(isLoyaltyCodeResendLoading = true) }
+                        runCatching {
+                            when (sheet.loyaltyCodeMode) {
+                                ProfileLoyaltyAddCardMode.Phone -> loyaltyInteractor.linkLoyaltyCardByPhone(phone = sheet.loyaltyCodePhone)
+                                ProfileLoyaltyAddCardMode.CardNumber -> {
+                                    loyaltyLinkUseCase(sheet.loyaltyCodeCardNumber).getOrThrow()
+                                    true
+                                }
+                            }
+                        }.onSuccess { isNeedVerification ->
+                            when {
+                                isNeedVerification -> {
+                                    val startedAt = System.currentTimeMillis()
+                                    reduce { state ->
+                                        state.copy(
+                                            isLoyaltyCodeResendLoading = false,
+                                            loyaltyCodeResendTimerStartedAt = startedAt,
+                                            loyaltyCodeResendSecondsLeft = codeResendSecondsLeft(startedAt)
+                                        )
+                                    }
+                                    dispatch(ProfileIntent.StartLoyaltyCodeResendTimerTicker)
+                                }
+                                else -> {
+                                    authenticationInteractor.currentUser()
+                                    stateFlow.value.loyaltyCodeResendTimerJob?.cancel()
+                                    reduce { it.copy(isLoyaltyCodeSheetVisible = false, isLoyaltyCodeResendLoading = false, loyaltyCodeResendTimerJob = null) }
+                                    dispatch(ProfileIntent.LoadLoyaltyCardInfo)
+                                }
+                            }
+                        }.onFailure { throwable ->
+                            if (sheet.loyaltyCodeMode == ProfileLoyaltyAddCardMode.Phone) {
+                                throwable.message
+                                    ?.takeIf(String::isNotBlank)
+                                    ?.let { message -> launch { send(ProfileEvent.SnackbarErrorMessage(message)) } }
+                            }
+                            reduce { state ->
+                                state.copy(
+                                    isLoyaltyCodeResendLoading = false,
+                                    isLoyaltyCodeErrorVisible = sheet.loyaltyCodeMode != ProfileLoyaltyAddCardMode.Phone
+                                )
                             }
                         }
                     }
@@ -506,27 +530,18 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    private suspend fun updateAlphaBankBanner(loyaltyCardInfo: LoyaltyCardInfo?) {
-        val cardType = loyaltyCardInfo?.typeCard
-        val availableCardType = when (cardType) {
-            LoyaltyCardType.Black,
-            LoyaltyCardType.Gold -> cardType
-            LoyaltyCardType.Silver,
-            null -> null
-        }
-        val closeTimestamp = settingsDataStore
-            .getValue(PreferenceKey.DisclaimerCloseTimestamp)
-            ?: 0L
-        val showBanner = availableCardType != null &&
-            System.currentTimeMillis() - closeTimestamp >= ALPHA_BANK_DISCLAIMER_HIDE_DURATION_MILLIS
-
-        reduce {
-            it.copy(
-                alphaBankBannerCardType = availableCardType.takeIf { showBanner },
-                profilePrivilegesSheet = it.profilePrivilegesSheet.takeIf { showBanner }
-            )
+    override fun catch(throwable: Throwable) {
+        when (throwable) {
+            is CatalogViewHistoryException -> reduce { it.copy(viewHistoryJob = null) }
+            is LoyaltyCardInfoException -> reduce { it.copy(loyaltyCardInfoJob = null) }
+            is LoyaltyLinkException -> {
+                reduce { it.copy(loyaltyAddCardJob = null) }
+                launch { send(ProfileEvent.SnackbarTopErrorMessage(throwable.message)) }
+            }
+            is RoomException, is RoomSQLiteException -> {
+                launch { send(ProfileEvent.SnackbarErrorMessage(throwable.message.orEmpty())) }
+            }
+            else -> super.catch(throwable)
         }
     }
 }
-
-private const val ALPHA_BANK_DISCLAIMER_HIDE_DURATION_MILLIS = 7L * 24L * 60L * 60L * 1000L

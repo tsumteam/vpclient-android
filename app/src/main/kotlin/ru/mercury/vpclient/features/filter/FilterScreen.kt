@@ -2,6 +2,8 @@
 
 package ru.mercury.vpclient.features.filter
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,11 +20,13 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -47,6 +51,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -116,6 +121,7 @@ import ru.mercury.vpclient.shared.ui.components.filters.FiltersRow
 import ru.mercury.vpclient.shared.ui.components.filters.FiltersRowState
 import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
 import ru.mercury.vpclient.shared.ui.icons.Search24
+import ru.mercury.vpclient.shared.ui.icons.SearchEmpty210x111
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.ktx.isContentVisible
 import ru.mercury.vpclient.shared.ui.ktx.isPagingFailure
@@ -124,19 +130,17 @@ import ru.mercury.vpclient.shared.ui.ktx.isRefreshFailure
 import ru.mercury.vpclient.shared.ui.ktx.isRefreshLoading
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
+import ru.mercury.vpclient.shared.ui.theme.medium15
 import ru.mercury.vpclient.shared.ui.theme.medium18
 import ru.mercury.vpclient.shared.ui.theme.regular15
 import kotlin.math.max
 
-private const val FILTER_NAVIGATION_ICONS_COUNT = 2
-private const val TOP_BAR_ICON_SIZE_DP = 42
-private val FILTERS_ROW_LOADING_HEIGHT = 108.dp
-private val FILTER_BRAND_FAVORITES_BAR_HEIGHT = 48.dp
-
 @Composable
 fun FilterScreen(
     route: FilterRoute,
-    viewModel: FilterViewModel = hiltViewModel<FilterViewModel, FilterViewModel.Factory>(creationCallback = { it.create(route) })
+    viewModel: FilterViewModel = hiltViewModel<FilterViewModel, FilterViewModel.Factory>(
+        creationCallback = { it.create(route) }
+    )
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
     val pagingItems = viewModel.productsPagingFlow.collectAsLazyPagingItems()
@@ -155,11 +159,21 @@ fun FilterScreen(
             state = requireNotNull(state.filterBrandSheetState),
             dispatch = { intent ->
                 when (intent) {
-                    is FilterBrandIntent.HideFilterBrandDialog -> viewModel.dispatch(FilterIntent.HideFilterValuesDialog)
-                    is FilterBrandIntent.ResetFilterBrandValues -> viewModel.dispatch(FilterIntent.UpdateFilterValuesSelection(emptySet()))
-                    is FilterBrandIntent.ConfirmFilterBrandValues -> viewModel.dispatch(FilterIntent.ConfirmFilterValues)
-                    is FilterBrandIntent.ToggleFilterBrandValue -> viewModel.dispatch(FilterIntent.ToggleFilterDialogValue(intent.valueId))
-                    is FilterBrandIntent.SelectAllBrands -> viewModel.dispatch(FilterIntent.UpdateFilterValuesSelection(state.filterValuesDialogSelectedValueIds + intent.valueIds))
+                    is FilterBrandIntent.HideFilterBrandDialog -> {
+                        viewModel.dispatch(FilterIntent.HideFilterValuesDialog)
+                    }
+                    is FilterBrandIntent.ResetFilterBrandValues -> {
+                        viewModel.dispatch(FilterIntent.UpdateFilterValuesSelection(emptySet()))
+                    }
+                    is FilterBrandIntent.ConfirmFilterBrandValues -> {
+                        viewModel.dispatch(FilterIntent.ConfirmFilterValues)
+                    }
+                    is FilterBrandIntent.ToggleFilterBrandValue -> {
+                        viewModel.dispatch(FilterIntent.ToggleFilterDialogValue(intent.valueId))
+                    }
+                    is FilterBrandIntent.SelectAllBrands -> {
+                        viewModel.dispatch(FilterIntent.UpdateFilterValuesSelection(state.filterValuesDialogSelectedValueIds + intent.valueIds))
+                    }
                 }
             }
         )
@@ -281,8 +295,8 @@ private fun FilterScreenContent(
     val pullToRefreshState = rememberPullToRefreshState()
     val scope = rememberCoroutineScope()
     val filtersRowLoadingHeightDp = when {
-        state.brandEntity != null -> FILTERS_ROW_LOADING_HEIGHT + FILTER_BRAND_FAVORITES_BAR_HEIGHT
-        else -> FILTERS_ROW_LOADING_HEIGHT
+        state.brandEntity != null -> 108.dp + 48.dp
+        else -> 108.dp
     }
     val filtersRowLoadingHeightPx = with(density) { filtersRowLoadingHeightDp.toPx() }
     var filtersRowHeightPx by remember { mutableFloatStateOf(filtersRowLoadingHeightPx) }
@@ -300,8 +314,8 @@ private fun FilterScreenContent(
 
     SharedScaffold(
         topBar = {
-            val navigationIconsWidth = FILTER_NAVIGATION_ICONS_COUNT * TOP_BAR_ICON_SIZE_DP
-            val actionsIconsWidth = (2 + if (state.showFittingButton) 1 else 0) * TOP_BAR_ICON_SIZE_DP
+            val navigationIconsWidth = 2 * 42
+            val actionsIconsWidth = (2 + if (state.isFittingButtonVisible) 1 else 0) * 42
 
             CenterAlignedTopAppBar(
                 title = {
@@ -346,8 +360,7 @@ private fun FilterScreenContent(
                             Icon(
                                 imageVector = ChevronStart24,
                                 contentDescription = null,
-                                modifier = Modifier.size(24.dp),
-                                tint = MaterialTheme.colorScheme.onBackground
+                                modifier = Modifier.size(24.dp)
                             )
                         }
 
@@ -358,34 +371,34 @@ private fun FilterScreenContent(
                             Icon(
                                 imageVector = Search24,
                                 contentDescription = null,
-                                modifier = Modifier.size(24.dp),
-                                tint = MaterialTheme.colorScheme.onBackground
+                                modifier = Modifier.size(24.dp)
                             )
                         }
                     }
                 },
                 actions = {
-                    if (state.showFittingButton) {
+                    if (state.isFittingButtonVisible) {
                         FittingIconButton(
                             text = state.fittingText,
-                            showBadge = state.showFittingBadge,
+                            showBadge = state.isFittingBadgeVisible,
                             onClick = { dispatch(FilterIntent.FittingClick) }
                         )
                     }
 
                     CartIconButton(
                         text = state.cartText,
-                        showBadge = state.showCartBadge,
+                        showBadge = state.isCartBadgeVisible,
                         onClick = { dispatch(FilterIntent.CartClick) }
                     )
 
                     MessengerIconButton(
-                        showBadge = state.showMessengerBadge,
+                        showBadge = state.isMessengerBadgeVisible,
                         onClick = { dispatch(FilterIntent.MessengerClick) }
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
+                    containerColor = MaterialTheme.colorScheme.background,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground
                 )
             )
         },
@@ -452,26 +465,81 @@ private fun FilterScreenContent(
                                 bottom = 16.dp
                             )
                         ) {
+                            val isEmptyProductsVisible = state.filterData.quantityEntity.requireProductsQuantity == 0 && pagingItems.itemCount == 0
                             item(
                                 span = { GridItemSpan(maxLineSpan) }
                             ) {
-                                Text(
-                                    text = pluralStringResource(
-                                        ClientStrings.FilterProductsQuantity,
-                                        state.filterData.quantityEntity.requireProductsQuantity,
-                                        state.filterData.quantityEntity.productsQuantityWithThousandsSeparator
-                                    ),
-                                    modifier = Modifier
-                                        .padding(top = 10.dp)
-                                        .fillMaxWidth(),
-                                    style = MaterialTheme.typography.regular15.copy(
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        lineHeight = 19.sp,
-                                        letterSpacing = .2.sp,
-                                        textAlign = TextAlign.Center
+                                Column(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Text(
+                                        text = pluralStringResource(
+                                            ClientStrings.FilterProductsQuantity,
+                                            state.filterData.quantityEntity.requireProductsQuantity,
+                                            state.filterData.quantityEntity.productsQuantityWithThousandsSeparator
+                                        ),
+                                        modifier = Modifier
+                                            .padding(top = 10.dp)
+                                            .fillMaxWidth(),
+                                        style = MaterialTheme.typography.regular15.copy(
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            lineHeight = 19.sp,
+                                            letterSpacing = .2.sp,
+                                            textAlign = TextAlign.Center
+                                        )
                                     )
-                                )
+
+                                    if (isEmptyProductsVisible) {
+                                        Column(
+                                            modifier = Modifier
+                                                .padding(top = 85.dp)
+                                                .fillMaxWidth(),
+                                            horizontalAlignment = Alignment.CenterHorizontally
+                                        ) {
+                                            Image(
+                                                imageVector = SearchEmpty210x111,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(width = 210.dp, height = 111.dp)
+                                            )
+
+                                            Text(
+                                                text = stringResource(ClientStrings.FilterEmptyProductsMessage),
+                                                modifier = Modifier.padding(top = 26.dp),
+                                                style = MaterialTheme.typography.regular15.copy(
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                    lineHeight = 19.sp,
+                                                    letterSpacing = .2.sp,
+                                                    textAlign = TextAlign.Center
+                                                )
+                                            )
+
+                                            OutlinedButton(
+                                                onClick = { dispatch(FilterIntent.BackClick) },
+                                                modifier = Modifier
+                                                    .padding(top = 38.dp, start = 16.dp, end = 16.dp)
+                                                    .fillMaxWidth()
+                                                    .height(52.dp),
+                                                shape = RoundedCornerShape(8.dp),
+                                                border = BorderStroke(
+                                                    width = 1.dp,
+                                                    color = MaterialTheme.colorScheme.onBackground
+                                                )
+                                            ) {
+                                                Text(
+                                                    text = stringResource(ClientStrings.FilterEmptyProductsButton),
+                                                    style = MaterialTheme.typography.medium15.copy(
+                                                        color = MaterialTheme.colorScheme.onBackground,
+                                                        textAlign = TextAlign.Center,
+                                                        letterSpacing = .3.sp
+                                                    )
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
                             }
+
                             items(
                                 count = pagingItems.itemCount,
                                 key = pagingItems.itemKey(),
@@ -482,11 +550,10 @@ private fun FilterScreenContent(
                                     CatalogProductCard(
                                         state = CatalogProductCardState(
                                             entity = entity,
-                                            isInBasket = state.isProductInBasket(entity)
-                                        ),
-                                        onClick = { dispatch(FilterIntent.ProductClick(entity.id)) },
-                                        onMessageClick = {},
-                                        onBasketClick = { dispatch(FilterIntent.ProductBasketClick(entity.id)) }
+                                            isInBasket = state.isProductInBasket(entity),
+                                            onClick = { dispatch(FilterIntent.ProductClick(entity.id)) },
+                                            onBasketIconClick = { dispatch(FilterIntent.ProductBasketClick(entity)) }
+                                        )
                                     )
                                 }
                             }
@@ -610,6 +677,11 @@ private class FilterModelProvider: PreviewParameterProvider<Pair<FilterModel, Li
         categoryId = 1,
         titleCategoryId = 1,
         productsQuantity = 5717
+    )
+    private val emptyQuantityEntity = CatalogFilterProductsQuantityEntity(
+        categoryId = 1,
+        titleCategoryId = 1,
+        productsQuantity = 0
     )
     private val productsEntities = listOf(
         CatalogFilterProductsEntity(
@@ -735,6 +807,33 @@ private class FilterModelProvider: PreviewParameterProvider<Pair<FilterModel, Li
                     )
                 )
             )
-        ) to productsEntities
+        ) to productsEntities,
+        FilterModel(
+            filterData = FilterData(
+                filterTitleEntity = FilterTitleEntity(
+                    titleCatalogCategoryEntity = titleCatalogCategoryEntity,
+                    subtitleCatalogCategoryEntity = subtitleCatalogCategoryEntity
+                ),
+                filterRibbonData = FilterRibbonData(
+                    topFilterChips = listOf(
+                        FilterChip(
+                            id = "brand",
+                            label = "Бренд"
+                        ),
+                        FilterChip(
+                            id = "size",
+                            label = "Размер"
+                        ),
+                        FilterChip(
+                            id = "color",
+                            label = "Цвет"
+                        )
+                    ),
+                    topFilterValueChips = emptyList(),
+                    bottomFilterChips = emptyList()
+                ),
+                quantityEntity = emptyQuantityEntity
+            )
+        ) to emptyList()
     )
 }

@@ -30,7 +30,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.details_wear_with_sheet.intent.DetailsWearWithSheetIntent
 import ru.mercury.vpclient.features.details_wear_with_sheet.model.DetailsWearWithSheetModel
@@ -77,11 +76,7 @@ fun DetailsWearWithSheet(
                     title = {
                         Text(
                             text = stringResource(ClientStrings.DetailsWearWithTitle),
-                            style = MaterialTheme.typography.livretMedium18.copy(
-                                color = MaterialTheme.colorScheme.onBackground,
-                                lineHeight = 26.sp,
-                                letterSpacing = .2.sp
-                            )
+                            style = MaterialTheme.typography.livretMedium18
                         )
                     },
                     navigationIcon = {
@@ -91,13 +86,14 @@ fun DetailsWearWithSheet(
                             Icon(
                                 imageVector = Close24,
                                 contentDescription = null,
-                                modifier = Modifier.size(24.dp),
-                                tint = MaterialTheme.colorScheme.onBackground
+                                modifier = Modifier.size(24.dp)
                             )
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.background
+                        containerColor = MaterialTheme.colorScheme.background,
+                        navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
+                        titleContentColor = MaterialTheme.colorScheme.onBackground
                     )
                 )
             }
@@ -116,10 +112,10 @@ fun DetailsWearWithSheet(
                     CatalogProductCard(
                         state = CatalogProductCardState(
                             entity = product,
-                            isInBasket = state.isProductInBasket(product)
-                        ),
-                        onClick = { sheetDispatch(DetailsWearWithSheetIntent.ProductClick(product.id)) },
-                        onBasketClick = { sheetDispatch(DetailsWearWithSheetIntent.ProductBasketClick(product)) }
+                            isInBasket = state.isProductInBasket(product),
+                            onClick = { sheetDispatch(DetailsWearWithSheetIntent.ProductClick(product.id)) },
+                            onBasketIconClick = { sheetDispatch(DetailsWearWithSheetIntent.ProductBasketClick(product)) }
+                        )
                     )
                 }
             }

@@ -20,7 +20,8 @@ data class CatalogFilterProductsEntity(
     val imageUrl: String,
     val imageUrls: List<String>,
     val additionalColorPhotoUrls: List<String>,
-    val position: Int
+    val position: Int,
+    val actionLabels: List<String> = emptyList()
 ) {
     companion object {
         val Empty = CatalogFilterProductsEntity(
@@ -37,7 +38,8 @@ data class CatalogFilterProductsEntity(
             imageUrl = "",
             imageUrls = emptyList(),
             additionalColorPhotoUrls = emptyList(),
-            position = 0
+            position = 0,
+            actionLabels = emptyList()
         )
     }
 }

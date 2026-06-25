@@ -23,7 +23,10 @@ fun CatalogProductSearchCardV2Response.entity(
         urlBrandLogo = urlBrandLogo,
         imageUrl = imageUrl.orEmpty(),
         imageUrls = imageUrls.orEmpty(),
-        additionalColorPhotoUrls = additionalColors.orEmpty().mapNotNull { it.photoUrl }
+        additionalColorPhotoUrls = additionalColors.orEmpty().mapNotNull { it.photoUrl },
+        actionLabels = actions.orEmpty()
+            .filter { action -> action.isCashDesk == true }
+            .mapNotNull { action -> action.name }
     )
 }
 
@@ -41,6 +44,10 @@ fun CatalogProductSearchCardV2Response.toRelatedItemEntity(): ProductRelatedItem
         price = price ?: 0.0,
         priceWithoutDiscount = priceWithoutDiscount,
         imageUrl = imageUrl,
-        imageUrls = imageUrls.orEmpty()
+        imageUrls = imageUrls.orEmpty(),
+        additionalColorPhotoUrls = additionalColors.orEmpty().mapNotNull { it.photoUrl },
+        actionLabels = actions.orEmpty()
+            .filter { action -> action.isCashDesk == true }
+            .mapNotNull { action -> action.name }
     )
 }

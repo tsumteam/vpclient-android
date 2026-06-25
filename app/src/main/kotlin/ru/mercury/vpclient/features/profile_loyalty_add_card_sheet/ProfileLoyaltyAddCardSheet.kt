@@ -60,7 +60,6 @@ import ru.mercury.vpclient.shared.ui.theme.medium12
 import ru.mercury.vpclient.shared.ui.theme.medium15
 import ru.mercury.vpclient.shared.ui.theme.onDisabled
 import ru.mercury.vpclient.shared.ui.theme.regular12
-import ru.mercury.vpclient.shared.ui.theme.regular14
 
 @Composable
 fun ProfileLoyaltyAddCardSheet(
@@ -70,10 +69,6 @@ fun ProfileLoyaltyAddCardSheet(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
     val focusRequester = remember { FocusRequester() }
-    val isInputErrorVisible = when (state.mode) {
-        ProfileLoyaltyAddCardMode.Phone -> state.isPhoneErrorVisible
-        ProfileLoyaltyAddCardMode.CardNumber -> state.isCardErrorVisible
-    }
     val sheetDispatch: (ProfileLoyaltyAddCardIntent) -> Unit = { intent ->
         when (intent) {
             is ProfileLoyaltyAddCardIntent.DismissRequest -> {
@@ -100,12 +95,7 @@ fun ProfileLoyaltyAddCardSheet(
                 title = {
                     Text(
                         text = stringResource(ClientStrings.ProfileLoyaltyAddCardTitleCaps),
-                        style = MaterialTheme.typography.livretMedium18.copy(
-                            color = MaterialTheme.colorScheme.onBackground,
-                            lineHeight = 26.sp,
-                            letterSpacing = .2.sp,
-                            textAlign = TextAlign.Center
-                        )
+                        style = MaterialTheme.typography.livretMedium18
                     )
                 },
                 navigationIcon = {
@@ -115,13 +105,14 @@ fun ProfileLoyaltyAddCardSheet(
                         Icon(
                             imageVector = Close24,
                             contentDescription = null,
-                            modifier = Modifier.size(24.dp),
-                            tint = MaterialTheme.colorScheme.onBackground
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
+                    containerColor = MaterialTheme.colorScheme.background,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground
                 )
             )
 
@@ -184,11 +175,6 @@ fun ProfileLoyaltyAddCardSheet(
                             .focusRequester(focusRequester)
                             .then(
                                 when {
-                                    state.isCardErrorVisible -> Modifier.border(
-                                        width = 1.dp,
-                                        color = MaterialTheme.colorScheme.error,
-                                        shape = RoundedCornerShape(8.dp)
-                                    )
                                     else -> Modifier
                                 }
                             ),
@@ -202,35 +188,17 @@ fun ProfileLoyaltyAddCardSheet(
                     .fillMaxWidth()
                     .height(40.dp)
             ) {
-                if (isInputErrorVisible) {
+                if (state.mode == ProfileLoyaltyAddCardMode.Phone && state.isPhoneErrorVisible) {
                     Text(
-                        text = when (state.mode) {
-                            ProfileLoyaltyAddCardMode.Phone -> {
-                                stringResource(ClientStrings.ProfileLoyaltyAddCardWrongPhoneError)
-                            }
-                            ProfileLoyaltyAddCardMode.CardNumber -> {
-                                stringResource(ClientStrings.ProfileLoyaltyAddCardGenericError)
-                            }
-                        },
+                        text = stringResource(ClientStrings.ProfileLoyaltyAddCardWrongPhoneError),
                         modifier = Modifier
                             .padding(start = 32.dp, top = 4.dp, end = 16.dp)
                             .fillMaxWidth(),
-                        style = when (state.mode) {
-                            ProfileLoyaltyAddCardMode.Phone -> {
-                                MaterialTheme.typography.regular12.copy(
-                                    color = MaterialTheme.colorScheme.error,
-                                    lineHeight = 16.sp,
-                                    letterSpacing = .2.sp
-                                )
-                            }
-                            ProfileLoyaltyAddCardMode.CardNumber -> {
-                                MaterialTheme.typography.regular14.copy(
-                                    color = MaterialTheme.colorScheme.error,
-                                    lineHeight = 18.sp,
-                                    letterSpacing = .2.sp
-                                )
-                            }
-                        }
+                        style = MaterialTheme.typography.regular12.copy(
+                            color = MaterialTheme.colorScheme.error,
+                            lineHeight = 16.sp,
+                            letterSpacing = .2.sp
+                        )
                     )
                 }
             }

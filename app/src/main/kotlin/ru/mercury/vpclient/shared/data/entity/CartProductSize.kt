@@ -8,5 +8,6 @@ data class CartProductSize(
     val name: String,
     val productId: String,
     val catalogProductId: String = "",
-    val isLastInStock: Boolean = false
+    val isLastInStock: Boolean = false,
+    val availableStockQuantity: Int = 0
 )

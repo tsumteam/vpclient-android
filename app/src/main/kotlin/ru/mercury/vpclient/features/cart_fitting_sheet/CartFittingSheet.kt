@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.cart_fitting_sheet.intent.CartFittingSheetIntent
 import ru.mercury.vpclient.features.cart_fitting_sheet.model.CartFittingSheetModel
+import ru.mercury.vpclient.shared.data.PREFIX_SPACE
 import ru.mercury.vpclient.shared.data.entity.CartFittingSheetOption
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
@@ -127,13 +128,13 @@ fun CartFittingSheet(
                             Icon(
                                 imageVector = Close24,
                                 contentDescription = null,
-                                modifier = Modifier.size(24.dp),
-                                tint = MaterialTheme.colorScheme.onBackground
+                                modifier = Modifier.size(24.dp)
                             )
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.background
+                        containerColor = MaterialTheme.colorScheme.background,
+                        navigationIconContentColor = MaterialTheme.colorScheme.onBackground
                     )
                 )
             }
@@ -297,7 +298,7 @@ fun CartFittingSheet(
                 Text(
                     text = buildAnnotatedString {
                         append(prefix)
-                        append(" ")
+                        append(PREFIX_SPACE)
                         withStyle(
                             style = SpanStyle(
                                 color = accentColor
@@ -333,7 +334,7 @@ fun CartFittingSheet(
                             ) {
                                 append("*")
                             }
-                            append(" ")
+                            append(PREFIX_SPACE)
                             append(hint)
                         },
                         modifier = Modifier

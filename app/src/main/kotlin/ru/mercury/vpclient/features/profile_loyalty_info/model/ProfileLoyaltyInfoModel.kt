@@ -1,10 +1,10 @@
 package ru.mercury.vpclient.features.profile_loyalty_info.model
 
 import ru.mercury.vpclient.shared.data.entity.LoyaltyCardDescription
-import ru.mercury.vpclient.shared.data.entity.LoyaltyCardInfo
 import ru.mercury.vpclient.shared.data.entity.LoyaltyCardType
 import ru.mercury.vpclient.shared.data.entity.ProfileLoyaltyInfoRowState
 import ru.mercury.vpclient.shared.data.entity.ProfileLoyaltyInfoRowType
+import ru.mercury.vpclient.shared.data.persistence.database.entity.LoyaltyCardInfoEntity
 import ru.mercury.vpclient.shared.domain.mapper.order
 import ru.mercury.vpclient.shared.mvi.Model
 
@@ -12,7 +12,7 @@ data class ProfileLoyaltyInfoModel(
     val isLoading: Boolean = true,
     val isUnlinkLoading: Boolean = false,
     val isUnlinkDialogVisible: Boolean = false,
-    val cardInfo: LoyaltyCardInfo = LoyaltyCardInfo(),
+    val loyaltyCardInfoEntity: LoyaltyCardInfoEntity = LoyaltyCardInfoEntity.Empty,
     val cardTypes: List<LoyaltyCardDescription> = emptyList(),
     val selectedCardType: LoyaltyCardType = LoyaltyCardType.Black
 ): Model {
@@ -21,7 +21,7 @@ data class ProfileLoyaltyInfoModel(
         get() = cardTypes.firstOrNull { cardType -> cardType.type == selectedCardType }
 
     val currentCardDescription: LoyaltyCardDescription?
-        get() = cardTypes.firstOrNull { cardType -> cardType.type == cardInfo.typeCard }
+        get() = cardTypes.firstOrNull { cardType -> cardType.type == loyaltyCardInfoEntity.typeCard }
 
     val sortedCardTypes: List<LoyaltyCardDescription>
         get() = cardTypes.sortedBy { cardType -> cardType.type.order }
@@ -29,7 +29,7 @@ data class ProfileLoyaltyInfoModel(
     val bonusRules: String
         get() = currentCardDescription?.bonusRules.orEmpty()
 
-    val showBonusRules: Boolean
+    val isBonusRulesVisible: Boolean
         get() = bonusRules.isNotBlank()
 
     val infoRows: List<ProfileLoyaltyInfoRowState>

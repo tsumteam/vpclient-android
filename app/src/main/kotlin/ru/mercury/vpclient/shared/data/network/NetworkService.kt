@@ -2,275 +2,266 @@ package ru.mercury.vpclient.shared.data.network
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.forms.FormBuilder
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.get
-import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.Headers
-import io.ktor.http.HttpHeaders
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
-import ru.mercury.vpclient.shared.data.network.entity.ActionItemDto
-import ru.mercury.vpclient.shared.data.network.entity.ActionPushRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.ActionsResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.ActiveClientResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.AddProductToActionRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.AddProductToFashionImageRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.AddProductsInFoldersRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.AddressSuggestionDtoItemsDto
-import ru.mercury.vpclient.shared.data.network.entity.ApproveFittingDeliveryManualPickupRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.ApproveFittingDeliveryManualPickupResponse
-import ru.mercury.vpclient.shared.data.network.entity.ApproveFittingDeliveryRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.ApproveFittingDeliveryResponse
-import ru.mercury.vpclient.shared.data.network.entity.ApproveFittingExpirationDateExtensionRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.ApproveFittingExpirationDateExtensionResponse
-import ru.mercury.vpclient.shared.data.network.entity.AvailableColorsRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.AvailableColorsResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.AvailableLocationsForProductResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.AvailableLocationsRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.AvailableLocationsResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.AvailableSizesRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.AvailableSizesResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.AxLoyaltyCardAuthRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.AxLoyaltyCardAuthResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.AxLoyaltyCardCalcAndReserveBonusPayRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.AxLoyaltyCardCalcAndReserveBonusPayResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.AxLoyaltyCardCalcBonusAmountRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.AxLoyaltyCardCalcBonusAmountResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.AxLoyaltyCardCheckPinRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.AxLoyaltyCardCheckPinResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.AxLoyaltyCardRollBackBonusPayRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.BarcodeScanRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.BasketAddProductByBarcodeAndLocationIdRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.BasketAddProductByBarcodeRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.BasketAddProductFromCatalogWithSelectedRussianSizeRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.BasketAddProductFromDetailedStocksRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.BasketCheckoutOrderResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.BasketForCheckoutResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.BasketGetDeliveryTimesForFittingRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.BasketGetDeliveryTimesForOrderRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.BasketOperationRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.BasketResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.BasketSyncRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.BlvLinkContentDto
-import ru.mercury.vpclient.shared.data.network.entity.CardInfoResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.CardTypeDtoItemsDto
-import ru.mercury.vpclient.shared.data.network.entity.CatalogBrandsResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.CatalogFashionImageCardDtoItemsDto
-import ru.mercury.vpclient.shared.data.network.entity.CatalogItemTypeEnum
-import ru.mercury.vpclient.shared.data.network.entity.CatalogScanHistoryDto
-import ru.mercury.vpclient.shared.data.network.entity.ChangeActionRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.CheckOutAddressesDto
-import ru.mercury.vpclient.shared.data.network.entity.CheckUserResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.ClientActivityInfoDtoItemsDto
-import ru.mercury.vpclient.shared.data.network.entity.ClientAddressDto
-import ru.mercury.vpclient.shared.data.network.entity.ClientAddressWithCoordinateDtoItemsDto
-import ru.mercury.vpclient.shared.data.network.entity.ClientSyncRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.CompilationCopyRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.CompilationCreateRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.CompilationDtoItemsDto
-import ru.mercury.vpclient.shared.data.network.entity.CompilationLookSaveRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.CompilationShareRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.CompilationStatus
-import ru.mercury.vpclient.shared.data.network.entity.CompilationsEmployeeLookUploadCollagePostRequest
-import ru.mercury.vpclient.shared.data.network.entity.CompilationsEmployeeLookUploadPhotoPostRequest
-import ru.mercury.vpclient.shared.data.network.entity.CompilationsEmployeeUploadPhotoPostRequest
-import ru.mercury.vpclient.shared.data.network.entity.CompilationsWithStatsByClientResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.CompilationsWithStatsResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.CreateClientAddressRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.CreateCompilationResultDto
-import ru.mercury.vpclient.shared.data.network.entity.CreateLookFromFashionImageRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.CreateOrderWithGiftCardRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.CreatePaletteFolderRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.DeleteClientAddressRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.DeleteFashionImageRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.DeleteLinkedCardRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.DeleteMessageRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.DeleteProductFromFashionImageRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.DeleteProductsFromFolderRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.DeliveryTimesForSingleProductRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.DetailedStocksRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.DetailedStocksResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.DetermineGenderByClientIdRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.DigineticaFilterValuesRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.DigineticaFilteredProductsQuantityRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.DigineticaFilteredProductsRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.DigineticaFilteredProductsResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.DigineticaFiltersRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.EditFashionImageRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.EditMessageRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.EditPaletteFolderRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.EmployeeCompilationProductsReportRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.EmployeeEventsReportRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.EmployeeFittingLimitsDto
-import ru.mercury.vpclient.shared.data.network.entity.EmployeeFittingOrderAccessFlagsResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.EmployeeNotificationsFiltersRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.EmployeeNotificationsFiltersResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.EmployeeNotificationsRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.EmployeeNotificationsResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.ExportCompilationStatisticsRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.ExportCompilationStatisticsResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.ExportEmployeeEventsRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.ExportEmployeeEventsResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.ExportTasksRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.ExportTasksResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.FashionImageStatisticsReportRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.FillAlternativesInBasketsRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.FittingCheckoutTagsRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.FittingCheckoutTagsResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.FittingDeliveryTimeResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.FittingExternalPushRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.FittingExternalPushResponseItemDtoItemsDto
-import ru.mercury.vpclient.shared.data.network.entity.FittingForCheckoutResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.FittingHistoryFiltersRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.FittingHistoryFiltersResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.FittingHistoryRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.FittingHistoryResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.FittingOperationRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.FittingResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.FittingSyncRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.GenderDto
-import ru.mercury.vpclient.shared.data.network.entity.GetCheckOutFlagsForExistingFittingRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.GetCheckOutFlagsForSingleProductRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.GetCheckOutFlagsRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.GetCheckOutFlagsResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.GetDeliveryIntervalsForExistingFittingRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.GetDeliveryIntervalsForExistingFittingResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.GetDeliveryIntervalsForExistingOrderRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.GetDeliveryIntervalsForExistingOrderResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.GetEmployeeFittingLimitsForSingleProductRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.GetEmployeeFittingLimitsRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.GetListClientAddressForCheckoutRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.GetListClientAddressRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.GiftCardResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.ImageSearchRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.ImageSearchResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.ImagesUploadPostRequest
-import ru.mercury.vpclient.shared.data.network.entity.ImagesUploadResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.ImportResultDto
-import ru.mercury.vpclient.shared.data.network.entity.InternalExcelImportAppendCollectionPostRequest
-import ru.mercury.vpclient.shared.data.network.entity.InternalExcelImportImportCollectionPostRequest
-import ru.mercury.vpclient.shared.data.network.entity.InternalExcelImportImportCrmTasksPostRequest
-import ru.mercury.vpclient.shared.data.network.entity.InternalExcelImportImportLooksPostRequest
-import ru.mercury.vpclient.shared.data.network.entity.InternalExcelImportImportMannequinsPostRequest
-import ru.mercury.vpclient.shared.data.network.entity.InternalExcelImportImportNewArrivalsPostRequest
-import ru.mercury.vpclient.shared.data.network.entity.InternalExcelImportImportSortSettingsPostRequest
-import ru.mercury.vpclient.shared.data.network.entity.InternalExcelImportImportVpTasksPostRequest
-import ru.mercury.vpclient.shared.data.network.entity.InternalExcelImportUpdateNoPhotoPostRequest
-import ru.mercury.vpclient.shared.data.network.entity.LinkCardRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.LookProductsResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.LookProductsWithStatsByClientResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.LookProductsWithStatsResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.LooksResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.LooksResponseItemDto
-import ru.mercury.vpclient.shared.data.network.entity.LooksResponseItemDtoItemsDto
-import ru.mercury.vpclient.shared.data.network.entity.LooksWithStatsResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.MainDeliveryResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.MainScreenAnalyticsReportRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.MessageGetRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.MessageReadGetDto
-import ru.mercury.vpclient.shared.data.network.entity.MessageReadResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.MessageResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.MessageResponseDtoItemsDto
-import ru.mercury.vpclient.shared.data.network.entity.MessengerActivityReportRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.MessengerActivityReportResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.MotivationRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.MotivationResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.MyClientsClientBadgesResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.MyClientsFiltersResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.MyClientsRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.MyClientsResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.NewArrivalsPushRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.NewLooksResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.OrderBonusReservationConfirmationRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.OrderBonusReservationRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.OrderConfirmPaymentViaCloudPaymentRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.OrderCreationFromFittingRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.OrderCreationRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.OrderDeliveryChangeRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.OrderExternalPushRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.OrderExternalPushResponseItemDtoItemsDto
-import ru.mercury.vpclient.shared.data.network.entity.OrderPaymentLinkResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.OrderResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.OrderResponseWithBadgeDto
-import ru.mercury.vpclient.shared.data.network.entity.OrderResponseWithBadgeDtoItemsDto
-import ru.mercury.vpclient.shared.data.network.entity.OrderStartPaymentViaCloudPaymentRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.OrderStartPaymentViaSbpResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.PaletteFoldersResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.PaletteProductsResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.PaymentAcknowledgeRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.PaymentReconciliationRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.PaymentReconciliationResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.PushTokenDto
-import ru.mercury.vpclient.shared.data.network.entity.RemoveBackgroundRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.RemoveBackgroundResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.ReserveRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.ReserveResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.ResetActivityCountersRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.SaveClientCompilationMessageRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.SaveCompilationLookMessageRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.SaveMessageWithImagesRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.SaveProductMessageRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.StatisticsType
-import ru.mercury.vpclient.shared.data.network.entity.StringItemsDto
-import ru.mercury.vpclient.shared.data.network.entity.SuggestionResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.SuggestsSearchRequest
-import ru.mercury.vpclient.shared.data.network.entity.TasksImportResultDto
-import ru.mercury.vpclient.shared.data.network.entity.TransferBasketToFittingRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.TransferRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.TransferResponseDto
-import ru.mercury.vpclient.shared.data.network.entity.UpdateClientAddressRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.UpdateMainScreenRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.UpdateMessageDto
-import ru.mercury.vpclient.shared.data.network.entity.UpdateNoPhotoResultDto
-import ru.mercury.vpclient.shared.data.network.entity.UploadCollageRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.UserProfileUploadPhotoPostRequest
-import ru.mercury.vpclient.shared.data.network.entity.VerifyLinkCardRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.ViewHistoryDto
+import ru.mercury.vpclient.shared.data.network.request.ActionPushRequest
+import ru.mercury.vpclient.shared.data.network.request.AddProductToActionRequest
+import ru.mercury.vpclient.shared.data.network.request.AddProductToFashionImageRequest
+import ru.mercury.vpclient.shared.data.network.request.AddProductsInFoldersRequest
+import ru.mercury.vpclient.shared.data.network.request.ApproveFittingDeliveryManualPickupRequest
+import ru.mercury.vpclient.shared.data.network.request.ApproveFittingDeliveryRequest
+import ru.mercury.vpclient.shared.data.network.request.ApproveFittingExpirationDateExtensionRequest
 import ru.mercury.vpclient.shared.data.network.request.AuthenticationContinueLoginRequest
 import ru.mercury.vpclient.shared.data.network.request.AuthenticationLoginRequest
 import ru.mercury.vpclient.shared.data.network.request.AuthenticationRegisterRequest
+import ru.mercury.vpclient.shared.data.network.request.AvailableColorsRequest
+import ru.mercury.vpclient.shared.data.network.request.AvailableLocationsRequest
+import ru.mercury.vpclient.shared.data.network.request.AvailableSizesRequest
+import ru.mercury.vpclient.shared.data.network.request.AxLoyaltyCardAuthRequest
+import ru.mercury.vpclient.shared.data.network.request.AxLoyaltyCardCalcAndReserveBonusPayRequest
+import ru.mercury.vpclient.shared.data.network.request.AxLoyaltyCardCalcBonusAmountRequest
+import ru.mercury.vpclient.shared.data.network.request.AxLoyaltyCardCheckPinRequest
+import ru.mercury.vpclient.shared.data.network.request.AxLoyaltyCardRollBackBonusPayRequest
+import ru.mercury.vpclient.shared.data.network.request.BarcodeScanRequest
+import ru.mercury.vpclient.shared.data.network.request.BasketAddProductByBarcodeAndLocationIdRequest
+import ru.mercury.vpclient.shared.data.network.request.BasketAddProductByBarcodeRequest
+import ru.mercury.vpclient.shared.data.network.request.BasketAddProductFromCatalogWithSelectedRussianSizeRequest
+import ru.mercury.vpclient.shared.data.network.request.BasketAddProductFromDetailedStocksRequest
+import ru.mercury.vpclient.shared.data.network.request.BasketGetDeliveryTimesForFittingRequest
+import ru.mercury.vpclient.shared.data.network.request.BasketGetDeliveryTimesForOrderRequest
+import ru.mercury.vpclient.shared.data.network.request.BasketOperationRequest
+import ru.mercury.vpclient.shared.data.network.request.BasketSyncRequest
 import ru.mercury.vpclient.shared.data.network.request.BottomCategoriesRequest
 import ru.mercury.vpclient.shared.data.network.request.CatalogBrandFavoriteRequest
+import ru.mercury.vpclient.shared.data.network.request.ChangeActionRequest
+import ru.mercury.vpclient.shared.data.network.request.ClientSyncRequest
+import ru.mercury.vpclient.shared.data.network.request.CompilationCopyRequest
+import ru.mercury.vpclient.shared.data.network.request.CompilationCreateRequest
+import ru.mercury.vpclient.shared.data.network.request.CompilationLookSaveRequest
+import ru.mercury.vpclient.shared.data.network.request.CompilationShareRequest
+import ru.mercury.vpclient.shared.data.network.request.CreateClientAddressRequest
+import ru.mercury.vpclient.shared.data.network.request.CreateLookFromFashionImageRequest
+import ru.mercury.vpclient.shared.data.network.request.CreateOrderWithGiftCardRequest
+import ru.mercury.vpclient.shared.data.network.request.CreatePaletteFolderRequest
+import ru.mercury.vpclient.shared.data.network.request.DeleteClientAddressRequest
+import ru.mercury.vpclient.shared.data.network.request.DeleteFashionImageRequest
+import ru.mercury.vpclient.shared.data.network.request.DeleteLinkedCardRequest
+import ru.mercury.vpclient.shared.data.network.request.DeleteMessageRequest
+import ru.mercury.vpclient.shared.data.network.request.DeleteProductFromFashionImageRequest
+import ru.mercury.vpclient.shared.data.network.request.DeleteProductsFromFolderRequest
+import ru.mercury.vpclient.shared.data.network.request.DeliveryTimesForSingleProductRequest
 import ru.mercury.vpclient.shared.data.network.request.DetailCardRequest
+import ru.mercury.vpclient.shared.data.network.request.DetailedStocksRequest
+import ru.mercury.vpclient.shared.data.network.request.DetermineGenderByClientIdRequest
+import ru.mercury.vpclient.shared.data.network.request.DigineticaFilterValuesRequest
+import ru.mercury.vpclient.shared.data.network.request.DigineticaFilteredProductsQuantityRequest
+import ru.mercury.vpclient.shared.data.network.request.DigineticaFilteredProductsRequest
+import ru.mercury.vpclient.shared.data.network.request.DigineticaFiltersRequest
+import ru.mercury.vpclient.shared.data.network.request.EditFashionImageRequest
+import ru.mercury.vpclient.shared.data.network.request.EditMessageRequest
+import ru.mercury.vpclient.shared.data.network.request.EditPaletteFolderRequest
+import ru.mercury.vpclient.shared.data.network.request.EmployeeCompilationProductsReportRequest
+import ru.mercury.vpclient.shared.data.network.request.EmployeeEventsReportRequest
+import ru.mercury.vpclient.shared.data.network.request.EmployeeNotificationsFiltersRequest
+import ru.mercury.vpclient.shared.data.network.request.EmployeeNotificationsRequest
+import ru.mercury.vpclient.shared.data.network.request.ExportCompilationStatisticsRequest
+import ru.mercury.vpclient.shared.data.network.request.ExportEmployeeEventsRequest
+import ru.mercury.vpclient.shared.data.network.request.ExportTasksRequest
+import ru.mercury.vpclient.shared.data.network.request.FashionImageStatisticsReportRequest
+import ru.mercury.vpclient.shared.data.network.request.FillAlternativesInBasketsRequest
 import ru.mercury.vpclient.shared.data.network.request.FilterValuesRequest
 import ru.mercury.vpclient.shared.data.network.request.FilteredProductsQuantityRequest
 import ru.mercury.vpclient.shared.data.network.request.FilteredProductsRequest
 import ru.mercury.vpclient.shared.data.network.request.FiltersRequest
+import ru.mercury.vpclient.shared.data.network.request.FittingCheckoutTagsRequest
+import ru.mercury.vpclient.shared.data.network.request.FittingExternalPushRequest
+import ru.mercury.vpclient.shared.data.network.request.FittingHistoryFiltersRequest
+import ru.mercury.vpclient.shared.data.network.request.FittingHistoryRequest
+import ru.mercury.vpclient.shared.data.network.request.FittingOperationRequest
+import ru.mercury.vpclient.shared.data.network.request.FittingSyncRequest
+import ru.mercury.vpclient.shared.data.network.request.GetCheckOutFlagsForExistingFittingRequest
+import ru.mercury.vpclient.shared.data.network.request.GetCheckOutFlagsForSingleProductRequest
+import ru.mercury.vpclient.shared.data.network.request.GetCheckOutFlagsRequest
+import ru.mercury.vpclient.shared.data.network.request.GetDeliveryIntervalsForExistingFittingRequest
+import ru.mercury.vpclient.shared.data.network.request.GetDeliveryIntervalsForExistingOrderRequest
+import ru.mercury.vpclient.shared.data.network.request.GetEmployeeFittingLimitsForSingleProductRequest
+import ru.mercury.vpclient.shared.data.network.request.GetEmployeeFittingLimitsRequest
+import ru.mercury.vpclient.shared.data.network.request.GetListClientAddressForCheckoutRequest
+import ru.mercury.vpclient.shared.data.network.request.GetListClientAddressRequest
+import ru.mercury.vpclient.shared.data.network.request.ImageSearchRequest
+import ru.mercury.vpclient.shared.data.network.request.LinkCardRequest
 import ru.mercury.vpclient.shared.data.network.request.LoyaltyLinkByPhoneRequest
 import ru.mercury.vpclient.shared.data.network.request.LoyaltyVerifyByPhoneRequest
+import ru.mercury.vpclient.shared.data.network.request.MainScreenAnalyticsReportRequest
+import ru.mercury.vpclient.shared.data.network.request.MessageGetRequest
+import ru.mercury.vpclient.shared.data.network.request.MessengerActivityReportRequest
+import ru.mercury.vpclient.shared.data.network.request.MotivationRequest
+import ru.mercury.vpclient.shared.data.network.request.MyClientsRequest
+import ru.mercury.vpclient.shared.data.network.request.NewArrivalsPushRequest
+import ru.mercury.vpclient.shared.data.network.request.OrderBonusReservationConfirmationRequest
+import ru.mercury.vpclient.shared.data.network.request.OrderBonusReservationRequest
+import ru.mercury.vpclient.shared.data.network.request.OrderConfirmPaymentViaCloudPaymentRequest
+import ru.mercury.vpclient.shared.data.network.request.OrderCreationFromFittingRequest
+import ru.mercury.vpclient.shared.data.network.request.OrderCreationRequest
+import ru.mercury.vpclient.shared.data.network.request.OrderDeliveryChangeRequest
+import ru.mercury.vpclient.shared.data.network.request.OrderExternalPushRequest
+import ru.mercury.vpclient.shared.data.network.request.OrderStartPaymentViaCloudPaymentRequest
+import ru.mercury.vpclient.shared.data.network.request.PaymentAcknowledgeRequest
+import ru.mercury.vpclient.shared.data.network.request.PaymentReconciliationRequest
 import ru.mercury.vpclient.shared.data.network.request.ProfileOrdersSalesRequest
+import ru.mercury.vpclient.shared.data.network.request.RemoveBackgroundRequest
+import ru.mercury.vpclient.shared.data.network.request.ReserveRequest
+import ru.mercury.vpclient.shared.data.network.request.ResetActivityCountersRequest
+import ru.mercury.vpclient.shared.data.network.request.SaveClientCompilationMessageRequest
+import ru.mercury.vpclient.shared.data.network.request.SaveCompilationLookMessageRequest
+import ru.mercury.vpclient.shared.data.network.request.SaveMessageWithImagesRequest
+import ru.mercury.vpclient.shared.data.network.request.SaveProductMessageRequest
+import ru.mercury.vpclient.shared.data.network.request.TransferBasketToFittingRequest
+import ru.mercury.vpclient.shared.data.network.request.TransferRequest
+import ru.mercury.vpclient.shared.data.network.request.UpdateClientAddressRequest
+import ru.mercury.vpclient.shared.data.network.request.UpdateMainScreenRequest
+import ru.mercury.vpclient.shared.data.network.request.UploadCollageRequest
+import ru.mercury.vpclient.shared.data.network.request.VerifyLinkCardRequest
+import ru.mercury.vpclient.shared.data.network.response.ActionItemDtoResponse
+import ru.mercury.vpclient.shared.data.network.response.ActionsResponse
+import ru.mercury.vpclient.shared.data.network.response.ActiveClientResponse
+import ru.mercury.vpclient.shared.data.network.response.AddressSuggestionItemsResponse
 import ru.mercury.vpclient.shared.data.network.response.AggregatedActivityCounterResponse
+import ru.mercury.vpclient.shared.data.network.response.ApproveFittingDeliveryManualPickupResponse
+import ru.mercury.vpclient.shared.data.network.response.ApproveFittingDeliveryResponse
+import ru.mercury.vpclient.shared.data.network.response.ApproveFittingExpirationDateExtensionResponse
+import ru.mercury.vpclient.shared.data.network.response.AvailableColorsResponse
+import ru.mercury.vpclient.shared.data.network.response.AvailableLocationsForProductResponse
+import ru.mercury.vpclient.shared.data.network.response.AvailableLocationsResponse
+import ru.mercury.vpclient.shared.data.network.response.AvailableSizesResponse
+import ru.mercury.vpclient.shared.data.network.response.AxLoyaltyCardAuthResponse
+import ru.mercury.vpclient.shared.data.network.response.AxLoyaltyCardCalcAndReserveBonusPayResponse
+import ru.mercury.vpclient.shared.data.network.response.AxLoyaltyCardCalcBonusAmountResponse
+import ru.mercury.vpclient.shared.data.network.response.AxLoyaltyCardCheckPinResponse
 import ru.mercury.vpclient.shared.data.network.response.BaseResponse
+import ru.mercury.vpclient.shared.data.network.response.BasketCheckoutOrderResponse
+import ru.mercury.vpclient.shared.data.network.response.BasketForCheckoutResponse
+import ru.mercury.vpclient.shared.data.network.response.BasketResponse
+import ru.mercury.vpclient.shared.data.network.response.BlvLinkContentDtoResponse
+import ru.mercury.vpclient.shared.data.network.response.CardInfoResponse
+import ru.mercury.vpclient.shared.data.network.response.CardTypeItemsResponse
+import ru.mercury.vpclient.shared.data.network.response.CatalogBrandsResponse
 import ru.mercury.vpclient.shared.data.network.response.CatalogCategoriesBasicResponse
+import ru.mercury.vpclient.shared.data.network.response.CatalogFashionImageCardItemsResponse
 import ru.mercury.vpclient.shared.data.network.response.CatalogProductDetailCardV2Response
 import ru.mercury.vpclient.shared.data.network.response.CatalogProductSearchCardDtoItemsResponse
+import ru.mercury.vpclient.shared.data.network.response.CatalogScanHistoryDtoResponse
+import ru.mercury.vpclient.shared.data.network.response.CheckOutAddressesDtoResponse
+import ru.mercury.vpclient.shared.data.network.response.CheckUserResponse
+import ru.mercury.vpclient.shared.data.network.response.ClientActivityInfoItemsResponse
+import ru.mercury.vpclient.shared.data.network.response.ClientAddressDtoResponse
+import ru.mercury.vpclient.shared.data.network.response.ClientAddressWithCoordinateItemsResponse
+import ru.mercury.vpclient.shared.data.network.response.CompilationItemsResponse
+import ru.mercury.vpclient.shared.data.network.response.CompilationsEmployeeLookUploadCollagePostResponse
+import ru.mercury.vpclient.shared.data.network.response.CompilationsEmployeeLookUploadPhotoPostResponse
+import ru.mercury.vpclient.shared.data.network.response.CompilationsEmployeeUploadPhotoPostResponse
+import ru.mercury.vpclient.shared.data.network.response.CompilationsWithStatsByClientResponse
+import ru.mercury.vpclient.shared.data.network.response.CompilationsWithStatsResponse
+import ru.mercury.vpclient.shared.data.network.response.CreateCompilationResultDtoResponse
 import ru.mercury.vpclient.shared.data.network.response.CurrentUserResponse
+import ru.mercury.vpclient.shared.data.network.response.DetailedStocksResponse
+import ru.mercury.vpclient.shared.data.network.response.DigineticaFilteredProductsResponse
 import ru.mercury.vpclient.shared.data.network.response.EmployeeBadgesResponse
+import ru.mercury.vpclient.shared.data.network.response.EmployeeFittingLimitsDtoResponse
+import ru.mercury.vpclient.shared.data.network.response.EmployeeFittingOrderAccessFlagsResponse
+import ru.mercury.vpclient.shared.data.network.response.EmployeeNotificationsFiltersResponse
+import ru.mercury.vpclient.shared.data.network.response.EmployeeNotificationsResponse
 import ru.mercury.vpclient.shared.data.network.response.EmployeeResponse
-import ru.mercury.vpclient.shared.data.network.response.ErrorResponse
+import ru.mercury.vpclient.shared.data.network.response.ExportCompilationStatisticsResponse
+import ru.mercury.vpclient.shared.data.network.response.ExportEmployeeEventsResponse
+import ru.mercury.vpclient.shared.data.network.response.ExportTasksResponse
 import ru.mercury.vpclient.shared.data.network.response.FilterValuesResponse
 import ru.mercury.vpclient.shared.data.network.response.FilteredProductsQuantityResponse
 import ru.mercury.vpclient.shared.data.network.response.FilteredProductsResponse
 import ru.mercury.vpclient.shared.data.network.response.FiltersResponse
+import ru.mercury.vpclient.shared.data.network.response.FittingCheckoutTagsResponse
+import ru.mercury.vpclient.shared.data.network.response.FittingDeliveryTimeResponse
+import ru.mercury.vpclient.shared.data.network.response.FittingExternalPushResponseItemItemsResponse
+import ru.mercury.vpclient.shared.data.network.response.FittingForCheckoutResponse
+import ru.mercury.vpclient.shared.data.network.response.FittingHistoryFiltersResponse
+import ru.mercury.vpclient.shared.data.network.response.FittingHistoryResponse
+import ru.mercury.vpclient.shared.data.network.response.FittingResponse
+import ru.mercury.vpclient.shared.data.network.response.GenderDtoResponse
+import ru.mercury.vpclient.shared.data.network.response.GetCheckOutFlagsResponse
+import ru.mercury.vpclient.shared.data.network.response.GetDeliveryIntervalsForExistingFittingResponse
+import ru.mercury.vpclient.shared.data.network.response.GetDeliveryIntervalsForExistingOrderResponse
+import ru.mercury.vpclient.shared.data.network.response.GiftCardResponse
+import ru.mercury.vpclient.shared.data.network.response.ImageSearchResponse
+import ru.mercury.vpclient.shared.data.network.response.ImagesUploadPostResponse
+import ru.mercury.vpclient.shared.data.network.response.ImagesUploadResponse
+import ru.mercury.vpclient.shared.data.network.response.ImportResultResponse
+import ru.mercury.vpclient.shared.data.network.response.InternalExcelImportAppendCollectionPostResponse
+import ru.mercury.vpclient.shared.data.network.response.InternalExcelImportImportCollectionPostResponse
+import ru.mercury.vpclient.shared.data.network.response.InternalExcelImportImportCrmTasksPostResponse
+import ru.mercury.vpclient.shared.data.network.response.InternalExcelImportImportLooksPostResponse
+import ru.mercury.vpclient.shared.data.network.response.InternalExcelImportImportMannequinsPostResponse
+import ru.mercury.vpclient.shared.data.network.response.InternalExcelImportImportNewArrivalsPostResponse
+import ru.mercury.vpclient.shared.data.network.response.InternalExcelImportImportSortSettingsPostResponse
+import ru.mercury.vpclient.shared.data.network.response.InternalExcelImportImportVpTasksPostResponse
+import ru.mercury.vpclient.shared.data.network.response.InternalExcelImportUpdateNoPhotoPostResponse
+import ru.mercury.vpclient.shared.data.network.response.LookProductsResponse
+import ru.mercury.vpclient.shared.data.network.response.LookProductsWithStatsByClientResponse
+import ru.mercury.vpclient.shared.data.network.response.LookProductsWithStatsResponse
+import ru.mercury.vpclient.shared.data.network.response.LooksResponse
+import ru.mercury.vpclient.shared.data.network.response.LooksResponseItemDtoResponse
+import ru.mercury.vpclient.shared.data.network.response.LooksResponseItemItemsResponse
+import ru.mercury.vpclient.shared.data.network.response.LooksWithStatsResponse
 import ru.mercury.vpclient.shared.data.network.response.LoyaltyLinkByPhoneResponse
 import ru.mercury.vpclient.shared.data.network.response.LoyaltyOperationResponse
+import ru.mercury.vpclient.shared.data.network.response.MainDeliveryResponse
+import ru.mercury.vpclient.shared.data.network.response.MessageReadGetResponse
+import ru.mercury.vpclient.shared.data.network.response.MessageReadResponse
+import ru.mercury.vpclient.shared.data.network.response.MessageResponse
+import ru.mercury.vpclient.shared.data.network.response.MessageResponseItemsResponse
+import ru.mercury.vpclient.shared.data.network.response.MessengerActivityReportResponse
+import ru.mercury.vpclient.shared.data.network.response.MotivationResponse
+import ru.mercury.vpclient.shared.data.network.response.MyClientsClientBadgesResponse
+import ru.mercury.vpclient.shared.data.network.response.MyClientsFiltersResponse
+import ru.mercury.vpclient.shared.data.network.response.MyClientsResponse
 import ru.mercury.vpclient.shared.data.network.response.MyEmployeesResponse
+import ru.mercury.vpclient.shared.data.network.response.NewLooksResponse
+import ru.mercury.vpclient.shared.data.network.response.OrderExternalPushResponseItemItemsResponse
+import ru.mercury.vpclient.shared.data.network.response.OrderPaymentLinkResponse
+import ru.mercury.vpclient.shared.data.network.response.OrderResponse
+import ru.mercury.vpclient.shared.data.network.response.OrderResponseWithBadgeDtoResponse
+import ru.mercury.vpclient.shared.data.network.response.OrderResponseWithBadgeItemsResponse
+import ru.mercury.vpclient.shared.data.network.response.OrderStartPaymentViaSbpResponse
+import ru.mercury.vpclient.shared.data.network.response.PaletteFoldersResponse
+import ru.mercury.vpclient.shared.data.network.response.PaletteProductsResponse
+import ru.mercury.vpclient.shared.data.network.response.PaymentReconciliationResponse
 import ru.mercury.vpclient.shared.data.network.response.ProfileOrdersSalesResponse
+import ru.mercury.vpclient.shared.data.network.response.PushTokenResponse
+import ru.mercury.vpclient.shared.data.network.response.RemoveBackgroundResponse
+import ru.mercury.vpclient.shared.data.network.response.ReserveResponse
+import ru.mercury.vpclient.shared.data.network.response.StringItemsResponse
+import ru.mercury.vpclient.shared.data.network.response.SuggestionResponse
+import ru.mercury.vpclient.shared.data.network.response.SuggestsSearchResponse
+import ru.mercury.vpclient.shared.data.network.response.TasksImportResultResponse
 import ru.mercury.vpclient.shared.data.network.response.TokenResponse
+import ru.mercury.vpclient.shared.data.network.response.TransferResponse
+import ru.mercury.vpclient.shared.data.network.response.UpdateMessageResponse
+import ru.mercury.vpclient.shared.data.network.response.UpdateNoPhotoResultResponse
+import ru.mercury.vpclient.shared.data.network.response.UserProfileUploadPhotoPostResponse
+import ru.mercury.vpclient.shared.data.network.response.ViewHistoryDtoResponse
+import ru.mercury.vpclient.shared.data.network.type.CatalogItemType
+import ru.mercury.vpclient.shared.data.network.type.CompilationStatus
+import ru.mercury.vpclient.shared.data.network.type.StatisticsType
+import ru.mercury.vpclient.shared.domain.mapper.appendFilePart
+import ru.mercury.vpclient.shared.domain.mapper.appendFileParts
+import ru.mercury.vpclient.shared.domain.mapper.appendFormPart
+import ru.mercury.vpclient.shared.domain.mapper.appendQueryParameter
+import ru.mercury.vpclient.shared.domain.mapper.bodyAsBaseResponse
 import javax.inject.Inject
-
-private val baseResponseJson = Json {
-    ignoreUnknownKeys = true
-    explicitNulls = false
-}
 
 class NetworkService @Inject constructor(
     private val ktorHttpClient: HttpClient
@@ -409,21 +400,19 @@ class NetworkService @Inject constructor(
         return ktorHttpClient.post("user/profile/delete").body()
     }
 
-    // fixme
-
     suspend fun actionsPost(
-        request: ActionItemDto
-    ): BaseResponse<ActionItemDto> {
+        request: ActionItemDtoResponse
+    ): BaseResponse<ActionItemDtoResponse> {
         return ktorHttpClient.post("actions") {
             setBody(request)
         }.body()
     }
 
     suspend fun actionsGet(
-        category: CatalogItemTypeEnum? = null,
+        category: CatalogItemType? = null,
         limit: Int? = null,
         offset: Int? = null
-    ): BaseResponse<ActionsResponseDto> {
+    ): BaseResponse<ActionsResponse> {
         return ktorHttpClient.get("actions") {
             appendQueryParameter("category", category)
             appendQueryParameter("limit", limit)
@@ -433,7 +422,7 @@ class NetworkService @Inject constructor(
 
     suspend fun actionsByActionIdNotifyAll(
         actionId: Int,
-        request: ActionPushRequestDto
+        request: ActionPushRequest
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("actions/$actionId/notify-all") {
             setBody(request)
@@ -441,7 +430,7 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun actionsNewArrivalsNotifyAll(
-        request: NewArrivalsPushRequestDto
+        request: NewArrivalsPushRequest
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("actions/new-arrivals/notify-all") {
             setBody(request)
@@ -449,10 +438,10 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun actionsActions(
-        category: CatalogItemTypeEnum? = null,
+        category: CatalogItemType? = null,
         limit: Int? = null,
         offset: Int? = null
-    ): BaseResponse<ActionsResponseDto> {
+    ): BaseResponse<ActionsResponse> {
         return ktorHttpClient.get("actions/actions") {
             appendQueryParameter("category", category)
             appendQueryParameter("limit", limit)
@@ -461,10 +450,10 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun actionsNewCollections(
-        category: CatalogItemTypeEnum? = null,
+        category: CatalogItemType? = null,
         limit: Int? = null,
         offset: Int? = null
-    ): BaseResponse<ActionsResponseDto> {
+    ): BaseResponse<ActionsResponse> {
         return ktorHttpClient.get("actions/newCollections") {
             appendQueryParameter("category", category)
             appendQueryParameter("limit", limit)
@@ -473,10 +462,10 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun actionsNewCollectionsVM(
-        category: CatalogItemTypeEnum? = null,
+        category: CatalogItemType? = null,
         limit: Int? = null,
         offset: Int? = null
-    ): BaseResponse<ActionsResponseDto> {
+    ): BaseResponse<ActionsResponse> {
         return ktorHttpClient.get("actions/newCollectionsVM") {
             appendQueryParameter("category", category)
             appendQueryParameter("limit", limit)
@@ -486,15 +475,15 @@ class NetworkService @Inject constructor(
 
     suspend fun actionsByActionId(
         actionId: Int
-    ): BaseResponse<ActionItemDto> {
+    ): BaseResponse<ActionItemDtoResponse> {
         return ktorHttpClient.get("actions/$actionId").body()
     }
 
     suspend fun actionsNewLooks(
-        category: CatalogItemTypeEnum? = null,
+        category: CatalogItemType? = null,
         limit: Int? = null,
         offset: Int? = null
-    ): BaseResponse<NewLooksResponseDto> {
+    ): BaseResponse<NewLooksResponse> {
         return ktorHttpClient.get("actions/newLooks") {
             appendQueryParameter("category", category)
             appendQueryParameter("limit", limit)
@@ -506,7 +495,7 @@ class NetworkService @Inject constructor(
         clientId: String,
         limit: Int? = null,
         offset: Int? = null
-    ): BaseResponse<ViewHistoryDto> {
+    ): BaseResponse<ViewHistoryDtoResponse> {
         return ktorHttpClient.get("activity/$clientId/view-history") {
             appendQueryParameter("limit", limit)
             appendQueryParameter("offset", offset)
@@ -515,7 +504,7 @@ class NetworkService @Inject constructor(
 
     suspend fun activityCountersByPairedUserIdReset(
         pairedUserId: String,
-        request: ResetActivityCountersRequestDto
+        request: ResetActivityCountersRequest
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("activity/counters/$pairedUserId/reset") {
             setBody(request)
@@ -525,7 +514,7 @@ class NetworkService @Inject constructor(
     suspend fun addressSuggestion(
         limit: Int? = null,
         searchText: String? = null
-    ): BaseResponse<AddressSuggestionDtoItemsDto> {
+    ): BaseResponse<AddressSuggestionItemsResponse> {
         return ktorHttpClient.get("address-suggestion") {
             appendQueryParameter("limit", limit)
             appendQueryParameter("searchText", searchText)
@@ -533,7 +522,7 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun internalAnalyticsTeamUpdateMainScreen(
-        request: UpdateMainScreenRequestDto
+        request: UpdateMainScreenRequest
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("/internal/analytics-team/update-main-screen") {
             setBody(request)
@@ -541,63 +530,63 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun axaptaPushFitting(
-        request: FittingExternalPushRequestDto
-    ): BaseResponse<FittingExternalPushResponseItemDtoItemsDto> {
+        request: FittingExternalPushRequest
+    ): BaseResponse<FittingExternalPushResponseItemItemsResponse> {
         return ktorHttpClient.post("/axapta/push/fitting") {
             setBody(request)
         }.body()
     }
 
     suspend fun axaptaPushOrder(
-        request: OrderExternalPushRequestDto
-    ): BaseResponse<OrderExternalPushResponseItemDtoItemsDto> {
+        request: OrderExternalPushRequest
+    ): BaseResponse<OrderExternalPushResponseItemItemsResponse> {
         return ktorHttpClient.post("/axapta/push/order") {
             setBody(request)
         }.body()
     }
 
     suspend fun axaptaPaymentsReconciliation(
-        request: PaymentReconciliationRequestDto
-    ): BaseResponse<PaymentReconciliationResponseDto> {
+        request: PaymentReconciliationRequest
+    ): BaseResponse<PaymentReconciliationResponse> {
         return ktorHttpClient.post("/axapta/payments-reconciliation") {
             setBody(request)
         }.body()
     }
 
     suspend fun axaptaLoyaltyLoyaltyCardAuthClient(
-        request: AxLoyaltyCardAuthRequestDto
-    ): BaseResponse<AxLoyaltyCardAuthResponseDto> {
+        request: AxLoyaltyCardAuthRequest
+    ): BaseResponse<AxLoyaltyCardAuthResponse> {
         return ktorHttpClient.post("/axapta/loyalty/loyaltyCardAuthClient") {
             setBody(request)
         }.body()
     }
 
     suspend fun axaptaLoyaltyLoyaltyCardCheckPin(
-        request: AxLoyaltyCardCheckPinRequestDto
-    ): BaseResponse<AxLoyaltyCardCheckPinResponseDto> {
+        request: AxLoyaltyCardCheckPinRequest
+    ): BaseResponse<AxLoyaltyCardCheckPinResponse> {
         return ktorHttpClient.post("/axapta/loyalty/loyaltyCardCheckPin") {
             setBody(request)
         }.body()
     }
 
     suspend fun axaptaLoyaltyLoyaltyCardCalcBonusAmount(
-        request: AxLoyaltyCardCalcBonusAmountRequestDto
-    ): BaseResponse<AxLoyaltyCardCalcBonusAmountResponseDto> {
+        request: AxLoyaltyCardCalcBonusAmountRequest
+    ): BaseResponse<AxLoyaltyCardCalcBonusAmountResponse> {
         return ktorHttpClient.post("/axapta/loyalty/loyaltyCardCalcBonusAmount") {
             setBody(request)
         }.body()
     }
 
     suspend fun axaptaLoyaltyLoyaltyCardCalcAndReserveBonusPay(
-        request: AxLoyaltyCardCalcAndReserveBonusPayRequestDto
-    ): BaseResponse<AxLoyaltyCardCalcAndReserveBonusPayResponseDto> {
+        request: AxLoyaltyCardCalcAndReserveBonusPayRequest
+    ): BaseResponse<AxLoyaltyCardCalcAndReserveBonusPayResponse> {
         return ktorHttpClient.post("/axapta/loyalty/loyaltyCardCalcAndReserveBonusPay") {
             setBody(request)
         }.body()
     }
 
     suspend fun axaptaLoyaltyLoyaltyCardRollBackBonusPay(
-        request: AxLoyaltyCardRollBackBonusPayRequestDto
+        request: AxLoyaltyCardRollBackBonusPayRequest
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("/axapta/loyalty/loyaltyCardRollBackBonusPay") {
             setBody(request)
@@ -605,7 +594,7 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun axaptaLoyaltyBasketPaymAcknowledge(
-        request: PaymentAcknowledgeRequestDto
+        request: PaymentAcknowledgeRequest
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("/axapta/loyalty/basketPaymAcknowledge") {
             setBody(request)
@@ -613,7 +602,7 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun basket(
-        request: BasketOperationRequestDto
+        request: BasketOperationRequest
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("basket") {
             setBody(request)
@@ -621,7 +610,7 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun basketResponse(
-        request: BasketOperationRequestDto
+        request: BasketOperationRequest
     ): HttpResponse {
         return ktorHttpClient.post("basket") {
             setBody(request)
@@ -629,7 +618,7 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun basketAddProductByBarcode(
-        request: BasketAddProductByBarcodeRequestDto
+        request: BasketAddProductByBarcodeRequest
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("basket/add-product-by-barcode") {
             setBody(request)
@@ -637,7 +626,7 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun basketAddProductByBarcodeAndLocationid(
-        request: BasketAddProductByBarcodeAndLocationIdRequestDto
+        request: BasketAddProductByBarcodeAndLocationIdRequest
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("basket/add-product-by-barcode-and-locationid") {
             setBody(request)
@@ -645,77 +634,77 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun basketAddProductFromDetailedStocks(
-        request: BasketAddProductFromDetailedStocksRequestDto
+        request: BasketAddProductFromDetailedStocksRequest
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("basket/add-product-from-detailed-stocks") {
             setBody(request)
-        }.bodyAsBaseResponse()
+        }.bodyAsBaseResponse(JsonElement.serializer())
     }
 
     suspend fun basketAddProductsFromCatalogWithSelectedRussianSize(
-        request: BasketAddProductFromCatalogWithSelectedRussianSizeRequestDto
+        request: BasketAddProductFromCatalogWithSelectedRussianSizeRequest
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("basket/add-products-from-catalog-with-selected-russian-size") {
             setBody(request)
-        }.bodyAsBaseResponse()
+        }.bodyAsBaseResponse(JsonElement.serializer())
     }
 
     suspend fun basketByPairedUserId(
         pairedUserId: String
-    ): BaseResponse<BasketResponseDto> {
+    ): BaseResponse<BasketResponse> {
         return ktorHttpClient.get("basket/$pairedUserId").body()
     }
 
     suspend fun basketChatGet(
-        request: MessageGetRequestDto
-    ): BaseResponse<MessageResponseDtoItemsDto> {
+        request: MessageGetRequest
+    ): BaseResponse<MessageResponseItemsResponse> {
         return ktorHttpClient.post("basket/chat/get") {
             setBody(request)
         }.body()
     }
 
     suspend fun basketChatStatus(
-        request: MessageReadGetDto
-    ): BaseResponse<MessageReadResponseDto> {
+        request: MessageReadGetResponse
+    ): BaseResponse<MessageReadResponse> {
         return ktorHttpClient.post("basket/chat/status") {
             setBody(request)
         }.body()
     }
 
     suspend fun basketChatSend(
-        request: SaveProductMessageRequestDto
-    ): BaseResponse<MessageResponseDto> {
+        request: SaveProductMessageRequest
+    ): BaseResponse<MessageResponse> {
         return ktorHttpClient.post("basket/chat/send") {
             setBody(request)
         }.body()
     }
 
     suspend fun basketChatSendCompilationLook(
-        request: SaveCompilationLookMessageRequestDto
-    ): BaseResponse<MessageResponseDto> {
+        request: SaveCompilationLookMessageRequest
+    ): BaseResponse<MessageResponse> {
         return ktorHttpClient.post("basket/chat/send/compilationLook") {
             setBody(request)
         }.body()
     }
 
     suspend fun basketChatSendClientCompilation(
-        request: SaveClientCompilationMessageRequestDto
-    ): BaseResponse<MessageResponseDto> {
+        request: SaveClientCompilationMessageRequest
+    ): BaseResponse<MessageResponse> {
         return ktorHttpClient.post("basket/chat/send/clientCompilation") {
             setBody(request)
         }.body()
     }
 
     suspend fun basketChatSendImages(
-        request: SaveMessageWithImagesRequestDto
-    ): BaseResponse<MessageResponseDto> {
+        request: SaveMessageWithImagesRequest
+    ): BaseResponse<MessageResponse> {
         return ktorHttpClient.post("basket/chat/send/images") {
             setBody(request)
         }.body()
     }
 
     suspend fun basketChatUpdate(
-        request: UpdateMessageDto
+        request: UpdateMessageResponse
     ): BaseResponse<Boolean> {
         return ktorHttpClient.post("basket/chat/update") {
             setBody(request)
@@ -723,7 +712,7 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun basketChatEdit(
-        request: EditMessageRequestDto
+        request: EditMessageRequest
     ): BaseResponse<Boolean> {
         return ktorHttpClient.post("basket/chat/edit") {
             setBody(request)
@@ -731,7 +720,7 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun basketChatDelete(
-        request: DeleteMessageRequestDto
+        request: DeleteMessageRequest
     ): BaseResponse<Boolean> {
         return ktorHttpClient.post("basket/chat/delete") {
             setBody(request)
@@ -740,18 +729,18 @@ class NetworkService @Inject constructor(
 
     suspend fun basketByPairedUserIdForCheckout(
         pairedUserId: String
-    ): BaseResponse<BasketForCheckoutResponseDto> {
+    ): BaseResponse<BasketForCheckoutResponse> {
         return ktorHttpClient.get("basket/$pairedUserId/for-checkout").body()
     }
 
     suspend fun blvLinkIdByLinkId(
         linkId: String
-    ): BaseResponse<BlvLinkContentDto> {
+    ): BaseResponse<BlvLinkContentDtoResponse> {
         return ktorHttpClient.get("blv-link/id/$linkId").body()
     }
 
     suspend fun blvLinkApproveDelivery(
-        request: ApproveFittingDeliveryRequestDto
+        request: ApproveFittingDeliveryRequest
     ): BaseResponse<ApproveFittingDeliveryResponse> {
         return ktorHttpClient.post("blv-link/approve-delivery") {
             setBody(request)
@@ -759,7 +748,7 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun blvLinkApproveFittingExtension(
-        request: ApproveFittingExpirationDateExtensionRequestDto
+        request: ApproveFittingExpirationDateExtensionRequest
     ): BaseResponse<ApproveFittingExpirationDateExtensionResponse> {
         return ktorHttpClient.post("blv-link/approve-fitting-extension") {
             setBody(request)
@@ -767,7 +756,7 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun blvLinkApproveFittingManualPickup(
-        request: ApproveFittingDeliveryManualPickupRequestDto
+        request: ApproveFittingDeliveryManualPickupRequest
     ): BaseResponse<ApproveFittingDeliveryManualPickupResponse> {
         return ktorHttpClient.post("blv-link/approve-fitting-manual-pickup") {
             setBody(request)
@@ -778,7 +767,7 @@ class NetworkService @Inject constructor(
         return ktorHttpClient.post("catalog/action-id/special-offer").body()
     }
 
-    suspend fun catalogBrands(): BaseResponse<CatalogBrandsResponseDto> {
+    suspend fun catalogBrands(): BaseResponse<CatalogBrandsResponse> {
         return ktorHttpClient.post("catalog/brands").body()
     }
 
@@ -808,31 +797,31 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun catalogAvailableColors(
-        request: AvailableColorsRequestDto
-    ): BaseResponse<AvailableColorsResponseDto> {
+        request: AvailableColorsRequest
+    ): BaseResponse<AvailableColorsResponse> {
         return ktorHttpClient.post("catalog/available/colors") {
             setBody(request)
         }.body()
     }
 
     suspend fun catalogAvailableSizes(
-        request: AvailableSizesRequestDto
-    ): BaseResponse<AvailableSizesResponseDto> {
+        request: AvailableSizesRequest
+    ): BaseResponse<AvailableSizesResponse> {
         return ktorHttpClient.post("catalog/available/sizes") {
             setBody(request)
         }.body()
     }
 
     suspend fun catalogAvailableLocations(
-        request: AvailableLocationsRequestDto
-    ): BaseResponse<AvailableLocationsResponseDto> {
+        request: AvailableLocationsRequest
+    ): BaseResponse<AvailableLocationsResponse> {
         return ktorHttpClient.post("catalog/available/locations") {
             setBody(request)
         }.body()
     }
 
     suspend fun catalogNewArrivals(
-        category: CatalogItemTypeEnum? = null,
+        category: CatalogItemType? = null,
         cover: Boolean? = null,
         limit: Int? = null,
         offset: Int? = null
@@ -859,7 +848,7 @@ class NetworkService @Inject constructor(
 
     suspend fun catalogFashionImageById(
         id: Int
-    ): BaseResponse<CatalogFashionImageCardDtoItemsDto> {
+    ): BaseResponse<CatalogFashionImageCardItemsResponse> {
         return ktorHttpClient.get("catalog/fashion-image/$id").body()
     }
 
@@ -872,7 +861,7 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun catalogScan(
-        request: BarcodeScanRequestDto
+        request: BarcodeScanRequest
     ): BaseResponse<CatalogProductDetailCardV2Response> {
         return ktorHttpClient.post("catalog/scan") {
             setBody(request)
@@ -880,8 +869,8 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun catalogScanLocations(
-        request: BarcodeScanRequestDto
-    ): BaseResponse<AvailableLocationsForProductResponseDto> {
+        request: BarcodeScanRequest
+    ): BaseResponse<AvailableLocationsForProductResponse> {
         return ktorHttpClient.post("catalog/scan/locations") {
             setBody(request)
         }.body()
@@ -890,7 +879,7 @@ class NetworkService @Inject constructor(
     suspend fun catalogScanHistory(
         limit: Int? = null,
         offset: Int? = null
-    ): BaseResponse<CatalogScanHistoryDto> {
+    ): BaseResponse<CatalogScanHistoryDtoResponse> {
         return ktorHttpClient.get("catalog/scan/history") {
             appendQueryParameter("limit", limit)
             appendQueryParameter("offset", offset)
@@ -898,24 +887,24 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun catalogDetailedStocks(
-        request: DetailedStocksRequestDto
-    ): BaseResponse<DetailedStocksResponseDto> {
+        request: DetailedStocksRequest
+    ): BaseResponse<DetailedStocksResponse> {
         return ktorHttpClient.post("catalog/detailed-stocks") {
             setBody(request)
-        }.bodyAsBaseResponse()
+        }.bodyAsBaseResponse(DetailedStocksResponse.serializer())
     }
 
     suspend fun catalogReserveBySerialid(
-        request: ReserveRequestDto
-    ): BaseResponse<ReserveResponseDto> {
+        request: ReserveRequest
+    ): BaseResponse<ReserveResponse> {
         return ktorHttpClient.post("catalog/reserve-by-serialid") {
             setBody(request)
         }.body()
     }
 
     suspend fun catalogTransferBySerialid(
-        request: TransferRequestDto
-    ): BaseResponse<TransferResponseDto> {
+        request: TransferRequest
+    ): BaseResponse<TransferResponse> {
         return ktorHttpClient.post("catalog/transfer-by-serialid") {
             setBody(request)
         }.body()
@@ -923,8 +912,8 @@ class NetworkService @Inject constructor(
 
     suspend fun catalogByTextSuggestsDiginetica(
         limit: Int? = null,
-        request: SuggestsSearchRequest
-    ): BaseResponse<SuggestionResponseDto> {
+        request: SuggestsSearchResponse
+    ): BaseResponse<SuggestionResponse> {
         return ktorHttpClient.post("catalog/by-text/suggests/diginetica") {
             appendQueryParameter("limit", limit)
             setBody(request)
@@ -934,8 +923,8 @@ class NetworkService @Inject constructor(
     suspend fun catalogByTextProductsDiginetica(
         limit: Int? = null,
         offset: Int? = null,
-        request: DigineticaFilteredProductsRequestDto
-    ): BaseResponse<DigineticaFilteredProductsResponseDto> {
+        request: DigineticaFilteredProductsRequest
+    ): BaseResponse<DigineticaFilteredProductsResponse> {
         return ktorHttpClient.post("catalog/by-text/products/diginetica") {
             appendQueryParameter("limit", limit)
             appendQueryParameter("offset", offset)
@@ -944,7 +933,7 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun catalogByTextFiltersDiginetica(
-        request: DigineticaFiltersRequestDto
+        request: DigineticaFiltersRequest
     ): BaseResponse<FiltersResponse> {
         return ktorHttpClient.post("catalog/by-text/filters/diginetica") {
             setBody(request)
@@ -952,7 +941,7 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun catalogByTextFilterValues(
-        request: DigineticaFilterValuesRequestDto
+        request: DigineticaFilterValuesRequest
     ): BaseResponse<FilterValuesResponse> {
         return ktorHttpClient.post("catalog/by-text/filter-values") {
             setBody(request)
@@ -960,7 +949,7 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun catalogByTextFilterProductsQuantity(
-        request: DigineticaFilteredProductsQuantityRequestDto
+        request: DigineticaFilteredProductsQuantityRequest
     ): BaseResponse<FilteredProductsQuantityResponse> {
         return ktorHttpClient.post("catalog/by-text/filter-products-quantity") {
             setBody(request)
@@ -982,39 +971,39 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun clientAddressList(
-        request: GetListClientAddressRequestDto
-    ): BaseResponse<ClientAddressWithCoordinateDtoItemsDto> {
+        request: GetListClientAddressRequest
+    ): BaseResponse<ClientAddressWithCoordinateItemsResponse> {
         return ktorHttpClient.post("client/address/list") {
             setBody(request)
         }.body()
     }
 
     suspend fun clientAddressCheckout(
-        request: GetListClientAddressForCheckoutRequestDto
-    ): BaseResponse<CheckOutAddressesDto> {
+        request: GetListClientAddressForCheckoutRequest
+    ): BaseResponse<CheckOutAddressesDtoResponse> {
         return ktorHttpClient.post("client/address/checkout") {
             setBody(request)
         }.body()
     }
 
     suspend fun clientAddressCreate(
-        request: CreateClientAddressRequestDto
-    ): BaseResponse<ClientAddressDto> {
+        request: CreateClientAddressRequest
+    ): BaseResponse<ClientAddressDtoResponse> {
         return ktorHttpClient.post("client/address/create") {
             setBody(request)
         }.body()
     }
 
     suspend fun clientAddressUpdate(
-        request: UpdateClientAddressRequestDto
-    ): BaseResponse<ClientAddressDto> {
+        request: UpdateClientAddressRequest
+    ): BaseResponse<ClientAddressDtoResponse> {
         return ktorHttpClient.post("client/address/update") {
             setBody(request)
         }.body()
     }
 
     suspend fun clientAddressDelete(
-        request: DeleteClientAddressRequestDto
+        request: DeleteClientAddressRequest
     ): BaseResponse<Boolean> {
         return ktorHttpClient.post("client/address/delete") {
             setBody(request)
@@ -1022,8 +1011,8 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun codeGender(
-        request: DetermineGenderByClientIdRequestDto
-    ): BaseResponse<GenderDto> {
+        request: DetermineGenderByClientIdRequest
+    ): BaseResponse<GenderDtoResponse> {
         return ktorHttpClient.post("code/gender") {
             setBody(request)
         }.body()
@@ -1037,7 +1026,7 @@ class NetworkService @Inject constructor(
         limit: Int? = null,
         offset: Int? = null,
         pairedUserId: String? = null
-    ): BaseResponse<CompilationDtoItemsDto> {
+    ): BaseResponse<CompilationItemsResponse> {
         return ktorHttpClient.get("compilations/client") {
             appendQueryParameter("limit", limit)
             appendQueryParameter("offset", offset)
@@ -1049,7 +1038,7 @@ class NetworkService @Inject constructor(
         compilationId: Int,
         limit: Int? = null,
         offset: Int? = null
-    ): BaseResponse<LooksResponseDto> {
+    ): BaseResponse<LooksResponse> {
         return ktorHttpClient.get("compilations/client/$compilationId") {
             appendQueryParameter("limit", limit)
             appendQueryParameter("offset", offset)
@@ -1058,7 +1047,7 @@ class NetworkService @Inject constructor(
 
     suspend fun compilationsClientLookByLookId(
         lookId: Int
-    ): BaseResponse<LookProductsResponseDto> {
+    ): BaseResponse<LookProductsResponse> {
         return ktorHttpClient.get("compilations/client/look/$lookId").body()
     }
 
@@ -1069,8 +1058,8 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun compilationsEmployeeCreate(
-        request: CompilationCreateRequestDto
-    ): BaseResponse<CreateCompilationResultDto> {
+        request: CompilationCreateRequest
+    ): BaseResponse<CreateCompilationResultDtoResponse> {
         return ktorHttpClient.post("compilations/employee/create") {
             setBody(request)
         }.body()
@@ -1078,7 +1067,7 @@ class NetworkService @Inject constructor(
 
     suspend fun compilationsEmployeeByCompilationIdEdit(
         compilationId: Int,
-        request: CompilationCreateRequestDto
+        request: CompilationCreateRequest
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("compilations/employee/$compilationId/edit") {
             setBody(request)
@@ -1086,7 +1075,7 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun compilationsEmployeeCopy(
-        request: CompilationCopyRequestDto
+        request: CompilationCopyRequest
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("compilations/employee/copy") {
             setBody(request)
@@ -1097,7 +1086,7 @@ class NetworkService @Inject constructor(
         limit: Int? = null,
         offset: Int? = null,
         pairedUserId: String? = null
-    ): BaseResponse<CompilationDtoItemsDto> {
+    ): BaseResponse<CompilationItemsResponse> {
         return ktorHttpClient.get("compilations/employee") {
             appendQueryParameter("limit", limit)
             appendQueryParameter("offset", offset)
@@ -1109,7 +1098,7 @@ class NetworkService @Inject constructor(
         compilationId: Int,
         limit: Int? = null,
         offset: Int? = null
-    ): BaseResponse<LooksResponseDto> {
+    ): BaseResponse<LooksResponse> {
         return ktorHttpClient.get("compilations/employee/$compilationId") {
             appendQueryParameter("limit", limit)
             appendQueryParameter("offset", offset)
@@ -1118,7 +1107,7 @@ class NetworkService @Inject constructor(
 
     suspend fun compilationsEmployeeLookByLookId(
         lookId: Int
-    ): BaseResponse<LookProductsResponseDto> {
+    ): BaseResponse<LookProductsResponse> {
         return ktorHttpClient.get("compilations/employee/look/$lookId").body()
     }
 
@@ -1137,7 +1126,7 @@ class NetworkService @Inject constructor(
 
     suspend fun compilationsEmployeeByCompilationIdShare(
         compilationId: Int,
-        request: CompilationShareRequestDto
+        request: CompilationShareRequest
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("compilations/employee/$compilationId/share") {
             setBody(request)
@@ -1146,7 +1135,7 @@ class NetworkService @Inject constructor(
 
     suspend fun compilationsEmployeeByCompilationIdShared(
         compilationId: Int
-    ): BaseResponse<StringItemsDto> {
+    ): BaseResponse<StringItemsResponse> {
         return ktorHttpClient.get("compilations/employee/$compilationId/shared").body()
     }
 
@@ -1157,16 +1146,16 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun compilationsEmployeeLookCreate(
-        request: CompilationLookSaveRequestDto
-    ): BaseResponse<LooksResponseItemDto> {
+        request: CompilationLookSaveRequest
+    ): BaseResponse<LooksResponseItemDtoResponse> {
         return ktorHttpClient.post("compilations/employee/look/create") {
             setBody(request)
         }.body()
     }
 
     suspend fun compilationsEmployeeLookCreateFromFashionImage(
-        request: CreateLookFromFashionImageRequestDto
-    ): BaseResponse<LooksResponseItemDtoItemsDto> {
+        request: CreateLookFromFashionImageRequest
+    ): BaseResponse<LooksResponseItemItemsResponse> {
         return ktorHttpClient.post("compilations/employee/look/create-from-fashion-image") {
             setBody(request)
         }.body()
@@ -1174,7 +1163,7 @@ class NetworkService @Inject constructor(
 
     suspend fun compilationsEmployeeLookByLookIdEdit(
         lookId: Int,
-        request: CompilationLookSaveRequestDto
+        request: CompilationLookSaveRequest
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("compilations/employee/look/$lookId/edit") {
             setBody(request)
@@ -1183,7 +1172,7 @@ class NetworkService @Inject constructor(
 
     suspend fun compilationsEmployeeLookByLookIdUploadCollage(
         lookId: Int,
-        request: CompilationsEmployeeLookUploadCollagePostRequest
+        request: CompilationsEmployeeLookUploadCollagePostResponse
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("compilations/employee/look/$lookId/upload-collage") {
             setBody(MultiPartFormDataContent(formData {
@@ -1194,7 +1183,7 @@ class NetworkService @Inject constructor(
 
     suspend fun compilationsEmployeeLookByLookIdUploadPhoto(
         lookId: Int,
-        request: CompilationsEmployeeLookUploadPhotoPostRequest
+        request: CompilationsEmployeeLookUploadPhotoPostResponse
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("compilations/employee/look/$lookId/upload-photo") {
             setBody(MultiPartFormDataContent(formData {
@@ -1211,7 +1200,7 @@ class NetworkService @Inject constructor(
 
     suspend fun compilationsEmployeeByCompilationIdUploadCollage(
         compilationId: Int,
-        request: UploadCollageRequestDto
+        request: UploadCollageRequest
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("compilations/employee/$compilationId/upload-collage") {
             setBody(request)
@@ -1220,7 +1209,7 @@ class NetworkService @Inject constructor(
 
     suspend fun compilationsEmployeeByCompilationIdUploadPhoto(
         compilationId: Int,
-        request: CompilationsEmployeeUploadPhotoPostRequest
+        request: CompilationsEmployeeUploadPhotoPostResponse
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("compilations/employee/$compilationId/upload-photo") {
             setBody(MultiPartFormDataContent(formData {
@@ -1236,7 +1225,7 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun compilationsPaletteFoldersCreate(
-        request: CreatePaletteFolderRequestDto
+        request: CreatePaletteFolderRequest
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("compilations/palette/folders/create") {
             setBody(request)
@@ -1251,7 +1240,7 @@ class NetworkService @Inject constructor(
 
     suspend fun compilationsPaletteFoldersByFolderIdEdit(
         folderId: Int,
-        request: EditPaletteFolderRequestDto
+        request: EditPaletteFolderRequest
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("compilations/palette/folders/$folderId/edit") {
             setBody(request)
@@ -1268,7 +1257,7 @@ class NetworkService @Inject constructor(
         folderId: Int,
         limit: Int? = null,
         offset: Int? = null
-    ): BaseResponse<PaletteProductsResponseDto> {
+    ): BaseResponse<PaletteProductsResponse> {
         return ktorHttpClient.get("compilations/palette/folders/$folderId") {
             appendQueryParameter("limit", limit)
             appendQueryParameter("offset", offset)
@@ -1276,7 +1265,7 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun compilationsPaletteFoldersAddItems(
-        request: AddProductsInFoldersRequestDto
+        request: AddProductsInFoldersRequest
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("compilations/palette/folders/add-items") {
             setBody(request)
@@ -1285,14 +1274,14 @@ class NetworkService @Inject constructor(
 
     suspend fun compilationsPaletteFoldersByFolderIdDeleteItems(
         folderId: Int,
-        request: DeleteProductsFromFolderRequestDto
+        request: DeleteProductsFromFolderRequest
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("compilations/palette/folders/$folderId/delete-items") {
             setBody(request)
         }.body()
     }
 
-    suspend fun compilationsPaletteFolders(): BaseResponse<PaletteFoldersResponseDto> {
+    suspend fun compilationsPaletteFolders(): BaseResponse<PaletteFoldersResponse> {
         return ktorHttpClient.get("compilations/palette/folders").body()
     }
 
@@ -1301,7 +1290,7 @@ class NetworkService @Inject constructor(
         limit: Int? = null,
         offset: Int? = null,
         status: CompilationStatus? = null
-    ): BaseResponse<CompilationsWithStatsByClientResponseDto> {
+    ): BaseResponse<CompilationsWithStatsByClientResponse> {
         return ktorHttpClient.get("compilations/stats/client/$clientId") {
             appendQueryParameter("limit", limit)
             appendQueryParameter("offset", offset)
@@ -1314,7 +1303,7 @@ class NetworkService @Inject constructor(
         compilationId: Int,
         limit: Int? = null,
         offset: Int? = null
-    ): BaseResponse<LooksWithStatsResponseDto> {
+    ): BaseResponse<LooksWithStatsResponse> {
         return ktorHttpClient.get("compilations/stats/$compilationId/client/$clientId") {
             appendQueryParameter("limit", limit)
             appendQueryParameter("offset", offset)
@@ -1324,7 +1313,7 @@ class NetworkService @Inject constructor(
     suspend fun compilationsStatsLookByLookIdClientByClientId(
         clientId: String,
         lookId: Int
-    ): BaseResponse<LookProductsWithStatsByClientResponseDto> {
+    ): BaseResponse<LookProductsWithStatsByClientResponse> {
         return ktorHttpClient.get("compilations/stats/look/$lookId/client/$clientId").body()
     }
 
@@ -1332,7 +1321,7 @@ class NetworkService @Inject constructor(
         limit: Int? = null,
         offset: Int? = null,
         status: CompilationStatus? = null
-    ): BaseResponse<CompilationsWithStatsResponseDto> {
+    ): BaseResponse<CompilationsWithStatsResponse> {
         return ktorHttpClient.get("compilations/stats") {
             appendQueryParameter("limit", limit)
             appendQueryParameter("offset", offset)
@@ -1344,7 +1333,7 @@ class NetworkService @Inject constructor(
         compilationId: Int,
         limit: Int? = null,
         offset: Int? = null
-    ): BaseResponse<LooksWithStatsResponseDto> {
+    ): BaseResponse<LooksWithStatsResponse> {
         return ktorHttpClient.get("compilations/stats/$compilationId") {
             appendQueryParameter("limit", limit)
             appendQueryParameter("offset", offset)
@@ -1354,14 +1343,14 @@ class NetworkService @Inject constructor(
     suspend fun compilationsStatsLookByLookId(
         lookId: Int,
         type: StatisticsType? = null
-    ): BaseResponse<LookProductsWithStatsResponseDto> {
+    ): BaseResponse<LookProductsWithStatsResponse> {
         return ktorHttpClient.get("compilations/stats/look/$lookId") {
             appendQueryParameter("type", type)
         }.body()
     }
 
     suspend fun internalContentTeamDeleteFashionImage(
-        request: DeleteFashionImageRequestDto
+        request: DeleteFashionImageRequest
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("/internal/content-team/delete-fashion-image") {
             setBody(request)
@@ -1369,7 +1358,7 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun internalContentTeamChangeAction(
-        request: ChangeActionRequestDto
+        request: ChangeActionRequest
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("/internal/content-team/change-action") {
             setBody(request)
@@ -1377,7 +1366,7 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun internalContentTeamAddProductToFashionImage(
-        request: AddProductToFashionImageRequestDto
+        request: AddProductToFashionImageRequest
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("/internal/content-team/add-product-to-fashion-image") {
             setBody(request)
@@ -1385,7 +1374,7 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun internalContentTeamDeleteProductFromFashionImage(
-        request: DeleteProductFromFashionImageRequestDto
+        request: DeleteProductFromFashionImageRequest
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("/internal/content-team/delete-product-from-fashion-image") {
             setBody(request)
@@ -1393,27 +1382,27 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun internalContentTeamEditFashionImage(
-        request: EditFashionImageRequestDto
+        request: EditFashionImageRequest
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("/internal/content-team/edit-fashion-image") {
             setBody(request)
         }.body()
     }
 
-    suspend fun delivery(): BaseResponse<MainDeliveryResponseDto> {
+    suspend fun delivery(): BaseResponse<MainDeliveryResponse> {
         return ktorHttpClient.get("delivery").body()
     }
 
     suspend fun employeeByEmployeeIdMyClientsFilters(
         employeeId: String
-    ): BaseResponse<MyClientsFiltersResponseDto> {
+    ): BaseResponse<MyClientsFiltersResponse> {
         return ktorHttpClient.get("employee/$employeeId/my-clients/filters").body()
     }
 
     suspend fun employeeByEmployeeIdMyClients(
         employeeId: String,
-        request: MyClientsRequestDto
-    ): BaseResponse<MyClientsResponseDto> {
+        request: MyClientsRequest
+    ): BaseResponse<MyClientsResponse> {
         return ktorHttpClient.post("employee/$employeeId/my-clients") {
             setBody(request)
         }.body()
@@ -1422,31 +1411,31 @@ class NetworkService @Inject constructor(
     suspend fun employeeByEmployeeIdMyClientsByClientIdBadges(
         clientId: String,
         employeeId: String
-    ): BaseResponse<MyClientsClientBadgesResponseDto> {
+    ): BaseResponse<MyClientsClientBadgesResponse> {
         return ktorHttpClient.get("employee/$employeeId/my-clients/$clientId/badges").body()
     }
 
     suspend fun employeeByEmployeeIdActiveClient(
         employeeId: String
-    ): BaseResponse<ActiveClientResponseDto> {
+    ): BaseResponse<ActiveClientResponse> {
         return ktorHttpClient.get("employee/$employeeId/active-client").body()
     }
 
     suspend fun employeeByEmployeeIdFittingOrderAccessFlags(
         employeeId: String
-    ): BaseResponse<EmployeeFittingOrderAccessFlagsResponseDto> {
+    ): BaseResponse<EmployeeFittingOrderAccessFlagsResponse> {
         return ktorHttpClient.get("employee/$employeeId/fitting-order-access-flags").body()
     }
 
     suspend fun employeeByEmployeeIdFittingLimits(
         employeeId: String
-    ): BaseResponse<EmployeeFittingLimitsDto> {
+    ): BaseResponse<EmployeeFittingLimitsDtoResponse> {
         return ktorHttpClient.get("employee/$employeeId/fitting-limits").body()
     }
 
     suspend fun internalExcelImportImportCollection(
-        request: InternalExcelImportImportCollectionPostRequest
-    ): List<ImportResultDto> {
+        request: InternalExcelImportImportCollectionPostResponse
+    ): List<ImportResultResponse> {
         return ktorHttpClient.post("/internal/excelImport/importCollection") {
             setBody(MultiPartFormDataContent(formData {
                 appendFilePart("formFile", request.formFile)
@@ -1456,8 +1445,8 @@ class NetworkService @Inject constructor(
 
     suspend fun internalExcelImportAppendCollection(
         fashionImageId: Int? = null,
-        request: InternalExcelImportAppendCollectionPostRequest
-    ): List<ImportResultDto> {
+        request: InternalExcelImportAppendCollectionPostResponse
+    ): List<ImportResultResponse> {
         return ktorHttpClient.post("/internal/excelImport/appendCollection") {
             appendQueryParameter("fashionImageId", fashionImageId)
             setBody(MultiPartFormDataContent(formData {
@@ -1468,8 +1457,8 @@ class NetworkService @Inject constructor(
 
     suspend fun internalExcelImportImportNewArrivals(
         deleteExisting: Boolean? = null,
-        request: InternalExcelImportImportNewArrivalsPostRequest
-    ): List<ImportResultDto> {
+        request: InternalExcelImportImportNewArrivalsPostResponse
+    ): List<ImportResultResponse> {
         return ktorHttpClient.post("/internal/excelImport/importNewArrivals") {
             appendQueryParameter("deleteExisting", deleteExisting)
             setBody(MultiPartFormDataContent(formData {
@@ -1479,8 +1468,8 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun internalExcelImportImportLooks(
-        request: InternalExcelImportImportLooksPostRequest
-    ): List<ImportResultDto> {
+        request: InternalExcelImportImportLooksPostResponse
+    ): List<ImportResultResponse> {
         return ktorHttpClient.post("/internal/excelImport/importLooks") {
             setBody(MultiPartFormDataContent(formData {
                 appendFilePart("formFile", request.formFile)
@@ -1489,8 +1478,8 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun internalExcelImportImportMannequins(
-        request: InternalExcelImportImportMannequinsPostRequest
-    ): List<ImportResultDto> {
+        request: InternalExcelImportImportMannequinsPostResponse
+    ): List<ImportResultResponse> {
         return ktorHttpClient.post("/internal/excelImport/importMannequins") {
             setBody(MultiPartFormDataContent(formData {
                 appendFilePart("formFile", request.formFile)
@@ -1499,8 +1488,8 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun internalExcelImportImportSortSettings(
-        request: InternalExcelImportImportSortSettingsPostRequest
-    ): List<ImportResultDto> {
+        request: InternalExcelImportImportSortSettingsPostResponse
+    ): List<ImportResultResponse> {
         return ktorHttpClient.post("/internal/excelImport/importSortSettings") {
             setBody(MultiPartFormDataContent(formData {
                 appendFilePart("formFile", request.formFile)
@@ -1509,8 +1498,8 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun internalExcelImportImportVpTasks(
-        request: InternalExcelImportImportVpTasksPostRequest
-    ): TasksImportResultDto {
+        request: InternalExcelImportImportVpTasksPostResponse
+    ): TasksImportResultResponse {
         return ktorHttpClient.post("/internal/excelImport/importVpTasks") {
             setBody(MultiPartFormDataContent(formData {
                 appendFilePart("formFile", request.formFile)
@@ -1519,8 +1508,8 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun internalExcelImportImportCrmTasks(
-        request: InternalExcelImportImportCrmTasksPostRequest
-    ): TasksImportResultDto {
+        request: InternalExcelImportImportCrmTasksPostResponse
+    ): TasksImportResultResponse {
         return ktorHttpClient.post("/internal/excelImport/importCrmTasks") {
             setBody(MultiPartFormDataContent(formData {
                 appendFilePart("formFile", request.formFile)
@@ -1529,8 +1518,8 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun internalExcelImportUpdateNoPhoto(
-        request: InternalExcelImportUpdateNoPhotoPostRequest
-    ): UpdateNoPhotoResultDto {
+        request: InternalExcelImportUpdateNoPhotoPostResponse
+    ): UpdateNoPhotoResultResponse {
         return ktorHttpClient.post("/internal/excelImport/update-no-photo") {
             setBody(MultiPartFormDataContent(formData {
                 appendFilePart("formFile", request.formFile)
@@ -1557,7 +1546,7 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun internalExportCsvMessenger(
-        request: MessengerActivityReportRequestDto
+        request: MessengerActivityReportRequest
     ): HttpResponse {
         return ktorHttpClient.post("/internal/export/csv/messenger") {
             setBody(request)
@@ -1570,7 +1559,7 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun internalExportCsvEmployeeEvents(
-        request: EmployeeEventsReportRequestDto
+        request: EmployeeEventsReportRequest
     ): HttpResponse {
         return ktorHttpClient.post("/internal/export/csv/employee-events") {
             setBody(request)
@@ -1578,7 +1567,7 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun internalExportCsvFashionImageStats(
-        request: FashionImageStatisticsReportRequestDto
+        request: FashionImageStatisticsReportRequest
     ): HttpResponse {
         return ktorHttpClient.post("/internal/export/csv/fashion-image-stats") {
             setBody(request)
@@ -1591,7 +1580,7 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun internalExportCsvEmployeeCompilationProducts(
-        request: EmployeeCompilationProductsReportRequestDto
+        request: EmployeeCompilationProductsReportRequest
     ): HttpResponse {
         return ktorHttpClient.post("/internal/export/csv/employee-compilation-products") {
             setBody(request)
@@ -1604,51 +1593,51 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun internalExportCsvMainScreenAnalytics(
-        request: MainScreenAnalyticsReportRequestDto
+        request: MainScreenAnalyticsReportRequest
     ): HttpResponse {
         return ktorHttpClient.post("/internal/export/csv/main-screen-analytics") {
             setBody(request)
         }
     }
 
-    suspend fun internalExportJson1CClientsActivity(): BaseResponse<ClientActivityInfoDtoItemsDto> {
+    suspend fun internalExportJson1CClientsActivity(): BaseResponse<ClientActivityInfoItemsResponse> {
         return ktorHttpClient.get("/internal/export/json/1C/clients-activity").body()
     }
 
     suspend fun internalExportJsonCompilationsStats(
-        request: ExportCompilationStatisticsRequestDto
-    ): BaseResponse<ExportCompilationStatisticsResponseDto> {
+        request: ExportCompilationStatisticsRequest
+    ): BaseResponse<ExportCompilationStatisticsResponse> {
         return ktorHttpClient.post("/internal/export/json/compilations/stats") {
             setBody(request)
         }.body()
     }
 
     suspend fun internalExportJsonMessenger(
-        request: MessengerActivityReportRequestDto
-    ): BaseResponse<MessengerActivityReportResponseDto> {
+        request: MessengerActivityReportRequest
+    ): BaseResponse<MessengerActivityReportResponse> {
         return ktorHttpClient.post("/internal/export/json/messenger") {
             setBody(request)
         }.body()
     }
 
     suspend fun internalExportJsonTasks(
-        request: ExportTasksRequestDto
-    ): BaseResponse<ExportTasksResponseDto> {
+        request: ExportTasksRequest
+    ): BaseResponse<ExportTasksResponse> {
         return ktorHttpClient.post("/internal/export/json/tasks") {
             setBody(request)
         }.body()
     }
 
     suspend fun internalExportJsonEmployeeEvents(
-        request: ExportEmployeeEventsRequestDto
-    ): BaseResponse<ExportEmployeeEventsResponseDto> {
+        request: ExportEmployeeEventsRequest
+    ): BaseResponse<ExportEmployeeEventsResponse> {
         return ktorHttpClient.post("/internal/export/json/employee-events") {
             setBody(request)
         }.body()
     }
 
     suspend fun fittingsAddOperations(
-        request: FittingOperationRequestDto
+        request: FittingOperationRequest
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("fittings/add-operations") {
             setBody(request)
@@ -1657,12 +1646,12 @@ class NetworkService @Inject constructor(
 
     suspend fun fittingsByPairedUserId(
         pairedUserId: String
-    ): BaseResponse<FittingResponseDto> {
+    ): BaseResponse<FittingResponse> {
         return ktorHttpClient.get("fittings/$pairedUserId").body()
     }
 
     suspend fun fittingsTransferFromBasket(
-        request: TransferBasketToFittingRequestDto
+        request: TransferBasketToFittingRequest
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("fittings/transfer-from-basket") {
             setBody(request)
@@ -1670,72 +1659,72 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun fittingsCheckoutFlags(
-        request: GetCheckOutFlagsRequestDto
-    ): BaseResponse<GetCheckOutFlagsResponseDto> {
+        request: GetCheckOutFlagsRequest
+    ): BaseResponse<GetCheckOutFlagsResponse> {
         return ktorHttpClient.post("fittings/checkout-flags") {
             setBody(request)
         }.body()
     }
 
     suspend fun fittingsCheckoutFlagsForExisingFitting(
-        request: GetCheckOutFlagsForExistingFittingRequestDto
-    ): BaseResponse<GetCheckOutFlagsResponseDto> {
+        request: GetCheckOutFlagsForExistingFittingRequest
+    ): BaseResponse<GetCheckOutFlagsResponse> {
         return ktorHttpClient.post("fittings/checkout-flags-for-exising-fitting") {
             setBody(request)
         }.body()
     }
 
     suspend fun fittingsCheckoutFlagsForSingleProduct(
-        request: GetCheckOutFlagsForSingleProductRequestDto
-    ): BaseResponse<GetCheckOutFlagsResponseDto> {
+        request: GetCheckOutFlagsForSingleProductRequest
+    ): BaseResponse<GetCheckOutFlagsResponse> {
         return ktorHttpClient.post("fittings/checkout-flags-for-single-product") {
             setBody(request)
         }.body()
     }
 
     suspend fun fittingsDeliveryTimes(
-        request: BasketGetDeliveryTimesForFittingRequestDto
-    ): BaseResponse<FittingDeliveryTimeResponseDto> {
+        request: BasketGetDeliveryTimesForFittingRequest
+    ): BaseResponse<FittingDeliveryTimeResponse> {
         return ktorHttpClient.post("fittings/delivery-times") {
             setBody(request)
         }.body()
     }
 
     suspend fun fittingsDeliveryTimesForExisingDelivery(
-        request: GetDeliveryIntervalsForExistingFittingRequestDto
-    ): BaseResponse<GetDeliveryIntervalsForExistingFittingResponseDto> {
+        request: GetDeliveryIntervalsForExistingFittingRequest
+    ): BaseResponse<GetDeliveryIntervalsForExistingFittingResponse> {
         return ktorHttpClient.post("fittings/delivery-times-for-exising-delivery") {
             setBody(request)
         }.body()
     }
 
     suspend fun fittingsDeliveryTimesForSingleProduct(
-        request: DeliveryTimesForSingleProductRequestDto
-    ): BaseResponse<FittingDeliveryTimeResponseDto> {
+        request: DeliveryTimesForSingleProductRequest
+    ): BaseResponse<FittingDeliveryTimeResponse> {
         return ktorHttpClient.post("fittings/delivery-times-for-single-product") {
             setBody(request)
         }.body()
     }
 
     suspend fun fittingsEmployeeLimits(
-        request: GetEmployeeFittingLimitsRequestDto
-    ): BaseResponse<EmployeeFittingLimitsDto> {
+        request: GetEmployeeFittingLimitsRequest
+    ): BaseResponse<EmployeeFittingLimitsDtoResponse> {
         return ktorHttpClient.post("fittings/employee-limits") {
             setBody(request)
         }.body()
     }
 
     suspend fun fittingsEmployeeLimitsForSingleProduct(
-        request: GetEmployeeFittingLimitsForSingleProductRequestDto
-    ): BaseResponse<EmployeeFittingLimitsDto> {
+        request: GetEmployeeFittingLimitsForSingleProductRequest
+    ): BaseResponse<EmployeeFittingLimitsDtoResponse> {
         return ktorHttpClient.post("fittings/employee-limits-for-single-product") {
             setBody(request)
         }.body()
     }
 
     suspend fun fittingsHistoryFilters(
-        request: FittingHistoryFiltersRequestDto
-    ): BaseResponse<FittingHistoryFiltersResponseDto> {
+        request: FittingHistoryFiltersRequest
+    ): BaseResponse<FittingHistoryFiltersResponse> {
         return ktorHttpClient.post("fittings/history/filters") {
             setBody(request)
         }.body()
@@ -1744,8 +1733,8 @@ class NetworkService @Inject constructor(
     suspend fun fittingsHistory(
         cursor: String? = null,
         limit: Int? = null,
-        request: FittingHistoryRequestDto
-    ): BaseResponse<FittingHistoryResponseDto> {
+        request: FittingHistoryRequest
+    ): BaseResponse<FittingHistoryResponse> {
         return ktorHttpClient.post("fittings/history") {
             appendQueryParameter("cursor", cursor)
             appendQueryParameter("limit", limit)
@@ -1754,8 +1743,8 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun fittingsCheckoutTags(
-        request: FittingCheckoutTagsRequestDto
-    ): BaseResponse<FittingCheckoutTagsResponseDto> {
+        request: FittingCheckoutTagsRequest
+    ): BaseResponse<FittingCheckoutTagsResponse> {
         return ktorHttpClient.post("fittings/checkout-tags") {
             setBody(request)
         }.body()
@@ -1763,11 +1752,11 @@ class NetworkService @Inject constructor(
 
     suspend fun fittingsByPairedUserIdForCheckout(
         pairedUserId: String
-    ): BaseResponse<FittingForCheckoutResponseDto> {
+    ): BaseResponse<FittingForCheckoutResponse> {
         return ktorHttpClient.get("fittings/$pairedUserId/for-checkout").body()
     }
 
-    suspend fun giftCards(): BaseResponse<GiftCardResponseDto> {
+    suspend fun giftCards(): BaseResponse<GiftCardResponse> {
         return ktorHttpClient.get("gift-cards").body()
     }
 
@@ -1776,24 +1765,24 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun imageSearchRemoveBackground(
-        request: RemoveBackgroundRequestDto
-    ): BaseResponse<RemoveBackgroundResponseDto> {
+        request: RemoveBackgroundRequest
+    ): BaseResponse<RemoveBackgroundResponse> {
         return ktorHttpClient.post("image-search/remove-background") {
             setBody(request)
         }.body()
     }
 
     suspend fun imageSearch(
-        request: ImageSearchRequestDto
-    ): BaseResponse<ImageSearchResponseDto> {
+        request: ImageSearchRequest
+    ): BaseResponse<ImageSearchResponse> {
         return ktorHttpClient.post("image-search") {
             setBody(request)
         }.body()
     }
 
     suspend fun imagesUpload(
-        request: ImagesUploadPostRequest
-    ): BaseResponse<ImagesUploadResponseDto> {
+        request: ImagesUploadPostResponse
+    ): BaseResponse<ImagesUploadResponse> {
         return ktorHttpClient.post("images/upload") {
             setBody(MultiPartFormDataContent(formData {
                 appendFileParts("Files", request.files)
@@ -1804,7 +1793,7 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun loyaltyLink(
-        request: LinkCardRequestDto
+        request: LinkCardRequest
     ): BaseResponse<LoyaltyOperationResponse> {
         return ktorHttpClient.post("loyalty/link") {
             setBody(request)
@@ -1812,7 +1801,7 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun loyaltyVerifyLink(
-        request: VerifyLinkCardRequestDto
+        request: VerifyLinkCardRequest
     ): BaseResponse<LoyaltyOperationResponse> {
         return ktorHttpClient.post("loyalty/verify-link") {
             setBody(request)
@@ -1836,32 +1825,32 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun loyaltyDelete(
-        request: DeleteLinkedCardRequestDto
+        request: DeleteLinkedCardRequest
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("loyalty/delete") {
             setBody(request)
         }.body()
     }
 
-    suspend fun loyaltyCardInfo(): BaseResponse<CardInfoResponseDto> {
+    suspend fun loyaltyCardInfo(): BaseResponse<CardInfoResponse> {
         return ktorHttpClient.get("loyalty/card-info").body()
     }
 
-    suspend fun loyaltyCardTypes(): BaseResponse<CardTypeDtoItemsDto> {
+    suspend fun loyaltyCardTypes(): BaseResponse<CardTypeItemsResponse> {
         return ktorHttpClient.get("loyalty/card-types").body()
     }
 
     suspend fun motivation(
-        request: MotivationRequestDto
-    ): BaseResponse<MotivationResponseDto> {
+        request: MotivationRequest
+    ): BaseResponse<MotivationResponse> {
         return ktorHttpClient.post("motivation") {
             setBody(request)
         }.body()
     }
 
     suspend fun notificationsFilters(
-        request: EmployeeNotificationsFiltersRequestDto
-    ): BaseResponse<EmployeeNotificationsFiltersResponseDto> {
+        request: EmployeeNotificationsFiltersRequest
+    ): BaseResponse<EmployeeNotificationsFiltersResponse> {
         return ktorHttpClient.post("notifications/filters") {
             setBody(request)
         }.body()
@@ -1870,8 +1859,8 @@ class NetworkService @Inject constructor(
     suspend fun notifications(
         cursor: String? = null,
         limit: Int? = null,
-        request: EmployeeNotificationsRequestDto
-    ): BaseResponse<EmployeeNotificationsResponseDto> {
+        request: EmployeeNotificationsRequest
+    ): BaseResponse<EmployeeNotificationsResponse> {
         return ktorHttpClient.post("notifications") {
             appendQueryParameter("cursor", cursor)
             appendQueryParameter("limit", limit)
@@ -1880,24 +1869,24 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun ordersCreateFromBasket(
-        request: OrderCreationRequestDto
-    ): BaseResponse<OrderResponseDto> {
+        request: OrderCreationRequest
+    ): BaseResponse<OrderResponse> {
         return ktorHttpClient.post("orders/create-from-basket") {
             setBody(request)
         }.body()
     }
 
     suspend fun ordersCreateFromFitting(
-        request: OrderCreationFromFittingRequestDto
-    ): BaseResponse<OrderResponseDto> {
+        request: OrderCreationFromFittingRequest
+    ): BaseResponse<OrderResponse> {
         return ktorHttpClient.post("orders/create-from-fitting") {
             setBody(request)
         }.body()
     }
 
     suspend fun ordersCreateWithGiftCard(
-        request: CreateOrderWithGiftCardRequestDto
-    ): BaseResponse<OrderResponseDto> {
+        request: CreateOrderWithGiftCardRequest
+    ): BaseResponse<OrderResponse> {
         return ktorHttpClient.post("orders/create-with-gift-card") {
             setBody(request)
         }.body()
@@ -1905,7 +1894,7 @@ class NetworkService @Inject constructor(
 
     suspend fun ordersByOrderIdChangeDelivery(
         orderId: String,
-        request: OrderDeliveryChangeRequestDto
+        request: OrderDeliveryChangeRequest
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("orders/$orderId/change-delivery") {
             setBody(request)
@@ -1914,7 +1903,7 @@ class NetworkService @Inject constructor(
 
     suspend fun ordersByOrderId(
         orderId: String
-    ): BaseResponse<OrderResponseWithBadgeDto> {
+    ): BaseResponse<OrderResponseWithBadgeDtoResponse> {
         return ktorHttpClient.get("orders/$orderId").body()
     }
 
@@ -1922,7 +1911,7 @@ class NetworkService @Inject constructor(
         clientId: String? = null,
         limit: Int? = null,
         offset: Int? = null
-    ): BaseResponse<OrderResponseWithBadgeDtoItemsDto> {
+    ): BaseResponse<OrderResponseWithBadgeItemsResponse> {
         return ktorHttpClient.get("orders") {
             appendQueryParameter("clientId", clientId)
             appendQueryParameter("limit", limit)
@@ -1943,8 +1932,8 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun ordersDeliveryTimes(
-        request: BasketGetDeliveryTimesForOrderRequestDto
-    ): BaseResponse<BasketCheckoutOrderResponseDto> {
+        request: BasketGetDeliveryTimesForOrderRequest
+    ): BaseResponse<BasketCheckoutOrderResponse> {
         return ktorHttpClient.post("orders/delivery-times") {
             setBody(request)
         }.body()
@@ -1952,8 +1941,8 @@ class NetworkService @Inject constructor(
 
     suspend fun ordersByOrderIdDeliveryTimes(
         orderId: String,
-        request: GetDeliveryIntervalsForExistingOrderRequestDto
-    ): BaseResponse<GetDeliveryIntervalsForExistingOrderResponseDto> {
+        request: GetDeliveryIntervalsForExistingOrderRequest
+    ): BaseResponse<GetDeliveryIntervalsForExistingOrderResponse> {
         return ktorHttpClient.post("orders/$orderId/delivery-times") {
             setBody(request)
         }.body()
@@ -1961,13 +1950,13 @@ class NetworkService @Inject constructor(
 
     suspend fun ordersByOrderIdPaymentLink(
         orderId: String
-    ): BaseResponse<OrderPaymentLinkResponseDto> {
+    ): BaseResponse<OrderPaymentLinkResponse> {
         return ktorHttpClient.get("orders/$orderId/payment-link").body()
     }
 
     suspend fun ordersByOrderIdReserveBonuses(
         orderId: String,
-        request: OrderBonusReservationRequestDto
+        request: OrderBonusReservationRequest
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("orders/$orderId/reserve-bonuses") {
             setBody(request)
@@ -1976,7 +1965,7 @@ class NetworkService @Inject constructor(
 
     suspend fun ordersByOrderIdConfirmBonuses(
         orderId: String,
-        request: OrderBonusReservationConfirmationRequestDto
+        request: OrderBonusReservationConfirmationRequest
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("orders/$orderId/confirm-bonuses") {
             setBody(request)
@@ -1985,7 +1974,7 @@ class NetworkService @Inject constructor(
 
     suspend fun ordersByOrderIdPaymentCloudPayment(
         orderId: String,
-        request: OrderStartPaymentViaCloudPaymentRequestDto
+        request: OrderStartPaymentViaCloudPaymentRequest
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("orders/$orderId/payment/cloud-payment") {
             setBody(request)
@@ -1994,13 +1983,13 @@ class NetworkService @Inject constructor(
 
     suspend fun ordersByOrderIdPaymentSbp(
         orderId: String
-    ): BaseResponse<OrderStartPaymentViaSbpResponseDto> {
+    ): BaseResponse<OrderStartPaymentViaSbpResponse> {
         return ktorHttpClient.post("orders/$orderId/payment/sbp").body()
     }
 
     suspend fun ordersByOrderIdPaymentCloudPaymentConfirm(
         orderId: String,
-        request: OrderConfirmPaymentViaCloudPaymentRequestDto
+        request: OrderConfirmPaymentViaCloudPaymentRequest
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("orders/$orderId/payment/cloud-payment/confirm") {
             setBody(request)
@@ -2008,7 +1997,7 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun push(
-        request: PushTokenDto
+        request: PushTokenResponse
     ): BaseResponse<Boolean> {
         return ktorHttpClient.post("push") {
             setBody(request)
@@ -2040,7 +2029,7 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun internalSchedulerFillAlternativesInBaskets(
-        request: FillAlternativesInBasketsRequestDto
+        request: FillAlternativesInBasketsRequest
     ): BaseResponse<String> {
         return ktorHttpClient.post("/internal/scheduler/fillAlternativesInBaskets") {
             setBody(request)
@@ -2052,7 +2041,7 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun internalSchedulerFittingSync(
-        request: FittingSyncRequestDto
+        request: FittingSyncRequest
     ): BaseResponse<String> {
         return ktorHttpClient.post("/internal/scheduler/fittingSync") {
             setBody(request)
@@ -2060,7 +2049,7 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun internalSchedulerBasketSync(
-        request: BasketSyncRequestDto
+        request: BasketSyncRequest
     ): BaseResponse<String> {
         return ktorHttpClient.post("/internal/scheduler/basketSync") {
             setBody(request)
@@ -2088,7 +2077,7 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun internalSchedulerGetOrdersUpdatesFromAx(
-        request: ClientSyncRequestDto
+        request: ClientSyncRequest
     ): BaseResponse<String> {
         return ktorHttpClient.post("/internal/scheduler/getOrdersUpdatesFromAx") {
             setBody(request)
@@ -2191,7 +2180,7 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun internalSupportTeamAddProductToAction(
-        request: AddProductToActionRequestDto
+        request: AddProductToActionRequest
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("/internal/support-team/add-product-to-action") {
             setBody(request)
@@ -2206,12 +2195,12 @@ class NetworkService @Inject constructor(
 
     suspend fun userCheckByPhoneByPhone(
         phone: String
-    ): BaseResponse<CheckUserResponseDto> {
+    ): BaseResponse<CheckUserResponse> {
         return ktorHttpClient.get("user/check-by-phone/$phone").body()
     }
 
     suspend fun userProfileUploadPhoto(
-        request: UserProfileUploadPhotoPostRequest
+        request: UserProfileUploadPhotoPostResponse
     ): BaseResponse<JsonElement> {
         return ktorHttpClient.post("user/profile/upload-photo") {
             setBody(MultiPartFormDataContent(formData {
@@ -2224,98 +2213,4 @@ class NetworkService @Inject constructor(
         return ktorHttpClient.post("user/profile/delete-photo").body()
     }
 
-    private fun HttpRequestBuilder.appendQueryParameter(
-        name: String,
-        value: Any?
-    ) {
-        when (value) {
-            null -> Unit
-            is Iterable<*> -> value.filterNotNull().forEach { item ->
-                parameter(name, item.asParameterValue())
-            }
-            else -> parameter(name, value.asParameterValue())
-        }
-    }
-
-    private fun FormBuilder.appendFormPart(
-        name: String,
-        value: Any?
-    ) {
-        when (value) {
-            null -> Unit
-            is Iterable<*> -> value.filterNotNull().forEach { item ->
-                append(name, item.asParameterValue())
-            }
-            else -> append(name, value.asParameterValue())
-        }
-    }
-
-    private fun FormBuilder.appendFilePart(
-        name: String,
-        value: ByteArray?
-    ) {
-        if (value == null) return
-        append(
-            name,
-            value,
-            Headers.build {
-                append(HttpHeaders.ContentDisposition, "filename=\"$name\"")
-            }
-        )
-    }
-
-    private fun FormBuilder.appendFileParts(
-        name: String,
-        values: List<ByteArray>?
-    ) {
-        values.orEmpty().forEachIndexed { index, value ->
-            append(
-                name,
-                value,
-                Headers.build {
-                    append(HttpHeaders.ContentDisposition, "filename=\"${name}-${index}\"")
-                }
-            )
-        }
-    }
-
-    private fun Any.asParameterValue(): String {
-        return when (this) {
-            is Enum<*> -> enumParameterValue(this)
-            else -> toString()
-        }
-    }
-
-    private fun enumParameterValue(value: Enum<*>): String {
-        return value.javaClass.getField(value.name).getAnnotation(SerialName::class.java)?.value ?: value.name
-    }
-}
-
-private suspend inline fun <reified T> HttpResponse.bodyAsBaseResponse(): BaseResponse<T> {
-    val responseText = bodyAsText()
-    if (responseText.isNotBlank()) {
-        val response = runCatching { baseResponseJson.decodeFromString<BaseResponse<T>>(responseText) }
-        response.getOrNull()?.let { decodedResponse -> return decodedResponse }
-        if (status.value < 400) {
-            return response.getOrThrow()
-        }
-    }
-
-    return BaseResponse(
-        data = null,
-        error = when {
-            status.value >= 400 -> ErrorResponse(
-                code = status.value,
-                display = null,
-                msg = null,
-                reason = status.description
-            )
-            else -> null
-        },
-        errors = null,
-        type = null,
-        title = status.description,
-        status = status.value,
-        traceId = null
-    )
 }

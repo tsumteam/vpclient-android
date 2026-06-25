@@ -8,7 +8,7 @@ data class ProfileOrderModel(
     val amount: String = "",
     val creationDate: String = "",
     val isLoading: Boolean = true,
-    val showPaymentAlert: Boolean = false,
+    val isPaymentAlertVisible: Boolean = false,
     val paymentAlertRemainingMinutes: Int = 0,
     val deliveryGroups: List<ProfileOrderDeliveryGroupState> = emptyList()
 ): Model

@@ -107,7 +107,7 @@ fun FittingAddressSelectionScreen(
         }
     }
 
-    if (state.addressActionAddress != null) {
+    if (state.isAddressActionsSheetVisible) {
         FittingAddressActionsSheet(
             dispatch = { intent ->
                 when (intent) {
@@ -175,7 +175,8 @@ fun FittingAddressSelectionScreen(
         )
     }
 
-    state.deleteAddress?.let { address ->
+    if (state.isAddressDeleteDialogVisible) {
+        val address = requireNotNull(state.deleteAddress)
         FittingAddressDeleteDialog(
             state = FittingAddressDeleteDialogModel(
                 address = address.title
@@ -212,13 +213,13 @@ private fun FittingAddressSelectionScreenContent(
                         Icon(
                             imageVector = ChevronStart24,
                             contentDescription = null,
-                            modifier = Modifier.size(24.dp),
-                            tint = MaterialTheme.colorScheme.onBackground
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
+                    containerColor = MaterialTheme.colorScheme.background,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground
                 )
             )
         },

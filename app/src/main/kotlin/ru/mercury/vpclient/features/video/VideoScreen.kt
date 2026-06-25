@@ -34,6 +34,8 @@ import androidx.media3.exoplayer.ExoPlayer
 import kotlinx.coroutines.delay
 import ru.mercury.vpclient.features.video.intent.VideoIntent
 import ru.mercury.vpclient.features.video.model.VideoModel
+import ru.mercury.vpclient.features.video.model.VideoModel.Companion.VIDEO_CONTROLS_HIDE_DELAY_MILLIS
+import ru.mercury.vpclient.features.video.model.VideoModel.Companion.VIDEO_POSITION_UPDATE_DELAY_MILLIS
 import ru.mercury.vpclient.features.video.navigation.VideoRoute
 import ru.mercury.vpclient.shared.ui.components.NightSystemBars
 import ru.mercury.vpclient.shared.ui.components.SharedAnimatedVisibility
@@ -47,9 +49,6 @@ import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.icons.Settings24
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import kotlin.time.Duration.Companion.milliseconds
-
-private const val VIDEO_CONTROLS_HIDE_DELAY_MILLIS = 2_000L
-private const val VIDEO_POSITION_UPDATE_DELAY_MILLIS = 250L
 
 @Composable
 fun VideoScreen(
@@ -121,8 +120,7 @@ private fun VideoScreenContent(
                             Icon(
                                 imageVector = Close24,
                                 contentDescription = null,
-                                modifier = Modifier.size(24.dp),
-                                tint = MaterialTheme.colorScheme.onPrimary
+                                modifier = Modifier.size(24.dp)
                             )
                         }
                     }
@@ -161,7 +159,8 @@ private fun VideoScreenContent(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
                 )
             )
         },

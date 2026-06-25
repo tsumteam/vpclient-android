@@ -3,7 +3,6 @@ package ru.mercury.vpclient.shared.domain.interactor.impl
 import kotlinx.coroutines.withContext
 import ru.mercury.vpclient.shared.coroutines.SharedDispatchers
 import ru.mercury.vpclient.shared.data.entity.LoyaltyCardDescription
-import ru.mercury.vpclient.shared.data.entity.LoyaltyCardInfo
 import ru.mercury.vpclient.shared.domain.interactor.LoyaltyInteractor
 import ru.mercury.vpclient.shared.domain.repository.LoyaltyRepository
 import javax.inject.Inject
@@ -12,10 +11,6 @@ class LoyaltyInteractorImpl @Inject constructor(
     private val dispatchers: SharedDispatchers,
     private val loyaltyRepository: LoyaltyRepository
 ): LoyaltyInteractor {
-
-    override suspend fun linkLoyaltyCard(cardNumber: String) {
-        withContext(dispatchers.io) { loyaltyRepository.linkLoyaltyCard(cardNumber = cardNumber) }
-    }
 
     override suspend fun verifyLoyaltyCard(cardNumber: String, code: String) {
         withContext(dispatchers.io) {
@@ -39,10 +34,6 @@ class LoyaltyInteractorImpl @Inject constructor(
                 code = code
             )
         }
-    }
-
-    override suspend fun loyaltyCardInfo(): LoyaltyCardInfo {
-        return withContext(dispatchers.io) { loyaltyRepository.loyaltyCardInfo() }
     }
 
     override suspend fun loyaltyCardTypes(): List<LoyaltyCardDescription> {

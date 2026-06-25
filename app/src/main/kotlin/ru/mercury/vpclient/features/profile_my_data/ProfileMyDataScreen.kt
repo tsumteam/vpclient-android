@@ -106,22 +106,22 @@ private fun ProfileMyDataScreenContent(
                     }
                 },
                 actions = {
-                    if (state.showFittingButton) {
+                    if (state.isFittingButtonVisible) {
                         FittingIconButton(
                             text = state.fittingText,
-                            showBadge = state.showFittingBadge,
+                            showBadge = state.isFittingBadgeVisible,
                             onClick = { dispatch(ProfileMyDataIntent.FittingClick) }
                         )
                     }
 
                     CartIconButton(
                         text = state.cartText,
-                        showBadge = state.showCartBadge,
+                        showBadge = state.isCartBadgeVisible,
                         onClick = { dispatch(ProfileMyDataIntent.CartClick) }
                     )
 
                     MessengerIconButton(
-                        showBadge = state.showMessengerBadge,
+                        showBadge = state.isMessengerBadgeVisible,
                         onClick = { dispatch(ProfileMyDataIntent.MessengerClick) }
                     )
                 },

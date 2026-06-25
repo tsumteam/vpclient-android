@@ -3,21 +3,21 @@ package ru.mercury.vpclient.shared.domain.mapper
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.encodeToJsonElement
 import ru.mercury.vpclient.shared.data.entity.CartProduct
-import ru.mercury.vpclient.shared.data.network.entity.BasketChangeLineLookOperationRequestItemDto
-import ru.mercury.vpclient.shared.data.network.entity.BasketOperationRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.BasketOperationRequestTypeEnum
-import ru.mercury.vpclient.shared.data.network.entity.BasketRemoveLookOperationRequestItemDto
+import ru.mercury.vpclient.shared.data.network.response.BasketChangeLineLookOperationRequestItemResponse
+import ru.mercury.vpclient.shared.data.network.request.BasketOperationRequest
+import ru.mercury.vpclient.shared.data.network.type.BasketOperationRequestType
+import ru.mercury.vpclient.shared.data.network.response.BasketRemoveLookOperationRequestItemResponse
 
 fun deleteLookRequest(
     lookId: String,
     pairedUserId: String
-): BasketOperationRequestDto {
-    return BasketOperationRequestDto(
+): BasketOperationRequest {
+    return BasketOperationRequest(
         pairedUserId = pairedUserId,
         items = listOf(
             cartLookJson.encodeToJsonElement(
-                BasketRemoveLookOperationRequestItemDto(
-                    operationType = BasketOperationRequestTypeEnum.REMOVE_LOOK,
+                BasketRemoveLookOperationRequestItemResponse(
+                    operationType = BasketOperationRequestType.REMOVE_LOOK,
                     operationOrder = 0,
                     lookId = lookId
                 )
@@ -29,13 +29,13 @@ fun deleteLookRequest(
 fun disassembleLookRequest(
     products: List<CartProduct>,
     pairedUserId: String
-): BasketOperationRequestDto {
-    return BasketOperationRequestDto(
+): BasketOperationRequest {
+    return BasketOperationRequest(
         pairedUserId = pairedUserId,
         items = products.mapIndexed { index, product ->
             cartLookJson.encodeToJsonElement(
-                BasketChangeLineLookOperationRequestItemDto(
-                    operationType = BasketOperationRequestTypeEnum.CHANGE_LINE_LOOK,
+                BasketChangeLineLookOperationRequestItemResponse(
+                    operationType = BasketOperationRequestType.CHANGE_LINE_LOOK,
                     operationOrder = index,
                     lineId = product.id,
                     lookId = null

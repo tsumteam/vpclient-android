@@ -23,7 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,11 +45,11 @@ fun BrandSearchField(
     onSearch: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
 
     Box(
         modifier = modifier
-            .height(56.dp)
+            .height(52.dp)
             .background(
                 color = MaterialTheme.colorScheme.surfaceContainerHigh,
                 shape = RoundedCornerShape(8.dp)
@@ -88,7 +88,7 @@ fun BrandSearchField(
             ),
             keyboardActions = KeyboardActions(
                 onSearch = {
-                    keyboardController?.hide()
+                    focusManager.clearFocus()
                     onSearch()
                 }
             ),
@@ -139,9 +139,6 @@ private fun BrandSearchFieldPreview() {
         value = value,
         onValueChange = { value = it },
         onClear = { value = "" },
-        onSearch = {},
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
+        onSearch = {}
     )
 }

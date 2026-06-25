@@ -34,7 +34,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
@@ -126,10 +125,7 @@ private fun ProfileOrdersScreenContent(
                 title = {
                     Text(
                         text = stringResource(ClientStrings.ProfilePurchases),
-                        style = MaterialTheme.typography.medium18.copy(
-                            color = MaterialTheme.colorScheme.onBackground,
-                            textAlign = TextAlign.Center
-                        )
+                        style = MaterialTheme.typography.medium18
                     )
                 },
                 navigationIcon = {
@@ -139,33 +135,34 @@ private fun ProfileOrdersScreenContent(
                         Icon(
                             imageVector = ChevronStart24,
                             contentDescription = null,
-                            modifier = Modifier.size(24.dp),
-                            tint = MaterialTheme.colorScheme.onBackground
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 },
                 actions = {
-                    if (state.showFittingButton) {
+                    if (state.isFittingButtonVisible) {
                         FittingIconButton(
                             text = state.fittingText,
-                            showBadge = state.showFittingBadge,
+                            showBadge = state.isFittingBadgeVisible,
                             onClick = { dispatch(ProfileOrdersIntent.FittingClick) }
                         )
                     }
 
                     CartIconButton(
                         text = state.cartText,
-                        showBadge = state.showCartBadge,
+                        showBadge = state.isCartBadgeVisible,
                         onClick = { dispatch(ProfileOrdersIntent.CartClick) }
                     )
 
                     MessengerIconButton(
-                        showBadge = state.showMessengerBadge,
+                        showBadge = state.isMessengerBadgeVisible,
                         onClick = { dispatch(ProfileOrdersIntent.MessengerClick) }
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
+                    containerColor = MaterialTheme.colorScheme.background,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground
                 )
             )
         }

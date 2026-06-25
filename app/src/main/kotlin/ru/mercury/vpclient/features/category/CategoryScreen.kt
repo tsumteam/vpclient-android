@@ -21,13 +21,17 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -35,6 +39,8 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.launch
+import ru.mercury.vpclient.features.category.event.CategoryEvent
 import ru.mercury.vpclient.features.category.intent.CategoryIntent
 import ru.mercury.vpclient.features.category.model.CategoryModel
 import ru.mercury.vpclient.features.category.navigation.CategoryRoute
@@ -43,45 +49,62 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogCatego
 import ru.mercury.vpclient.shared.data.persistence.database.pojo.SubcategoryPojo
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
+import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.cart.CartIconButton
 import ru.mercury.vpclient.shared.ui.components.cart.FittingIconButton
 import ru.mercury.vpclient.shared.ui.components.cart.MessengerIconButton
 import ru.mercury.vpclient.shared.ui.components.catalog.CatalogCategorySection
 import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
 import ru.mercury.vpclient.shared.ui.icons.Search24
+import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.livretRegular15
 import ru.mercury.vpclient.shared.ui.theme.medium18
 
 @Composable
 fun CategoryScreen(
     route: CategoryRoute,
-    viewModel: CategoryViewModel = hiltViewModel<CategoryViewModel, CategoryViewModel.Factory>(creationCallback = { it.create(route) })
+    viewModel: CategoryViewModel = hiltViewModel<CategoryViewModel, CategoryViewModel.Factory>(
+        creationCallback = { it.create(route) }
+    )
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
+    val snackbarHostStateError = remember { SnackbarHostState() }
 
     CategoryScreenContent(
         state = state,
-        dispatch = viewModel::dispatch
+        dispatch = viewModel::dispatch,
+        snackbarHostStateError = snackbarHostStateError
     )
+
+    ObserveAsEvents(
+        flow = viewModel.eventFlow
+    ) { event ->
+        when (event) {
+            is CategoryEvent.SnackbarErrorMessage -> {
+                snackbarHostStateError.currentSnackbarData?.dismiss()
+                scope.launch { snackbarHostStateError.showSnackbar(event.message) }
+            }
+        }
+    }
 }
 
 @Composable
 private fun CategoryScreenContent(
     state: CategoryModel,
-    dispatch: (CategoryIntent) -> Unit
+    dispatch: (CategoryIntent) -> Unit,
+    snackbarHostStateError: SnackbarHostState
 ) {
     SharedScaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = state.entity.name,
-                        style = MaterialTheme.typography.medium18.copy(
-                            color = MaterialTheme.colorScheme.onBackground,
-                            textAlign = TextAlign.Center
-                        )
+                        text = state.catalogCategoryEntity.name,
+                        style = MaterialTheme.typography.medium18,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 },
                 navigationIcon = {
@@ -93,8 +116,7 @@ private fun CategoryScreenContent(
                             Icon(
                                 imageVector = ChevronStart24,
                                 contentDescription = null,
-                                modifier = Modifier.size(24.dp),
-                                tint = MaterialTheme.colorScheme.onBackground
+                                modifier = Modifier.size(24.dp)
                             )
                         }
 
@@ -105,40 +127,47 @@ private fun CategoryScreenContent(
                             Icon(
                                 imageVector = Search24,
                                 contentDescription = null,
-                                modifier = Modifier.size(24.dp),
-                                tint = MaterialTheme.colorScheme.onBackground
+                                modifier = Modifier.size(24.dp)
                             )
                         }
                     }
                 },
                 actions = {
-                    if (state.showFittingButton) {
+                    if (state.isFittingButtonVisible) {
                         FittingIconButton(
                             text = state.fittingText,
-                            showBadge = state.showFittingBadge,
+                            showBadge = state.isFittingBadgeVisible,
                             onClick = { dispatch(CategoryIntent.FittingClick) }
                         )
                     }
 
                     CartIconButton(
                         text = state.cartText,
-                        showBadge = state.showCartBadge,
+                        showBadge = state.isCartBadgeVisible,
                         onClick = { dispatch(CategoryIntent.CartClick) }
                     )
 
                     MessengerIconButton(
-                        showBadge = state.showMessengerBadge,
+                        showBadge = state.isMessengerBadgeVisible,
                         onClick = { dispatch(CategoryIntent.MessengerClick) }
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors().copy(
-                    containerColor = MaterialTheme.colorScheme.background
+                    containerColor = MaterialTheme.colorScheme.background,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground
                 )
+            )
+        },
+        snackbarHost = {
+            SharedSnackbarHost(
+                hostState = snackbarHostStateError,
+                containerColor = MaterialTheme.colorScheme.error
             )
         }
     ) { innerPadding ->
         when {
-            state.pojos.isEmpty() -> {
+            state.subcategoryPojos.isEmpty() -> {
                 SharedLazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = innerPadding + PaddingValues(bottom = 8.dp),
@@ -166,7 +195,7 @@ private fun CategoryScreenContent(
                     verticalArrangement = Arrangement.spacedBy(24.dp)
                 ) {
                     items(
-                        items = state.pojos,
+                        items = state.subcategoryPojos,
                         key = { item -> "${item.entity.id}" }
                     ) { item ->
                         CatalogCategorySection(
@@ -176,30 +205,32 @@ private fun CategoryScreenContent(
                         )
                     }
 
-                    item {
-                        OutlinedButton(
-                            onClick = { dispatch(CategoryIntent.FilterClick(state.entity)) },
-                            modifier = Modifier
-                                .padding(horizontal = 16.dp)
-                                .fillMaxWidth()
-                                .height(52.dp),
-                            shape = RoundedCornerShape(8.dp),
-                            border = BorderStroke(
-                                width = 1.dp,
-                                color = MaterialTheme.colorScheme.onBackground
-                            ),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.background,
-                                contentColor = MaterialTheme.colorScheme.onBackground
-                            ),
-                            contentPadding = PaddingValues(horizontal = 16.dp)
-                        ) {
-                            Text(
-                                text = stringResource(ClientStrings.CatalogViewAllClothing),
-                                style = MaterialTheme.typography.livretRegular15.copy(
-                                    textAlign = TextAlign.Center
+                    if (state.isViewAllButtonVisible) {
+                        item {
+                            OutlinedButton(
+                                onClick = { dispatch(CategoryIntent.FilterClick(state.catalogCategoryEntity)) },
+                                modifier = Modifier
+                                    .padding(horizontal = 16.dp)
+                                    .fillMaxWidth()
+                                    .height(52.dp),
+                                shape = RoundedCornerShape(8.dp),
+                                border = BorderStroke(
+                                    width = 1.dp,
+                                    color = MaterialTheme.colorScheme.onBackground
+                                ),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.background,
+                                    contentColor = MaterialTheme.colorScheme.onBackground
+                                ),
+                                contentPadding = PaddingValues(horizontal = 16.dp)
+                            ) {
+                                Text(
+                                    text = stringResource(state.viewAllButtonTitleRes),
+                                    style = MaterialTheme.typography.livretRegular15.copy(
+                                        textAlign = TextAlign.Center
+                                    )
                                 )
-                            )
+                            }
                         }
                     }
                 }
@@ -216,7 +247,8 @@ private fun CategoryScreenPreview(
 ) {
     CategoryScreenContent(
         state = state,
-        dispatch = {}
+        dispatch = {},
+        snackbarHostStateError = remember { SnackbarHostState() }
     )
 }
 
@@ -253,8 +285,8 @@ private class CategoryModelProvider: PreviewParameterProvider<CategoryModel> {
 
     override val values: Sequence<CategoryModel> = sequenceOf(
         CategoryModel(
-            entity = catalogCategoryEntity,
-            pojos = listOf(categoryPojo)
+            catalogCategoryEntity = catalogCategoryEntity,
+            subcategoryPojos = listOf(categoryPojo)
         ),
         CategoryModel()
     )

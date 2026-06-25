@@ -24,14 +24,18 @@ import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.livretMedium18
 
+data class DetailsWearWithSectionState(
+    val products: List<CatalogFilterProductsEntity>,
+    val onProductClick: (String) -> Unit,
+    val isProductInBasket: (CatalogFilterProductsEntity) -> Boolean = { false },
+    val onProductMessageClick: (CatalogFilterProductsEntity) -> Unit = {},
+    val onProductBasketClick: (CatalogFilterProductsEntity) -> Unit = {}
+)
+
 @Composable
 fun DetailsWearWithSection(
-    products: List<CatalogFilterProductsEntity>,
-    onProductClick: (String) -> Unit,
+    state: DetailsWearWithSectionState,
     modifier: Modifier = Modifier,
-    isProductInBasket: (CatalogFilterProductsEntity) -> Boolean = { false },
-    onProductMessageClick: (CatalogFilterProductsEntity) -> Unit = {},
-    onProductBasketClick: (CatalogFilterProductsEntity) -> Unit = {}
 ) {
     Column(
         modifier = modifier
@@ -53,7 +57,7 @@ fun DetailsWearWithSection(
             modifier = Modifier.padding(start = 4.dp, top = 8.dp, end = 4.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            products.chunked(2).forEach { row ->
+            state.products.chunked(2).forEach { row ->
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
@@ -61,12 +65,12 @@ fun DetailsWearWithSection(
                         CatalogProductCard(
                             state = CatalogProductCardState(
                                 entity = product,
-                                isInBasket = isProductInBasket(product)
+                                isInBasket = state.isProductInBasket(product),
+                                onClick = { state.onProductClick(product.id) },
+                                onMessageIconClick = { state.onProductMessageClick(product) },
+                                onBasketIconClick = { state.onProductBasketClick(product) }
                             ),
-                            modifier = Modifier.weight(1F),
-                            onClick = { onProductClick(product.id) },
-                            onMessageClick = { onProductMessageClick(product) },
-                            onBasketClick = { onProductBasketClick(product) }
+                            modifier = Modifier.weight(1F)
                         )
                     }
                     if (row.size == 1) {
@@ -84,87 +88,87 @@ fun DetailsWearWithSection(
 @Preview(showBackground = true)
 @Composable
 private fun DetailsWearWithSectionPreview(
-    @PreviewParameter(DetailsWearWithSectionCatalogFilterProductsEntitiesProvider::class) products: List<CatalogFilterProductsEntity>
+    @PreviewParameter(DetailsWearWithSectionStateProvider::class) state: DetailsWearWithSectionState
 ) {
     DetailsWearWithSection(
-        products = products,
-        onProductClick = {}
+        state = state
     )
 }
 
-private class DetailsWearWithSectionCatalogFilterProductsEntitiesProvider: PreviewParameterProvider<List<CatalogFilterProductsEntity>> {
-    override val values: Sequence<List<CatalogFilterProductsEntity>> = sequenceOf(
-        listOf(
-            CatalogFilterProductsEntity(
-                categoryId = 1,
-                titleCategoryId = 11,
-                position = 0,
-                id = "preview-1",
-                itemId = "item-1",
-                colorId = "black",
-                name = "Кожаная куртка oversize",
-                price = 189_900.0,
-                priceWithoutDiscount = 234_900.0,
-                brand = "SAINT LAURENT",
-                urlBrandLogo = "https://example.com/brand-logo.png",
-                imageUrl = "",
-                imageUrls = listOf("", ""),
-                additionalColorPhotoUrls = emptyList()
+private class DetailsWearWithSectionStateProvider: PreviewParameterProvider<DetailsWearWithSectionState> {
+    override val values: Sequence<DetailsWearWithSectionState> = sequenceOf(
+        DetailsWearWithSectionState(
+            products = listOf(
+                CatalogFilterProductsEntity(
+                    categoryId = 1,
+                    titleCategoryId = 11,
+                    position = 0,
+                    id = "preview-1",
+                    itemId = "item-1",
+                    colorId = "black",
+                    name = "Кожаная куртка oversize",
+                    price = 189_900.0,
+                    priceWithoutDiscount = 234_900.0,
+                    brand = "SAINT LAURENT",
+                    urlBrandLogo = "https://example.com/brand-logo.png",
+                    imageUrl = "",
+                    imageUrls = listOf("", ""),
+                    additionalColorPhotoUrls = listOf(
+                        "https://st.vip-platinum.ru/catalog/ColorSearchCard/Blue.png",
+                        "https://st.vip-platinum.ru/catalog/ColorSearchCard/Bordo.png"
+                    )
+                ),
+                CatalogFilterProductsEntity(
+                    categoryId = 1,
+                    titleCategoryId = 11,
+                    position = 1,
+                    id = "preview-2",
+                    itemId = "item-2",
+                    colorId = "white",
+                    name = "Хлопковая футболка с логотипом",
+                    price = 32_700.0,
+                    priceWithoutDiscount = null,
+                    brand = "BRUNELLO CUCINELLI",
+                    urlBrandLogo = null,
+                    imageUrl = "",
+                    imageUrls = listOf(""),
+                    additionalColorPhotoUrls = emptyList()
+                ),
+                CatalogFilterProductsEntity(
+                    categoryId = 1,
+                    titleCategoryId = 11,
+                    position = 2,
+                    id = "preview-3",
+                    itemId = "item-3",
+                    colorId = "blue",
+                    name = "Джинсы прямого кроя",
+                    price = 74_500.0,
+                    priceWithoutDiscount = 96_400.0,
+                    brand = "TOM FORD",
+                    urlBrandLogo = null,
+                    imageUrl = "",
+                    imageUrls = emptyList(),
+                    additionalColorPhotoUrls = emptyList()
+                ),
+                CatalogFilterProductsEntity(
+                    categoryId = 1,
+                    titleCategoryId = 11,
+                    position = 3,
+                    id = "preview-4",
+                    itemId = "item-4",
+                    colorId = "beige",
+                    name = "Кашемировый кардиган на пуговицах",
+                    price = 128_000.0,
+                    priceWithoutDiscount = 156_800.0,
+                    brand = "LORO PIANA",
+                    urlBrandLogo = null,
+                    imageUrl = "",
+                    imageUrls = listOf("", "", ""),
+                    additionalColorPhotoUrls = emptyList()
+                )
             ),
-            CatalogFilterProductsEntity(
-                categoryId = 1,
-                titleCategoryId = 11,
-                position = 1,
-                id = "preview-2",
-                itemId = "item-2",
-                colorId = "white",
-                name = "Хлопковая футболка с логотипом",
-                price = 32_700.0,
-                priceWithoutDiscount = null,
-                brand = "BRUNELLO CUCINELLI",
-                urlBrandLogo = null,
-                imageUrl = "",
-                imageUrls = listOf(""),
-                additionalColorPhotoUrls = emptyList()
-            ),
-            CatalogFilterProductsEntity(
-                categoryId = 1,
-                titleCategoryId = 11,
-                position = 2,
-                id = "preview-3",
-                itemId = "item-3",
-                colorId = "blue",
-                name = "Джинсы прямого кроя",
-                price = 74_500.0,
-                priceWithoutDiscount = 96_400.0,
-                brand = "TOM FORD",
-                urlBrandLogo = null,
-                imageUrl = "",
-                imageUrls = emptyList(),
-                additionalColorPhotoUrls = emptyList()
-            ),
-            CatalogFilterProductsEntity(
-                categoryId = 1,
-                titleCategoryId = 11,
-                position = 3,
-                id = "preview-4",
-                itemId = "item-4",
-                colorId = "beige",
-                name = "Кашемировый кардиган на пуговицах",
-                price = 128_000.0,
-                priceWithoutDiscount = 156_800.0,
-                brand = "LORO PIANA",
-                urlBrandLogo = null,
-                imageUrl = "",
-                imageUrls = listOf("", "", ""),
-                additionalColorPhotoUrls = emptyList()
-            )
-        ),
-        listOf(
-            CatalogFilterProductsEntity.Empty,
-            CatalogFilterProductsEntity.Empty,
-            CatalogFilterProductsEntity.Empty,
-            CatalogFilterProductsEntity.Empty
+            onProductClick = {},
+            isProductInBasket = { it.id == "preview-1" }
         )
     )
 }

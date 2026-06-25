@@ -4,7 +4,7 @@ data class ProfileOrderDetails(
     val orderNumber: String,
     val amount: String,
     val creationDate: String,
-    val showPaymentAlert: Boolean,
+    val isPaymentAlertVisible: Boolean,
     val paymentAlertRemainingMinutes: Int,
     val deliveries: List<ProfileOrderDelivery>
 )

@@ -53,8 +53,10 @@ import ru.mercury.vpclient.shared.domain.mapper.imagePages
 import ru.mercury.vpclient.shared.domain.mapper.isDiscountLabelVisible
 import ru.mercury.vpclient.shared.ui.components.BrandBox
 import ru.mercury.vpclient.shared.ui.components.DiscountBadge
-import ru.mercury.vpclient.shared.ui.components.SharedHorizontalPagerIndicator
 import ru.mercury.vpclient.shared.ui.components.PriceText
+import ru.mercury.vpclient.shared.ui.components.SharedHorizontalPagerIndicator
+import ru.mercury.vpclient.shared.ui.components.catalog.CatalogProductCardState.Companion.ADDED_TO_BASKET_BADGE_FADE_OUT_DURATION
+import ru.mercury.vpclient.shared.ui.components.catalog.CatalogProductCardState.Companion.ADDED_TO_BASKET_BADGE_VISIBLE_DURATION
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.icons.Basket24
 import ru.mercury.vpclient.shared.ui.icons.BasketFilled24
@@ -65,21 +67,23 @@ import ru.mercury.vpclient.shared.ui.theme.regular12
 import ru.mercury.vpclient.shared.ui.theme.regular14
 import kotlin.time.Duration.Companion.milliseconds
 
-private const val ADDED_TO_BASKET_BADGE_VISIBLE_DURATION = 1_500L
-private const val ADDED_TO_BASKET_BADGE_FADE_OUT_DURATION = 800L
-
 data class CatalogProductCardState(
     val entity: CatalogFilterProductsEntity,
-    val isInBasket: Boolean = false
-)
+    val isInBasket: Boolean = false,
+    val onClick: () -> Unit = {},
+    val onMessageIconClick: () -> Unit = {},
+    val onBasketIconClick: () -> Unit = {}
+) {
+    companion object {
+        const val ADDED_TO_BASKET_BADGE_VISIBLE_DURATION = 1_500L
+        const val ADDED_TO_BASKET_BADGE_FADE_OUT_DURATION = 800L
+    }
+}
 
 @Composable
 fun CatalogProductCard(
     state: CatalogProductCardState,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit = {},
-    onMessageClick: () -> Unit = {},
-    onBasketClick: () -> Unit = {}
+    modifier: Modifier = Modifier
 ) {
     val entity = state.entity
     val pagerImages = remember(entity.imagePages) { entity.imagePages }
@@ -109,7 +113,7 @@ fun CatalogProductCard(
             .height(388.dp)
             .background(MaterialTheme.colorScheme.background)
             .clip(RoundedCornerShape(4.dp))
-            .clickable(onClick = onClick)
+            .clickable(onClick = state.onClick)
     ) {
         val (
             messageButton,
@@ -119,12 +123,13 @@ fun CatalogProductCard(
             pagerIndicator,
             brand,
             title,
+            actionLabel,
             price,
             discountBadge
         ) = createRefs()
 
         IconButton(
-            onClick = onMessageClick,
+            onClick = state.onMessageIconClick,
             modifier = Modifier.constrainAs(messageButton) {
                 start.linkTo(parent.start, 2.dp)
                 top.linkTo(parent.top, 2.dp)
@@ -143,7 +148,7 @@ fun CatalogProductCard(
                 if (!state.isInBasket) {
                     addedToBasketBadgeTrigger += 1
                 }
-                onBasketClick()
+                state.onBasketIconClick()
             },
             modifier = Modifier.constrainAs(basketButton) {
                 top.linkTo(parent.top, 2.dp)
@@ -228,9 +233,11 @@ fun CatalogProductCard(
                 urlBrandLogo = entity.urlBrandLogo
             ),
             modifier = Modifier.constrainAs(brand) {
-                start.linkTo(parent.start)
+                width = Dimension.fillToConstraints
+                height = Dimension.value(33.dp)
+                start.linkTo(parent.start, 16.dp)
                 top.linkTo(pagerIndicator.bottom, 3.dp)
-                end.linkTo(parent.end)
+                end.linkTo(parent.end, 16.dp)
             }
         )
 
@@ -263,11 +270,33 @@ fun CatalogProductCard(
             }
         }
 
+        if (entity.actionLabels.isNotEmpty()) {
+            Text(
+                text = entity.actionLabels.first(),
+                modifier = Modifier.constrainAs(actionLabel) {
+                    width = Dimension.fillToConstraints
+                    start.linkTo(parent.start, 16.dp)
+                    top.linkTo(title.bottom, 2.dp)
+                    end.linkTo(parent.end, 16.dp)
+                },
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.regular12.copy(
+                    color = MaterialTheme.colorScheme.error,
+                    textAlign = TextAlign.Center
+                )
+            )
+        }
+
         PriceText(
             entity = entity,
             modifier = Modifier.constrainAs(price) {
                 start.linkTo(parent.start)
-                top.linkTo(title.bottom, 2.dp)
+                if (entity.actionLabels.isNotEmpty()) {
+                    top.linkTo(actionLabel.bottom, 1.dp)
+                } else {
+                    top.linkTo(title.bottom, 2.dp)
+                }
                 end.linkTo(parent.end)
             }
         )
@@ -334,6 +363,22 @@ private class CatalogProductCardCatalogFilterProductsEntityProvider: PreviewPara
             price = 32_700.0,
             priceWithoutDiscount = null,
             brand = "BRUNELLO CUCINELLI",
+            urlBrandLogo = null,
+            imageUrl = "",
+            imageUrls = listOf(""),
+            additionalColorPhotoUrls = emptyList()
+        ),
+        CatalogFilterProductsEntity(
+            categoryId = 1,
+            titleCategoryId = 11,
+            position = 2,
+            id = "preview-3",
+            itemId = "item-3",
+            colorId = "red",
+            name = "Шелковое платье",
+            price = 0.0,
+            priceWithoutDiscount = 159_900.0,
+            brand = "VALENTINO",
             urlBrandLogo = null,
             imageUrl = "",
             imageUrls = listOf(""),

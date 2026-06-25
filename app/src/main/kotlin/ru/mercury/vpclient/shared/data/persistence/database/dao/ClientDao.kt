@@ -11,10 +11,13 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.ClientEntity
 interface ClientDao {
 
     @Query("SELECT * FROM client LIMIT 1")
-    fun selectFlow(): Flow<ClientEntity>
+    fun selectFlow(): Flow<ClientEntity?>
 
     @Query("SELECT * FROM client LIMIT 1")
-    suspend fun select(): ClientEntity
+    suspend fun select(): ClientEntity?
+
+    @Query("SELECT * FROM client LIMIT 1")
+    suspend fun selectNotNull(): ClientEntity
 
     @Upsert
     suspend fun upsert(entity: ClientEntity)

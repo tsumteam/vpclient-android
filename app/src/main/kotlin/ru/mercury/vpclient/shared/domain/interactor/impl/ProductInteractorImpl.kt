@@ -1,5 +1,6 @@
 package ru.mercury.vpclient.shared.domain.interactor.impl
 
+import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import ru.mercury.vpclient.shared.coroutines.SharedDispatchers
@@ -22,11 +23,11 @@ class ProductInteractorImpl @Inject constructor(
         return productRepository.viewHistoryProductsFlow()
     }
 
-    override suspend fun loadProduct(id: String) {
-        withContext(dispatchers.io) { productRepository.loadProduct(id) }
+    override fun viewHistoryProductsPagingData(): Flow<PagingData<CatalogFilterProductsEntity>> {
+        return productRepository.viewHistoryProductsPagingData()
     }
 
-    override suspend fun loadViewHistoryProducts(limit: Int) {
-        withContext(dispatchers.io) { productRepository.loadViewHistoryProducts(limit) }
+    override suspend fun loadProduct(id: String) {
+        withContext(dispatchers.io) { productRepository.loadProduct(id) }
     }
 }

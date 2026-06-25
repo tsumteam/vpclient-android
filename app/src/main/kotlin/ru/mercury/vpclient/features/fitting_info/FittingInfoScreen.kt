@@ -16,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -27,10 +26,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.mercury.vpclient.features.fitting_info.intent.FittingInfoIntent
 import ru.mercury.vpclient.features.fitting_info.model.FittingInfoModel
 import ru.mercury.vpclient.features.fitting_info.navigation.FittingInfoRoute
-import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
-import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.InfoItem
 import ru.mercury.vpclient.shared.ui.components.InfoItemState
+import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
+import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
@@ -62,10 +61,7 @@ private fun FittingInfoScreenContent(
                 title = {
                     Text(
                         text = stringResource(ClientStrings.FittingInfoTitle),
-                        style = MaterialTheme.typography.medium18.copy(
-                            color = MaterialTheme.colorScheme.onBackground,
-                            textAlign = TextAlign.Center
-                        )
+                        style = MaterialTheme.typography.medium18
                     )
                 },
                 navigationIcon = {
@@ -75,13 +71,14 @@ private fun FittingInfoScreenContent(
                         Icon(
                             imageVector = ChevronStart24,
                             contentDescription = null,
-                            modifier = Modifier.size(24.dp),
-                            tint = MaterialTheme.colorScheme.onBackground
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
+                    containerColor = MaterialTheme.colorScheme.background,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground
                 )
             )
         }

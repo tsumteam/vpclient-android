@@ -1,9 +1,11 @@
 package ru.mercury.vpclient.shared.domain.usecase
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import ru.mercury.vpclient.shared.coroutines.SharedDispatchers
 import ru.mercury.vpclient.shared.data.persistence.database.dao.ClientDao
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ClientEntity
+import ru.mercury.vpclient.shared.domain.mapper.orEmpty
 import javax.inject.Inject
 
 class ClientEntityFlowUseCase @Inject constructor(
@@ -12,6 +14,6 @@ class ClientEntityFlowUseCase @Inject constructor(
 ): FlowUseCase<Unit, ClientEntity>(dispatchers.io) {
 
     override fun execute(parameters: Unit): Flow<ClientEntity> {
-        return clientDao.selectFlow()
+        return clientDao.selectFlow().map { clientEntity -> clientEntity.orEmpty }
     }
 }

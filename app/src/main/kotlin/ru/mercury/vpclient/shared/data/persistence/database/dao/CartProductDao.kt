@@ -13,10 +13,13 @@ interface CartProductDao {
     fun selectAllFlow(): Flow<List<CartProductEntity>>
 
     @Query("SELECT COALESCE(SUM(quantity * sizeCount), 0) FROM CartProduct")
-    fun cartSizeFlow(): Flow<Int>
+    fun countFlow(): Flow<Int>
 
     @Query("SELECT * FROM CartProduct ORDER BY position ASC")
     suspend fun selectAll(): List<CartProductEntity>
+
+    @Query("SELECT * FROM CartProduct WHERE itemId = :itemId AND colorId = :colorId LIMIT 1")
+    suspend fun selectByProductKey(itemId: String, colorId: String): CartProductEntity?
 
     @Upsert
     suspend fun upsert(entities: List<CartProductEntity>)
@@ -32,4 +35,7 @@ interface CartProductDao {
 
     @Query("DELETE FROM CartProduct")
     suspend fun delete()
+
+    @Query("DELETE FROM CartProduct WHERE id = :id")
+    suspend fun delete(id: String)
 }

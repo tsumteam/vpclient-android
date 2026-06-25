@@ -91,11 +91,7 @@ fun DetailsMessageSheet(
                 title = {
                     Text(
                         text = stringResource(ClientStrings.DetailsMessageSheetTitle),
-                        style = MaterialTheme.typography.livretMedium18.copy(
-                            color = MaterialTheme.colorScheme.onBackground,
-                            lineHeight = 26.sp,
-                            letterSpacing = .2.sp
-                        )
+                        style = MaterialTheme.typography.livretMedium18
                     )
                 },
                 navigationIcon = {
@@ -105,13 +101,14 @@ fun DetailsMessageSheet(
                         Icon(
                             imageVector = Close24,
                             contentDescription = null,
-                            modifier = Modifier.size(24.dp),
-                            tint = MaterialTheme.colorScheme.onBackground
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
+                    containerColor = MaterialTheme.colorScheme.background,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground
                 )
             )
 

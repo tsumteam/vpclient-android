@@ -47,6 +47,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -58,13 +59,13 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.features.details_cart_added_sheet.DetailsCartAddedSheet
-import ru.mercury.vpclient.features.details_cart_added_sheet.intent.DetailsCartAddedSheetIntent
-import ru.mercury.vpclient.features.details_cart_added_sheet.model.DetailsCartAddedSheetModel
 import ru.mercury.vpclient.features.details.event.DetailsEvent
 import ru.mercury.vpclient.features.details.intent.DetailsIntent
 import ru.mercury.vpclient.features.details.model.DetailsModel
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
+import ru.mercury.vpclient.features.details_cart_added_sheet.DetailsCartAddedSheet
+import ru.mercury.vpclient.features.details_cart_added_sheet.intent.DetailsCartAddedSheetIntent
+import ru.mercury.vpclient.features.details_cart_added_sheet.model.DetailsCartAddedSheetModel
 import ru.mercury.vpclient.features.details_message_sheet.DetailsMessageSheet
 import ru.mercury.vpclient.features.details_message_sheet.intent.DetailsMessageSheetIntent
 import ru.mercury.vpclient.features.details_message_sheet.model.DetailsMessageSheetModel
@@ -76,6 +77,8 @@ import ru.mercury.vpclient.features.size_sheet.intent.SizeSheetIntent
 import ru.mercury.vpclient.features.size_sheet.model.SizeSheetModel
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.entity.DetailsMediaItem
+import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductAvailableSizeEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductAvailableSizesEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductButtonEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductOtherColorEntity
@@ -91,11 +94,14 @@ import ru.mercury.vpclient.shared.ui.components.cart.MessengerIconButton
 import ru.mercury.vpclient.shared.ui.components.details.DetailsColorImageSelector
 import ru.mercury.vpclient.shared.ui.components.details.DetailsCompleteSetSection
 import ru.mercury.vpclient.shared.ui.components.details.DetailsFieldRow
+import ru.mercury.vpclient.shared.ui.components.details.DetailsFieldRowState
 import ru.mercury.vpclient.shared.ui.components.details.DetailsOutfitButton
 import ru.mercury.vpclient.shared.ui.components.details.DetailsPagerIndicator
 import ru.mercury.vpclient.shared.ui.components.details.DetailsProductInfoBox
+import ru.mercury.vpclient.shared.ui.components.details.DetailsProductInfoBoxState
 import ru.mercury.vpclient.shared.ui.components.details.DetailsSizeSelector
 import ru.mercury.vpclient.shared.ui.components.details.DetailsWearWithSection
+import ru.mercury.vpclient.shared.ui.components.details.DetailsWearWithSectionState
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.components.video.VideoPlayer
 import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
@@ -104,7 +110,6 @@ import ru.mercury.vpclient.shared.ui.ktx.clickableWithoutRipple
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
-import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.livretRegular15
 import ru.mercury.vpclient.shared.ui.theme.medium15
 import ru.mercury.vpclient.shared.ui.theme.regular14
@@ -112,15 +117,20 @@ import ru.mercury.vpclient.shared.ui.theme.regular14
 @Composable
 fun DetailsScreen(
     route: DetailsRoute,
-    viewModel: DetailsViewModel = hiltViewModel<DetailsViewModel, DetailsViewModel.Factory>(creationCallback = { it.create(route) })
+    viewModel: DetailsViewModel = hiltViewModel<DetailsViewModel, DetailsViewModel.Factory>(
+        creationCallback = { it.create(route) }
+    )
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
+    val resources = LocalResources.current
+    val snackbarHostState = remember { SnackbarHostState() }
     val snackbarHostStateError = remember { SnackbarHostState() }
 
     DetailsScreenContent(
         state = state,
         dispatch = viewModel::dispatch,
+        snackbarHostState = snackbarHostState,
         snackbarHostStateError = snackbarHostStateError
     )
 
@@ -177,7 +187,7 @@ fun DetailsScreen(
                         viewModel.dispatch(DetailsIntent.ProductClick(intent.id))
                     }
                     is DetailsWearWithSheetIntent.ProductBasketClick -> {
-                        viewModel.dispatch(DetailsIntent.ProductBasketClick(intent.product.id))
+                        viewModel.dispatch(DetailsIntent.ProductBasketClick(intent.product))
                     }
                     is DetailsWearWithSheetIntent.DismissRequest -> {
                         viewModel.dispatch(DetailsIntent.HideWearWithSheet)
@@ -215,6 +225,10 @@ fun DetailsScreen(
         flow = viewModel.eventFlow
     ) { event ->
         when (event) {
+            is DetailsEvent.SnackbarMessage -> {
+                snackbarHostState.currentSnackbarData?.dismiss()
+                scope.launch { snackbarHostState.showSnackbar(resources.getString(event.messageRes)) }
+            }
             is DetailsEvent.SnackbarErrorMessage -> {
                 snackbarHostStateError.currentSnackbarData?.dismiss()
                 scope.launch { snackbarHostStateError.showSnackbar(event.message) }
@@ -227,6 +241,7 @@ fun DetailsScreen(
 private fun DetailsScreenContent(
     state: DetailsModel,
     dispatch: (DetailsIntent) -> Unit,
+    snackbarHostState: SnackbarHostState,
     snackbarHostStateError: SnackbarHostState
 ) {
     val lazyListState = rememberLazyListState()
@@ -293,33 +308,33 @@ private fun DetailsScreenContent(
                         Icon(
                             imageVector = ChevronStart24,
                             contentDescription = null,
-                            modifier = Modifier.size(24.dp),
-                            tint = MaterialTheme.colorScheme.onBackground
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 },
                 actions = {
-                    if (state.showFittingButton) {
+                    if (state.isFittingButtonVisible) {
                         FittingIconButton(
                             text = state.fittingText,
-                            showBadge = state.showFittingBadge,
+                            showBadge = state.isFittingBadgeVisible,
                             onClick = { dispatch(DetailsIntent.FittingClick) }
                         )
                     }
 
                     CartIconButton(
                         text = state.cartText,
-                        showBadge = state.showCartBadge,
+                        showBadge = state.isCartBadgeVisible,
                         onClick = { dispatch(DetailsIntent.CartClick) }
                     )
 
                     MessengerIconButton(
-                        showBadge = state.showMessengerBadge,
+                        showBadge = state.isMessengerBadgeVisible,
                         onClick = { dispatch(DetailsIntent.MessengerClick) }
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
+                    containerColor = MaterialTheme.colorScheme.background,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground
                 )
             )
         },
@@ -349,7 +364,7 @@ private fun DetailsScreenContent(
                     )
                 ) {
                     Text(
-                        text = stringResource(ClientStrings.DetailsAddToBasket),
+                        text = stringResource(state.addToBasketButtonText),
                         style = MaterialTheme.typography.medium15.copy(
                             textAlign = TextAlign.Center,
                             letterSpacing = .3.sp
@@ -359,11 +374,16 @@ private fun DetailsScreenContent(
             }
         },
         snackbarHost = {
-            SharedSnackbarHost(
-                hostState = snackbarHostStateError,
-                modifier = Modifier.padding(bottom = 8.dp),
-                containerColor = MaterialTheme.colorScheme.error
-            )
+            Box {
+                SharedSnackbarHost(
+                    hostState = snackbarHostState
+                )
+
+                SharedSnackbarHost(
+                    hostState = snackbarHostStateError,
+                    containerColor = MaterialTheme.colorScheme.error
+                )
+            }
         }
     ) { innerPadding ->
         when {
@@ -378,7 +398,7 @@ private fun DetailsScreenContent(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(start = 31.dp, top = 16.dp, end = 31.dp)
-                                .aspectRatio(3f / 4f)
+                                .aspectRatio(3F / 4F)
                                 .clip(RoundedCornerShape(4.dp))
                                 .placeholder(
                                     visible = true,
@@ -557,17 +577,21 @@ private fun DetailsScreenContent(
                     }
                     item {
                         DetailsProductInfoBox(
-                            productEntity = state.productEntity,
-                            onMessageClick = { dispatch(DetailsIntent.MessageClick) },
+                            state = DetailsProductInfoBoxState(
+                                productEntity = state.productEntity,
+                                availabilityText = state.noSizeAvailabilityText,
+                                onMessageClick = { dispatch(DetailsIntent.MessageClick) }
+                            ),
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
                     if (state.isSizePickerVisible) {
                         item {
                             DetailsSizeSelector(
-                                state = state.sizePickerState,
-                                onSizeClick = { dispatch(DetailsIntent.SizeClick(it)) },
-                                onSizeTableClick = { dispatch(DetailsIntent.SizeTableClick) }
+                                state = state.sizePickerState.copy(
+                                    onSizeClick = { dispatch(DetailsIntent.SizeClick(it)) },
+                                    onSizeTableClick = { dispatch(DetailsIntent.SizeTableClick) }
+                                )
                             )
                         }
                     }
@@ -604,7 +628,10 @@ private fun DetailsScreenContent(
                     state.detailFields.forEachIndexed { index, field ->
                         item {
                             DetailsFieldRow(
-                                field = field,
+                                state = DetailsFieldRowState(
+                                    field = field,
+                                    onCopyClick = { dispatch(DetailsIntent.FieldCopyClick(it)) }
+                                ),
                                 modifier = Modifier.padding(start = 16.dp, top = 24.dp)
                             )
                         }
@@ -620,10 +647,12 @@ private fun DetailsScreenContent(
                     if (state.isWearWithBoxVisible) {
                         item {
                             DetailsWearWithSection(
-                                products = state.wearWithProducts,
-                                onProductClick = { id -> dispatch(DetailsIntent.ProductClick(id)) },
-                                isProductInBasket = state::isProductInBasket,
-                                onProductBasketClick = { dispatch(DetailsIntent.ProductBasketClick(it.id)) }
+                                state = DetailsWearWithSectionState(
+                                    products = state.wearWithProducts,
+                                    onProductClick = { id -> dispatch(DetailsIntent.ProductClick(id)) },
+                                    isProductInBasket = state::isProductInBasket,
+                                    onProductBasketClick = { dispatch(DetailsIntent.ProductBasketClick(it)) }
+                                )
                             )
                         }
                     }
@@ -633,7 +662,7 @@ private fun DetailsScreenContent(
                                 products = state.completeSetProducts,
                                 onProductClick = { id -> dispatch(DetailsIntent.ProductClick(id)) },
                                 isProductInBasket = state::isProductInBasket,
-                                onProductBasketClick = { dispatch(DetailsIntent.ProductBasketClick(it.id)) }
+                                onProductBasketClick = { dispatch(DetailsIntent.ProductBasketClick(it)) }
                             )
                         }
                     }
@@ -678,16 +707,17 @@ private fun DetailsScreenContent(
 @Preview(heightDp = 2000, showBackground = true)
 @Composable
 private fun DetailsScreenContentPreview(
-    @PreviewParameter(DetailsModelProvider::class) state: DetailsModel
+    @PreviewParameter(DetailsModelPreviewParameterProvider::class) state: DetailsModel
 ) {
     DetailsScreenContent(
         state = state,
         dispatch = {},
+        snackbarHostState = remember { SnackbarHostState() },
         snackbarHostStateError = remember { SnackbarHostState() }
     )
 }
 
-private class DetailsModelProvider: PreviewParameterProvider<DetailsModel> {
+private class DetailsModelPreviewParameterProvider: PreviewParameterProvider<DetailsModel> {
     override val values: Sequence<DetailsModel> = sequenceOf(
         DetailsModel(),
         DetailsModel(
@@ -707,21 +737,44 @@ private class DetailsModelProvider: PreviewParameterProvider<DetailsModel> {
                     ProductButtonEntity(title = "Женская одежда"),
                     ProductButtonEntity(title = "Куртки")
                 ),
-                colorImageUrls = listOf(
-                    "https://st-m-vpr-s3.vp.ru/cms/98/43/98437c3a-da76-4aaa-87b7-fdf5f4a1fd70.jpg",
-                    "https://st-m-vpr-s3.vp.ru/cms/51/f0/51f07d1d-0449-41a7-9e2a-952d85f279a7.jpg"
+                colorImageUrls = listOf("", "", "", "", "", "", "", "", ""),
+                availableSizes = ProductAvailableSizesEntity(
+                    items = listOf(
+                        ProductAvailableSizeEntity(
+                            sizeId = "36",
+                            russianSize = "34",
+                            sizeFullName = "IT 36",
+                            inStock = true
+                        ),
+                        ProductAvailableSizeEntity(
+                            sizeId = "38",
+                            russianSize = "36",
+                            sizeFullName = "IT 38",
+                            inStock = true
+                        ),
+                        ProductAvailableSizeEntity(
+                            sizeId = "40",
+                            russianSize = "38",
+                            sizeFullName = "IT 40",
+                            inStock = false
+                        )
+                    ),
+                    countryCode = "IT",
+                    sizeTableTitle = "Таблица размеров",
+                    sizeTableUrl = "https://example.com/size-table"
                 ),
                 otherColors = listOf(
                     ProductOtherColorEntity(
-                        imageUrls = listOf("https://st-m-vpr-s3.vp.ru/cms/98/43/98437c3a-da76-4aaa-87b7-fdf5f4a1fd70.jpg")
+                        imageUrls = listOf("")
                     ),
                     ProductOtherColorEntity(
-                        imageUrls = listOf("https://st-m-vpr-s3.vp.ru/cms/51/f0/51f07d1d-0449-41a7-9e2a-952d85f279a7.jpg")
+                        imageUrls = listOf("")
                     )
                 ),
                 hasWearWith = true,
                 wearWithButtonEnabled = true
-            )
+            ),
+            selectedSizeId = "40"
         )
     )
 }

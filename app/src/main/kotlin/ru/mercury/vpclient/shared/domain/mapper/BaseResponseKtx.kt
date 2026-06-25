@@ -36,7 +36,7 @@ suspend fun <T> handleResponse(
                         message = message.ifEmpty { "Ошибка запроса" },
                         httpCode = response.status ?: error.code ?: 0,
                         backendCode = error.code,
-                        backendReason = error.reason
+                        backendReason = error.reason?.toString()
                     )
                     when {
                         onFailure != null -> onFailure(error)

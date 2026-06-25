@@ -61,12 +61,12 @@ fun DetailsCompleteSetSection(
                         CatalogProductCard(
                             state = CatalogProductCardState(
                                 entity = product,
-                                isInBasket = isProductInBasket(product)
+                                isInBasket = isProductInBasket(product),
+                                onClick = { onProductClick(product.id) },
+                                onMessageIconClick = { onProductMessageClick(product) },
+                                onBasketIconClick = { onProductBasketClick(product) }
                             ),
-                            modifier = Modifier.weight(1F),
-                            onClick = { onProductClick(product.id) },
-                            onMessageClick = { onProductMessageClick(product) },
-                            onBasketClick = { onProductBasketClick(product) }
+                            modifier = Modifier.weight(1F)
                         )
                     }
                     if (row.size == 1) {

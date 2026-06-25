@@ -58,7 +58,7 @@ fun CatalogClothingCard(
                 .fillMaxWidth()
                 .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
             overflow = TextOverflow.Ellipsis,
-            maxLines = 1,
+            maxLines = 2,
             style = MaterialTheme.typography.livretMedium19.copy(
                 color = MaterialTheme.colorScheme.onBackground
             )
@@ -84,7 +84,7 @@ private class CatalogClothingCardCatalogCategoryEntityProvider: PreviewParameter
             parentId = 2,
             rootId = 2,
             level = CatalogCategoryEntity.LEVEL_TOP,
-            name = "Одежда",
+            name = "Хрусталь и коллекции для дома",
             photoUrl = "",
             categoryType = CatalogCategoryType.CATALOG,
             sortSettingId = 0,

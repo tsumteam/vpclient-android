@@ -14,6 +14,8 @@ import ru.mercury.vpclient.features.fitting_confirmation.navigation.FittingConfi
 import ru.mercury.vpclient.shared.data.entity.FittingData
 import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
 import ru.mercury.vpclient.shared.domain.mapper.isNotEmpty
+import ru.mercury.vpclient.shared.domain.usecase.CartCountFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.FittingCountFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.mvi.Event
@@ -22,11 +24,14 @@ import javax.inject.Inject
 @HiltViewModel
 class FittingViewModel @Inject constructor(
     private val cartInteractor: CartInteractor,
+    private val cartCountFlowUseCase: CartCountFlowUseCase,
+    private val fittingCountFlowUseCase: FittingCountFlowUseCase,
     private val employeeActiveFlowUseCase: EmployeeActiveFlowUseCase
 ): ClientViewModel<FittingIntent, FittingModel, Event>(FittingModel()) {
 
     init {
-        dispatch(FittingIntent.CollectCartSize)
+        dispatch(FittingIntent.CollectCartCount)
+        dispatch(FittingIntent.CollectFittingCount)
         dispatch(FittingIntent.CollectCartProducts)
         dispatch(FittingIntent.CollectActiveEmployee)
         dispatch(FittingIntent.LoadCartData)
@@ -35,12 +40,21 @@ class FittingViewModel @Inject constructor(
 
     override fun dispatch(intent: FittingIntent) {
         when (intent) {
-            is FittingIntent.CollectCartSize -> {
+            is FittingIntent.CollectCartCount -> {
                 launch {
-                    cartInteractor.cartSize
+                    cartCountFlowUseCase(Unit)
                         .distinctUntilChanged()
-                        .collectLatest { size ->
-                            reduce { it.copy(cartSize = size) }
+                        .collectLatest { count ->
+                            reduce { it.copy(cartCount = count) }
+                        }
+                }
+            }
+            is FittingIntent.CollectFittingCount -> {
+                launch {
+                    fittingCountFlowUseCase(Unit)
+                        .distinctUntilChanged()
+                        .collectLatest { count ->
+                            reduce { it.copy(fittingCount = count) }
                         }
                 }
             }
@@ -67,6 +81,7 @@ class FittingViewModel @Inject constructor(
             is FittingIntent.LoadCartData -> {
                 launch {
                     runCatching { cartInteractor.loadBasket() }
+                    runCatching { cartInteractor.loadFitting() }
 
                     val badge = runCatching { cartInteractor.cartBadge() }.getOrDefault(0)
                     reduce { it.copy(cartBadge = badge) }

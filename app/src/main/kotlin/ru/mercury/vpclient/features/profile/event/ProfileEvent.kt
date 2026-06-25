@@ -4,4 +4,6 @@ import ru.mercury.vpclient.shared.mvi.Event
 
 sealed interface ProfileEvent: Event {
     data class SnackbarMessage(val message: String): ProfileEvent
+    data class SnackbarErrorMessage(val message: String): ProfileEvent
+    data class SnackbarTopErrorMessage(val message: String): ProfileEvent
 }

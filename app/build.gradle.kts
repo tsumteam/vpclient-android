@@ -32,7 +32,6 @@ android {
         targetSdk = libs.versions.target.sdk.get().toInt()
         versionName = "1.0.0"
         versionCode = gitCommitsCount
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     productFlavors {
@@ -189,10 +188,6 @@ dependencies {
     ksp(libs.androidx.hilt.compiler)
     ksp(libs.androidx.room.compiler)
     debugImplementation(libs.androidx.compose.ui.tooling)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
-    testImplementation(libs.kotlin.test)
-    testImplementation(libs.kotlin.test.junit)
-    testImplementation(libs.junit)
 
     implementation(libs.appmetrica.analytics)
     implementation(libs.coil.compose)
@@ -204,20 +199,6 @@ dependencies {
     debugImplementation(libs.okhttp.logging.interceptor)
     debugImplementation(libs.chucker.library)
     releaseImplementation(libs.chucker.library.no.op)
-
-    testImplementation(libs.kotlin.test)
-    testImplementation(libs.kotlin.test.junit)
-    testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation(libs.junit)
-    testImplementation(libs.mockk)
-    testImplementation(libs.robolectric)
-    testImplementation(libs.ktor.client.mock)
-
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    androidTestImplementation(libs.androidx.compose.ui.test.manifest)
-    androidTestImplementation(libs.androidx.core.testing)
-    androidTestImplementation(libs.androidx.room.testing)
-    androidTestImplementation(libs.androidx.test.ext.junit.ktx)
 }
 
 tasks.register("printVersion") {

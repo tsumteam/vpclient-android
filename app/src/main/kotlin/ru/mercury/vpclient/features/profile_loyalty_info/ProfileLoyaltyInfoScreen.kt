@@ -56,9 +56,9 @@ import ru.mercury.vpclient.features.profile_loyalty_info.model.ProfileLoyaltyInf
 import ru.mercury.vpclient.features.profile_loyalty_unlink_dialog.ProfileLoyaltyUnlinkDialog
 import ru.mercury.vpclient.features.profile_loyalty_unlink_dialog.intent.ProfileLoyaltyUnlinkDialogIntent
 import ru.mercury.vpclient.shared.data.entity.LoyaltyCardDescription
-import ru.mercury.vpclient.shared.data.entity.LoyaltyCardInfo
 import ru.mercury.vpclient.shared.data.entity.LoyaltyCardType
 import ru.mercury.vpclient.shared.data.entity.ProfileLoyaltyInfoRowType
+import ru.mercury.vpclient.shared.data.persistence.database.entity.LoyaltyCardInfoEntity
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
@@ -113,10 +113,7 @@ private fun ProfileLoyaltyInfoScreenContent(
                 title = {
                     Text(
                         text = stringResource(ClientStrings.ProfileLoyaltyInfoTitle),
-                        style = MaterialTheme.typography.medium18.copy(
-                            color = MaterialTheme.colorScheme.onBackground,
-                            textAlign = TextAlign.Center
-                        )
+                        style = MaterialTheme.typography.medium18
                     )
                 },
                 navigationIcon = {
@@ -126,13 +123,14 @@ private fun ProfileLoyaltyInfoScreenContent(
                         Icon(
                             imageVector = ChevronStart24,
                             contentDescription = null,
-                            modifier = Modifier.size(24.dp),
-                            tint = MaterialTheme.colorScheme.onBackground
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
+                    containerColor = MaterialTheme.colorScheme.background,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground
                 )
             )
         },
@@ -236,14 +234,14 @@ private fun ProfileLoyaltyInfoScreenContent(
                     item {
                         ProfileLoyaltyCard(
                             state = ProfileLoyaltyCardState(
-                                cardInfo = state.cardInfo
+                                loyaltyCardInfoEntity = state.loyaltyCardInfoEntity,
+                                moreButtonEnabled = false,
+                                onQrButtonClick = { dispatch(ProfileLoyaltyInfoIntent.QrClick) }
                             ),
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            onQrClick = { dispatch(ProfileLoyaltyInfoIntent.QrClick) },
-                            onMoreClick = {}
+                            modifier = Modifier.padding(horizontal = 16.dp)
                         )
                     }
-                    if (state.showBonusRules) {
+                    if (state.isBonusRulesVisible) {
                         item {
                             Text(
                                 text = state.bonusRules,
@@ -413,7 +411,7 @@ private class ProfileLoyaltyInfoModelPreviewParameterProvider: PreviewParameterP
         ProfileLoyaltyInfoModel(),
         ProfileLoyaltyInfoModel(
             isLoading = false,
-            cardInfo = LoyaltyCardInfo(
+            loyaltyCardInfoEntity = LoyaltyCardInfoEntity.Empty.copy(
                 loyaltyCardNumber = "G40135",
                 bonusAmount = 1500,
                 typeCard = LoyaltyCardType.Silver
@@ -423,7 +421,7 @@ private class ProfileLoyaltyInfoModelPreviewParameterProvider: PreviewParameterP
         ),
         ProfileLoyaltyInfoModel(
             isLoading = false,
-            cardInfo = LoyaltyCardInfo(
+            loyaltyCardInfoEntity = LoyaltyCardInfoEntity.Empty.copy(
                 loyaltyCardNumber = "G40135",
                 bonusAmount = 3200,
                 typeCard = LoyaltyCardType.Gold
@@ -434,7 +432,7 @@ private class ProfileLoyaltyInfoModelPreviewParameterProvider: PreviewParameterP
         ProfileLoyaltyInfoModel(
             isLoading = false,
             isUnlinkLoading = true,
-            cardInfo = LoyaltyCardInfo(
+            loyaltyCardInfoEntity = LoyaltyCardInfoEntity.Empty.copy(
                 loyaltyCardNumber = "G40135",
                 bonusAmount = 7400,
                 typeCard = LoyaltyCardType.Black

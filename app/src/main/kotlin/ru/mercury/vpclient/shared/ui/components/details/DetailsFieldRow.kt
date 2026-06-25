@@ -35,11 +35,17 @@ import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.medium14
 import ru.mercury.vpclient.shared.ui.theme.regular14
 
+data class DetailsFieldRowState(
+    val field: DetailsField,
+    val onCopyClick: (DetailsField) -> Unit = {}
+)
+
 @Composable
 fun DetailsFieldRow(
-    field: DetailsField,
+    state: DetailsFieldRowState,
     modifier: Modifier = Modifier
 ) {
+    val field = state.field
     val clipboard = LocalClipboard.current
     val scope = rememberCoroutineScope()
 
@@ -82,6 +88,7 @@ fun DetailsFieldRow(
                     onClick = {
                         scope.launch {
                             clipboard.setClipEntry(ClipEntry(ClipData.newPlainText(null, field.value)))
+                            state.onCopyClick(field)
                         }
                     }
                 ) {
@@ -126,7 +133,9 @@ private fun DetailsFieldRowPreview(
         state.detailFields.forEachIndexed { index, field ->
             item {
                 DetailsFieldRow(
-                    field = field,
+                    state = DetailsFieldRowState(
+                        field = field
+                    ),
                     modifier = Modifier.padding(start = 16.dp, top = 24.dp)
                 )
             }

@@ -3,10 +3,11 @@ package ru.mercury.vpclient.shared.domain.mapper
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.encodeToJsonElement
 import ru.mercury.vpclient.shared.data.FORMAT_RUB
-import ru.mercury.vpclient.shared.data.network.entity.BasketAddLineOperationRequestItemDto
-import ru.mercury.vpclient.shared.data.network.entity.BasketOperationRequestDto
-import ru.mercury.vpclient.shared.data.network.entity.BasketOperationRequestTypeEnum
+import ru.mercury.vpclient.shared.data.network.response.BasketAddLineOperationRequestItemResponse
+import ru.mercury.vpclient.shared.data.network.request.BasketOperationRequest
+import ru.mercury.vpclient.shared.data.network.type.BasketOperationRequestType
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.CartProductEntity
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
@@ -21,32 +22,70 @@ private val CatalogFilterProductsEntity.cardImageUrls: List<String>
     }
 
 val CatalogFilterProductsEntity.isDiscountPriceVisible: Boolean
-    get() = cardOldPrice != null && cardDiscountedPrice != null
+    get() = price != 0.0 && cardOldPrice != null && cardDiscountedPrice != null
 
 val CatalogFilterProductsEntity.isDiscountLabelVisible: Boolean
-    get() = cardDiscountLabel != null
+    get() = price != 0.0 && cardDiscountLabel != null
 
 val CatalogFilterProductsEntity.imagePages: List<String>
     get() = cardImageUrls.ifEmpty { listOf("") }
 
 fun CatalogFilterProductsEntity.addProductToBasketRequest(
     pairedUserId: String,
-    sizeId: String?
-): BasketOperationRequestDto {
-    return BasketOperationRequestDto(
+    sizeId: String?,
+    lineId: String = UUID.randomUUID().toString()
+): BasketOperationRequest {
+    return BasketOperationRequest(
         pairedUserId = pairedUserId,
         items = listOf(
             catalogFilterProductJson.encodeToJsonElement(
-                BasketAddLineOperationRequestItemDto(
-                    operationType = BasketOperationRequestTypeEnum.ADD_LINE,
+                BasketAddLineOperationRequestItemResponse(
+                    operationType = BasketOperationRequestType.ADD_LINE,
                     operationOrder = 0,
                     colorId = colorId,
                     itemId = itemId,
-                    lineId = UUID.randomUUID().toString(),
+                    lineId = lineId,
                     sizeId = sizeId
                 )
             )
         )
+    )
+}
+
+fun CatalogFilterProductsEntity.optimisticCartProductEntity(position: Int, lineId: String): CartProductEntity {
+    return CartProductEntity(
+        id = lineId,
+        position = position,
+        detailId = id,
+        itemId = itemId,
+        colorId = colorId,
+        brand = brand,
+        urlBrandLogo = urlBrandLogo,
+        name = name,
+        article = itemId,
+        color = "",
+        size = "",
+        price = cardPrice,
+        oldPrice = cardOldPrice,
+        lookId = null,
+        lookName = null,
+        lookImageUrl = null,
+        imageUrl = imageUrl,
+        imageUrls = imageUrls,
+        isForPayment = true,
+        isSold = false,
+        isLastInStock = false,
+        hasActions = actionLabels.isNotEmpty(),
+        isAlternativesPaletteOpen = false,
+        isAlternativePaletteControlsAvailable = false,
+        isSwitchAlternativeBackToOriginalAvailable = false,
+        alternatives = emptyList(),
+        discountPercentage = 0,
+        quantity = 1,
+        sizeCount = 1,
+        priceValue = price,
+        sizeId = "",
+        sizeItems = emptyList()
     )
 }
 
@@ -79,6 +118,7 @@ private fun Double?.formattedOldPrice(currentPrice: Double?): String? {
     return when {
         this == null -> null
         currentPrice == null -> null
+        currentPrice == 0.0 -> null
         this <= currentPrice -> null
         else -> formatPrice(this)
     }
@@ -88,6 +128,7 @@ private fun Double?.formattedDiscountedPrice(oldPrice: Double?): String? {
     return when {
         this == null -> null
         oldPrice == null -> null
+        this == 0.0 -> null
         oldPrice <= this -> null
         else -> formatPrice(this)
     }
@@ -97,6 +138,7 @@ private fun Double?.discountLabel(oldPrice: Double?): String? {
     return when {
         this == null -> null
         oldPrice == null -> null
+        this == 0.0 -> null
         oldPrice <= this -> null
         oldPrice == 0.0 -> null
         else -> {

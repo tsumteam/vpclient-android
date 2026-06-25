@@ -1,10 +1,20 @@
+@file:OptIn(ExperimentalPagingApi::class)
+
 package ru.mercury.vpclient.shared.domain.repository.impl
 
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import ru.mercury.vpclient.shared.data.PREFIX_SPACE
 import ru.mercury.vpclient.shared.data.network.NetworkService
 import ru.mercury.vpclient.shared.data.network.request.DetailCardRequest
+import ru.mercury.vpclient.shared.data.persistence.database.AppDatabase
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogFilterProductsDao
+import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogViewHistoryProductDao
+import ru.mercury.vpclient.shared.data.persistence.database.dao.PagingKeyDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.ProductDao
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductAvailableSizeEntity
@@ -13,14 +23,17 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductButton
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductOtherColorEntity
 import ru.mercury.vpclient.shared.domain.mapper.handleResponse
-import ru.mercury.vpclient.shared.domain.mapper.toCatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.domain.mapper.toRelatedItemEntity
+import ru.mercury.vpclient.shared.domain.paging.CatalogViewHistoryRemoteMediator
 import ru.mercury.vpclient.shared.domain.repository.ProductRepository
 import javax.inject.Inject
 
 class ProductRepositoryImpl @Inject constructor(
+    private val appDatabase: AppDatabase,
     private val networkService: NetworkService,
     private val catalogFilterProductsDao: CatalogFilterProductsDao,
+    private val catalogViewHistoryProductDao: CatalogViewHistoryProductDao,
+    private val pagingKeyDao: PagingKeyDao,
     private val productDao: ProductDao
 ): ProductRepository {
 
@@ -29,26 +42,48 @@ class ProductRepositoryImpl @Inject constructor(
     }
 
     override fun viewHistoryProductsFlow(): Flow<List<CatalogFilterProductsEntity>> {
-        return catalogFilterProductsDao.selectFlow(
-            categoryId = -1,
-            titleCategoryId = -1
-        )
+        return catalogViewHistoryProductDao.selectFlow()
+    }
+
+    override fun viewHistoryProductsPagingData(): Flow<PagingData<CatalogFilterProductsEntity>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = CATALOG_VIEW_HISTORY_PAGE_SIZE,
+                initialLoadSize = CATALOG_VIEW_HISTORY_PAGE_SIZE,
+                enablePlaceholders = false
+            ),
+            remoteMediator = CatalogViewHistoryRemoteMediator(
+                networkService = networkService,
+                appDatabase = appDatabase,
+                catalogViewHistoryProductDao = catalogViewHistoryProductDao,
+                pagingKeyDao = pagingKeyDao
+            ),
+            pagingSourceFactory = {
+                catalogViewHistoryProductDao.pagingSource()
+            }
+        ).flow
     }
 
     override suspend fun loadProduct(id: String) {
-        val catalogEntity = catalogFilterProductsDao.select(id) ?: return
+        val request = catalogFilterProductsDao.select(id)?.let { catalogEntity ->
+            DetailCardRequest(
+                itemId = catalogEntity.itemId,
+                colorId = catalogEntity.colorId
+            )
+        } ?: catalogViewHistoryProductDao.select(id)?.let { viewHistoryEntity ->
+            DetailCardRequest(
+                itemId = viewHistoryEntity.itemId,
+                colorId = viewHistoryEntity.colorId
+            )
+        } ?: return
 
         handleResponse(
             request = {
-                val request = DetailCardRequest(
-                    itemId = catalogEntity.itemId,
-                    colorId = catalogEntity.colorId
-                )
                 networkService.catalogDetailedProduct(request)
             },
             onSuccess = { response ->
                 val selectedColor = response.colors?.let { colors ->
-                    colors.find { it.colorId == catalogEntity.colorId }
+                    colors.find { it.colorId == request.colorId }
                         ?: colors.find { it.isSelected == true }
                         ?: colors.firstOrNull()
                 }
@@ -60,7 +95,7 @@ class ProductRepositoryImpl @Inject constructor(
                     brandId = response.brandId,
                     brand = response.brand,
                     colorName = listOfNotNull(selectedColor?.colorName, selectedColor?.colorId?.let { "($it)" })
-                        .joinToString(separator = " ")
+                        .joinToString(separator = PREFIX_SPACE)
                         .takeIf { it.isNotEmpty() },
                     urlBrandLogo = response.urlBrandLogo,
                     article = response.article,
@@ -134,7 +169,7 @@ class ProductRepositoryImpl @Inject constructor(
                             urlBrandLogo = item.urlBrandLogo,
                             imageUrl = item.imageUrl.orEmpty(),
                             imageUrls = item.imageUrls,
-                            additionalColorPhotoUrls = emptyList(),
+                            additionalColorPhotoUrls = item.additionalColorPhotoUrls,
                             position = index
                         )
                     }
@@ -144,31 +179,6 @@ class ProductRepositoryImpl @Inject constructor(
             }
         )
     }
-
-    override suspend fun loadViewHistoryProducts(limit: Int) {
-        handleResponse(
-            request = {
-                networkService.catalogViewHistory(limit = limit)
-            },
-            onSuccess = { response ->
-                val items = response.items.orEmpty()
-                if (items.isEmpty()) {
-                    return@handleResponse
-                }
-
-                val entities = items.mapIndexed { index, item ->
-                    item.toCatalogFilterProductsEntity(
-                        position = index,
-                        categoryId = -1,
-                        titleCategoryId = -1
-                    )
-                }
-                catalogFilterProductsDao.remove(
-                    categoryId = -1,
-                    titleCategoryId = -1
-                )
-                catalogFilterProductsDao.upsert(entities)
-            }
-        )
-    }
 }
+
+private const val CATALOG_VIEW_HISTORY_PAGE_SIZE = 15

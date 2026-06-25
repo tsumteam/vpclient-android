@@ -77,9 +77,7 @@ import ru.mercury.vpclient.shared.ui.theme.medium13
 import ru.mercury.vpclient.shared.ui.theme.medium15
 import ru.mercury.vpclient.shared.ui.theme.regular14
 import kotlin.math.roundToInt
-
-private const val DRAG_AUTO_SCROLL_EDGE_DP = 80
-private const val DRAG_AUTO_SCROLL_STEP_DP = 28
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun CartListScreen(
@@ -105,6 +103,7 @@ private fun CartListScreenContent(
     var dragOffset by remember { mutableStateOf(Offset.Zero) }
     var dragPointerPosition by remember { mutableStateOf<Offset?>(null) }
     var contentBounds by remember { mutableStateOf<Rect?>(null) }
+    var openedSwipeKey by remember { mutableStateOf<String?>(null) }
     val lazyListState = rememberLazyListState()
     val pullToRefreshState = rememberPullToRefreshState()
     val density = LocalDensity.current
@@ -217,8 +216,8 @@ private fun CartListScreenContent(
         contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal)
     ) { innerPadding ->
         val displayState = draggingProducts?.let { products -> state.copy(products = products) } ?: state
-        val autoScrollEdgePx = with(density) { DRAG_AUTO_SCROLL_EDGE_DP.dp.toPx() }
-        val autoScrollStepPx = with(density) { DRAG_AUTO_SCROLL_STEP_DP.dp.toPx() }
+        val autoScrollEdgePx = with(density) { 80.dp.toPx() }
+        val autoScrollStepPx = with(density) { 28.dp.toPx() }
         val moveDraggingProductOverTarget: (String, Offset) -> Unit = { productId, pointer ->
             val target = productBounds.entries.firstOrNull { entry ->
                 entry.key != productId && entry.value.contains(pointer)
@@ -259,7 +258,7 @@ private fun CartListScreenContent(
                 if (productId != null && pointer != null) {
                     moveDraggingProductOverTarget(productId, pointer)
                 }
-                delay(16)
+                delay(16.milliseconds)
             }
         }
 
@@ -362,11 +361,15 @@ private fun CartListScreenContent(
                                 dispatch(CartIntent.DeleteLookSwipeClick(group.lookId.orEmpty()))
                             },
                             productModifier = productModifier,
+                            swipeKey = "look_${group.key}",
+                            openedSwipeKey = openedSwipeKey,
+                            onSwipeOpen = { key -> openedSwipeKey = key },
                             selectedAlternativeId = state.selectedAlternativeId
                         )
                     }
                     else -> {
                         val product = group.products.first()
+
                         CartProductCard(
                             state = CartProductCardState(
                                 product = product,
@@ -403,6 +406,9 @@ private fun CartListScreenContent(
                                 onHideAlternativesSwipeClick = {
                                     dispatch(CartIntent.HideAlternativesSwipeClick(product))
                                 },
+                                swipeKey = "product_${product.id}",
+                                openedSwipeKey = openedSwipeKey,
+                                onSwipeOpen = { key -> openedSwipeKey = key },
                                 selectedAlternativeId = state.selectedAlternativeId
                             ),
                             modifier = productModifier(product)
@@ -412,11 +418,8 @@ private fun CartListScreenContent(
             }
 
             val product = group.products.firstOrNull()
-            val isAlternativesVisible = product?.isAlternativesPaletteOpen == true &&
-                product.alternatives.isNotEmpty()
-            val isDividerVisible = !group.isLook &&
-                groupIndex < lastGroupIndex &&
-                !isAlternativesVisible
+            val isAlternativesVisible = product?.isAlternativesPaletteOpen == true && product.alternatives.isNotEmpty()
+            val isDividerVisible = !group.isLook && groupIndex < lastGroupIndex && !isAlternativesVisible
 
             if (isDividerVisible) {
                 HorizontalDivider(

@@ -41,7 +41,9 @@ import ru.mercury.vpclient.shared.ui.zoomable
 @Composable
 fun MediaScreen(
     route: MediaRoute,
-    viewModel: MediaViewModel = hiltViewModel<MediaViewModel, MediaViewModel.Factory>(creationCallback = { it.create(route) })
+    viewModel: MediaViewModel = hiltViewModel<MediaViewModel, MediaViewModel.Factory>(
+        creationCallback = { it.create(route) }
+    )
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
 
@@ -74,13 +76,13 @@ private fun MediaScreenContent(
                         Icon(
                             imageVector = Close24,
                             contentDescription = null,
-                            modifier = Modifier.size(24.dp),
-                            tint = MaterialTheme.colorScheme.onBackground
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
+                    containerColor = MaterialTheme.colorScheme.background,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground
                 )
             )
         },
@@ -107,6 +109,7 @@ private fun MediaScreenContent(
             when (val item = mediaItems[page]) {
                 is DetailsMediaItem.Image -> {
                     val zoomState = rememberZoomState()
+
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.TopCenter
@@ -123,6 +126,7 @@ private fun MediaScreenContent(
                 }
                 is DetailsMediaItem.Video -> {
                     val zoomState = rememberZoomState()
+
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.TopCenter

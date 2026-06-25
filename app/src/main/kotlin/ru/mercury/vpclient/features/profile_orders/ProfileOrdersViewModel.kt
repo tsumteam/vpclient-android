@@ -19,6 +19,8 @@ import ru.mercury.vpclient.features.profile_stack.event.ProfileStackEventManager
 import ru.mercury.vpclient.shared.domain.interactor.AuthenticationInteractor
 import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
 import ru.mercury.vpclient.shared.domain.interactor.OrderInteractor
+import ru.mercury.vpclient.shared.domain.usecase.CartCountFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.FittingCountFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.navigation.BackRoute
@@ -28,6 +30,8 @@ import javax.inject.Inject
 class ProfileOrdersViewModel @Inject constructor(
     private val authenticationInteractor: AuthenticationInteractor,
     private val cartInteractor: CartInteractor,
+    private val cartCountFlowUseCase: CartCountFlowUseCase,
+    private val fittingCountFlowUseCase: FittingCountFlowUseCase,
     private val employeeActiveFlowUseCase: EmployeeActiveFlowUseCase,
     private val orderInteractor: OrderInteractor
 ): ClientViewModel<ProfileOrdersIntent, ProfileOrdersModel, ProfileOrdersEvent>(ProfileOrdersModel()) {
@@ -48,19 +52,29 @@ class ProfileOrdersViewModel @Inject constructor(
     ).flow.cachedIn(this)
 
     init {
-        dispatch(ProfileOrdersIntent.CollectCartSize)
+        dispatch(ProfileOrdersIntent.CollectCartCount)
+        dispatch(ProfileOrdersIntent.CollectFittingCount)
         dispatch(ProfileOrdersIntent.CollectActiveEmployee)
         dispatch(ProfileOrdersIntent.LoadCartData)
     }
 
     override fun dispatch(intent: ProfileOrdersIntent) {
         when (intent) {
-            is ProfileOrdersIntent.CollectCartSize -> {
+            is ProfileOrdersIntent.CollectCartCount -> {
                 launch {
-                    cartInteractor.cartSize
+                    cartCountFlowUseCase(Unit)
                         .distinctUntilChanged()
-                        .collectLatest { size ->
-                            reduce { it.copy(cartSize = size) }
+                        .collectLatest { count ->
+                            reduce { it.copy(cartCount = count) }
+                        }
+                }
+            }
+            is ProfileOrdersIntent.CollectFittingCount -> {
+                launch {
+                    fittingCountFlowUseCase(Unit)
+                        .distinctUntilChanged()
+                        .collectLatest { count ->
+                            reduce { it.copy(fittingCount = count) }
                         }
                 }
             }
@@ -76,6 +90,7 @@ class ProfileOrdersViewModel @Inject constructor(
             is ProfileOrdersIntent.LoadCartData -> {
                 launch {
                     runCatching { cartInteractor.loadBasket() }
+                    runCatching { cartInteractor.loadFitting() }
 
                     val badge = runCatching { cartInteractor.cartBadge() }.getOrDefault(0)
                     reduce { it.copy(cartBadge = badge) }
@@ -87,6 +102,7 @@ class ProfileOrdersViewModel @Inject constructor(
                 launch { send(ProfileOrdersEvent.RefreshOrders) }
                 launch {
                     runCatching { cartInteractor.loadBasket() }
+                    runCatching { cartInteractor.loadFitting() }
 
                     val badge = runCatching { cartInteractor.cartBadge() }.getOrDefault(0)
                     reduce { it.copy(cartBadge = badge) }

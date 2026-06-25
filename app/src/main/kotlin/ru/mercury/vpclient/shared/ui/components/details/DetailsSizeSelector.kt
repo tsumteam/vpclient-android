@@ -31,7 +31,10 @@ data class SizeSelectorState(
     val sizes: List<SizeState>,
     val topText: String,
     val bottomText: String,
-    val isSizeTableVisible: Boolean
+    val isSizeTableVisible: Boolean,
+    val isSizeSelectTextVisible: Boolean = true,
+    val onSizeClick: (Int) -> Unit = {},
+    val onSizeTableClick: () -> Unit = {}
 ) {
     val selectedSize: SizeState?
         get() = sizes.firstOrNull { it.selected }
@@ -49,8 +52,6 @@ data class SizeSelectorState(
 @Composable
 fun DetailsSizeSelector(
     state: SizeSelectorState,
-    onSizeClick: (Int) -> Unit,
-    onSizeTableClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     ConstraintLayout(
@@ -72,7 +73,7 @@ fun DetailsSizeSelector(
 
         if (state.isSizeTableVisible) {
             TextButton(
-                onClick = onSizeTableClick,
+                onClick = state.onSizeTableClick,
                 modifier = Modifier.constrainAs(tableButtonRef) {
                     top.linkTo(parent.top)
                     end.linkTo(parent.end, 8.dp)
@@ -100,7 +101,7 @@ fun DetailsSizeSelector(
             verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterVertically)
         ) {
             Text(
-                text = state.topText.ifEmpty { state.selectedSize?.topText.orEmpty() },
+                text = state.topText,
                 style = MaterialTheme.typography.regular14.copy(
                     color = MaterialTheme.colorScheme.onBackground,
                     letterSpacing = .2.sp
@@ -108,7 +109,7 @@ fun DetailsSizeSelector(
             )
 
             Text(
-                text = state.bottomText.ifEmpty { state.selectedSize?.bottomText.orEmpty() },
+                text = state.bottomText,
                 style = MaterialTheme.typography.regular14.copy(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     letterSpacing = .2.sp
@@ -119,25 +120,30 @@ fun DetailsSizeSelector(
         LazyRow(
             modifier = Modifier.constrainAs(sizeListRef) {
                 width = Dimension.fillToConstraints
-                start.linkTo(textsRef.end)
+                start.linkTo(textsRef.end, 16.dp)
                 top.linkTo(titleRef.bottom, 16.dp)
                 end.linkTo(parent.end)
             },
-            contentPadding = PaddingValues(horizontal = 16.dp),
+            contentPadding = PaddingValues(end = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             itemsIndexed(state.sizes) { index, sizeState ->
                 DetailsSizeButton(
                     state = sizeState,
-                    onClick = { onSizeClick(index) }
+                    onClick = { state.onSizeClick(index) }
                 )
             }
         }
 
         Text(
             text = when {
-                state.selectedSize == null -> stringResource(ClientStrings.DetailsSizeSelect)
-                state.selectedSize?.enabled == true -> stringResource(ClientStrings.DetailsSizeInStock)
+                state.selectedSize == null && state.isSizeSelectTextVisible -> {
+                    stringResource(ClientStrings.DetailsSizeSelect)
+                }
+                state.selectedSize == null -> ""
+                state.selectedSize?.enabled == true -> {
+                    stringResource(ClientStrings.DetailsSizeInStock)
+                }
                 else -> stringResource(ClientStrings.DetailsSizeSold)
             },
             modifier = Modifier.constrainAs(statusRef) {
@@ -163,9 +169,7 @@ private fun DetailsSizeSelectorPreview(
     @PreviewParameter(DetailsSizeSelectorSizeSelectorStateProvider::class) state: SizeSelectorState
 ) {
     DetailsSizeSelector(
-        state = state,
-        onSizeClick = {},
-        onSizeTableClick = {}
+        state = state
     )
 }
 

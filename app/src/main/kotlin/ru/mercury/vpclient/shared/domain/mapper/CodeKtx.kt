@@ -2,6 +2,7 @@ package ru.mercury.vpclient.shared.domain.mapper
 
 import ru.mercury.vpclient.shared.data.CODE_RESEND_MAX_TIME
 import ru.mercury.vpclient.shared.data.CODE_RESEND_TIMER_DELAY
+import ru.mercury.vpclient.shared.data.PREFIX_SPACE
 import java.util.Locale
 
 fun formatCodeResendTime(seconds: Int): String {
@@ -28,12 +29,12 @@ fun formatPhoneForDisplay(phone: String): String {
 
     val part2 = digits.segment(1, 4)
     if (part2.isNotEmpty()) {
-        result.append(" ").append(part2)
+        result.append(PREFIX_SPACE).append(part2)
     }
 
     val part3 = digits.segment(4, 7)
     if (part3.isNotEmpty()) {
-        result.append(" ").append(part3)
+        result.append(PREFIX_SPACE).append(part3)
     }
 
     val part4 = digits.segment(7, 9)
@@ -47,7 +48,7 @@ fun formatPhoneForDisplay(phone: String): String {
     }
 
     if (digits.length > 11) {
-        result.append(" ").append(digits.substring(11))
+        result.append(PREFIX_SPACE).append(digits.substring(11))
     }
 
     return result.toString()

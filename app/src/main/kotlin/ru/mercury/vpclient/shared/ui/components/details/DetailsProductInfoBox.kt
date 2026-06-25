@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,19 +30,25 @@ import ru.mercury.vpclient.shared.ui.components.DiscountBadge
 import ru.mercury.vpclient.shared.ui.components.PriceText
 import ru.mercury.vpclient.shared.ui.icons.Message24
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
+import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.regular14
+
+data class DetailsProductInfoBoxState(
+    val productEntity: ProductEntity,
+    val availabilityText: Int? = null,
+    val onMessageClick: () -> Unit = {}
+)
 
 @Composable
 fun DetailsProductInfoBox(
-    productEntity: ProductEntity,
-    onMessageClick: () -> Unit,
+    state: DetailsProductInfoBoxState,
     modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier.padding(bottom = 12.dp)
     ) {
         IconButton(
-            onClick = onMessageClick,
+            onClick = state.onMessageClick,
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .padding(start = 8.dp, top = 31.dp)
@@ -56,8 +63,8 @@ fun DetailsProductInfoBox(
 
         BrandBox(
             entity = BrandEntity(
-                brand = productEntity.brand.orEmpty(),
-                urlBrandLogo = productEntity.urlBrandLogo
+                brand = state.productEntity.brand.orEmpty(),
+                urlBrandLogo = state.productEntity.urlBrandLogo
             ),
             modifier = Modifier
                 .align(Alignment.TopCenter)
@@ -71,14 +78,14 @@ fun DetailsProductInfoBox(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = productEntity.shortDescription.orEmpty(),
+                text = state.productEntity.shortDescription.orEmpty(),
                 modifier = Modifier.fillMaxWidth(),
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
                 style = MaterialTheme.typography.regular14.copy(color = MaterialTheme.colorScheme.onBackground, textAlign = TextAlign.Center)
             )
 
-            productEntity.cashboxActions.forEach { action ->
+            state.productEntity.cashboxActions.forEach { action ->
                 Text(
                     text = action,
                     modifier = Modifier
@@ -91,13 +98,28 @@ fun DetailsProductInfoBox(
             }
 
             PriceText(
-                entity = productEntity,
+                entity = state.productEntity,
                 modifier = Modifier.padding(top = 6.dp)
             )
 
-            if (productEntity.isDiscountLabelVisible) {
+            state.availabilityText?.let { availabilityText ->
+                Text(
+                    text = stringResource(availabilityText),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 4.dp),
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.regular14.copy(
+                        color = MaterialTheme.colorScheme.error,
+                        textAlign = TextAlign.Center
+                    )
+                )
+            }
+
+            if (state.productEntity.isDiscountLabelVisible) {
                 DiscountBadge(
-                    percentText = productEntity.cardDiscountLabel.orEmpty(),
+                    percentText = state.productEntity.cardDiscountLabel.orEmpty(),
                     modifier = Modifier.padding(top = 6.dp)
                 )
             }
@@ -109,48 +131,67 @@ fun DetailsProductInfoBox(
 @Preview(showBackground = true)
 @Composable
 private fun DetailsProductInfoBoxPreview(
-    @PreviewParameter(ProductInfoBoxProvider::class) productEntity: ProductEntity
+    @PreviewParameter(ProductInfoBoxStateProvider::class) state: DetailsProductInfoBoxState
 ) {
     DetailsProductInfoBox(
-        productEntity = productEntity,
-        onMessageClick = {},
+        state = state,
         modifier = Modifier.fillMaxWidth()
     )
 }
 
-private class ProductInfoBoxProvider: PreviewParameterProvider<ProductEntity> {
-    override val values: Sequence<ProductEntity> = sequenceOf(
-        ProductEntity.Empty.copy(
-            id = "preview-1",
-            shortDescription = "Куртка из кожи oversize",
-            brand = "SAINT LAURENT",
-            price = 189_900.0,
-            priceWithoutDiscount = null,
-            cashboxActions = emptyList()
+private class ProductInfoBoxStateProvider: PreviewParameterProvider<DetailsProductInfoBoxState> {
+    override val values: Sequence<DetailsProductInfoBoxState> = sequenceOf(
+        DetailsProductInfoBoxState(
+            productEntity = ProductEntity.Empty.copy(
+                id = "preview-1",
+                shortDescription = "Куртка из кожи oversize",
+                brand = "SAINT LAURENT",
+                price = 189_900.0,
+                priceWithoutDiscount = null,
+                cashboxActions = emptyList()
+            )
         ),
-        ProductEntity.Empty.copy(
-            id = "preview-2",
-            shortDescription = "Хлопковая футболка с логотипом",
-            brand = "BRUNELLO CUCINELLI",
-            price = 32_700.0,
-            priceWithoutDiscount = 45_000.0,
-            cashboxActions = listOf("Скидка ЦУМ collect")
+        DetailsProductInfoBoxState(
+            productEntity = ProductEntity.Empty.copy(
+                id = "preview-2",
+                shortDescription = "Хлопковая футболка с логотипом",
+                brand = "BRUNELLO CUCINELLI",
+                price = 32_700.0,
+                priceWithoutDiscount = 45_000.0,
+                cashboxActions = listOf("Скидка ЦУМ collect")
+            )
         ),
-        ProductEntity.Empty.copy(
-            id = "preview-3",
-            shortDescription = "Шёлковое платье миди",
-            brand = "VALENTINO",
-            price = 129_900.0,
-            priceWithoutDiscount = null,
-            cashboxActions = emptyList()
+        DetailsProductInfoBoxState(
+            productEntity = ProductEntity.Empty.copy(
+                id = "preview-3",
+                shortDescription = "Шёлковое платье миди",
+                brand = "VALENTINO",
+                price = 129_900.0,
+                priceWithoutDiscount = null,
+                cashboxActions = emptyList()
+            ),
+            availabilityText = ClientStrings.DetailsSold
         ),
-        ProductEntity.Empty.copy(
-            id = "preview-4",
-            shortDescription = "Кашемировый джемпер",
-            brand = "LORO PIANA",
-            price = 74_500.0,
-            priceWithoutDiscount = 110_000.0,
-            cashboxActions = listOf("Скидка ЦУМ collect", "Скидка по акции")
+        DetailsProductInfoBoxState(
+            productEntity = ProductEntity.Empty.copy(
+                id = "preview-5",
+                shortDescription = "Сумка из кожи",
+                brand = "BOTTEGA VENETA",
+                price = 219_900.0,
+                priceWithoutDiscount = null,
+                cashboxActions = emptyList()
+            ),
+            availabilityText = ClientStrings.DetailsSizeInStock
+        ),
+        DetailsProductInfoBoxState(
+            productEntity = ProductEntity.Empty.copy(
+                id = "preview-4",
+                shortDescription = "Кашемировый джемпер",
+                brand = "LORO PIANA",
+                price = 74_500.0,
+                priceWithoutDiscount = 110_000.0,
+                cashboxActions = listOf("Скидка ЦУМ collect", "Скидка по акции")
+            )
         )
     )
 }

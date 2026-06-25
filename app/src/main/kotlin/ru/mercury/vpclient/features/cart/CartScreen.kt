@@ -59,9 +59,9 @@ import ru.mercury.vpclient.features.cart_list.CartListScreen
 import ru.mercury.vpclient.features.cart_quantity_sheet.CartQuantitySheet
 import ru.mercury.vpclient.features.cart_quantity_sheet.intent.CartQuantityIntent
 import ru.mercury.vpclient.features.cart_quantity_sheet.model.CartQuantityModel
-import ru.mercury.vpclient.features.cart_size_picker_sheet.CartSizePickerSheet
-import ru.mercury.vpclient.features.cart_size_picker_sheet.intent.CartSizePickerSheetIntent
-import ru.mercury.vpclient.features.cart_size_picker_sheet.model.CartSizePickerSheetModel
+import ru.mercury.vpclient.features.cart_size_sheet.CartSizeSheet
+import ru.mercury.vpclient.features.cart_size_sheet.intent.CartSizeSheetIntent
+import ru.mercury.vpclient.features.cart_size_sheet.model.CartSizeSheetModel
 import ru.mercury.vpclient.shared.data.entity.CartFittingSheetOption
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
@@ -93,16 +93,20 @@ fun CartScreen(
         snackbarHostStateError = snackbarHostStateError
     )
 
-    state.editProduct?.let { product ->
-        val editProductActions = listOf(
-            stringResource(ClientStrings.CartEditAddSize) to CartIntent.AddSizeClick(product)
-        ).filter {
-            product.sizeItems.size < 2
-        } + listOf(
-            stringResource(ClientStrings.CartEditSelectSize) to CartIntent.ShowSizePicker(product),
-            stringResource(ClientStrings.CartEditChangeQuantity) to CartIntent.ShowQuantityPicker(product),
-            stringResource(ClientStrings.CartEditChangeColor) to CartIntent.ShowColorPicker(product)
-        )
+    if (state.isEditProductSheetVisible) {
+        val product = requireNotNull(state.editProduct)
+        val editProductActions = buildList {
+            if (!product.isSold && product.isSizeSelectionAvailable && product.sizeItems.size < 2) {
+                add(stringResource(ClientStrings.CartEditAddSize) to CartIntent.AddSizeClick(product))
+            }
+            if (product.isSizeSelectionAvailable) {
+                add(stringResource(ClientStrings.CartEditSelectSize) to CartIntent.ShowSizePicker(product))
+            }
+            if (!product.isSold) {
+                add(stringResource(ClientStrings.CartEditChangeQuantity) to CartIntent.ShowQuantityPicker(product))
+            }
+            add(stringResource(ClientStrings.CartEditChangeColor) to CartIntent.ShowColorPicker(product))
+        }
 
         CartEditProductSheet(
             state = CartEditProductSheetModel(
@@ -122,7 +126,8 @@ fun CartScreen(
         )
     }
 
-    state.fittingEditProduct?.let { product ->
+    if (state.isFittingEditProductSheetVisible) {
+        val product = requireNotNull(state.fittingEditProduct)
         CartFittingEditProductSheet(
             dispatch = { intent ->
                 when (intent) {
@@ -198,32 +203,35 @@ fun CartScreen(
         )
     }
 
-    if (state.sizePickerProduct != null) {
-        CartSizePickerSheet(
-            state = CartSizePickerSheetModel(
+    if (state.isSizePickerSheetVisible) {
+        CartSizeSheet(
+            state = CartSizeSheetModel(
                 sizeSelectorState = state.sizePickerState,
                 buttonText = when {
                     state.sizePickerForFitting -> stringResource(ClientStrings.CartSave)
-                    else -> stringResource(ClientStrings.CartSelectSizeForPaymentButton)
+                    else -> stringResource(ClientStrings.CartSizeSheetSelect)
                 }
             ),
             dispatch = { intent ->
                 when (intent) {
-                    is CartSizePickerSheetIntent.SizeClick -> {
+                    is CartSizeSheetIntent.SizeClick -> {
                         dispatch(CartIntent.ToggleSizePickerItem(intent.index))
                     }
-                    is CartSizePickerSheetIntent.ConfirmClick -> {
+                    is CartSizeSheetIntent.ConfirmClick -> {
                         dispatch(CartIntent.ConfirmSizePicker)
                     }
-                    is CartSizePickerSheetIntent.DismissRequest -> {
+                    is CartSizeSheetIntent.DismissRequest -> {
                         dispatch(CartIntent.HideSizePicker)
+                    }
+                    is CartSizeSheetIntent.SizeTableClick -> {
+                        dispatch(CartIntent.SizeTableClick)
                     }
                 }
             }
         )
     }
 
-    if (state.colorPickerProduct != null) {
+    if (state.isColorPickerSheetVisible) {
         CartColorSheet(
             state = CartColorModel(
                 colors = state.colorPickerColorsState
@@ -244,7 +252,7 @@ fun CartScreen(
         )
     }
 
-    if (state.quantityPickerProduct != null) {
+    if (state.isQuantityPickerSheetVisible) {
         CartQuantitySheet(
             state = CartQuantityModel(
                 quantities = state.quantityPickerValues
@@ -331,13 +339,13 @@ private fun CartScreenContent(
                             Icon(
                                 imageVector = Close24,
                                 contentDescription = null,
-                                modifier = Modifier.size(24.dp),
-                                tint = MaterialTheme.colorScheme.onBackground
+                                modifier = Modifier.size(24.dp)
                             )
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.background
+                        containerColor = MaterialTheme.colorScheme.background,
+                        navigationIconContentColor = MaterialTheme.colorScheme.onBackground
                     )
                 )
 

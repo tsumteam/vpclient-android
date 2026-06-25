@@ -29,6 +29,8 @@ import ru.mercury.vpclient.features.profile_policy.navigation.ProfilePolicyRoute
 import ru.mercury.vpclient.features.profile_return.ProfileReturnScreen
 import ru.mercury.vpclient.features.profile_return.navigation.ProfileReturnRoute
 import ru.mercury.vpclient.features.profile_stack.event.ProfileStackEventManager
+import ru.mercury.vpclient.features.profile_view_history.ProfileViewHistoryScreen
+import ru.mercury.vpclient.features.profile_view_history.navigation.ProfileViewHistoryRoute
 import ru.mercury.vpclient.shared.navigation.BackRoute
 import ru.mercury.vpclient.shared.ui.components.system.ClientNavDisplay
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
@@ -52,6 +54,7 @@ fun ProfileStackScreen(
             entry<ProfilePolicyRoute> { ProfilePolicyScreen() }
             entry<ProfileGiftRoute> { ProfileGiftScreen() }
             entry<ProfileContactsRoute> { ProfileContactsScreen() }
+            entry<ProfileViewHistoryRoute> { ProfileViewHistoryScreen() }
         }
     )
 
@@ -73,6 +76,7 @@ fun ProfileStackScreen(
             is ProfilePolicyRoute -> navBackStack.add(event)
             is ProfileGiftRoute -> navBackStack.add(event)
             is ProfileContactsRoute -> navBackStack.add(event)
+            is ProfileViewHistoryRoute -> navBackStack.add(event)
             is BackRoute -> navBackStack.removeLastOrNull()
         }
     }

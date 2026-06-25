@@ -46,7 +46,12 @@
     <string name="main_tab_profile">Профиль</string>
 
     <string name="catalog_watch_all">Смотреть\nвсё</string>
+    <string name="catalog_view_all">Смотреть всё</string>
     <string name="catalog_view_all_clothing">Смотреть всю одежду</string>
+    <string name="catalog_view_all_shoes">Смотреть всю обувь</string>
+    <string name="catalog_view_all_bags">Смотреть все сумки</string>
+    <string name="catalog_view_all_accessories">Смотреть все аксессуары</string>
+    <string name="catalog_view_all_baby">Смотреть все для малышей</string>
     <string name="catalog_added_to_cart">Добавлено в корзину</string>
 
     <string name="cart_title">Корзина</string>
@@ -64,6 +69,8 @@
     <string name="cart_alternatives_not_found">Альтернативы не найдены</string>
     <string name="cart_hide_alternatives">Скрыть</string>
     <string name="cart_select_size_for_payment_button">Выбрать размер</string>
+    <string name="cart_size_sheet_select">Выбрать</string>
+    <string name="cart_size_sheet_select_for_alternative">Выбрать для подбора альтернативы</string>
     <string name="cart_look_default_title">Образ</string>
     <string name="cart_look_add">Дополнить образ</string>
     <string name="cart_buy_item">Купить</string>
@@ -75,6 +82,7 @@
     <string name="cart_edit_change_quantity">Изменить количество</string>
     <string name="cart_edit_change_quantity_caps">ИЗМЕНИТЬ КОЛИЧЕСТВО</string>
     <string name="cart_edit_change_color">Изменить цвет</string>
+    <string name="cart_no_available_colors">Для товара нет доступных цветов</string>
     <string name="cart_edit_cancel">Отмена</string>
     <string name="cart_save">Сохранить</string>
     <string name="cart_fitting_return_to_basket">Вернуть\nв корзину</string>
@@ -224,6 +232,8 @@
     <string name="filter_brand_all_header">ВСЕ БРЕНДЫ</string>
     <string name="filter_brand_select_all">Выбрать все</string>
     <string name="filter_brand_empty_search">По Вашему запросу ничего не найдено</string>
+    <string name="filter_empty_products_message">По Вашему запросу ничего не найдено</string>
+    <string name="filter_empty_products_button">Вернуться в каталог</string>
 
     <string name="sort_title">СОРТИРОВКА</string>
     <string name="sort_select">Выбрать</string>
@@ -235,15 +245,17 @@
     <string name="size_country_russia">Россия</string>
     <string name="size_country_italy">Италия</string>
     <string name="size_country_france">Франция</string>
-    <string name="size_country_international">Международная</string>
+    <string name="size_country_international">Международный</string>
 
     <string name="details_what_to_wear">С ЧЕМ\nНОСИТЬ</string>
     <string name="details_add_to_basket">Добавить в корзину</string>
+    <string name="details_pick_alternative_in_basket">Подобрать альтернативу в корзине</string>
     <string name="details_size_title">Размер</string>
     <string name="details_size_table">Таблица размеров</string>
     <string name="details_size_select">Выберите размер</string>
     <string name="details_size_select_caps">ВЫБЕРИТЕ РАЗМЕР</string>
     <string name="details_size_in_stock">В наличии</string>
+    <string name="details_sold">Продано</string>
     <string name="details_size_sold">Продан. Размер для подбора альтернативы</string>
     <string name="details_other_model_colors">ДРУГИЕ ЦВЕТА ЭТОЙ МОДЕЛИ</string>
     <string name="details_wear_with_title">С ЧЕМ НОСИТЬ</string>
@@ -261,6 +273,8 @@
     <string name="details_field_item_id">Артикул</string>
     <string name="details_field_article">Артикул производителя</string>
     <string name="details_field_measurements">Замеры</string>
+    <string name="details_article_copied">Артикул скопирован</string>
+    <string name="details_manufacturer_article_copied">Артикул производителя скопирован</string>
 
     <string name="video_speed_title">Скорость</string>
     <string name="video_speed_05">0,5x</string>
@@ -305,6 +319,8 @@
     <string name="profile_purchases">Покупки</string>
     <string name="profile_information">Информация</string>
     <string name="profile_qr_code">Ваш QR-код</string>
+    <string name="profile_favorite_brands">Любимые бренды</string>
+    <string name="profile_recently_viewed">Вы недавно смотрели</string>
     <string name="profile_recently_viewed_caps">ВЫ НЕДАВНО СМОТРЕЛИ</string>
     <string name="profile_watch_more">Смотреть еще</string>
     <string name="profile_logout_title">Выход</string>

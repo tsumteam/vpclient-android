@@ -34,8 +34,8 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.R
-import ru.mercury.vpclient.shared.data.entity.LoyaltyCardInfo
 import ru.mercury.vpclient.shared.data.entity.LoyaltyCardType
+import ru.mercury.vpclient.shared.data.persistence.database.entity.LoyaltyCardInfoEntity
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.gold
@@ -50,16 +50,17 @@ import ru.mercury.vpclient.shared.ui.theme.silver2
 import ru.mercury.vpclient.shared.ui.theme.silver3
 
 data class ProfileLoyaltyCardState(
-    val cardInfo: LoyaltyCardInfo = LoyaltyCardInfo(),
-    val showButtons: Boolean = true
+    val loyaltyCardInfoEntity: LoyaltyCardInfoEntity = LoyaltyCardInfoEntity.Empty,
+    val isButtonsVisible: Boolean = true,
+    val moreButtonEnabled: Boolean = true,
+    val onQrButtonClick: () -> Unit = {},
+    val onMoreButtonClick: () -> Unit = {}
 )
 
 @Composable
 fun ProfileLoyaltyCard(
     state: ProfileLoyaltyCardState,
-    modifier: Modifier = Modifier,
-    onQrClick: () -> Unit = {},
-    onMoreClick: () -> Unit = {}
+    modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier
@@ -67,26 +68,32 @@ fun ProfileLoyaltyCard(
             .height(191.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(
-                when (state.cardInfo.typeCard) {
-                    LoyaltyCardType.Black -> Brush.linearGradient(
-                        colors = listOf(
-                            MaterialTheme.colorScheme.primary,
-                            MaterialTheme.colorScheme.primary
+                when (state.loyaltyCardInfoEntity.typeCard) {
+                    LoyaltyCardType.Black -> {
+                        Brush.linearGradient(
+                            colors = listOf(
+                                MaterialTheme.colorScheme.primary,
+                                MaterialTheme.colorScheme.primary
+                            )
                         )
-                    )
-                    LoyaltyCardType.Gold -> Brush.linearGradient(
-                        colors = listOf(
-                            MaterialTheme.colorScheme.gold2,
-                            MaterialTheme.colorScheme.gold3,
-                            MaterialTheme.colorScheme.gold4
+                    }
+                    LoyaltyCardType.Gold -> {
+                        Brush.linearGradient(
+                            colors = listOf(
+                                MaterialTheme.colorScheme.gold2,
+                                MaterialTheme.colorScheme.gold3,
+                                MaterialTheme.colorScheme.gold4
+                            )
                         )
-                    )
-                    LoyaltyCardType.Silver -> Brush.linearGradient(
-                        colors = listOf(
-                            MaterialTheme.colorScheme.silver,
-                            MaterialTheme.colorScheme.silver2
+                    }
+                    LoyaltyCardType.Silver -> {
+                        Brush.linearGradient(
+                            colors = listOf(
+                                MaterialTheme.colorScheme.silver,
+                                MaterialTheme.colorScheme.silver2
+                            )
                         )
-                    )
+                    }
                 }
             )
     ) {
@@ -105,7 +112,7 @@ fun ProfileLoyaltyCard(
             )
 
             Text(
-                text = state.cardInfo.loyaltyCardNumber,
+                text = state.loyaltyCardInfoEntity.loyaltyCardNumber,
                 modifier = Modifier.padding(top = 7.dp),
                 style = MaterialTheme.typography.regular18.copy(
                     color = Color.White,
@@ -120,9 +127,9 @@ fun ProfileLoyaltyCard(
 
             Text(
                 text = pluralStringResource(
-                    id = ClientStrings.ProfileLoyaltyCardBonuses,
-                    count = state.cardInfo.bonusAmount,
-                    state.cardInfo.bonusAmount
+                    ClientStrings.ProfileLoyaltyCardBonuses,
+                    state.loyaltyCardInfoEntity.bonusAmount,
+                    state.loyaltyCardInfoEntity.bonusAmount
                 ),
                 style = MaterialTheme.typography.regular16.copy(
                     color = Color.White,
@@ -134,7 +141,7 @@ fun ProfileLoyaltyCard(
 
         Image(
             painter = painterResource(
-                when (state.cardInfo.typeCard) {
+                when (state.loyaltyCardInfoEntity.typeCard) {
                     LoyaltyCardType.Black -> R.drawable.loyalty_vip_black
                     LoyaltyCardType.Gold -> R.drawable.loyalty_vip_gold
                     LoyaltyCardType.Silver -> R.drawable.loyalty_vip_silver
@@ -145,12 +152,12 @@ fun ProfileLoyaltyCard(
                 .align(Alignment.TopEnd)
                 .padding(top = 24.dp, end = 16.dp)
                 .size(
-                    width = when (state.cardInfo.typeCard) {
+                    width = when (state.loyaltyCardInfoEntity.typeCard) {
                         LoyaltyCardType.Black -> 95.dp
                         LoyaltyCardType.Gold -> 89.dp
                         LoyaltyCardType.Silver -> 81.dp
                     },
-                    height = when (state.cardInfo.typeCard) {
+                    height = when (state.loyaltyCardInfoEntity.typeCard) {
                         LoyaltyCardType.Black -> 47.dp
                         LoyaltyCardType.Gold -> 50.dp
                         LoyaltyCardType.Silver -> 55.dp
@@ -158,7 +165,7 @@ fun ProfileLoyaltyCard(
                 )
         )
 
-        if (state.showButtons) {
+        if (state.isButtonsVisible) {
             Row(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
@@ -171,14 +178,14 @@ fun ProfileLoyaltyCard(
                         .height(22.dp)
                         .clip(RoundedCornerShape(51.dp))
                         .background(Color.White)
-                        .clickable(onClick = onQrClick)
+                        .clickable(onClick = state.onQrButtonClick)
                         .padding(horizontal = 15.5.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = stringResource(ClientStrings.ProfileLoyaltyCardQrCode),
                         style = MaterialTheme.typography.regular10.copy(
-                            color = when (state.cardInfo.typeCard) {
+                            color = when (state.loyaltyCardInfoEntity.typeCard) {
                                 LoyaltyCardType.Gold -> MaterialTheme.colorScheme.gold
                                 LoyaltyCardType.Black,
                                 LoyaltyCardType.Silver -> MaterialTheme.colorScheme.onBackground
@@ -192,31 +199,36 @@ fun ProfileLoyaltyCard(
                         .height(22.dp)
                         .clip(RoundedCornerShape(51.dp))
                         .background(
-                            when (state.cardInfo.typeCard) {
+                            when (state.loyaltyCardInfoEntity.typeCard) {
                                 LoyaltyCardType.Gold -> Color.Transparent
                                 LoyaltyCardType.Black,
                                 LoyaltyCardType.Silver -> MaterialTheme.colorScheme.silver3
                             }
                         )
                         .then(
-                            when (state.cardInfo.typeCard) {
-                                LoyaltyCardType.Gold -> Modifier.border(
-                                    width = 1.dp,
-                                    color = Color.White,
-                                    shape = RoundedCornerShape(11.dp)
-                                )
+                            when (state.loyaltyCardInfoEntity.typeCard) {
+                                LoyaltyCardType.Gold -> {
+                                    Modifier.border(
+                                        width = 1.dp,
+                                        color = Color.White,
+                                        shape = RoundedCornerShape(11.dp)
+                                    )
+                                }
                                 LoyaltyCardType.Black,
                                 LoyaltyCardType.Silver -> Modifier
                             }
                         )
-                        .clickable(onClick = onMoreClick)
+                        .clickable(
+                            enabled = state.moreButtonEnabled,
+                            onClick = state.onMoreButtonClick
+                        )
                         .padding(horizontal = 6.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = stringResource(ClientStrings.ProfileLoyaltyCardMore),
                         style = MaterialTheme.typography.regular10.copy(
-                            color = when (state.cardInfo.typeCard) {
+                            color = when (state.loyaltyCardInfoEntity.typeCard) {
                                 LoyaltyCardType.Gold -> Color.White
                                 LoyaltyCardType.Black,
                                 LoyaltyCardType.Silver -> MaterialTheme.colorScheme.onBackground
@@ -245,21 +257,21 @@ private fun ProfileLoyaltyCardPreview(
 private class ProfileLoyaltyCardStatePreviewParameterProvider: PreviewParameterProvider<ProfileLoyaltyCardState> {
     override val values: Sequence<ProfileLoyaltyCardState> = sequenceOf(
         ProfileLoyaltyCardState(
-            cardInfo = LoyaltyCardInfo(
+            loyaltyCardInfoEntity = LoyaltyCardInfoEntity.Empty.copy(
                 loyaltyCardNumber = "G40135",
                 bonusAmount = 0,
                 typeCard = LoyaltyCardType.Black
             )
         ),
         ProfileLoyaltyCardState(
-            cardInfo = LoyaltyCardInfo(
+            loyaltyCardInfoEntity = LoyaltyCardInfoEntity.Empty.copy(
                 loyaltyCardNumber = "G40135",
                 bonusAmount = 0,
                 typeCard = LoyaltyCardType.Gold
             )
         ),
         ProfileLoyaltyCardState(
-            cardInfo = LoyaltyCardInfo(
+            loyaltyCardInfoEntity = LoyaltyCardInfoEntity.Empty.copy(
                 loyaltyCardNumber = "G40135",
                 bonusAmount = 0,
                 typeCard = LoyaltyCardType.Silver

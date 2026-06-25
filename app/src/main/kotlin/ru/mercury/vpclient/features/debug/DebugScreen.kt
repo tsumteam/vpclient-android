@@ -74,7 +74,7 @@ fun DebugScreen(
         snackbarHostState = snackbarHostState
     )
 
-    if (state.environmentDialog) {
+    if (state.isEnvironmentDialogVisible) {
         DebugEnvironmentDialog(
             state = DebugEnvironmentDialogModel(
                 selectedEnvironment = state.environment
@@ -132,13 +132,14 @@ private fun DebugActivityContent(
                         Icon(
                             imageVector = Close24,
                             contentDescription = null,
-                            modifier = Modifier.size(24.dp),
-                            tint = MaterialTheme.colorScheme.onBackground
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
+                    containerColor = MaterialTheme.colorScheme.background,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground
                 )
             )
         },

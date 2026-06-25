@@ -14,8 +14,6 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilter
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValueItemEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesEntity
 
-// fixme
-
 private val json = Json { ignoreUnknownKeys = true; explicitNulls = false }
 
 fun CatalogFilterEntity.toFilterRibbonData(): FilterRibbonData {

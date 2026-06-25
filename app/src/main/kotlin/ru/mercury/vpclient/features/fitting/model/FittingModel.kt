@@ -5,17 +5,16 @@ import ru.mercury.vpclient.shared.data.FORMAT_RUB
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.FittingDeliveryData
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
-import ru.mercury.vpclient.shared.domain.mapper.fittingText
 import ru.mercury.vpclient.shared.domain.mapper.hasFittingBadge
-import ru.mercury.vpclient.shared.domain.mapper.hasFittingProducts
 import ru.mercury.vpclient.shared.domain.mapper.hasMessengerBadge
 import ru.mercury.vpclient.shared.domain.mapper.thousandsSeparator
 import ru.mercury.vpclient.shared.mvi.Model
 import kotlin.math.roundToInt
 
 data class FittingModel(
-    val cartSize: Int = 0,
+    val cartCount: Int = 0,
     val cartBadge: Int = 0,
+    val fittingCount: Int = 0,
     val activeEmployee: EmployeeEntity = EmployeeEntity.Empty,
     val products: List<CartProduct> = emptyList(),
     val apiFittingProducts: List<CartProduct> = emptyList(),
@@ -25,23 +24,23 @@ data class FittingModel(
 
     val cartText: String
         get() = when {
-            cartSize > 0 -> cartSize.toString()
+            cartCount > 0 -> cartCount.toString()
             else -> ""
         }
 
-    val showCartBadge: Boolean
+    val isCartBadgeVisible: Boolean
         get() = cartBadge > 0
 
     val fittingText: String
-        get() = activeEmployee.fittingText
+        get() = if (fittingCount > 0) fittingCount.toString() else ""
 
-    val showFittingButton: Boolean
-        get() = activeEmployee.hasFittingProducts
+    val isFittingButtonVisible: Boolean
+        get() = fittingCount > 0
 
-    val showFittingBadge: Boolean
+    val isFittingBadgeVisible: Boolean
         get() = activeEmployee.hasFittingBadge
 
-    val showMessengerBadge: Boolean
+    val isMessengerBadgeVisible: Boolean
         get() = activeEmployee.hasMessengerBadge
 
     val visibleProducts: List<CartProduct>

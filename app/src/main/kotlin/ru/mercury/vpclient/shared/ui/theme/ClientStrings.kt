@@ -50,7 +50,12 @@ object ClientStrings {
     val MainTabProfile get() = R.string.main_tab_profile
 
     val CatalogWatchAll get() = R.string.catalog_watch_all
+    val CatalogViewAll get() = R.string.catalog_view_all
     val CatalogViewAllClothing get() = R.string.catalog_view_all_clothing
+    val CatalogViewAllShoes get() = R.string.catalog_view_all_shoes
+    val CatalogViewAllBags get() = R.string.catalog_view_all_bags
+    val CatalogViewAllAccessories get() = R.string.catalog_view_all_accessories
+    val CatalogViewAllBaby get() = R.string.catalog_view_all_baby
     val CatalogAddedToCart get() = R.string.catalog_added_to_cart
 
     val CartTitle get() = R.string.cart_title
@@ -70,6 +75,8 @@ object ClientStrings {
     val CartAlternativesNotFound get() = R.string.cart_alternatives_not_found
     val CartHideAlternatives get() = R.string.cart_hide_alternatives
     val CartSelectSizeForPaymentButton get() = R.string.cart_select_size_for_payment_button
+    val CartSizeSheetSelect get() = R.string.cart_size_sheet_select
+    val CartSizeSheetSelectForAlternative get() = R.string.cart_size_sheet_select_for_alternative
     val CartLookDefaultTitle get() = R.string.cart_look_default_title
     val CartLookAdd get() = R.string.cart_look_add
     val CartBuyItem get() = R.string.cart_buy_item
@@ -81,6 +88,7 @@ object ClientStrings {
     val CartEditChangeQuantity get() = R.string.cart_edit_change_quantity
     val CartEditChangeQuantityCaps get() = R.string.cart_edit_change_quantity_caps
     val CartEditChangeColor get() = R.string.cart_edit_change_color
+    val CartNoAvailableColors get() = R.string.cart_no_available_colors
     val CartEditCancel get() = R.string.cart_edit_cancel
     val CartSave get() = R.string.cart_save
     val CartFittingReturnToBasket get() = R.string.cart_fitting_return_to_basket
@@ -187,6 +195,8 @@ object ClientStrings {
     val FilterBrandAllHeader get() = R.string.filter_brand_all_header
     val FilterBrandSelectAll get() = R.string.filter_brand_select_all
     val FilterBrandEmptySearch get() = R.string.filter_brand_empty_search
+    val FilterEmptyProductsMessage get() = R.string.filter_empty_products_message
+    val FilterEmptyProductsButton get() = R.string.filter_empty_products_button
 
     val SortTitle get() = R.string.sort_title
     val SortSelect get() = R.string.sort_select
@@ -202,11 +212,13 @@ object ClientStrings {
 
     val DetailsWhatToWear get() = R.string.details_what_to_wear
     val DetailsAddToBasket get() = R.string.details_add_to_basket
+    val DetailsPickAlternativeInBasket get() = R.string.details_pick_alternative_in_basket
     val DetailsSizeTitle get() = R.string.details_size_title
     val DetailsSizeTable get() = R.string.details_size_table
     val DetailsSizeSelect get() = R.string.details_size_select
     val DetailsSizeSelectCaps get() = R.string.details_size_select_caps
     val DetailsSizeInStock get() = R.string.details_size_in_stock
+    val DetailsSold get() = R.string.details_sold
     val DetailsSizeSold get() = R.string.details_size_sold
     val DetailsOtherModelColors get() = R.string.details_other_model_colors
     val DetailsWearWithTitle get() = R.string.details_wear_with_title
@@ -224,6 +236,8 @@ object ClientStrings {
     val DetailsFieldItemId get() = R.string.details_field_item_id
     val DetailsFieldArticle get() = R.string.details_field_article
     val DetailsFieldMeasurements get() = R.string.details_field_measurements
+    val DetailsArticleCopied get() = R.string.details_article_copied
+    val DetailsManufacturerArticleCopied get() = R.string.details_manufacturer_article_copied
 
     val VideoSpeedTitle get() = R.string.video_speed_title
     val VideoSpeed05 get() = R.string.video_speed_05
@@ -291,6 +305,8 @@ object ClientStrings {
     val ProfilePurchases get() = R.string.profile_purchases
     val ProfileInformation get() = R.string.profile_information
     val ProfileQrCode get() = R.string.profile_qr_code
+    val ProfileFavoriteBrands get() = R.string.profile_favorite_brands
+    val ProfileRecentlyViewed get() = R.string.profile_recently_viewed
     val ProfileRecentlyViewedCaps get() = R.string.profile_recently_viewed_caps
     val ProfileWatchMore get() = R.string.profile_watch_more
     val ProfileLogoutTitle get() = R.string.profile_logout_title

@@ -15,5 +15,6 @@ data class FilterRoute(
     val brandEntity: BrandEntity? = null,
     val initialSelectedFilterValueChips: List<FilterChip> = emptyList(),
     val hiddenFilterValueChipIds: List<String> = emptyList(),
-    val viewTypeOverride: CatalogViewType? = null
+    val viewTypeOverride: CatalogViewType? = null,
+    val actionId: Int? = null
 ): NavKey

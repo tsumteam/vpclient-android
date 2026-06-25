@@ -18,6 +18,8 @@ import ru.mercury.vpclient.features.profile_return.navigation.ProfileReturnRoute
 import ru.mercury.vpclient.features.profile_stack.event.ProfileStackEventManager
 import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
 import ru.mercury.vpclient.shared.domain.mapper.isNotEmpty
+import ru.mercury.vpclient.shared.domain.usecase.CartCountFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.FittingCountFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.mvi.Event
@@ -27,23 +29,35 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileInfoViewModel @Inject constructor(
     private val cartInteractor: CartInteractor,
+    private val cartCountFlowUseCase: CartCountFlowUseCase,
+    private val fittingCountFlowUseCase: FittingCountFlowUseCase,
     private val employeeActiveFlowUseCase: EmployeeActiveFlowUseCase
 ): ClientViewModel<ProfileInfoIntent, ProfileInfoModel, Event>(ProfileInfoModel()) {
 
     init {
-        dispatch(ProfileInfoIntent.CollectCartSize)
+        dispatch(ProfileInfoIntent.CollectCartCount)
+        dispatch(ProfileInfoIntent.CollectFittingCount)
         dispatch(ProfileInfoIntent.CollectActiveEmployee)
         dispatch(ProfileInfoIntent.LoadCartData)
     }
 
     override fun dispatch(intent: ProfileInfoIntent) {
         when (intent) {
-            is ProfileInfoIntent.CollectCartSize -> {
+            is ProfileInfoIntent.CollectCartCount -> {
                 launch {
-                    cartInteractor.cartSize
+                    cartCountFlowUseCase(Unit)
                         .distinctUntilChanged()
-                        .collectLatest { size ->
-                            reduce { it.copy(cartSize = size) }
+                        .collectLatest { count ->
+                            reduce { it.copy(cartCount = count) }
+                        }
+                }
+            }
+            is ProfileInfoIntent.CollectFittingCount -> {
+                launch {
+                    fittingCountFlowUseCase(Unit)
+                        .distinctUntilChanged()
+                        .collectLatest { count ->
+                            reduce { it.copy(fittingCount = count) }
                         }
                 }
             }
@@ -62,6 +76,7 @@ class ProfileInfoViewModel @Inject constructor(
             is ProfileInfoIntent.LoadCartData -> {
                 launch {
                     runCatching { cartInteractor.loadBasket() }
+                    runCatching { cartInteractor.loadFitting() }
 
                     val badge = runCatching { cartInteractor.cartBadge() }.getOrDefault(0)
                     reduce { it.copy(cartBadge = badge) }

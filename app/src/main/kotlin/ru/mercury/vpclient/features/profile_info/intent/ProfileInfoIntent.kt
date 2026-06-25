@@ -3,7 +3,8 @@ package ru.mercury.vpclient.features.profile_info.intent
 import ru.mercury.vpclient.shared.mvi.Intent
 
 sealed interface ProfileInfoIntent: Intent {
-    data object CollectCartSize: ProfileInfoIntent
+    data object CollectCartCount: ProfileInfoIntent
+    data object CollectFittingCount: ProfileInfoIntent
     data object CollectActiveEmployee: ProfileInfoIntent
     data object LoadCartData: ProfileInfoIntent
     data object BackClick: ProfileInfoIntent

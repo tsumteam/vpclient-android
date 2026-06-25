@@ -18,15 +18,27 @@ interface CatalogCategoryDao {
     fun selectAllFlow(): Flow<List<CatalogCategoryEntity>>
 
     @Transaction
-    @Query("SELECT * FROM CatalogCategory WHERE parentId = :parentId")
+    @Query("SELECT * FROM CatalogCategory WHERE parentId = :parentId ORDER BY position")
     fun selectPojosFlow(parentId: Int): Flow<List<SubcategoryPojo>>
 
     @Query("SELECT * FROM CatalogCategory WHERE id = :id LIMIT 1")
-    suspend fun select(id: Int): CatalogCategoryEntity
+    suspend fun select(id: Int): CatalogCategoryEntity?
 
     @Query("SELECT * FROM CatalogCategory WHERE id = :id LIMIT 1")
-    suspend fun selectOrNull(id: Int): CatalogCategoryEntity?
+    suspend fun selectNotNull(id: Int): CatalogCategoryEntity
 
     @Upsert
     suspend fun upsert(entities: List<CatalogCategoryEntity>)
+
+    @Query(
+        """
+        DELETE FROM CatalogCategory
+        WHERE parentId = :parentId
+            OR parentId IN (SELECT id FROM CatalogCategory WHERE parentId = :parentId)
+        """
+    )
+    suspend fun deleteBottom(parentId: Int)
+
+    @Query("DELETE FROM CatalogCategory")
+    suspend fun delete()
 }

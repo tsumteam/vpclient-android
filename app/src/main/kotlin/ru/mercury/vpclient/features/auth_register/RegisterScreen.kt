@@ -36,7 +36,6 @@ import androidx.compose.ui.autofill.ContentType
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -142,7 +141,7 @@ private fun RegisterScreenContent(
                 },
                 colors = TopAppBarDefaults.topAppBarColors().copy(
                     containerColor = MaterialTheme.colorScheme.background,
-                    titleContentColor = Color.Black
+                    titleContentColor = MaterialTheme.colorScheme.onBackground
                 )
             )
         },

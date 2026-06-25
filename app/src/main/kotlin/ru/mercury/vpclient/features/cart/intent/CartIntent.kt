@@ -4,12 +4,13 @@ import ru.mercury.vpclient.shared.data.entity.CartPayMode
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
 import ru.mercury.vpclient.shared.data.entity.CartProductSize
-import ru.mercury.vpclient.shared.data.network.entity.FittingTypeDtoEnum
+import ru.mercury.vpclient.shared.data.network.type.FittingType
 import ru.mercury.vpclient.shared.mvi.Intent
 import ru.mercury.vpclient.shared.ui.components.fitting.FittingDeliveryHeaderState
 
 sealed interface CartIntent: Intent {
     data object CollectCart: CartIntent
+    data object CollectFittingCount: CartIntent
     data object CollectActiveEmployee: CartIntent
     data object LoadCurrentUser: CartIntent
     data object LoadCart: CartIntent
@@ -33,10 +34,11 @@ sealed interface CartIntent: Intent {
     data object ConfirmColorPicker: CartIntent
     data object ConfirmQuantityPicker: CartIntent
     data object CollectInitialPage: CartIntent
+    data object SizeTableClick: CartIntent
     data class FittingDeliveryClick(
         val productIds: List<String>,
         val deliveryId: String,
-        val fittingType: FittingTypeDtoEnum,
+        val fittingType: FittingType,
         val header: FittingDeliveryHeaderState
     ): CartIntent
     data class ProductClick(val id: String): CartIntent

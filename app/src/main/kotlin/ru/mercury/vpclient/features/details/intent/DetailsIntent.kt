@@ -1,11 +1,14 @@
 package ru.mercury.vpclient.features.details.intent
 
+import ru.mercury.vpclient.shared.data.entity.DetailsField
+import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.mvi.Intent
 
 sealed interface DetailsIntent: Intent {
     data object CollectProduct: DetailsIntent
     data object CollectCartProducts: DetailsIntent
-    data object CollectCartSize: DetailsIntent
+    data object CollectCartCount: DetailsIntent
+    data object CollectFittingCount: DetailsIntent
     data object CollectActiveEmployee: DetailsIntent
     data object LoadCartData: DetailsIntent
     data object LoadProduct: DetailsIntent
@@ -28,6 +31,7 @@ sealed interface DetailsIntent: Intent {
     data class ColorClick(val index: Int): DetailsIntent
     data class ButtonClick(val index: Int): DetailsIntent
     data class ProductClick(val id: String): DetailsIntent
-    data class ProductBasketClick(val id: String): DetailsIntent
+    data class ProductBasketClick(val product: CatalogFilterProductsEntity): DetailsIntent
     data class OpenMedia(val initialPage: Int): DetailsIntent
+    data class FieldCopyClick(val field: DetailsField): DetailsIntent
 }

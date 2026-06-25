@@ -46,6 +46,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.mercury.vpclient.features.profile_order.intent.ProfileOrderIntent
 import ru.mercury.vpclient.features.profile_order.model.ProfileOrderModel
 import ru.mercury.vpclient.features.profile_order.navigation.ProfileOrderRoute
+import ru.mercury.vpclient.shared.data.PREFIX_SPACE
 import ru.mercury.vpclient.shared.data.event.ProfileOrderDeliveryGroupState
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.InfoItem
@@ -135,13 +136,13 @@ private fun ProfileOrderScreenContent(
                         Icon(
                             imageVector = ChevronStart24,
                             contentDescription = null,
-                            modifier = Modifier.size(24.dp),
-                            tint = MaterialTheme.colorScheme.onBackground
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
+                    containerColor = MaterialTheme.colorScheme.background,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground
                 )
             )
         }
@@ -175,7 +176,7 @@ private fun ProfileOrderScreenContent(
                     )
                 }
             } else {
-                if (state.showPaymentAlert) {
+                if (state.isPaymentAlertVisible) {
                     item {
                         val hours = state.paymentAlertRemainingMinutes / 60
                         val minutes = state.paymentAlertRemainingMinutes % 60
@@ -196,7 +197,7 @@ private fun ProfileOrderScreenContent(
                                 )
                                 else -> null
                             }
-                        ).joinToString(separator = " ")
+                        ).joinToString(separator = PREFIX_SPACE)
 
                         Text(
                             text = stringResource(ClientStrings.ProfileOrderPaymentAlert, remainingTime),
@@ -333,7 +334,7 @@ private class ProfileOrderModelProvider: PreviewParameterProvider<ProfileOrderMo
             amount = "200 000 ₽",
             creationDate = "29.06.2026",
             isLoading = false,
-            showPaymentAlert = true,
+            isPaymentAlertVisible = true,
             paymentAlertRemainingMinutes = 179,
             deliveryGroups = listOf(
                 ProfileOrderDeliveryGroupState(
