@@ -2,7 +2,7 @@ package ru.mercury.vpclient.shared.domain.usecase
 
 import androidx.room.withTransaction
 import ru.mercury.vpclient.shared.coroutines.SharedDispatchers
-import ru.mercury.vpclient.shared.data.error.ClientException
+import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.network.NetworkService
 import ru.mercury.vpclient.shared.data.persistence.database.AppDatabase
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogCategoryDao

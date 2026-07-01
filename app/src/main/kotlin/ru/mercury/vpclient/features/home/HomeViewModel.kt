@@ -10,19 +10,23 @@ import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.features.home.intent.HomeIntent
 import ru.mercury.vpclient.features.home.model.HomeModel
 import ru.mercury.vpclient.shared.data.network.type.ActivityCounterType
-import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
 import ru.mercury.vpclient.shared.domain.mapper.isNotEmpty
 import ru.mercury.vpclient.shared.domain.usecase.ActivityCounterFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.CartBadgeUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CartCountFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.FittingCountFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.LoadBasketUseCase
+import ru.mercury.vpclient.shared.domain.usecase.LoadFittingUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.mvi.Event
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val cartInteractor: CartInteractor,
+    private val loadBasketUseCase: LoadBasketUseCase,
+    private val loadFittingUseCase: LoadFittingUseCase,
+    private val cartBadgeUseCase: CartBadgeUseCase,
     private val cartCountFlowUseCase: CartCountFlowUseCase,
     private val fittingCountFlowUseCase: FittingCountFlowUseCase,
     private val employeeActiveFlowUseCase: EmployeeActiveFlowUseCase,
@@ -80,10 +84,10 @@ class HomeViewModel @Inject constructor(
             }
             is HomeIntent.LoadCartData -> {
                 launch {
-                    runCatching { cartInteractor.loadBasket() }
-                    runCatching { cartInteractor.loadFitting() }
+                    runCatching { loadBasketUseCase(Unit).getOrThrow() }
+                    runCatching { loadFittingUseCase(Unit).getOrThrow() }
 
-                    val badge = runCatching { cartInteractor.cartBadge() }.getOrDefault(0)
+                    val badge = runCatching { cartBadgeUseCase(Unit).getOrThrow() }.getOrDefault(0)
                     reduce { it.copy(cartBadge = badge) }
                 }
             }

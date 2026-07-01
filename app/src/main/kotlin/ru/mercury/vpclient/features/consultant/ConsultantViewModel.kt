@@ -14,8 +14,7 @@ import ru.mercury.vpclient.features.consultant.intent.ConsultantIntent
 import ru.mercury.vpclient.features.consultant.model.ConsultantModel
 import ru.mercury.vpclient.features.consultant.navigation.ConsultantRoute
 import ru.mercury.vpclient.features.main.navigation.MainRoute
-import ru.mercury.vpclient.shared.data.error.ClientException
-import ru.mercury.vpclient.shared.data.error.MyEmployeeException
+import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity.Companion.ID_CALL
@@ -26,6 +25,7 @@ import ru.mercury.vpclient.shared.domain.mapper.hasFittingProducts
 import ru.mercury.vpclient.shared.domain.usecase.EmployeePojoFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.MyEmployeeBadgesUseCase
 import ru.mercury.vpclient.shared.domain.usecase.MyEmployeeUseCase
+import ru.mercury.vpclient.shared.domain.usecase.MyEmployeeUseCase.MyEmployeeException
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.navigation.BackRoute
 

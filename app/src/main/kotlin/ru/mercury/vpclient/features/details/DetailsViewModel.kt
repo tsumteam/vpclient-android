@@ -20,19 +20,25 @@ import ru.mercury.vpclient.features.media.navigation.MediaRoute
 import ru.mercury.vpclient.features.video.navigation.VideoRoute
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.entity.DetailsField
-import ru.mercury.vpclient.shared.data.error.AddProductToBasketException
 import ru.mercury.vpclient.shared.data.network.type.CatalogViewType
-import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
-import ru.mercury.vpclient.shared.domain.interactor.ProductInteractor
 import ru.mercury.vpclient.shared.domain.mapper.filterRoute
 import ru.mercury.vpclient.shared.domain.mapper.isNotEmpty
 import ru.mercury.vpclient.shared.domain.mapper.toCatalogLinkData
 import ru.mercury.vpclient.shared.domain.mapper.withCenterLoading
+import ru.mercury.vpclient.shared.domain.usecase.AddCatalogProductToBasketUseCase
+import ru.mercury.vpclient.shared.domain.usecase.AddProductToBasketUseCase
+import ru.mercury.vpclient.shared.domain.usecase.CartBadgeUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CartCountFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.CartProductsFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CatalogCategoryUseCase
 import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.FittingCountFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.LoadBasketUseCase
+import ru.mercury.vpclient.shared.domain.usecase.LoadFittingUseCase
+import ru.mercury.vpclient.shared.domain.usecase.LoadProductUseCase
+import ru.mercury.vpclient.shared.domain.usecase.ProductFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.SetLastCatalogRootIdUseCase
+import ru.mercury.vpclient.shared.domain.usecase.AddProductToBasketUseCase.AddProductToBasketException
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.navigation.BackRoute
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
@@ -40,13 +46,19 @@ import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 @HiltViewModel(assistedFactory = DetailsViewModel.Factory::class)
 class DetailsViewModel @AssistedInject constructor(
     @Assisted private val route: DetailsRoute,
-    private val cartInteractor: CartInteractor,
+    private val loadBasketUseCase: LoadBasketUseCase,
+    private val loadFittingUseCase: LoadFittingUseCase,
+    private val cartBadgeUseCase: CartBadgeUseCase,
+    private val cartProductsFlowUseCase: CartProductsFlowUseCase,
+    private val addProductToBasketUseCase: AddProductToBasketUseCase,
+    private val addCatalogProductToBasketUseCase: AddCatalogProductToBasketUseCase,
     private val catalogCategoryUseCase: CatalogCategoryUseCase,
     private val cartCountFlowUseCase: CartCountFlowUseCase,
     private val fittingCountFlowUseCase: FittingCountFlowUseCase,
     private val employeeActiveFlowUseCase: EmployeeActiveFlowUseCase,
     private val setLastCatalogRootIdUseCase: SetLastCatalogRootIdUseCase,
-    private val productInteractor: ProductInteractor
+    private val productFlowUseCase: ProductFlowUseCase,
+    private val loadProductUseCase: LoadProductUseCase
 ): ClientViewModel<DetailsIntent, DetailsModel, DetailsEvent>(DetailsModel()) {
 
     init {
@@ -62,12 +74,12 @@ class DetailsViewModel @AssistedInject constructor(
     override fun dispatch(intent: DetailsIntent) {
         when (intent) {
             is DetailsIntent.CollectProduct -> launch {
-                productInteractor.productFlow(route.id).collectLatest { productEntity ->
+                productFlowUseCase(route.id).collectLatest { productEntity ->
                     reduce { it.copy(productEntity = productEntity) }
                 }
             }
             is DetailsIntent.CollectCartProducts -> launch {
-                cartInteractor.cartProductsFlow.collectLatest { products ->
+                cartProductsFlowUseCase(Unit).collectLatest { products ->
                     reduce {
                         it.copy(
                             basketProductIds = products.map { product -> product.detailId }
@@ -113,14 +125,14 @@ class DetailsViewModel @AssistedInject constructor(
             }
             is DetailsIntent.LoadCartData -> {
                 launch {
-                    runCatching { cartInteractor.loadBasket() }
-                    runCatching { cartInteractor.loadFitting() }
+                    runCatching { loadBasketUseCase(Unit).getOrThrow() }
+                    runCatching { loadFittingUseCase(Unit).getOrThrow() }
 
-                    val badge = runCatching { cartInteractor.cartBadge() }.getOrDefault(0)
+                    val badge = runCatching { cartBadgeUseCase(Unit).getOrThrow() }.getOrDefault(0)
                     reduce { it.copy(cartBadge = badge) }
                 }
             }
-            is DetailsIntent.LoadProduct -> launch { productInteractor.loadProduct(route.id) }
+            is DetailsIntent.LoadProduct -> launch { loadProductUseCase(route.id).getOrThrow() }
             is DetailsIntent.BackClick -> launch {
                 when {
                     route.openedFromCart -> MainEventManager.send(BackRoute)
@@ -153,7 +165,12 @@ class DetailsViewModel @AssistedInject constructor(
                         reduce { it.copy(isSizePickerSheetVisible = false) }
                         launch {
                             withCenterLoading {
-                                cartInteractor.addProductToBasket(route.id, state.selectedSizeId)
+                                addProductToBasketUseCase(
+                                    AddProductToBasketUseCase.Params(
+                                        productId = route.id,
+                                        sizeId = state.selectedSizeId
+                                    )
+                                ).getOrThrow()
                             }
                             reduce { it.copy(isCartAddedSheetVisible = true) }
                         }
@@ -228,7 +245,16 @@ class DetailsViewModel @AssistedInject constructor(
                     else -> CatalogRootEventManager.send(DetailsRoute(intent.id))
                 }
             }
-            is DetailsIntent.ProductBasketClick -> launch { cartInteractor.addProductToBasket(intent.product, null) }
+            is DetailsIntent.ProductBasketClick -> {
+                launch {
+                    addCatalogProductToBasketUseCase(
+                        AddCatalogProductToBasketUseCase.Params(
+                            product = intent.product,
+                            sizeId = null
+                        )
+                    ).getOrThrow()
+                }
+            }
             is DetailsIntent.OpenVideo -> launch {
                 val videoUrl = stateFlow.value.selectedColorVideoUrl ?: return@launch
                 MainEventManager.send(VideoRoute(videoUrl))

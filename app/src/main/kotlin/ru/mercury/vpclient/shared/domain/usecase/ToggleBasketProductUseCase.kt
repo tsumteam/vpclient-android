@@ -3,8 +3,7 @@
 package ru.mercury.vpclient.shared.domain.usecase
 
 import ru.mercury.vpclient.shared.coroutines.SharedDispatchers
-import ru.mercury.vpclient.shared.data.error.AddProductToBasketException
-import ru.mercury.vpclient.shared.data.error.DeleteProductException
+import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.network.NetworkService
 import ru.mercury.vpclient.shared.data.persistence.database.AppDatabase
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CartProductDao
@@ -67,7 +66,7 @@ class ToggleBasketProductUseCase @Inject constructor(
             },
             onFailure = { error ->
                 cartProductDao.delete(optimisticEntity.id)
-                throw AddProductToBasketException(error.message)
+                throw ToggleBasketProductException(error.message)
             }
         )
     }
@@ -85,8 +84,12 @@ class ToggleBasketProductUseCase @Inject constructor(
             },
             onFailure = { error ->
                 cartProductDao.upsert(listOf(productEntity))
-                throw DeleteProductException(error.message)
+                throw ToggleBasketProductException(error.message)
             }
         )
     }
+
+    data class ToggleBasketProductException(
+        override val message: String
+    ): ClientException(message)
 }

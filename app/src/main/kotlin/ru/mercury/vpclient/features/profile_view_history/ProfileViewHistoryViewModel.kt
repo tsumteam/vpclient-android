@@ -11,9 +11,12 @@ import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.features.profile_stack.event.ProfileStackEventManager
 import ru.mercury.vpclient.features.profile_view_history.intent.ProfileViewHistoryIntent
 import ru.mercury.vpclient.features.profile_view_history.model.ProfileViewHistoryModel
-import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
-import ru.mercury.vpclient.shared.domain.interactor.ProductInteractor
+import ru.mercury.vpclient.shared.domain.usecase.AddCatalogProductToBasketUseCase
+import ru.mercury.vpclient.shared.domain.usecase.CartBadgeUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CartCountFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.CartProductsFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.LoadBasketUseCase
+import ru.mercury.vpclient.shared.domain.usecase.ViewHistoryProductsPagingDataUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.mvi.Event
 import ru.mercury.vpclient.shared.navigation.BackRoute
@@ -21,12 +24,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewHistoryViewModel @Inject constructor(
-    private val cartInteractor: CartInteractor,
+    private val loadBasketUseCase: LoadBasketUseCase,
+    private val cartBadgeUseCase: CartBadgeUseCase,
+    private val cartProductsFlowUseCase: CartProductsFlowUseCase,
+    private val addCatalogProductToBasketUseCase: AddCatalogProductToBasketUseCase,
     private val cartCountFlowUseCase: CartCountFlowUseCase,
-    productInteractor: ProductInteractor
+    viewHistoryProductsPagingDataUseCase: ViewHistoryProductsPagingDataUseCase
 ): ClientViewModel<ProfileViewHistoryIntent, ProfileViewHistoryModel, Event>(ProfileViewHistoryModel()) {
 
-    val productsPagingFlow = productInteractor.viewHistoryProductsPagingData().cachedIn(this)
+    val productsPagingFlow = viewHistoryProductsPagingDataUseCase(Unit).cachedIn(this)
 
     init {
         dispatch(ProfileViewHistoryIntent.CollectCartCount)
@@ -47,7 +53,7 @@ class ProfileViewHistoryViewModel @Inject constructor(
             }
             is ProfileViewHistoryIntent.CollectCartProducts -> {
                 launch {
-                    cartInteractor.cartProductsFlow.collectLatest { products ->
+                    cartProductsFlowUseCase(Unit).collectLatest { products ->
                         reduce {
                             it.copy(
                                 basketProductIds = products.flatMap { product -> listOf(product.id, product.detailId) }
@@ -64,9 +70,9 @@ class ProfileViewHistoryViewModel @Inject constructor(
             }
             is ProfileViewHistoryIntent.LoadCartData -> {
                 launch {
-                    runCatching { cartInteractor.loadBasket() }
+                    runCatching { loadBasketUseCase(Unit).getOrThrow() }
 
-                    val badge = runCatching { cartInteractor.cartBadge() }.getOrDefault(0)
+                    val badge = runCatching { cartBadgeUseCase(Unit).getOrThrow() }.getOrDefault(0)
                     reduce { it.copy(cartBadge = badge) }
                 }
             }
@@ -83,7 +89,12 @@ class ProfileViewHistoryViewModel @Inject constructor(
                         basketProductKeys = it.basketProductKeys + "${intent.product.itemId}:${intent.product.colorId}:"
                     )
                 }
-                cartInteractor.addProductToBasket(intent.product, null)
+                addCatalogProductToBasketUseCase(
+                    AddCatalogProductToBasketUseCase.Params(
+                        product = intent.product,
+                        sizeId = null
+                    )
+                ).getOrThrow()
                 dispatch(ProfileViewHistoryIntent.LoadCartData)
             }
         }

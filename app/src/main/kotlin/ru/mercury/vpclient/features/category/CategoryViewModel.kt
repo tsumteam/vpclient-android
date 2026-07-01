@@ -16,7 +16,7 @@ import ru.mercury.vpclient.features.category.intent.CategoryIntent
 import ru.mercury.vpclient.features.category.model.CategoryModel
 import ru.mercury.vpclient.features.category.navigation.CategoryRoute
 import ru.mercury.vpclient.features.filter.navigation.FilterRoute
-import ru.mercury.vpclient.shared.data.error.ClientException
+import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
 import ru.mercury.vpclient.shared.domain.usecase.CartCountFlowUseCase

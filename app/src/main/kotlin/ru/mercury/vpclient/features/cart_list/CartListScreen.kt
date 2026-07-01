@@ -66,6 +66,7 @@ import ru.mercury.vpclient.shared.ui.components.SharedPullToRefreshBox
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.SharedTabRow
 import ru.mercury.vpclient.shared.ui.components.SharedTabRowState
+import ru.mercury.vpclient.shared.ui.components.cart.CartListLoading
 import ru.mercury.vpclient.shared.ui.components.cart.CartLookCard
 import ru.mercury.vpclient.shared.ui.components.cart.CartProductCard
 import ru.mercury.vpclient.shared.ui.components.cart.CartProductCardState
@@ -124,6 +125,27 @@ private fun CartListScreenContent(
     SharedScaffold(
         topBar = {
             when {
+                state.isCartInitialLoading -> {
+                    Box(
+                        modifier = Modifier.background(MaterialTheme.colorScheme.background)
+                    ) {
+                        SharedTabRow(
+                            state = SharedTabRowState(
+                                selectedIndex = when (state.payMode) {
+                                    CartPayMode.All -> 0
+                                    CartPayMode.Payment -> 1
+                                },
+                                firstTabText = "",
+                                secondTabText = "",
+                                onFirstTabClick = {},
+                                onSecondTabClick = {},
+                                isLoading = true
+                            ),
+                            textStyle = MaterialTheme.typography.medium13,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                        )
+                    }
+                }
                 state.products.isEmpty() -> {
                     Text(
                         text = stringResource(ClientStrings.CartEmptyTabHint),
@@ -430,6 +452,11 @@ private fun CartListScreenContent(
         }
 
         when {
+            state.isCartInitialLoading -> {
+                CartListLoading(
+                    contentPadding = innerPadding + PaddingValues(bottom = 76.dp)
+                )
+            }
             state.products.isEmpty() -> {
                 Box(
                     modifier = Modifier

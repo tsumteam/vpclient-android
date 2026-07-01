@@ -2,6 +2,7 @@
 
 package ru.mercury.vpclient.features.fitting_address_search_sheet
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,8 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -29,16 +32,23 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.mercury.vpclient.features.fitting_address_search_sheet.intent.FittingAddressSearchSheetIntent
 import ru.mercury.vpclient.features.fitting_address_search_sheet.model.FittingAddressSearchModel
 import ru.mercury.vpclient.shared.data.entity.ClientDeliveryAddressSuggestion
@@ -57,10 +67,40 @@ import ru.mercury.vpclient.shared.ui.theme.medium15
 
 @Composable
 fun FittingAddressSearchSheet(
+    initialQuery: String,
+    onDismissRequest: () -> Unit,
+    onSelectAddressSuggestion: (ClientDeliveryAddressSuggestion) -> Unit,
+    viewModel: FittingAddressSearchSheetViewModel = hiltViewModel<FittingAddressSearchSheetViewModel, FittingAddressSearchSheetViewModel.Factory>(
+        creationCallback = { it.create(initialQuery) }
+    )
+) {
+    val state by viewModel.stateFlow.collectAsStateWithLifecycle()
+
+    LaunchedEffect(initialQuery) {
+        viewModel.dispatch(FittingAddressSearchSheetIntent.CollectInitialQuery)
+    }
+
+    FittingAddressSearchSheetContent(
+        state = state,
+        dispatch = { intent ->
+            when (intent) {
+                is FittingAddressSearchSheetIntent.QueryChange -> viewModel.dispatch(intent)
+                is FittingAddressSearchSheetIntent.DismissRequest -> onDismissRequest()
+                is FittingAddressSearchSheetIntent.SelectAddressSuggestion -> onSelectAddressSuggestion(intent.suggestion)
+                is FittingAddressSearchSheetIntent.CollectInitialQuery -> Unit
+                is FittingAddressSearchSheetIntent.CollectAddressSuggestions -> Unit
+            }
+        }
+    )
+}
+
+@Composable
+private fun FittingAddressSearchSheetContent(
     state: FittingAddressSearchModel,
     dispatch: (FittingAddressSearchSheetIntent) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val focusRequester = remember { FocusRequester() }
 
     SharedModalBottomSheet(
         modifier = Modifier
@@ -71,7 +111,11 @@ fun FittingAddressSearchSheet(
     ) {
         SharedScaffold(
             topBar = {
-                Column {
+                Column(
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.background)
+                        .padding(bottom = 16.dp)
+                ) {
                     CenterAlignedTopAppBar(
                         title = {
                             Text(
@@ -103,9 +147,21 @@ fun FittingAddressSearchSheet(
                             dispatch(FittingAddressSearchSheetIntent.QueryChange(value))
                         },
                         label = stringResource(ClientStrings.FittingAddressCityStreetHousePlaceholder),
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                val query = state.query.trim()
+                                if (query.isNotEmpty()) {
+                                    dispatch(FittingAddressSearchSheetIntent.SelectAddressSuggestion(ClientDeliveryAddressSuggestion(query)))
+                                }
+                            }
+                        ),
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(52.dp)
+                            .focusRequester(focusRequester)
                             .padding(horizontal = 16.dp)
                     )
                 }
@@ -115,7 +171,7 @@ fun FittingAddressSearchSheet(
                 modifier = Modifier
                     .fillMaxSize()
                     .imePadding(),
-                contentPadding = innerPadding + PaddingValues(vertical = 16.dp)
+                contentPadding = innerPadding + PaddingValues(bottom = 16.dp)
             ) {
                 when {
                     state.isSuggestionsLoading -> {
@@ -147,14 +203,9 @@ fun FittingAddressSearchSheet(
                                 text = suggestion.title,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(48.dp)
-                                    .clickable {
-                                        dispatch(FittingAddressSearchSheetIntent.SelectAddressSuggestion(suggestion))
-                                    }
-                                    .padding(horizontal = 16.dp)
+                                    .clickable { dispatch(FittingAddressSearchSheetIntent.SelectAddressSuggestion(suggestion)) }
+                                    .padding(horizontal = 16.dp, vertical = 15.dp)
                                     .wrapContentHeight(Alignment.CenterVertically),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
                                 style = MaterialTheme.typography.medium15.copy(
                                     color = MaterialTheme.colorScheme.onBackground,
                                     letterSpacing = .3.sp
@@ -171,6 +222,8 @@ fun FittingAddressSearchSheet(
             }
         }
     }
+
+    LaunchedEffect(Unit) { focusRequester.requestFocus() }
 }
 
 @PreviewWrapper(ThemeWrapper::class)
@@ -182,7 +235,7 @@ private fun FittingAddressSearchSheetPreview(
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        FittingAddressSearchSheet(
+        FittingAddressSearchSheetContent(
             state = state,
             dispatch = {}
         )

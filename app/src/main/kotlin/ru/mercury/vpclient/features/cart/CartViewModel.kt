@@ -17,37 +17,61 @@ import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.features.fitting_confirmation.navigation.FittingConfirmationRoute
 import ru.mercury.vpclient.features.fitting_info.navigation.FittingInfoRoute
 import ru.mercury.vpclient.shared.data.entity.FittingData
-import ru.mercury.vpclient.shared.data.error.AddProductSizeException
-import ru.mercury.vpclient.shared.data.error.BasketHideAlternativesException
-import ru.mercury.vpclient.shared.data.error.BasketReturnOriginalException
-import ru.mercury.vpclient.shared.data.error.BasketShowAlternativesException
-import ru.mercury.vpclient.shared.data.error.ChangeFittingLineColorException
-import ru.mercury.vpclient.shared.data.error.ChangeFittingLineSizeException
-import ru.mercury.vpclient.shared.data.error.ChangeFittingPaySwitchException
-import ru.mercury.vpclient.shared.data.error.ChangePaySwitchException
-import ru.mercury.vpclient.shared.data.error.ClientException
-import ru.mercury.vpclient.shared.data.error.DeleteLookException
-import ru.mercury.vpclient.shared.data.error.DeleteProductException
-import ru.mercury.vpclient.shared.data.error.DisassembleLookException
-import ru.mercury.vpclient.shared.data.error.FittingReturnProductException
-import ru.mercury.vpclient.shared.data.error.MoveProductsAfterDragException
-import ru.mercury.vpclient.shared.data.error.RemoveAlternativeException
-import ru.mercury.vpclient.shared.data.error.RemoveProductSizeException
-import ru.mercury.vpclient.shared.data.error.SetProductColorException
-import ru.mercury.vpclient.shared.data.error.SetProductQuantityException
-import ru.mercury.vpclient.shared.data.error.SetProductSizeException
-import ru.mercury.vpclient.shared.data.error.SwitchProductWithAlternativeException
+import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
-import ru.mercury.vpclient.shared.domain.interactor.AuthenticationInteractor
-import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
-import ru.mercury.vpclient.shared.domain.interactor.ProductInteractor
 import ru.mercury.vpclient.shared.domain.mapper.clientFullName
 import ru.mercury.vpclient.shared.domain.mapper.isFeminine
 import ru.mercury.vpclient.shared.domain.mapper.moveProductAfterDrag
 import ru.mercury.vpclient.shared.domain.mapper.withCenterLoading
+import ru.mercury.vpclient.shared.domain.usecase.AddProductSizeUseCase.AddProductSizeException
+import ru.mercury.vpclient.shared.domain.usecase.AddProductSizeUseCase
+import ru.mercury.vpclient.shared.domain.usecase.BasketHideAlternativesUseCase.BasketHideAlternativesException
+import ru.mercury.vpclient.shared.domain.usecase.BasketHideAlternativesUseCase
+import ru.mercury.vpclient.shared.domain.usecase.BasketReturnOriginalUseCase.BasketReturnOriginalException
+import ru.mercury.vpclient.shared.domain.usecase.BasketReturnOriginalUseCase
+import ru.mercury.vpclient.shared.domain.usecase.BasketShowAlternativesUseCase.BasketShowAlternativesException
+import ru.mercury.vpclient.shared.domain.usecase.BasketShowAlternativesUseCase
+import ru.mercury.vpclient.shared.domain.usecase.CartProductsFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.ChangeFittingPaySwitchUseCase.ChangeFittingPaySwitchException
+import ru.mercury.vpclient.shared.domain.usecase.ChangeFittingPaySwitchUseCase
+import ru.mercury.vpclient.shared.domain.usecase.ChangePaySwitchUseCase.ChangePaySwitchException
+import ru.mercury.vpclient.shared.domain.usecase.ChangePaySwitchUseCase
+import ru.mercury.vpclient.shared.domain.usecase.CurrentUserUseCase
+import ru.mercury.vpclient.shared.domain.usecase.DeleteLookUseCase.DeleteLookException
+import ru.mercury.vpclient.shared.domain.usecase.DeleteLookUseCase
+import ru.mercury.vpclient.shared.domain.usecase.DeleteProductUseCase.DeleteProductException
+import ru.mercury.vpclient.shared.domain.usecase.DeleteProductUseCase
+import ru.mercury.vpclient.shared.domain.usecase.DisassembleLookUseCase.DisassembleLookException
+import ru.mercury.vpclient.shared.domain.usecase.DisassembleLookUseCase
 import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.FittingReturnProductUseCase.FittingReturnProductException
+import ru.mercury.vpclient.shared.domain.usecase.FittingReturnProductUseCase
 import ru.mercury.vpclient.shared.domain.usecase.FittingCountFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.LoadAvailableColorsUseCase
+import ru.mercury.vpclient.shared.domain.usecase.LoadAvailableSizesUseCase
+import ru.mercury.vpclient.shared.domain.usecase.LoadBasketUseCase
+import ru.mercury.vpclient.shared.domain.usecase.LoadFittingUseCase
+import ru.mercury.vpclient.shared.domain.usecase.LoadProductUseCase
+import ru.mercury.vpclient.shared.domain.usecase.MoveProductsAfterDragUseCase.MoveProductsAfterDragException
+import ru.mercury.vpclient.shared.domain.usecase.MoveProductsAfterDragUseCase
+import ru.mercury.vpclient.shared.domain.usecase.ProductFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.RemoveAlternativeUseCase.RemoveAlternativeException
+import ru.mercury.vpclient.shared.domain.usecase.RemoveAlternativeUseCase
+import ru.mercury.vpclient.shared.domain.usecase.RemoveProductSizeUseCase.RemoveProductSizeException
+import ru.mercury.vpclient.shared.domain.usecase.RemoveProductSizeUseCase
+import ru.mercury.vpclient.shared.domain.usecase.SetFittingProductColorUseCase.ChangeFittingLineColorException
+import ru.mercury.vpclient.shared.domain.usecase.SetFittingProductColorUseCase
+import ru.mercury.vpclient.shared.domain.usecase.SetFittingProductSizeUseCase.ChangeFittingLineSizeException
+import ru.mercury.vpclient.shared.domain.usecase.SetFittingProductSizeUseCase
+import ru.mercury.vpclient.shared.domain.usecase.SetProductColorUseCase.SetProductColorException
+import ru.mercury.vpclient.shared.domain.usecase.SetProductColorUseCase
+import ru.mercury.vpclient.shared.domain.usecase.SetProductQuantityUseCase.SetProductQuantityException
+import ru.mercury.vpclient.shared.domain.usecase.SetProductQuantityUseCase
+import ru.mercury.vpclient.shared.domain.usecase.SetProductSizeUseCase.SetProductSizeException
+import ru.mercury.vpclient.shared.domain.usecase.SetProductSizeUseCase
+import ru.mercury.vpclient.shared.domain.usecase.SwitchProductWithAlternativeUseCase.SwitchProductWithAlternativeException
+import ru.mercury.vpclient.shared.domain.usecase.SwitchProductWithAlternativeUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.navigation.BackRoute
 
@@ -56,12 +80,41 @@ private const val NO_AVAILABLE_COLORS_MESSAGE = "Для товара нет до
 @HiltViewModel(assistedFactory = CartViewModel.Factory::class)
 class CartViewModel @AssistedInject constructor(
     @Assisted private val route: CartRoute,
-    private val authenticationInteractor: AuthenticationInteractor,
-    private val cartInteractor: CartInteractor,
+    private val currentUserUseCase: CurrentUserUseCase,
+    private val cartProductsFlowUseCase: CartProductsFlowUseCase,
+    private val loadBasketUseCase: LoadBasketUseCase,
+    private val loadFittingUseCase: LoadFittingUseCase,
+    private val changePaySwitchUseCase: ChangePaySwitchUseCase,
+    private val changeFittingPaySwitchUseCase: ChangeFittingPaySwitchUseCase,
+    private val loadAvailableSizesUseCase: LoadAvailableSizesUseCase,
+    private val addProductSizeUseCase: AddProductSizeUseCase,
+    private val setFittingProductSizeUseCase: SetFittingProductSizeUseCase,
+    private val setProductSizeUseCase: SetProductSizeUseCase,
+    private val loadAvailableColorsUseCase: LoadAvailableColorsUseCase,
+    private val setFittingProductColorUseCase: SetFittingProductColorUseCase,
+    private val setProductColorUseCase: SetProductColorUseCase,
+    private val setProductQuantityUseCase: SetProductQuantityUseCase,
+    private val switchProductWithAlternativeUseCase: SwitchProductWithAlternativeUseCase,
+    private val removeAlternativeUseCase: RemoveAlternativeUseCase,
+    private val basketHideAlternativesUseCase: BasketHideAlternativesUseCase,
+    private val basketShowAlternativesUseCase: BasketShowAlternativesUseCase,
+    private val basketReturnOriginalUseCase: BasketReturnOriginalUseCase,
+    private val deleteProductUseCase: DeleteProductUseCase,
+    private val disassembleLookUseCase: DisassembleLookUseCase,
+    private val deleteLookUseCase: DeleteLookUseCase,
+    private val removeProductSizeUseCase: RemoveProductSizeUseCase,
+    private val fittingReturnProductUseCase: FittingReturnProductUseCase,
+    private val moveProductsAfterDragUseCase: MoveProductsAfterDragUseCase,
     private val employeeActiveFlowUseCase: EmployeeActiveFlowUseCase,
     private val fittingCountFlowUseCase: FittingCountFlowUseCase,
-    private val productInteractor: ProductInteractor
-): ClientViewModel<CartIntent, CartModel, CartEvent>(CartModel()) {
+    private val productFlowUseCase: ProductFlowUseCase,
+    private val loadProductUseCase: LoadProductUseCase
+): ClientViewModel<CartIntent, CartModel, CartEvent>(
+    CartModel(
+        isCartInitialLoading = true,
+        isFittingInitialLoading = true
+    )
+) {
 
     init {
         dispatch(CartIntent.CollectInitialPage)
@@ -87,7 +140,7 @@ class CartViewModel @AssistedInject constructor(
             }
             is CartIntent.CollectCart -> {
                 launch {
-                    cartInteractor.cartProductsFlow.collectLatest { products ->
+                    cartProductsFlowUseCase(Unit).collectLatest { products ->
                         reduce { it.copy(products = products) }
                     }
                 }
@@ -112,7 +165,7 @@ class CartViewModel @AssistedInject constructor(
             }
             is CartIntent.LoadCurrentUser -> {
                 launch {
-                    runCatching { authenticationInteractor.currentUser() }
+                    runCatching { currentUserUseCase(Unit).getOrThrow() }
                         .onSuccess { currentUser ->
                             reduce {
                                 it.copy(
@@ -123,15 +176,27 @@ class CartViewModel @AssistedInject constructor(
                         }
                 }
             }
-            is CartIntent.LoadCart -> launch { cartInteractor.loadBasket() }
+            is CartIntent.LoadCart -> {
+                launch {
+                    try {
+                        loadBasketUseCase(Unit).getOrThrow()
+                    } finally {
+                        reduce { it.copy(isCartInitialLoading = false) }
+                    }
+                }
+            }
             is CartIntent.LoadFitting -> {
                 launch {
-                    val fitting = runCatching { cartInteractor.loadFitting() }.getOrDefault(FittingData())
-                    reduce {
-                        it.copy(
-                            apiFittingProducts = fitting.products,
-                            apiFittingDeliveries = fitting.deliveries
-                        )
+                    try {
+                        val fitting = runCatching { loadFittingUseCase(Unit).getOrThrow() }.getOrDefault(FittingData())
+                        reduce {
+                            it.copy(
+                                apiFittingProducts = fitting.products,
+                                apiFittingDeliveries = fitting.deliveries
+                            )
+                        }
+                    } finally {
+                        reduce { it.copy(isFittingInitialLoading = false) }
                     }
                 }
             }
@@ -140,8 +205,8 @@ class CartViewModel @AssistedInject constructor(
                 reduce { it.copy(isRefreshing = true) }
                 launch {
                     try {
-                        cartInteractor.loadBasket()
-                        val fitting = runCatching { cartInteractor.loadFitting() }.getOrDefault(FittingData())
+                        loadBasketUseCase(Unit).getOrThrow()
+                        val fitting = runCatching { loadFittingUseCase(Unit).getOrThrow() }.getOrDefault(FittingData())
                         reduce {
                             it.copy(
                                 apiFittingProducts = fitting.products,
@@ -213,7 +278,12 @@ class CartViewModel @AssistedInject constructor(
                         stateFlow.value.paySwitchJob?.cancel()
                         val paySwitchJob = launch {
                             try {
-                                cartInteractor.changePaySwitch(intent.product, intent.paySwitch)
+                                changePaySwitchUseCase(
+                                    ChangePaySwitchUseCase.Params(
+                                        product = intent.product,
+                                        paySwitch = intent.paySwitch
+                                    )
+                                ).getOrThrow()
                             } finally {
                                 reduce { it.copy(paySwitchJob = null) }
                             }
@@ -224,8 +294,13 @@ class CartViewModel @AssistedInject constructor(
             }
             is CartIntent.ChangeFittingPaySwitch -> {
                 launch {
-                    cartInteractor.changeFittingPaySwitch(intent.product, intent.paySwitch)
-                    val fitting = runCatching { cartInteractor.loadFitting() }.getOrDefault(FittingData())
+                    changeFittingPaySwitchUseCase(
+                        ChangeFittingPaySwitchUseCase.Params(
+                            product = intent.product,
+                            paySwitch = intent.paySwitch
+                        )
+                    ).getOrThrow()
+                    val fitting = runCatching { loadFittingUseCase(Unit).getOrThrow() }.getOrDefault(FittingData())
                     reduce {
                         it.copy(
                             apiFittingProducts = fitting.products,
@@ -251,8 +326,8 @@ class CartViewModel @AssistedInject constructor(
                     )
                 }
                 val sizePickerJob = launch {
-                    launch { productInteractor.loadProduct(detailId) }
-                    productInteractor.productFlow(detailId).collectLatest { entity ->
+                    launch { loadProductUseCase(detailId).getOrThrow() }
+                    productFlowUseCase(detailId).collectLatest { entity ->
                         entity.availableSizes?.let { sizes ->
                             reduce {
                                 when (it.sizePickerProduct?.detailId) {
@@ -268,6 +343,9 @@ class CartViewModel @AssistedInject constructor(
                 reduce { it.copy(sizePickerJob = sizePickerJob) }
             }
             is CartIntent.ShowFittingSizePicker -> {
+                if (!intent.product.isSizeSelectionAvailable) {
+                    return
+                }
                 stateFlow.value.sizePickerJob?.cancel()
                 reduce {
                     it.copy(
@@ -281,7 +359,7 @@ class CartViewModel @AssistedInject constructor(
                     )
                 }
                 val sizePickerJob = launch {
-                    val sizes = cartInteractor.loadAvailableSizes(intent.product)
+                    val sizes = loadAvailableSizesUseCase(intent.product).getOrThrow()
                     reduce {
                         when (it.sizePickerProduct?.id) {
                             intent.product.id -> it.copy(sizePickerSizes = sizes)
@@ -327,25 +405,46 @@ class CartViewModel @AssistedInject constructor(
                 launch {
                     withCenterLoading {
                         when {
-                            addSize -> cartInteractor.addProductSize(product, sizeId)
+                            addSize -> addProductSizeUseCase(
+                                AddProductSizeUseCase.Params(
+                                    product = product,
+                                    sizeId = sizeId
+                                )
+                            ).getOrThrow()
                             forFitting -> {
-                                cartInteractor.setFittingProductSize(product, sizeId)
-                                val fitting = runCatching { cartInteractor.loadFitting() }.getOrDefault(FittingData())
-                                reduce {
-                                    it.copy(
-                                        apiFittingProducts = fitting.products,
-                                        apiFittingDeliveries = fitting.deliveries
+                                val confirmationRoute = stateFlow.value.fittingConfirmationRoute(product.id)
+                                setFittingProductSizeUseCase(
+                                    SetFittingProductSizeUseCase.Params(
+                                        product = product,
+                                        sizeId = sizeId
                                     )
+                                ).getOrThrow()
+                                when (confirmationRoute) {
+                                    null -> {
+                                        val fitting = runCatching { loadFittingUseCase(Unit).getOrThrow() }.getOrDefault(FittingData())
+                                        reduce {
+                                            it.copy(
+                                                apiFittingProducts = fitting.products,
+                                                apiFittingDeliveries = fitting.deliveries
+                                            )
+                                        }
+                                    }
+                                    else -> MainEventManager.send(confirmationRoute)
                                 }
                             }
-                            else -> cartInteractor.setProductSize(product, sizeId)
+                            else -> setProductSizeUseCase(
+                                SetProductSizeUseCase.Params(
+                                    product = product,
+                                    sizeId = sizeId
+                                )
+                            ).getOrThrow()
                         }
                     }
                 }
             }
             is CartIntent.ShowColorPicker -> {
                 launch {
-                    val colors = cartInteractor.loadAvailableColors(intent.product)
+                    val colors = loadAvailableColorsUseCase(intent.product).getOrThrow()
                     if (colors.isEmpty()) {
                         send(CartEvent.SnackbarErrorMessage(NO_AVAILABLE_COLORS_MESSAGE))
                         return@launch
@@ -395,16 +494,32 @@ class CartViewModel @AssistedInject constructor(
                     withCenterLoading {
                         when {
                             forFitting -> {
-                                cartInteractor.setFittingProductColor(product, colorId)
-                                val fitting = runCatching { cartInteractor.loadFitting() }.getOrDefault(FittingData())
-                                reduce {
-                                    it.copy(
-                                        apiFittingProducts = fitting.products,
-                                        apiFittingDeliveries = fitting.deliveries
+                                val confirmationRoute = stateFlow.value.fittingConfirmationRoute(product.id)
+                                setFittingProductColorUseCase(
+                                    SetFittingProductColorUseCase.Params(
+                                        product = product,
+                                        colorId = colorId
                                     )
+                                ).getOrThrow()
+                                when (confirmationRoute) {
+                                    null -> {
+                                        val fitting = runCatching { loadFittingUseCase(Unit).getOrThrow() }.getOrDefault(FittingData())
+                                        reduce {
+                                            it.copy(
+                                                apiFittingProducts = fitting.products,
+                                                apiFittingDeliveries = fitting.deliveries
+                                            )
+                                        }
+                                    }
+                                    else -> MainEventManager.send(confirmationRoute)
                                 }
                             }
-                            else -> cartInteractor.setProductColor(product, colorId)
+                            else -> setProductColorUseCase(
+                                SetProductColorUseCase.Params(
+                                    product = product,
+                                    colorId = colorId
+                                )
+                            ).getOrThrow()
                         }
                     }
                 }
@@ -444,7 +559,12 @@ class CartViewModel @AssistedInject constructor(
                 }
                 launch {
                     withCenterLoading {
-                        cartInteractor.setProductQuantity(product, quantity)
+                        setProductQuantityUseCase(
+                            SetProductQuantityUseCase.Params(
+                                product = product,
+                                quantity = quantity
+                            )
+                        ).getOrThrow()
                     }
                 }
             }
@@ -453,7 +573,7 @@ class CartViewModel @AssistedInject constructor(
                 launch {
                     try {
                         withCenterLoading {
-                            cartInteractor.switchProductWithAlternative(intent.alternative)
+                            switchProductWithAlternativeUseCase(intent.alternative).getOrThrow()
                         }
                     } finally {
                         reduce { it.copy(selectedAlternativeId = null) }
@@ -461,28 +581,28 @@ class CartViewModel @AssistedInject constructor(
                 }
             }
             is CartIntent.RemoveAlternativeClick -> {
-                launch { cartInteractor.removeAlternative(intent.alternative) }
+                launch { removeAlternativeUseCase(intent.alternative).getOrThrow() }
             }
             is CartIntent.HideAlternativesClick -> {
-                launch { cartInteractor.basketHideAlternatives(intent.product) }
+                launch { basketHideAlternativesUseCase(intent.product).getOrThrow() }
             }
             is CartIntent.HideAlternativesSwipeClick -> {
-                launch { cartInteractor.basketHideAlternatives(intent.product) }
+                launch { basketHideAlternativesUseCase(intent.product).getOrThrow() }
             }
             is CartIntent.ShowAlternativesSwipeClick -> {
-                launch { cartInteractor.basketShowAlternatives(intent.product) }
+                launch { basketShowAlternativesUseCase(intent.product).getOrThrow() }
             }
             is CartIntent.ReturnOriginalSwipeClick -> {
                 launch {
                     withCenterLoading {
-                        cartInteractor.basketReturnOriginal(intent.product)
+                        basketReturnOriginalUseCase(intent.product).getOrThrow()
                     }
                 }
             }
             is CartIntent.DeleteProductSwipeClick -> {
                 launch {
                     withCenterLoading {
-                        cartInteractor.deleteProduct(intent.product)
+                        deleteProductUseCase(intent.product).getOrThrow()
                     }
                 }
             }
@@ -490,14 +610,14 @@ class CartViewModel @AssistedInject constructor(
                 val products = stateFlow.value.products.filter { it.lookId == intent.lookId }
                 launch {
                     withCenterLoading {
-                        cartInteractor.disassembleLook(products)
+                        disassembleLookUseCase(products).getOrThrow()
                     }
                 }
             }
             is CartIntent.DeleteLookSwipeClick -> {
                 launch {
                     withCenterLoading {
-                        cartInteractor.deleteLook(intent.lookId)
+                        deleteLookUseCase(intent.lookId).getOrThrow()
                     }
                 }
             }
@@ -507,7 +627,12 @@ class CartViewModel @AssistedInject constructor(
                 }
                 launch {
                     withCenterLoading {
-                        cartInteractor.removeProductSize(intent.product, intent.size)
+                        removeProductSizeUseCase(
+                            RemoveProductSizeUseCase.Params(
+                                product = intent.product,
+                                size = intent.size
+                            )
+                        ).getOrThrow()
                     }
                 }
             }
@@ -529,9 +654,9 @@ class CartViewModel @AssistedInject constructor(
             is CartIntent.ReturnFittingProductToBasketSwipeClick -> {
                 launch {
                     withCenterLoading {
-                        cartInteractor.fittingReturnProduct(intent.product)
-                        cartInteractor.loadBasket()
-                        val fitting = runCatching { cartInteractor.loadFitting() }.getOrDefault(FittingData())
+                        fittingReturnProductUseCase(intent.product).getOrThrow()
+                        loadBasketUseCase(Unit).getOrThrow()
+                        val fitting = runCatching { loadFittingUseCase(Unit).getOrThrow() }.getOrDefault(FittingData())
                         reduce {
                             it.copy(
                                 apiFittingProducts = fitting.products,
@@ -564,7 +689,7 @@ class CartViewModel @AssistedInject constructor(
                     stateFlow.value.products -> return
                     else -> {
                         reduce { it.copy(products = movedProducts) }
-                        launch { cartInteractor.moveProductsAfterDrag(movedProducts) }
+                        launch { moveProductsAfterDragUseCase(movedProducts).getOrThrow() }
                     }
                 }
             }
@@ -647,4 +772,17 @@ class CartViewModel @AssistedInject constructor(
     interface Factory {
         fun create(route: CartRoute): CartViewModel
     }
+}
+
+private fun CartModel.fittingConfirmationRoute(productId: String): FittingConfirmationRoute? {
+    val delivery = apiFittingDeliveries.firstOrNull { delivery ->
+        delivery.products.any { product -> product.id == productId }
+    } ?: return null
+    val deliveryId = delivery.id.takeIf { it.isNotBlank() } ?: return null
+
+    return FittingConfirmationRoute(
+        productIds = listOf(productId),
+        deliveryId = deliveryId,
+        fittingType = delivery.fittingType
+    )
 }

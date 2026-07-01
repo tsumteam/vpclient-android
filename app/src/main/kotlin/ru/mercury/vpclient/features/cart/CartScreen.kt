@@ -49,9 +49,6 @@ import ru.mercury.vpclient.features.cart_edit_product_sheet.model.CartEditProduc
 import ru.mercury.vpclient.features.cart_fitting.CartFittingScreen
 import ru.mercury.vpclient.features.cart_fitting_edit_product_sheet.CartFittingEditProductSheet
 import ru.mercury.vpclient.features.cart_fitting_edit_product_sheet.intent.CartFittingEditProductSheetIntent
-import ru.mercury.vpclient.features.cart_fitting_products_sheet.CartFittingProductsSheet
-import ru.mercury.vpclient.features.cart_fitting_products_sheet.intent.CartFittingProductsSheetIntent
-import ru.mercury.vpclient.features.cart_fitting_products_sheet.model.CartFittingProductsSheetModel
 import ru.mercury.vpclient.features.cart_fitting_sheet.CartFittingSheet
 import ru.mercury.vpclient.features.cart_fitting_sheet.intent.CartFittingSheetIntent
 import ru.mercury.vpclient.features.cart_fitting_sheet.model.CartFittingSheetModel
@@ -62,6 +59,9 @@ import ru.mercury.vpclient.features.cart_quantity_sheet.model.CartQuantityModel
 import ru.mercury.vpclient.features.cart_size_sheet.CartSizeSheet
 import ru.mercury.vpclient.features.cart_size_sheet.intent.CartSizeSheetIntent
 import ru.mercury.vpclient.features.cart_size_sheet.model.CartSizeSheetModel
+import ru.mercury.vpclient.features.fitting_products_sheet.FittingProductsSheet
+import ru.mercury.vpclient.features.fitting_products_sheet.event.FittingProductsSheetEvent
+import ru.mercury.vpclient.features.fitting_products_sheet.event.FittingProductsSheetEventManager
 import ru.mercury.vpclient.shared.data.entity.CartFittingSheetOption
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
@@ -129,13 +129,16 @@ fun CartScreen(
     if (state.isFittingEditProductSheetVisible) {
         val product = requireNotNull(state.fittingEditProduct)
         CartFittingEditProductSheet(
+            isSizeSelectionAvailable = product.isSizeSelectionAvailable,
             dispatch = { intent ->
                 when (intent) {
                     is CartFittingEditProductSheetIntent.ChangeColorClick -> {
                         dispatch(CartIntent.ShowColorPicker(product, forFitting = true))
                     }
                     is CartFittingEditProductSheetIntent.ChangeSizeClick -> {
-                        dispatch(CartIntent.ShowFittingSizePicker(product))
+                        if (product.isSizeSelectionAvailable) {
+                            dispatch(CartIntent.ShowFittingSizePicker(product))
+                        }
                     }
                     is CartFittingEditProductSheetIntent.ConfirmClick -> {
                         dispatch(CartIntent.HideFittingEditProductSheet)
@@ -185,22 +188,7 @@ fun CartScreen(
     }
 
     if (state.isFittingProductsSheetVisible) {
-        CartFittingProductsSheet(
-            state = CartFittingProductsSheetModel(
-                products = state.fittingProducts
-            ),
-            dispatch = { intent ->
-                when (intent) {
-                    is CartFittingProductsSheetIntent.ProductCheckedChange -> Unit
-                    is CartFittingProductsSheetIntent.ConfirmClick -> {
-                        dispatch(CartIntent.ConfirmFittingProductsSheet(intent.productIds))
-                    }
-                    is CartFittingProductsSheetIntent.DismissRequest -> {
-                        dispatch(CartIntent.HideFittingProductsSheet)
-                    }
-                }
-            }
-        )
+        FittingProductsSheet()
     }
 
     if (state.isSizePickerSheetVisible) {
@@ -280,6 +268,19 @@ fun CartScreen(
             is CartEvent.SnackbarErrorMessage -> {
                 snackbarHostStateError.currentSnackbarData?.dismiss()
                 scope.launch { snackbarHostStateError.showSnackbar(event.message) }
+            }
+        }
+    }
+
+    ObserveAsEvents(
+        flow = FittingProductsSheetEventManager.eventFlow
+    ) { event ->
+        when (event) {
+            is FittingProductsSheetEvent.ConfirmClick -> {
+                dispatch(CartIntent.ConfirmFittingProductsSheet(event.productIds))
+            }
+            is FittingProductsSheetEvent.DismissRequest -> {
+                dispatch(CartIntent.HideFittingProductsSheet)
             }
         }
     }

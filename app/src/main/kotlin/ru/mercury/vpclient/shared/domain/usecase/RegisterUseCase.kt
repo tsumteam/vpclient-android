@@ -2,7 +2,7 @@ package ru.mercury.vpclient.shared.domain.usecase
 
 import ru.mercury.vpclient.shared.coroutines.SharedDispatchers
 import ru.mercury.vpclient.shared.data.FORMAT_PHONE_NUMBER
-import ru.mercury.vpclient.shared.data.error.RegisterException
+import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.network.NetworkService
 import ru.mercury.vpclient.shared.data.network.request.AuthenticationRegisterRequest
 import ru.mercury.vpclient.shared.data.persistence.database.dao.ClientDao
@@ -39,6 +39,10 @@ class RegisterUseCase @Inject constructor(
             onFailure = { error -> throw RegisterException(error.message) }
         )
     }
+
+    data class RegisterException(
+        override val message: String
+    ): ClientException(message)
 
     data class Params(
         val phone: String,

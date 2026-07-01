@@ -116,7 +116,7 @@ fun FittingAddressActionsSheet(
                     )
                 ) {
                     Text(
-                        text = stringResource(ClientStrings.FittingAddressSave),
+                        text = stringResource(ClientStrings.FittingAddressCancel),
                         style = MaterialTheme.typography.medium15.copy(
                             textAlign = TextAlign.Center,
                             letterSpacing = .3.sp

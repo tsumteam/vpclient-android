@@ -1,11 +1,11 @@
 package ru.mercury.vpclient.shared.domain.mapper
 
-import ru.mercury.vpclient.shared.data.entity.ClientDeliveryAddress
-import ru.mercury.vpclient.shared.data.entity.ClientDeliveryAddressSuggestion
 import ru.mercury.vpclient.features.fitting_address_sheet.model.FittingAddressModel
+import ru.mercury.vpclient.shared.data.entity.ClientDeliveryAddressSuggestion
 import ru.mercury.vpclient.shared.data.entity.FittingAddressFormField
+import ru.mercury.vpclient.shared.data.persistence.database.entity.ClientDeliveryAddressEntity
 
-val ClientDeliveryAddress.fittingAddressModel: FittingAddressModel
+val ClientDeliveryAddressEntity.fittingAddressModel: FittingAddressModel
     get() = FittingAddressModel(
         addressId = id,
         address = address,
@@ -42,9 +42,9 @@ fun FittingAddressModel.updated(
     }
 }
 
-fun FittingAddressModel.clientDeliveryAddress(): ClientDeliveryAddress {
-    return ClientDeliveryAddress(
-        id = addressId ?: 0,
+fun FittingAddressModel.clientDeliveryAddress(): ClientDeliveryAddressEntity {
+    return ClientDeliveryAddressEntity(
+        id = addressId.orEmpty,
         address = address,
         flat = flat,
         entrance = entrance,

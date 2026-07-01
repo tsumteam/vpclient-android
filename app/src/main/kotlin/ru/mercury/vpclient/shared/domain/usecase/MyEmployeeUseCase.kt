@@ -3,7 +3,7 @@
 package ru.mercury.vpclient.shared.domain.usecase
 
 import ru.mercury.vpclient.shared.coroutines.SharedDispatchers
-import ru.mercury.vpclient.shared.data.error.MyEmployeeException
+import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.network.NetworkService
 import ru.mercury.vpclient.shared.data.persistence.database.dao.EmployeeDao
 import ru.mercury.vpclient.shared.domain.mapper.entity
@@ -33,4 +33,8 @@ class MyEmployeeUseCase @Inject constructor(
             onFailure = { error -> throw MyEmployeeException(error.message) }
         )
     }
+
+    data class MyEmployeeException(
+        override val message: String
+    ): ClientException(message)
 }

@@ -7,10 +7,10 @@ import ru.mercury.vpclient.features.auth_code.navigation.CodeRoute
 import ru.mercury.vpclient.features.auth_login.event.LoginEvents
 import ru.mercury.vpclient.features.auth_login.intent.LoginIntent
 import ru.mercury.vpclient.features.auth_login.model.LoginModel
-import ru.mercury.vpclient.shared.data.error.LoginException
 import ru.mercury.vpclient.shared.domain.mapper.normalizePhoneInput
 import ru.mercury.vpclient.shared.domain.usecase.AuthValidatePhoneUseCase
 import ru.mercury.vpclient.shared.domain.usecase.LoginUseCase
+import ru.mercury.vpclient.shared.domain.usecase.LoginUseCase.LoginException
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import javax.inject.Inject
 

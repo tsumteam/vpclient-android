@@ -2,7 +2,7 @@ package ru.mercury.vpclient.shared.domain.usecase
 
 import ru.mercury.vpclient.shared.coroutines.SharedDispatchers
 import ru.mercury.vpclient.shared.data.FORMAT_PHONE_NUMBER
-import ru.mercury.vpclient.shared.data.error.ClientException
+import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.network.NetworkService
 import ru.mercury.vpclient.shared.data.network.request.AuthenticationContinueLoginRequest
 import ru.mercury.vpclient.shared.data.persistence.database.dao.ClientDao

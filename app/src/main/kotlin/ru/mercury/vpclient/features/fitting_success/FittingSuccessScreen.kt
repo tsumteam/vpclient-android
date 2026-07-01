@@ -59,7 +59,7 @@ private fun FittingSuccessScreenContent(
             Button(
                 onClick = { dispatch(FittingSuccessIntent.CatalogClick) },
                 modifier = Modifier
-                    .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
+                    .padding(bottom = 8.dp)
                     .fillMaxWidth()
                     .height(52.dp),
                 shape = RoundedCornerShape(8.dp),

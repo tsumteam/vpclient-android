@@ -28,13 +28,11 @@ import ru.mercury.vpclient.shared.data.entity.FilterChip
 import ru.mercury.vpclient.shared.data.entity.FilterRequestData
 import ru.mercury.vpclient.shared.data.entity.FilterValuesRequestData
 import ru.mercury.vpclient.shared.data.entity.SortType
-import ru.mercury.vpclient.shared.data.error.ClientException
+import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesQuantityEntity
-import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
-import ru.mercury.vpclient.shared.domain.interactor.FilterInteractor
 import ru.mercury.vpclient.shared.domain.mapper.includeDefaultCategory
 import ru.mercury.vpclient.shared.domain.mapper.isEmpty
 import ru.mercury.vpclient.shared.domain.mapper.isRequestAffectingCatalogFilterValueChipId
@@ -46,20 +44,28 @@ import ru.mercury.vpclient.shared.domain.mapper.toPriceRangeChipData
 import ru.mercury.vpclient.shared.domain.mapper.topBarBrandChipId
 import ru.mercury.vpclient.shared.domain.mapper.topBarBrandId
 import ru.mercury.vpclient.shared.domain.mapper.values
+import ru.mercury.vpclient.shared.domain.usecase.BrandFavoriteStatusUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CartCountFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.CartProductsFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.CatalogFilterProductsPagingDataUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CatalogFilterProductQuantityUseCase
+import ru.mercury.vpclient.shared.domain.usecase.CatalogFilterValuesUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CatalogFiltersUseCase
 import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.FilterDataFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.FilterValuesEntityFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.FilterValuesQuantityEntityFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.FilterValuesQuantityUseCase
 import ru.mercury.vpclient.shared.domain.usecase.FittingCountFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.ResetFilterValuesQuantityUseCase
 import ru.mercury.vpclient.shared.domain.usecase.ToggleBasketProductUseCase
+import ru.mercury.vpclient.shared.domain.usecase.ToggleBrandFavoriteUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.navigation.BackRoute
 
 @HiltViewModel(assistedFactory = FilterViewModel.Factory::class)
 class FilterViewModel @AssistedInject constructor(
     @Assisted private val route: FilterRoute,
-    private val cartInteractor: CartInteractor,
     private val filterDataFlowUseCase: FilterDataFlowUseCase,
     private val catalogFiltersUseCase: CatalogFiltersUseCase,
     private val catalogFilterProductQuantityUseCase: CatalogFilterProductQuantityUseCase,
@@ -67,7 +73,15 @@ class FilterViewModel @AssistedInject constructor(
     private val fittingCountFlowUseCase: FittingCountFlowUseCase,
     private val employeeActiveFlowUseCase: EmployeeActiveFlowUseCase,
     private val toggleBasketProductUseCase: ToggleBasketProductUseCase,
-    private val filterInteractor: FilterInteractor
+    private val cartProductsFlowUseCase: CartProductsFlowUseCase,
+    private val catalogFilterProductsPagingDataUseCase: CatalogFilterProductsPagingDataUseCase,
+    private val filterValuesEntityFlowUseCase: FilterValuesEntityFlowUseCase,
+    private val filterValuesQuantityEntityFlowUseCase: FilterValuesQuantityEntityFlowUseCase,
+    private val catalogFilterValuesUseCase: CatalogFilterValuesUseCase,
+    private val filterValuesQuantityUseCase: FilterValuesQuantityUseCase,
+    private val resetFilterValuesQuantityUseCase: ResetFilterValuesQuantityUseCase,
+    private val brandFavoriteStatusUseCase: BrandFavoriteStatusUseCase,
+    private val toggleBrandFavoriteUseCase: ToggleBrandFavoriteUseCase
 ): ClientViewModel<FilterIntent, FilterModel, FilterEvent>(FilterModel()) {
 
     val productsPagingFlow = stateFlow
@@ -82,7 +96,7 @@ class FilterViewModel @AssistedInject constructor(
             )
         }
         .distinctUntilChanged()
-        .flatMapLatest { entity -> filterInteractor.filterProductsPagingData(entity) }
+        .flatMapLatest { entity -> catalogFilterProductsPagingDataUseCase(entity) }
         .cachedIn(this)
 
     init {
@@ -132,7 +146,7 @@ class FilterViewModel @AssistedInject constructor(
             }
             is FilterIntent.CollectCartProducts -> {
                 launch {
-                    cartInteractor.cartProductsFlow.collectLatest { products ->
+                    cartProductsFlowUseCase(Unit).collectLatest { products ->
                         reduce {
                             it.copy(
                                 basketProductIds = products.map { product -> product.detailId }
@@ -242,7 +256,7 @@ class FilterViewModel @AssistedInject constructor(
                     )
                 }
                 val pickerCollectionJob = launch {
-                    filterInteractor.filterValuesEntityFlow(chip.id).collectLatest { entity ->
+                    filterValuesEntityFlowUseCase(chip.id).collectLatest { entity ->
                         reduce {
                             val productsQuantity = when {
                                 it.filterValuesDialogProductsQuantity.chipId == entity.chipId &&
@@ -261,7 +275,7 @@ class FilterViewModel @AssistedInject constructor(
                     }
                 }
                 val quantityCollectionJob = launch {
-                    filterInteractor.filterValuesQuantityEntityFlow(chip.id).collectLatest { entity: FilterValuesQuantityEntity ->
+                    filterValuesQuantityEntityFlowUseCase(chip.id).collectLatest { entity: FilterValuesQuantityEntity ->
                         entity.quantity?.let {
                             reduce { model ->
                                 model.copy(
@@ -279,7 +293,7 @@ class FilterViewModel @AssistedInject constructor(
                     )
                 }
                 launch {
-                    filterInteractor.loadCatalogFilterValues(
+                    catalogFilterValuesUseCase(
                         FilterValuesRequestData(
                             categoryId = route.categoryId,
                             titleCategoryId = route.titleCategoryId,
@@ -288,7 +302,7 @@ class FilterViewModel @AssistedInject constructor(
                             includeDefaultCategory = route.includeDefaultCategory(),
                             viewTypeOverride = route.viewTypeOverride
                         )
-                    )
+                    ).getOrThrow()
                 }
             }
             is FilterIntent.HideFilterValuesDialog -> {
@@ -313,7 +327,7 @@ class FilterViewModel @AssistedInject constructor(
                     )
                 }
                 if (chipId.isNotEmpty()) {
-                    launch { filterInteractor.resetFilterValuesQuantity(chipId) }
+                    launch { resetFilterValuesQuantityUseCase(chipId).getOrThrow() }
                 }
             }
             is FilterIntent.ResetFilters -> {
@@ -450,16 +464,18 @@ class FilterViewModel @AssistedInject constructor(
                 }
                 val chipId = picker.chipId
                 val productsQuantityJob = launch {
-                    filterInteractor.loadCatalogFiltersProductsQuantity(
-                        chipId = chipId,
-                        data = CatalogFilterRequestData2(
-                            categoryId = route.categoryId,
-                            titleCategoryId = route.titleCategoryId,
-                            selectedFilterValueChipIds = route.requestFilterValueChipIds(stateFlow.value.currentDialogSelectedFilterValueChipIds()),
-                            includeDefaultCategory = route.includeDefaultCategory(),
-                            viewTypeOverride = route.viewTypeOverride
+                    filterValuesQuantityUseCase(
+                        FilterValuesQuantityUseCase.Params(
+                            chipId = chipId,
+                            data = CatalogFilterRequestData2(
+                                categoryId = route.categoryId,
+                                titleCategoryId = route.titleCategoryId,
+                                selectedFilterValueChipIds = route.requestFilterValueChipIds(stateFlow.value.currentDialogSelectedFilterValueChipIds()),
+                                includeDefaultCategory = route.includeDefaultCategory(),
+                                viewTypeOverride = route.viewTypeOverride
+                            )
                         )
-                    )
+                    ).getOrThrow()
                 }.also { job ->
                     job.invokeOnCompletion {
                         reduce { model ->
@@ -569,10 +585,12 @@ class FilterViewModel @AssistedInject constructor(
             }
             is FilterIntent.LoadBrandFavoriteStatus -> {
                 launch {
-                    val isFavorite = filterInteractor.loadBrandFavoriteStatus(
-                        brandId = intent.brandId,
-                        categoryId = intent.categoryId
-                    )
+                    val isFavorite = brandFavoriteStatusUseCase(
+                        BrandFavoriteStatusUseCase.Params(
+                            categoryId = route.categoryId,
+                            brandId = intent.brandId
+                        )
+                    ).getOrThrow()
                     reduce { it.copy(isBrandFavorited = isFavorite) }
                 }
             }
@@ -587,12 +605,14 @@ class FilterViewModel @AssistedInject constructor(
                 launch {
                     val currentIsFavorite = stateFlow.value.isBrandFavorited
                     val nextIsFavorite = !currentIsFavorite
-                    filterInteractor.toggleBrandFavorite(
-                        chipId = chipId,
-                        brandId = brandId,
-                        categoryId = route.categoryId,
-                        isFavorite = nextIsFavorite
-                    )
+                    toggleBrandFavoriteUseCase(
+                        ToggleBrandFavoriteUseCase.Params(
+                            chipId = chipId,
+                            brandId = brandId,
+                            categoryId = route.categoryId,
+                            isFavorite = nextIsFavorite
+                        )
+                    ).getOrThrow()
                     reduce { it.copy(isBrandFavorited = nextIsFavorite) }
                 }
             }

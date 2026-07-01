@@ -3,13 +3,13 @@ package ru.mercury.vpclient.shared.domain.paging
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import ru.mercury.vpclient.features.profile_orders.model.toProfileOrderItemState
-import ru.mercury.vpclient.shared.domain.interactor.AuthenticationInteractor
-import ru.mercury.vpclient.shared.domain.interactor.OrderInteractor
+import ru.mercury.vpclient.shared.domain.usecase.ProfileOrdersUseCase
+import ru.mercury.vpclient.shared.domain.usecase.UserIdUseCase
 import ru.mercury.vpclient.shared.ui.components.profile.ProfileOrderItemState
 
 class ProfileOrdersPagingSource(
-    private val authenticationInteractor: AuthenticationInteractor,
-    private val orderInteractor: OrderInteractor,
+    private val userIdUseCase: UserIdUseCase,
+    private val profileOrdersUseCase: ProfileOrdersUseCase,
     private val pageSize: Int
 ): PagingSource<Int, ProfileOrderItemState>() {
 
@@ -23,7 +23,7 @@ class ProfileOrdersPagingSource(
         return try {
             val offset = params.key ?: 0
             val limit = params.loadSize
-            val clientId = authenticationInteractor.userId()
+            val clientId = userIdUseCase(Unit).getOrThrow()
 
             if (clientId.isEmpty()) {
                 return LoadResult.Page(
@@ -33,11 +33,13 @@ class ProfileOrdersPagingSource(
                 )
             }
 
-            val orders = orderInteractor.profileOrders(
-                clientId = clientId,
-                limit = limit,
-                offset = offset
-            ).map { order -> order.toProfileOrderItemState() }
+            val orders = profileOrdersUseCase(
+                ProfileOrdersUseCase.Params(
+                    clientId = clientId,
+                    limit = limit,
+                    offset = offset
+                )
+            ).getOrThrow().map { order -> order.toProfileOrderItemState() }
 
             LoadResult.Page(
                 data = orders,

@@ -13,7 +13,7 @@ import ru.mercury.vpclient.features.catalog.model.CatalogModel
 import ru.mercury.vpclient.features.catalog_root.event.CatalogRootEventManager
 import ru.mercury.vpclient.features.category.navigation.CategoryRoute
 import ru.mercury.vpclient.features.filter.navigation.FilterRoute
-import ru.mercury.vpclient.shared.data.error.ClientException
+import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.network.type.CatalogCategoryType
 import ru.mercury.vpclient.shared.data.network.type.CatalogViewType
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException

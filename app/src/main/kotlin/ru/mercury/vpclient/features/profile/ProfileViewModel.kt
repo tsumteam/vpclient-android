@@ -29,10 +29,6 @@ import ru.mercury.vpclient.shared.data.persistence.database.RoomException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
 import ru.mercury.vpclient.shared.data.persistence.datastore.PreferenceKey
 import ru.mercury.vpclient.shared.data.persistence.datastore.SettingsDataStore
-import ru.mercury.vpclient.shared.domain.interactor.AuthenticationInteractor
-import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
-import ru.mercury.vpclient.shared.domain.interactor.LoyaltyInteractor
-import ru.mercury.vpclient.shared.domain.interactor.ProductInteractor
 import ru.mercury.vpclient.shared.domain.mapper.codeResendSecondsLeft
 import ru.mercury.vpclient.shared.domain.mapper.formatPhoneForDisplay
 import ru.mercury.vpclient.shared.domain.mapper.isNotEmpty
@@ -44,24 +40,36 @@ import ru.mercury.vpclient.shared.domain.usecase.CatalogViewHistoryUseCase.Catal
 import ru.mercury.vpclient.shared.domain.usecase.LoyaltyCardInfoUseCase.LoyaltyCardInfoException
 import ru.mercury.vpclient.shared.domain.usecase.LoyaltyLinkUseCase.LoyaltyLinkException
 import ru.mercury.vpclient.shared.domain.usecase.AuthValidateCodeUseCase.Companion.CODE_LENGTH
+import ru.mercury.vpclient.shared.domain.usecase.CartBadgeUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CartCountFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CatalogViewHistoryUseCase
 import ru.mercury.vpclient.shared.domain.usecase.ClientEntityFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.CurrentUserUseCase
 import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.FittingCountFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.LinkLoyaltyCardByPhoneUseCase
+import ru.mercury.vpclient.shared.domain.usecase.LoadBasketUseCase
+import ru.mercury.vpclient.shared.domain.usecase.LoadFittingUseCase
+import ru.mercury.vpclient.shared.domain.usecase.LogoutUseCase
 import ru.mercury.vpclient.shared.domain.usecase.LoyaltyCardInfoFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.LoyaltyCardInfoFlowUseCase.Companion.ALPHA_BANK_DISCLAIMER_HIDE_DURATION_MILLIS
 import ru.mercury.vpclient.shared.domain.usecase.LoyaltyCardInfoUseCase
 import ru.mercury.vpclient.shared.domain.usecase.LoyaltyLinkUseCase
+import ru.mercury.vpclient.shared.domain.usecase.VerifyLoyaltyCardByPhoneUseCase
+import ru.mercury.vpclient.shared.domain.usecase.VerifyLoyaltyCardUseCase
+import ru.mercury.vpclient.shared.domain.usecase.ViewHistoryProductsFlowUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val authenticationInteractor: AuthenticationInteractor,
+    private val currentUserUseCase: CurrentUserUseCase,
+    private val logoutUseCase: LogoutUseCase,
     private val clientEntityFlowUseCase: ClientEntityFlowUseCase,
-    private val cartInteractor: CartInteractor,
+    private val loadBasketUseCase: LoadBasketUseCase,
+    private val loadFittingUseCase: LoadFittingUseCase,
+    private val cartBadgeUseCase: CartBadgeUseCase,
     private val cartCountFlowUseCase: CartCountFlowUseCase,
     private val fittingCountFlowUseCase: FittingCountFlowUseCase,
     private val employeeActiveFlowUseCase: EmployeeActiveFlowUseCase,
@@ -71,8 +79,10 @@ class ProfileViewModel @Inject constructor(
     private val loyaltyCardInfoUseCase: LoyaltyCardInfoUseCase,
     private val loyaltyCardInfoFlowUseCase: LoyaltyCardInfoFlowUseCase,
     private val loyaltyLinkUseCase: LoyaltyLinkUseCase,
-    private val loyaltyInteractor: LoyaltyInteractor,
-    private val productInteractor: ProductInteractor,
+    private val linkLoyaltyCardByPhoneUseCase: LinkLoyaltyCardByPhoneUseCase,
+    private val verifyLoyaltyCardUseCase: VerifyLoyaltyCardUseCase,
+    private val verifyLoyaltyCardByPhoneUseCase: VerifyLoyaltyCardByPhoneUseCase,
+    private val viewHistoryProductsFlowUseCase: ViewHistoryProductsFlowUseCase,
     private val settingsDataStore: SettingsDataStore
 ): ClientViewModel<ProfileIntent, ProfileModel, ProfileEvent>(ProfileModel()) {
 
@@ -165,7 +175,7 @@ class ProfileViewModel @Inject constructor(
             }
             is ProfileIntent.CollectViewHistoryProducts -> {
                 launch {
-                    productInteractor.viewHistoryProductsFlow()
+                    viewHistoryProductsFlowUseCase(Unit)
                         .distinctUntilChanged()
                         .collectLatest { products ->
                             reduce { it.copy(viewHistoryProducts = products) }
@@ -203,10 +213,10 @@ class ProfileViewModel @Inject constructor(
             }
             is ProfileIntent.LoadCartData -> {
                 launch {
-                    runCatching { cartInteractor.loadBasket() }
-                    runCatching { cartInteractor.loadFitting() }
+                    runCatching { loadBasketUseCase(Unit).getOrThrow() }
+                    runCatching { loadFittingUseCase(Unit).getOrThrow() }
 
-                    val badge = runCatching { cartInteractor.cartBadge() }.getOrDefault(0)
+                    val badge = runCatching { cartBadgeUseCase(Unit).getOrThrow() }.getOrDefault(0)
                     reduce { it.copy(cartBadge = badge) }
                 }
             }
@@ -286,7 +296,7 @@ class ProfileViewModel @Inject constructor(
             is ProfileIntent.Logout -> {
                 val job = launch {
                     reduce { it.copy(isLogoutDialogVisible = false) }
-                    authenticationInteractor.logout()
+                    logoutUseCase(Unit).getOrThrow()
                     MainEventManager.send(WelcomeRoute)
                 }.also { launchedJob ->
                     launchedJob.invokeOnCompletion { reduce { it.copy(logoutJob = null) } }
@@ -332,7 +342,7 @@ class ProfileViewModel @Inject constructor(
                         reduce { state -> state.copy(isLoyaltyAddCardPhoneErrorVisible = true) }
                     } else {
                         val job = launch {
-                            runCatching { loyaltyInteractor.linkLoyaltyCardByPhone(phone = phone) }
+                            runCatching { linkLoyaltyCardByPhoneUseCase(phone).getOrThrow() }
                                 .onSuccess { isNeedVerification ->
                                     when {
                                         isNeedVerification -> {
@@ -356,7 +366,7 @@ class ProfileViewModel @Inject constructor(
                                             dispatch(ProfileIntent.StartLoyaltyCodeResendTimerTicker)
                                         }
                                         else -> {
-                                            authenticationInteractor.currentUser()
+                                            currentUserUseCase(Unit).getOrThrow()
                                             stateFlow.value.loyaltyCodeResendTimerJob?.cancel()
                                             reduce { it.copy(isLoyaltyAddCardSheetVisible = false, isLoyaltyCodeSheetVisible = false) }
                                             dispatch(ProfileIntent.LoadLoyaltyCardInfo)
@@ -450,19 +460,23 @@ class ProfileViewModel @Inject constructor(
                         runCatching {
                             when (sheet.loyaltyCodeMode) {
                                 ProfileLoyaltyAddCardMode.Phone -> {
-                                    loyaltyInteractor.verifyLoyaltyCardByPhone(
-                                        phone = sheet.loyaltyCodePhone,
-                                        code = sheet.loyaltyCode
-                                    )
+                                    verifyLoyaltyCardByPhoneUseCase(
+                                        VerifyLoyaltyCardByPhoneUseCase.Params(
+                                            phone = sheet.loyaltyCodePhone,
+                                            code = sheet.loyaltyCode
+                                        )
+                                    ).getOrThrow()
                                 }
                                 ProfileLoyaltyAddCardMode.CardNumber -> {
-                                    loyaltyInteractor.verifyLoyaltyCard(
-                                        cardNumber = sheet.loyaltyCodeCardNumber,
-                                        code = sheet.loyaltyCode
-                                    )
+                                    verifyLoyaltyCardUseCase(
+                                        VerifyLoyaltyCardUseCase.Params(
+                                            cardNumber = sheet.loyaltyCodeCardNumber,
+                                            code = sheet.loyaltyCode
+                                        )
+                                    ).getOrThrow()
                                 }
                             }
-                            authenticationInteractor.currentUser()
+                            currentUserUseCase(Unit).getOrThrow()
                         }.onSuccess {
                             stateFlow.value.loyaltyCodeResendTimerJob?.cancel()
                             reduce { it.copy(isLoyaltyCodeSheetVisible = false, isLoyaltyCodeLoading = false, loyaltyCodeResendTimerJob = null) }
@@ -485,7 +499,7 @@ class ProfileViewModel @Inject constructor(
                         reduce { state -> state.copy(isLoyaltyCodeResendLoading = true) }
                         runCatching {
                             when (sheet.loyaltyCodeMode) {
-                                ProfileLoyaltyAddCardMode.Phone -> loyaltyInteractor.linkLoyaltyCardByPhone(phone = sheet.loyaltyCodePhone)
+                                ProfileLoyaltyAddCardMode.Phone -> linkLoyaltyCardByPhoneUseCase(sheet.loyaltyCodePhone).getOrThrow()
                                 ProfileLoyaltyAddCardMode.CardNumber -> {
                                     loyaltyLinkUseCase(sheet.loyaltyCodeCardNumber).getOrThrow()
                                     true
@@ -505,7 +519,7 @@ class ProfileViewModel @Inject constructor(
                                     dispatch(ProfileIntent.StartLoyaltyCodeResendTimerTicker)
                                 }
                                 else -> {
-                                    authenticationInteractor.currentUser()
+                                    currentUserUseCase(Unit).getOrThrow()
                                     stateFlow.value.loyaltyCodeResendTimerJob?.cancel()
                                     reduce { it.copy(isLoyaltyCodeSheetVisible = false, isLoyaltyCodeResendLoading = false, loyaltyCodeResendTimerJob = null) }
                                     dispatch(ProfileIntent.LoadLoyaltyCardInfo)

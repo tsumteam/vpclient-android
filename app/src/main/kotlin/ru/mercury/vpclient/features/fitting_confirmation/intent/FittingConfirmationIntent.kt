@@ -12,8 +12,6 @@ sealed interface FittingConfirmationIntent: Intent {
     data object LoadFittingData: FittingConfirmationIntent
     data object LoadClientAddresses: FittingConfirmationIntent
     data object OpenAddressSelection: FittingConfirmationIntent
-    data object AddressSelectionBackClick: FittingConfirmationIntent
-    data object SaveAddressSelectionClick: FittingConfirmationIntent
     data object AddAddressClick: FittingConfirmationIntent
     data object HideAddressForm: FittingConfirmationIntent
     data object OpenAddressSearch: FittingConfirmationIntent
@@ -24,9 +22,11 @@ sealed interface FittingConfirmationIntent: Intent {
     data object DismissDeleteAddress: FittingConfirmationIntent
     data object ConfirmDeleteAddress: FittingConfirmationIntent
     data object CollectRoute: FittingConfirmationIntent
-    data object CollectAddressSelectionRoute: FittingConfirmationIntent
     data object CollectCartProducts: FittingConfirmationIntent
-    data object CollectAddressSelectionResult: FittingConfirmationIntent
+    data object CollectClientAddresses: FittingConfirmationIntent
+    data class ReceiveFittingAddressesEvent(
+        val event: ru.mercury.vpclient.features.fitting_addresses.event.FittingAddressesEvent
+    ): FittingConfirmationIntent
     data class SelectPlace(val placeType: FittingConfirmationPlaceType): FittingConfirmationIntent
     data class SelectDeliveryMode(val mode: FittingConfirmationDeliveryMode): FittingConfirmationIntent
     data class SelectSingleDay(val dayId: String): FittingConfirmationIntent
@@ -37,12 +37,6 @@ sealed interface FittingConfirmationIntent: Intent {
     data class SelectClientAddress(val addressId: Int): FittingConfirmationIntent
     data class OpenAddressActions(val addressId: Int): FittingConfirmationIntent
     data class RequestDeleteAddress(val addressId: Int): FittingConfirmationIntent
-    data class AddressFormValueChange(
-        val field: FittingAddressFormField,
-        val value: String
-    ): FittingConfirmationIntent
-    data class AddressSearchQueryChange(val query: String): FittingConfirmationIntent
-    data class SelectAddressSuggestion(
-        val suggestion: ClientDeliveryAddressSuggestion
-    ): FittingConfirmationIntent
+    data class AddressFormValueChange(val field: FittingAddressFormField, val value: String): FittingConfirmationIntent
+    data class SelectAddressSuggestion(val suggestion: ClientDeliveryAddressSuggestion): FittingConfirmationIntent
 }

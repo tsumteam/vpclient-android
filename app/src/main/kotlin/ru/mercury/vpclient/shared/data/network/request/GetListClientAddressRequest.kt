@@ -5,5 +5,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class GetListClientAddressRequest(
-    @SerialName("clientId") val clientId: String? = null
+    @SerialName("clientId") val clientId: String
 )

@@ -114,8 +114,8 @@
     <string name="cart_fitting_sheet_no_size_hint">У вас в Корзине есть вещи с признаком «Выберите размер». Они не могут быть заказаны для примерки \nи останутся в Корзине. Вы сможете позже добавить их в Примерку, выбрав в Корзине размер.</string>
     <string name="cart_fitting_sheet_confirm">Подтвердить примерку</string>
     <string name="cart_fitting_sheet_continue">Продолжить</string>
-    <string name="cart_fitting_products_sheet_title">ВЫБЕРИТЕ ТОВАРЫ</string>
-    <string name="cart_fitting_products_sheet_select">Выбрать</string>
+    <string name="fitting_products_sheet_title">ВЫБЕРИТЕ ТОВАРЫ</string>
+    <string name="fitting_products_sheet_select">Выбрать</string>
     <string name="fitting_confirmation_title">Подтвердить примерку</string>
     <string name="fitting_confirmation_place_title">Место примерки</string>
     <string name="fitting_confirmation_place_value">Бутик VIP Platinum</string>

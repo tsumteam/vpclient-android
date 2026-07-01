@@ -6,9 +6,15 @@ import ru.mercury.vpclient.shared.data.entity.CartProductSize
 import ru.mercury.vpclient.shared.data.network.response.FittingDeliveryResponse
 import ru.mercury.vpclient.shared.data.network.response.FittingLineResponse
 import ru.mercury.vpclient.shared.data.network.type.DateReceiptExpiredStatus
+import ru.mercury.vpclient.shared.data.network.type.FittingLogisticStatus
 import ru.mercury.vpclient.shared.ui.components.fitting.FittingDeliveryHeaderState
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.OffsetDateTime
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 val FittingLineResponse.cartProduct: CartProduct?
@@ -59,14 +65,17 @@ val FittingLineResponse.cartProduct: CartProduct?
             isLastInStock = sizes.any { it.isLastInStock == true || it.availableStockQuantity == 1.0 },
             hasActions = product.actions.orEmpty().isNotEmpty(),
             discountPercentage = product.discountPercentage.orEmpty,
-            quantity = 1,
+            quantity = product.quantity ?: 1,
             sizeCount = sizeItems.size.takeIf { it > 0 } ?: sizes.size.coerceAtLeast(1),
             priceValue = price,
             sizeId = sizeItems.firstOrNull()?.id ?: sizes.firstOrNull()?.id.orEmpty(),
             sizeItems = sizeItems,
             isOneSize = product.oneSize == true,
-            dateReceipt = dateOfExpiration?.takeIf { it.isNotBlank() }
-                ?: dateReceiptAsString?.takeIf { it.isNotBlank() },
+            dateReceipt = when {
+                isReadyForRedeem -> dateOfExpiration?.formattedReceiptDate
+                    ?: dateReceiptAsString?.takeIf { it.isNotBlank() }
+                else -> null
+            },
             isDateReceiptOverdue = dateReceiptExpiredStatus == DateReceiptExpiredStatus.OVERDUE
         )
     }
@@ -96,3 +105,28 @@ private val fittingPriceFormatter = DecimalFormat(
         groupingSeparator = ' '
     }
 )
+
+private val receiptDateFormatter = DateTimeFormatter.ofPattern(
+    "d MMMM",
+    Locale.Builder().setLanguage("ru").setRegion("RU").build()
+)
+
+private val String.formattedReceiptDate: String?
+    get() {
+        val value = takeIf { it.isNotBlank() } ?: return null
+        val date = runCatching { OffsetDateTime.parse(value).toLocalDate() }.getOrNull()
+            ?: runCatching { ZonedDateTime.parse(value).toLocalDate() }.getOrNull()
+            ?: runCatching { LocalDateTime.parse(value, DateTimeFormatter.ISO_LOCAL_DATE_TIME).toLocalDate() }.getOrNull()
+            ?: runCatching { LocalDate.parse(value, DateTimeFormatter.ISO_LOCAL_DATE) }.getOrNull()
+            ?: runCatching { LocalDate.parse(value, DateTimeFormatter.ofPattern("dd.MM.yyyy")) }.getOrNull()
+            ?: return value
+
+        return date.format(receiptDateFormatter)
+    }
+
+private val FittingLineResponse.isReadyForRedeem: Boolean
+    get() = when (logisticStatus) {
+        FittingLogisticStatus.READY_TO_SHIP_TO_CUSTOMER -> true
+        FittingLogisticStatus.IN_THE_STORE -> true
+        else -> logisticStatusAsStringClient.equals("Готово", ignoreCase = true)
+    }

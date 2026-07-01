@@ -23,6 +23,8 @@ import kotlin.math.roundToInt
 data class CartModel(
     val initialPage: Int = CART_PAGE_INDEX,
     val payMode: CartPayMode = CartPayMode.All,
+    val isCartInitialLoading: Boolean = false,
+    val isFittingInitialLoading: Boolean = false,
     val isRefreshing: Boolean = false,
     val activeEmployee: EmployeeEntity = EmployeeEntity.Empty,
     val products: List<CartProduct> = emptyList(),

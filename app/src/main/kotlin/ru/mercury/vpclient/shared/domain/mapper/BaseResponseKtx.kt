@@ -2,8 +2,7 @@ package ru.mercury.vpclient.shared.domain.mapper
 
 import kotlinx.coroutines.CancellationException
 import ru.mercury.vpclient.shared.data.entity.ClientError
-import ru.mercury.vpclient.shared.data.error.ClientEmptyException
-import ru.mercury.vpclient.shared.data.error.ClientException
+import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.network.response.BaseResponse
 import ru.mercury.vpclient.shared.data.network.response.DataResponse
 
@@ -95,7 +94,7 @@ suspend fun <T> handleResponseResult(
                     is DataResponse -> {
                         when {
                             data.data == DataResponse.RESULT_OK -> Result.success(data)
-                            else -> Result.failure(ClientEmptyException())
+                            else -> Result.failure(ClientException("Данные отсутствуют"))
                         }
                     }
                     else -> Result.success(data)

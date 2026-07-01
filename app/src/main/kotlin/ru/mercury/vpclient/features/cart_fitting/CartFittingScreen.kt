@@ -48,6 +48,7 @@ import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.SharedTabRow
 import ru.mercury.vpclient.shared.ui.components.SharedTabRowState
 import ru.mercury.vpclient.shared.ui.components.cart.CartFittingSummary
+import ru.mercury.vpclient.shared.ui.components.cart.CartListLoading
 import ru.mercury.vpclient.shared.ui.components.cart.CartLookCard
 import ru.mercury.vpclient.shared.ui.components.cart.CartProductCard
 import ru.mercury.vpclient.shared.ui.components.cart.CartProductCardState
@@ -82,6 +83,27 @@ private fun CartFittingScreenContent(
     SharedScaffold(
         topBar = {
             when {
+                state.isFittingInitialLoading -> {
+                    Box(
+                        modifier = Modifier.background(MaterialTheme.colorScheme.background)
+                    ) {
+                        SharedTabRow(
+                            state = SharedTabRowState(
+                                selectedIndex = when (state.payMode) {
+                                    CartPayMode.All -> 0
+                                    CartPayMode.Payment -> 1
+                                },
+                                firstTabText = "",
+                                secondTabText = "",
+                                onFirstTabClick = {},
+                                onSecondTabClick = {},
+                                isLoading = true
+                            ),
+                            textStyle = MaterialTheme.typography.medium13,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                        )
+                    }
+                }
                 state.apiFittingProducts.isEmpty() -> {
                     Text(
                         text = stringResource(ClientStrings.CartEmptyTabHint),
@@ -149,6 +171,11 @@ private fun CartFittingScreenContent(
         contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal)
     ) { innerPadding ->
         when {
+            state.isFittingInitialLoading -> {
+                CartListLoading(
+                    contentPadding = innerPadding + PaddingValues(bottom = 76.dp)
+                )
+            }
             state.apiFittingProducts.isEmpty() -> {
                 Box(
                     modifier = Modifier

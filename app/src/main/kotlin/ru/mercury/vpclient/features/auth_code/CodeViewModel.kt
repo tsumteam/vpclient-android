@@ -10,12 +10,11 @@ import ru.mercury.vpclient.features.auth_code.intent.CodeIntent
 import ru.mercury.vpclient.features.auth_code.model.CodeModel
 import ru.mercury.vpclient.features.main.navigation.MainRoute
 import ru.mercury.vpclient.shared.data.CODE_RESEND_TIMER_DELAY
-import ru.mercury.vpclient.shared.data.error.LoginException
-import ru.mercury.vpclient.shared.data.error.RegisterException
 import ru.mercury.vpclient.shared.domain.mapper.resendCodeTimerSec
 import ru.mercury.vpclient.shared.domain.usecase.AuthContinueLoginUseCase
 import ru.mercury.vpclient.shared.domain.usecase.AuthContinueLoginUseCase.AuthContinueLoginException
 import ru.mercury.vpclient.shared.domain.usecase.AuthResendCodeUseCase
+import ru.mercury.vpclient.shared.domain.usecase.AuthResendCodeUseCase.AuthResendCodeException
 import ru.mercury.vpclient.shared.domain.usecase.AuthValidateCodeUseCase
 import ru.mercury.vpclient.shared.domain.usecase.AuthValidateCodeUseCase.CodeValidationError
 import ru.mercury.vpclient.shared.domain.usecase.AuthValidateCodeUseCase.Companion.CODE_LENGTH
@@ -123,13 +122,7 @@ class CodeViewModel @Inject constructor(
                     send(CodeEvents.SnackbarMessage(throwable.message))
                 }
             }
-            is LoginException -> {
-                launch {
-                    reduce { it.copy(resendCodeJob = null) }
-                    send(CodeEvents.SnackbarMessage(throwable.message))
-                }
-            }
-            is RegisterException -> {
+            is AuthResendCodeException -> {
                 launch {
                     reduce { it.copy(resendCodeJob = null) }
                     send(CodeEvents.SnackbarMessage(throwable.message))

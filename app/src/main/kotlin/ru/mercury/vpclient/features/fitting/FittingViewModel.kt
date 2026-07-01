@@ -12,18 +12,26 @@ import ru.mercury.vpclient.features.fitting.intent.FittingIntent
 import ru.mercury.vpclient.features.fitting.model.FittingModel
 import ru.mercury.vpclient.features.fitting_confirmation.navigation.FittingConfirmationRoute
 import ru.mercury.vpclient.shared.data.entity.FittingData
-import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
 import ru.mercury.vpclient.shared.domain.mapper.isNotEmpty
+import ru.mercury.vpclient.shared.domain.usecase.CartBadgeUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CartCountFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.CartProductsFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.ChangeFittingPaySwitchUseCase
 import ru.mercury.vpclient.shared.domain.usecase.FittingCountFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.LoadBasketUseCase
+import ru.mercury.vpclient.shared.domain.usecase.LoadFittingUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.mvi.Event
 import javax.inject.Inject
 
 @HiltViewModel
 class FittingViewModel @Inject constructor(
-    private val cartInteractor: CartInteractor,
+    private val loadBasketUseCase: LoadBasketUseCase,
+    private val loadFittingUseCase: LoadFittingUseCase,
+    private val cartBadgeUseCase: CartBadgeUseCase,
+    private val cartProductsFlowUseCase: CartProductsFlowUseCase,
+    private val changeFittingPaySwitchUseCase: ChangeFittingPaySwitchUseCase,
     private val cartCountFlowUseCase: CartCountFlowUseCase,
     private val fittingCountFlowUseCase: FittingCountFlowUseCase,
     private val employeeActiveFlowUseCase: EmployeeActiveFlowUseCase
@@ -60,7 +68,7 @@ class FittingViewModel @Inject constructor(
             }
             is FittingIntent.CollectCartProducts -> {
                 launch {
-                    cartInteractor.cartProductsFlow.collectLatest { products ->
+                    cartProductsFlowUseCase(Unit).collectLatest { products ->
                         reduce { it.copy(products = products) }
                     }
                 }
@@ -80,16 +88,16 @@ class FittingViewModel @Inject constructor(
             }
             is FittingIntent.LoadCartData -> {
                 launch {
-                    runCatching { cartInteractor.loadBasket() }
-                    runCatching { cartInteractor.loadFitting() }
+                    runCatching { loadBasketUseCase(Unit).getOrThrow() }
+                    runCatching { loadFittingUseCase(Unit).getOrThrow() }
 
-                    val badge = runCatching { cartInteractor.cartBadge() }.getOrDefault(0)
+                    val badge = runCatching { cartBadgeUseCase(Unit).getOrThrow() }.getOrDefault(0)
                     reduce { it.copy(cartBadge = badge) }
                 }
             }
             is FittingIntent.LoadFitting -> {
                 launch {
-                    val fitting = runCatching { cartInteractor.loadFitting() }.getOrDefault(FittingData())
+                    val fitting = runCatching { loadFittingUseCase(Unit).getOrThrow() }.getOrDefault(FittingData())
                     reduce {
                         it.copy(
                             apiFittingProducts = fitting.products,
@@ -111,8 +119,13 @@ class FittingViewModel @Inject constructor(
             }
             is FittingIntent.ChangePaySwitch -> {
                 launch {
-                    cartInteractor.changeFittingPaySwitch(intent.product, intent.paySwitch)
-                    val fitting = runCatching { cartInteractor.loadFitting() }.getOrDefault(FittingData())
+                    changeFittingPaySwitchUseCase(
+                        ChangeFittingPaySwitchUseCase.Params(
+                            product = intent.product,
+                            paySwitch = intent.paySwitch
+                        )
+                    ).getOrThrow()
+                    val fitting = runCatching { loadFittingUseCase(Unit).getOrThrow() }.getOrDefault(FittingData())
                     reduce {
                         it.copy(
                             apiFittingProducts = fitting.products,

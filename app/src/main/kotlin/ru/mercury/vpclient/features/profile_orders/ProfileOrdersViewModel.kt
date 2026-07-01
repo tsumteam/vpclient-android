@@ -16,24 +16,28 @@ import ru.mercury.vpclient.features.profile_orders.event.ProfileOrdersEvent
 import ru.mercury.vpclient.features.profile_orders.intent.ProfileOrdersIntent
 import ru.mercury.vpclient.features.profile_orders.model.ProfileOrdersModel
 import ru.mercury.vpclient.features.profile_stack.event.ProfileStackEventManager
-import ru.mercury.vpclient.shared.domain.interactor.AuthenticationInteractor
-import ru.mercury.vpclient.shared.domain.interactor.CartInteractor
-import ru.mercury.vpclient.shared.domain.interactor.OrderInteractor
+import ru.mercury.vpclient.shared.domain.usecase.CartBadgeUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CartCountFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.FittingCountFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.LoadBasketUseCase
+import ru.mercury.vpclient.shared.domain.usecase.LoadFittingUseCase
+import ru.mercury.vpclient.shared.domain.usecase.ProfileOrdersUseCase
+import ru.mercury.vpclient.shared.domain.usecase.UserIdUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.navigation.BackRoute
 import javax.inject.Inject
 
 @HiltViewModel
 class ProfileOrdersViewModel @Inject constructor(
-    private val authenticationInteractor: AuthenticationInteractor,
-    private val cartInteractor: CartInteractor,
+    private val userIdUseCase: UserIdUseCase,
+    private val loadBasketUseCase: LoadBasketUseCase,
+    private val loadFittingUseCase: LoadFittingUseCase,
+    private val cartBadgeUseCase: CartBadgeUseCase,
     private val cartCountFlowUseCase: CartCountFlowUseCase,
     private val fittingCountFlowUseCase: FittingCountFlowUseCase,
     private val employeeActiveFlowUseCase: EmployeeActiveFlowUseCase,
-    private val orderInteractor: OrderInteractor
+    private val profileOrdersUseCase: ProfileOrdersUseCase
 ): ClientViewModel<ProfileOrdersIntent, ProfileOrdersModel, ProfileOrdersEvent>(ProfileOrdersModel()) {
 
     val ordersPagingFlow = Pager(
@@ -44,8 +48,8 @@ class ProfileOrdersViewModel @Inject constructor(
         ),
         pagingSourceFactory = {
             ProfileOrdersPagingSource(
-                authenticationInteractor = authenticationInteractor,
-                orderInteractor = orderInteractor,
+                userIdUseCase = userIdUseCase,
+                profileOrdersUseCase = profileOrdersUseCase,
                 pageSize = PROFILE_ORDERS_LIMIT
             )
         }
@@ -89,10 +93,10 @@ class ProfileOrdersViewModel @Inject constructor(
             }
             is ProfileOrdersIntent.LoadCartData -> {
                 launch {
-                    runCatching { cartInteractor.loadBasket() }
-                    runCatching { cartInteractor.loadFitting() }
+                    runCatching { loadBasketUseCase(Unit).getOrThrow() }
+                    runCatching { loadFittingUseCase(Unit).getOrThrow() }
 
-                    val badge = runCatching { cartInteractor.cartBadge() }.getOrDefault(0)
+                    val badge = runCatching { cartBadgeUseCase(Unit).getOrThrow() }.getOrDefault(0)
                     reduce { it.copy(cartBadge = badge) }
                 }
             }
@@ -101,10 +105,10 @@ class ProfileOrdersViewModel @Inject constructor(
                 reduce { it.copy(isRefreshing = true) }
                 launch { send(ProfileOrdersEvent.RefreshOrders) }
                 launch {
-                    runCatching { cartInteractor.loadBasket() }
-                    runCatching { cartInteractor.loadFitting() }
+                    runCatching { loadBasketUseCase(Unit).getOrThrow() }
+                    runCatching { loadFittingUseCase(Unit).getOrThrow() }
 
-                    val badge = runCatching { cartInteractor.cartBadge() }.getOrDefault(0)
+                    val badge = runCatching { cartBadgeUseCase(Unit).getOrThrow() }.getOrDefault(0)
                     reduce { it.copy(cartBadge = badge) }
                 }
             }

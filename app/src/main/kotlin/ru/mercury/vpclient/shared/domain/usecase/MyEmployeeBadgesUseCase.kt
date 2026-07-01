@@ -2,7 +2,7 @@ package ru.mercury.vpclient.shared.domain.usecase
 
 import androidx.room.withTransaction
 import ru.mercury.vpclient.shared.coroutines.SharedDispatchers
-import ru.mercury.vpclient.shared.data.error.MyEmployeeException
+import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.network.NetworkService
 import ru.mercury.vpclient.shared.data.persistence.database.AppDatabase
 import ru.mercury.vpclient.shared.data.persistence.database.dao.EmployeeBadgeDao
@@ -37,7 +37,7 @@ class MyEmployeeBadgesUseCase @Inject constructor(
                 onSuccess = { response ->
                     badgeEntities += response.entity(employeeId)
                 },
-                onFailure = { error -> throw MyEmployeeException(error.message) }
+                onFailure = { error -> throw MyEmployeeBadgesException(error.message) }
             )
         }
 
@@ -46,4 +46,8 @@ class MyEmployeeBadgesUseCase @Inject constructor(
             employeeBadgeDao.upsert(badgeEntities)
         }
     }
+
+    data class MyEmployeeBadgesException(
+        override val message: String
+    ): ClientException(message)
 }

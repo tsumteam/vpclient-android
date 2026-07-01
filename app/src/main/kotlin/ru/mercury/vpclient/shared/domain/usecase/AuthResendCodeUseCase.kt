@@ -2,8 +2,7 @@ package ru.mercury.vpclient.shared.domain.usecase
 
 import ru.mercury.vpclient.shared.coroutines.SharedDispatchers
 import ru.mercury.vpclient.shared.data.FORMAT_PHONE_NUMBER
-import ru.mercury.vpclient.shared.data.error.LoginException
-import ru.mercury.vpclient.shared.data.error.RegisterException
+import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.network.NetworkService
 import ru.mercury.vpclient.shared.data.network.request.AuthenticationLoginRequest
 import ru.mercury.vpclient.shared.data.network.request.AuthenticationRegisterRequest
@@ -35,7 +34,7 @@ class AuthResendCodeUseCase @Inject constructor(
                         )
                         clientDao.update(updatedClientEntity)
                     },
-                    onFailure = { error -> throw LoginException(error.message) }
+                    onFailure = { error -> throw AuthResendCodeException(error.message) }
                 )
             }
             else -> {
@@ -53,9 +52,13 @@ class AuthResendCodeUseCase @Inject constructor(
                         )
                         clientDao.update(updatedClientEntity)
                     },
-                    onFailure = { error -> throw RegisterException(error.message) }
+                    onFailure = { error -> throw AuthResendCodeException(error.message) }
                 )
             }
         }
     }
+
+    data class AuthResendCodeException(
+        override val message: String
+    ): ClientException(message)
 }

@@ -120,8 +120,8 @@ object ClientStrings {
     val CartFittingSheetNoSizeHint get() = R.string.cart_fitting_sheet_no_size_hint
     val CartFittingSheetConfirm get() = R.string.cart_fitting_sheet_confirm
     val CartFittingSheetContinue get() = R.string.cart_fitting_sheet_continue
-    val CartFittingProductsSheetTitle get() = R.string.cart_fitting_products_sheet_title
-    val CartFittingProductsSheetSelect get() = R.string.cart_fitting_products_sheet_select
+    val FittingProductsSheetTitle get() = R.string.fitting_products_sheet_title
+    val FittingProductsSheetSelect get() = R.string.fitting_products_sheet_select
 
     val FittingConfirmationTitle get() = R.string.fitting_confirmation_title
     val FittingConfirmationProductsTitle get() = R.plurals.fitting_confirmation_products_title

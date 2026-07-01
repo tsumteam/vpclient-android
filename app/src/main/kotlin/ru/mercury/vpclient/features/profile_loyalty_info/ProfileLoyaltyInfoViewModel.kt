@@ -8,10 +8,11 @@ import ru.mercury.vpclient.features.profile_loyalty_info.intent.ProfileLoyaltyIn
 import ru.mercury.vpclient.features.profile_loyalty_info.model.ProfileLoyaltyInfoModel
 import ru.mercury.vpclient.features.profile_loyalty_qr.navigation.ProfileLoyaltyQrRoute
 import ru.mercury.vpclient.features.profile_loyalty_terms.navigation.ProfileLoyaltyTermsRoute
-import ru.mercury.vpclient.shared.domain.interactor.AuthenticationInteractor
-import ru.mercury.vpclient.shared.domain.interactor.LoyaltyInteractor
+import ru.mercury.vpclient.shared.domain.usecase.CurrentUserUseCase
+import ru.mercury.vpclient.shared.domain.usecase.DeleteLoyaltyCardUseCase
 import ru.mercury.vpclient.shared.domain.usecase.LoyaltyCardInfoFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.LoyaltyCardInfoUseCase
+import ru.mercury.vpclient.shared.domain.usecase.LoyaltyCardTypesUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.mvi.Event
 import ru.mercury.vpclient.shared.navigation.BackRoute
@@ -19,10 +20,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileLoyaltyInfoViewModel @Inject constructor(
-    private val authenticationInteractor: AuthenticationInteractor,
+    private val currentUserUseCase: CurrentUserUseCase,
     private val loyaltyCardInfoUseCase: LoyaltyCardInfoUseCase,
     private val loyaltyCardInfoFlowUseCase: LoyaltyCardInfoFlowUseCase,
-    private val loyaltyInteractor: LoyaltyInteractor
+    private val loyaltyCardTypesUseCase: LoyaltyCardTypesUseCase,
+    private val deleteLoyaltyCardUseCase: DeleteLoyaltyCardUseCase
 ): ClientViewModel<ProfileLoyaltyInfoIntent, ProfileLoyaltyInfoModel, Event>(ProfileLoyaltyInfoModel()) {
 
     init {
@@ -37,7 +39,7 @@ class ProfileLoyaltyInfoViewModel @Inject constructor(
                     runCatching {
                         loyaltyCardInfoUseCase(Unit).getOrThrow()
                         val cardInfo = loyaltyCardInfoFlowUseCase(Unit).first()
-                        val cardTypes = loyaltyInteractor.loyaltyCardTypes()
+                        val cardTypes = loyaltyCardTypesUseCase(Unit).getOrThrow()
                         cardInfo to cardTypes
                     }.onSuccess { result ->
                         reduce {
@@ -80,8 +82,8 @@ class ProfileLoyaltyInfoViewModel @Inject constructor(
                         )
                     }
                     runCatching {
-                        loyaltyInteractor.deleteLoyaltyCard(cardNumber = cardNumber)
-                        authenticationInteractor.currentUser()
+                        deleteLoyaltyCardUseCase(cardNumber).getOrThrow()
+                        currentUserUseCase(Unit).getOrThrow()
                     }.onSuccess {
                         MainEventManager.send(BackRoute)
                     }.onFailure {

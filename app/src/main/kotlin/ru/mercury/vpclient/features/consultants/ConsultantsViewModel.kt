@@ -12,7 +12,7 @@ import ru.mercury.vpclient.features.consultants.intent.ConsultantsIntent
 import ru.mercury.vpclient.features.consultants.model.ConsultantsModel
 import ru.mercury.vpclient.features.fitting.navigation.FittingRoute
 import ru.mercury.vpclient.features.main.event.MainTabsEventManager
-import ru.mercury.vpclient.shared.data.error.ClientException
+import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity.Companion.ID_CALL

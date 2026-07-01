@@ -4,7 +4,7 @@ package ru.mercury.vpclient.shared.domain.usecase
 
 import ru.mercury.vpclient.shared.coroutines.SharedDispatchers
 import ru.mercury.vpclient.shared.data.FORMAT_PHONE_NUMBER
-import ru.mercury.vpclient.shared.data.error.LoginException
+import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.network.NetworkService
 import ru.mercury.vpclient.shared.data.network.request.AuthenticationLoginRequest
 import ru.mercury.vpclient.shared.data.persistence.database.dao.ClientDao
@@ -37,4 +37,8 @@ class LoginUseCase @Inject constructor(
             onFailure = { error -> throw LoginException(error.message) }
         )
     }
+
+    data class LoginException(
+        override val message: String
+    ): ClientException(message)
 }

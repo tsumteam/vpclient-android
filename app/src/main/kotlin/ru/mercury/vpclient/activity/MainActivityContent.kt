@@ -27,8 +27,8 @@ import ru.mercury.vpclient.features.consultant.ConsultantScreen
 import ru.mercury.vpclient.features.consultant.navigation.ConsultantRoute
 import ru.mercury.vpclient.features.details.DetailsScreen
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
-import ru.mercury.vpclient.features.fitting_address_selection.FittingAddressSelectionScreen
-import ru.mercury.vpclient.features.fitting_address_selection.navigation.FittingAddressSelectionRoute
+import ru.mercury.vpclient.features.fitting_addresses.FittingAddressesScreen
+import ru.mercury.vpclient.features.fitting_addresses.navigation.FittingAddressesRoute
 import ru.mercury.vpclient.features.fitting_confirmation.FittingConfirmationScreen
 import ru.mercury.vpclient.features.fitting_confirmation.navigation.FittingConfirmationRoute
 import ru.mercury.vpclient.features.fitting_info.FittingInfoScreen
@@ -92,7 +92,7 @@ fun MainActivityContent(
                 entry<DetailsRoute> { DetailsScreen(it) }
                 entry<FittingConfirmationRoute> { FittingConfirmationScreen(it) }
                 entry<FittingInfoRoute> { FittingInfoScreen(it) }
-                entry<FittingAddressSelectionRoute> { FittingAddressSelectionScreen(it) }
+                entry<FittingAddressesRoute> { FittingAddressesScreen(it) }
                 entry<FittingSuccessRoute> { FittingSuccessScreen(it) }
                 entry<ConsultantRoute> { ConsultantScreen(it) }
                 entry<MediaRoute> { MediaScreen(it) }

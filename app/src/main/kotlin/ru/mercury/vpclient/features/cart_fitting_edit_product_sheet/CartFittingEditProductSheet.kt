@@ -21,7 +21,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
@@ -35,6 +34,7 @@ import ru.mercury.vpclient.shared.ui.theme.medium15
 
 @Composable
 fun CartFittingEditProductSheet(
+    isSizeSelectionAvailable: Boolean,
     dispatch: (CartFittingEditProductSheetIntent) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -60,7 +60,10 @@ fun CartFittingEditProductSheet(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(58.dp),
-                    shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
+                    shape = when {
+                        isSizeSelectionAvailable -> RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)
+                        else -> RoundedCornerShape(8.dp)
+                    },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.background,
                         contentColor = MaterialTheme.colorScheme.onBackground
@@ -68,37 +71,33 @@ fun CartFittingEditProductSheet(
                 ) {
                     Text(
                         text = stringResource(ClientStrings.CartEditChangeColor),
-                        style = MaterialTheme.typography.medium15.copy(
-                            color = MaterialTheme.colorScheme.onBackground,
-                            textAlign = TextAlign.Center
-                        )
+                        style = MaterialTheme.typography.medium15
                     )
                 }
             }
-            item {
-                HorizontalDivider(
-                    color = MaterialTheme.colorScheme.outlineVariant
-                )
-            }
-            item {
-                Button(
-                    onClick = { sheetDispatch(CartFittingEditProductSheetIntent.ChangeSizeClick) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(58.dp),
-                    shape = RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        contentColor = MaterialTheme.colorScheme.onBackground
+            if (isSizeSelectionAvailable) {
+                item {
+                    HorizontalDivider(
+                        color = MaterialTheme.colorScheme.outlineVariant
                     )
-                ) {
-                    Text(
-                        text = stringResource(ClientStrings.CartEditSelectSize),
-                        style = MaterialTheme.typography.medium15.copy(
-                            color = MaterialTheme.colorScheme.onBackground,
-                            textAlign = TextAlign.Center
+                }
+                item {
+                    Button(
+                        onClick = { sheetDispatch(CartFittingEditProductSheetIntent.ChangeSizeClick) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(58.dp),
+                        shape = RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.background,
+                            contentColor = MaterialTheme.colorScheme.onBackground
                         )
-                    )
+                    ) {
+                        Text(
+                            text = stringResource(ClientStrings.CartEditSelectSize),
+                            style = MaterialTheme.typography.medium15
+                        )
+                    }
                 }
             }
             item {
@@ -119,11 +118,8 @@ fun CartFittingEditProductSheet(
                     )
                 ) {
                     Text(
-                        text = stringResource(ClientStrings.CartSave),
-                        style = MaterialTheme.typography.medium15.copy(
-                            color = MaterialTheme.colorScheme.onBackground,
-                            textAlign = TextAlign.Center
-                        )
+                        text = stringResource(ClientStrings.CartEditCancel),
+                        style = MaterialTheme.typography.medium15
                     )
                 }
             }
@@ -139,6 +135,7 @@ private fun CartFittingEditProductSheetPreview() {
         modifier = Modifier.fillMaxSize()
     ) {
         CartFittingEditProductSheet(
+            isSizeSelectionAvailable = true,
             dispatch = {}
         )
     }
