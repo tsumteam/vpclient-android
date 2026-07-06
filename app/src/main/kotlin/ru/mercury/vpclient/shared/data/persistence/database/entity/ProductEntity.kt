@@ -1,13 +1,13 @@
 package ru.mercury.vpclient.shared.data.persistence.database.entity
 
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 
-// fixme
-
-@Entity(tableName = "Product")
+@Entity(
+    tableName = "Product",
+    primaryKeys = ["id"]
+)
 data class ProductEntity(
-    @PrimaryKey val id: String,
+    val id: String,
     val name: String?,
     val itemId: String?,
     val categoryId: Int?,

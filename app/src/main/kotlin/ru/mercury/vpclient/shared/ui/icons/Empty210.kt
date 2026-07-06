@@ -13,13 +13,13 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 
-val SearchEmpty210x111: ImageVector
+val Empty210: ImageVector
     get() {
-        if (_searchEmpty210x111 != null) {
-            return _searchEmpty210x111!!
+        if (_empty210 != null) {
+            return _empty210!!
         }
-        _searchEmpty210x111 = ImageVector.Builder(
-            name = "SearchEmpty210x111",
+        _empty210 = ImageVector.Builder(
+            name = "Empty210",
             defaultWidth = 210.dp,
             defaultHeight = 111.dp,
             viewportWidth = 210F,
@@ -123,17 +123,17 @@ val SearchEmpty210x111: ImageVector
                 pathFillType = PathFillType.NonZero
             )
         }.build()
-        return _searchEmpty210x111!!
+        return _empty210!!
     }
 
-private var _searchEmpty210x111: ImageVector? = null
+private var _empty210: ImageVector? = null
 
 @PreviewWrapper(ThemeWrapper::class)
 @Preview(showBackground = true)
 @Composable
-private fun SearchEmpty210x111Preview() {
+private fun Empty210Preview() {
     Icon(
-        imageVector = SearchEmpty210x111,
+        imageVector = Empty210,
         contentDescription = null,
         tint = Color.Unspecified
     )

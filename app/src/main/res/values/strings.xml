@@ -116,6 +116,19 @@
     <string name="cart_fitting_sheet_continue">Продолжить</string>
     <string name="fitting_products_sheet_title">ВЫБЕРИТЕ ТОВАРЫ</string>
     <string name="fitting_products_sheet_select">Выбрать</string>
+    <string name="fitting_compilations_empty_message">На данный момент у Вас нет ни одной подборки. Обратитесь к Вашему персональному консультанту</string>
+    <plurals name="fitting_compilation_looks">
+        <item quantity="one">%1$d образ</item>
+        <item quantity="few">%1$d образа</item>
+        <item quantity="many">%1$d образов</item>
+        <item quantity="other">%1$d образа</item>
+    </plurals>
+    <plurals name="fitting_compilation_things">
+        <item quantity="one">%1$d вещь</item>
+        <item quantity="few">%1$d вещи</item>
+        <item quantity="many">%1$d вещей</item>
+        <item quantity="other">%1$d вещи</item>
+    </plurals>
     <string name="fitting_confirmation_title">Подтвердить примерку</string>
     <string name="fitting_confirmation_place_title">Место примерки</string>
     <string name="fitting_confirmation_place_value">Бутик VIP Platinum</string>

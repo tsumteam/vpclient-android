@@ -1,9 +1,11 @@
 package ru.mercury.vpclient.features.fitting.model
 
-import ru.mercury.vpclient.shared.data.entity.CartPayMode
+import kotlinx.coroutines.Job
 import ru.mercury.vpclient.shared.data.FORMAT_RUB
+import ru.mercury.vpclient.shared.data.entity.CartPayMode
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.FittingDeliveryData
+import ru.mercury.vpclient.shared.data.persistence.database.entity.CompilationEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.domain.mapper.hasFittingBadge
 import ru.mercury.vpclient.shared.domain.mapper.hasMessengerBadge
@@ -16,6 +18,8 @@ data class FittingModel(
     val cartBadge: Int = 0,
     val fittingCount: Int = 0,
     val activeEmployee: EmployeeEntity = EmployeeEntity.Empty,
+    val compilationEntities: List<CompilationEntity> = emptyList(),
+    val compilationsClientJob: Job? = null,
     val products: List<CartProduct> = emptyList(),
     val apiFittingProducts: List<CartProduct> = emptyList(),
     val apiFittingDeliveries: List<FittingDeliveryData> = emptyList(),
@@ -42,6 +46,12 @@ data class FittingModel(
 
     val isMessengerBadgeVisible: Boolean
         get() = activeEmployee.hasMessengerBadge
+
+    val isLoading: Boolean
+        get() = compilationsClientJob?.isActive == true
+
+    val isEmptyVisible: Boolean
+        get() = !isLoading && compilationEntities.isEmpty()
 
     val visibleProducts: List<CartProduct>
         get() = when (payMode) {

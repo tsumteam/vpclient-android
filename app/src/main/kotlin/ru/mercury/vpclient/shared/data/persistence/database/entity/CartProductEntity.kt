@@ -1,13 +1,15 @@
 package ru.mercury.vpclient.shared.data.persistence.database.entity
 
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
 import ru.mercury.vpclient.shared.data.entity.CartProductSize
 
-@Entity(tableName = "CartProduct")
+@Entity(
+    tableName = "CartProduct",
+    primaryKeys = ["id"]
+)
 data class CartProductEntity(
-    @PrimaryKey val id: String,
+    val id: String,
     val position: Int,
     val detailId: String,
     val itemId: String,

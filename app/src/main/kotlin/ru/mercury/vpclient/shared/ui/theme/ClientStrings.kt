@@ -122,6 +122,9 @@ object ClientStrings {
     val CartFittingSheetContinue get() = R.string.cart_fitting_sheet_continue
     val FittingProductsSheetTitle get() = R.string.fitting_products_sheet_title
     val FittingProductsSheetSelect get() = R.string.fitting_products_sheet_select
+    val FittingCompilationsEmptyMessage get() = R.string.fitting_compilations_empty_message
+    val FittingCompilationLooks get() = R.plurals.fitting_compilation_looks
+    val FittingCompilationThings get() = R.plurals.fitting_compilation_things
 
     val FittingConfirmationTitle get() = R.string.fitting_confirmation_title
     val FittingConfirmationProductsTitle get() = R.plurals.fitting_confirmation_products_title

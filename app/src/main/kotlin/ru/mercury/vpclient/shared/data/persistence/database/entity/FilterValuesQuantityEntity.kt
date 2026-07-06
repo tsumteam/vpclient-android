@@ -1,11 +1,13 @@
 package ru.mercury.vpclient.shared.data.persistence.database.entity
 
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 
-@Entity(tableName = "FilterValuesQuantity")
+@Entity(
+    tableName = "FilterValuesQuantity",
+    primaryKeys = ["chipId"]
+)
 data class FilterValuesQuantityEntity(
-    @PrimaryKey val chipId: String,
+    val chipId: String,
     val quantity: Int?
 ) {
     companion object {

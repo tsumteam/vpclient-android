@@ -1,19 +1,10 @@
 package ru.mercury.vpclient.shared.domain.mapper
 
-import java.text.NumberFormat
-import java.util.Locale
-
 val Int?.orEmpty: Int
     get() = this ?: 0
 
 val Int?.isNotEmpty: Boolean
     get() = this != null && this != 0
-
-val Int.thousandsSeparator: String
-    get() {
-        val formatter = NumberFormat.getIntegerInstance(Locale.forLanguageTag("ru-RU"))
-        return formatter.format(this).replace('\u00A0', ' ')
-    }
 
 val Long?.orEmpty: Long
     get() = this ?: 0L

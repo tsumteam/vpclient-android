@@ -120,8 +120,8 @@ import ru.mercury.vpclient.shared.ui.components.filters.FilterScreenTitle
 import ru.mercury.vpclient.shared.ui.components.filters.FiltersRow
 import ru.mercury.vpclient.shared.ui.components.filters.FiltersRowState
 import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
+import ru.mercury.vpclient.shared.ui.icons.Empty210
 import ru.mercury.vpclient.shared.ui.icons.Search24
-import ru.mercury.vpclient.shared.ui.icons.SearchEmpty210x111
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.ktx.isContentVisible
 import ru.mercury.vpclient.shared.ui.ktx.isPagingFailure
@@ -498,7 +498,7 @@ private fun FilterScreenContent(
                                             horizontalAlignment = Alignment.CenterHorizontally
                                         ) {
                                             Image(
-                                                imageVector = SearchEmpty210x111,
+                                                imageVector = Empty210,
                                                 contentDescription = null,
                                                 modifier = Modifier.size(width = 210.dp, height = 111.dp)
                                             )
