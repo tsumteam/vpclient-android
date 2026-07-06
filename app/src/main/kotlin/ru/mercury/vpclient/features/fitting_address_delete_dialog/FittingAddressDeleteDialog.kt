@@ -55,7 +55,6 @@ fun FittingAddressDeleteDialog(
             Text(
                 text = stringResource(ClientStrings.FittingAddressDeleteTitle),
                 style = MaterialTheme.typography.medium19.copy(
-                    color = MaterialTheme.colorScheme.onBackground,
                     lineHeight = 24.sp
                 )
             )
@@ -64,12 +63,13 @@ fun FittingAddressDeleteDialog(
             Text(
                 text = stringResource(ClientStrings.FittingAddressDeleteMessage, state.address),
                 style = MaterialTheme.typography.regular15.copy(
-                    color = MaterialTheme.colorScheme.onBackground,
                     lineHeight = 19.sp,
                     letterSpacing = .2.sp
                 )
             )
-        }
+        },
+        titleContentColor = MaterialTheme.colorScheme.onBackground,
+        textContentColor = MaterialTheme.colorScheme.onBackground
     )
 }
 

@@ -55,7 +55,6 @@ fun ProfileLoyaltyUnlinkDialog(
             Text(
                 text = stringResource(ClientStrings.ProfileLoyaltyUnlinkTitle),
                 style = MaterialTheme.typography.medium19.copy(
-                    color = MaterialTheme.colorScheme.onBackground,
                     lineHeight = 24.sp
                 )
             )
@@ -64,12 +63,13 @@ fun ProfileLoyaltyUnlinkDialog(
             Text(
                 text = stringResource(ClientStrings.ProfileLoyaltyUnlinkMessage),
                 style = MaterialTheme.typography.regular15.copy(
-                    color = MaterialTheme.colorScheme.onBackground,
                     lineHeight = 19.sp,
                     letterSpacing = .2.sp
                 )
             )
-        }
+        },
+        titleContentColor = MaterialTheme.colorScheme.onBackground,
+        textContentColor = MaterialTheme.colorScheme.onBackground
     )
 }
 
