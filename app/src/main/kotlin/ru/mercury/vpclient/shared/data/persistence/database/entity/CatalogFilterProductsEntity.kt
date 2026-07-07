@@ -21,7 +21,13 @@ data class CatalogFilterProductsEntity(
     val imageUrls: List<String>,
     val additionalColorPhotoUrls: List<String>,
     val position: Int,
-    val actionLabels: List<String> = emptyList()
+    val actionLabels: List<String> = emptyList(),
+    val lookActionPrice: Double? = null,
+    val lookActionPriceWithoutDiscount: Double? = null,
+    val lookActionName: String? = null,
+    val lookActionDiscountPercentage: Int? = null,
+    val availableSizes: ProductAvailableSizesEntity? = null,
+    val isOneSize: Boolean = false
 ) {
     companion object {
         val Empty = CatalogFilterProductsEntity(
@@ -39,7 +45,13 @@ data class CatalogFilterProductsEntity(
             imageUrls = emptyList(),
             additionalColorPhotoUrls = emptyList(),
             position = 0,
-            actionLabels = emptyList()
+            actionLabels = emptyList(),
+            lookActionPrice = null,
+            lookActionPriceWithoutDiscount = null,
+            lookActionName = null,
+            lookActionDiscountPercentage = null,
+            availableSizes = null,
+            isOneSize = false
         )
     }
 }

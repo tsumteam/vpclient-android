@@ -2,10 +2,12 @@ package ru.mercury.vpclient.shared.domain.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import ru.mercury.vpclient.features.profile_orders.model.toProfileOrderItemState
 import ru.mercury.vpclient.shared.domain.usecase.ProfileOrdersUseCase
 import ru.mercury.vpclient.shared.domain.usecase.UserIdUseCase
 import ru.mercury.vpclient.shared.ui.components.profile.ProfileOrderItemState
+import ru.mercury.vpclient.shared.ui.components.profile.ProfileOrderProductState
+import ru.mercury.vpclient.shared.ui.components.profile.ProfileOrderStatusType
+import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 
 class ProfileOrdersPagingSource(
     private val userIdUseCase: UserIdUseCase,
@@ -39,7 +41,34 @@ class ProfileOrdersPagingSource(
                     limit = limit,
                     offset = offset
                 )
-            ).getOrThrow().map { order -> order.toProfileOrderItemState() }
+            ).getOrThrow().map { order ->
+                val visibleImages = when {
+                    order.imageUrls.size <= 4 -> order.imageUrls
+                    else -> order.imageUrls.take(4)
+                }
+
+                ProfileOrderItemState(
+                    numberTitleRes = when {
+                        order.isReceipt -> ClientStrings.ProfileOrdersReceiptNumber
+                        else -> ClientStrings.ProfileOrdersNumber
+                    },
+                    orderNumber = order.orderNumber,
+                    amount = order.amount,
+                    statusPrefix = order.statusPrefix,
+                    statusDescription = order.statusDescription,
+                    statusType = when {
+                        order.isFinished -> ProfileOrderStatusType.Finished
+                        else -> ProfileOrderStatusType.NotFinished
+                    },
+                    showPaymentBadge = order.showPaymentBadge,
+                    products = visibleImages.map { imageUrl ->
+                        ProfileOrderProductState(
+                            imageUrl = imageUrl
+                        )
+                    },
+                    hiddenProductsCount = (order.productsCount - visibleImages.size).coerceAtLeast(0)
+                )
+            }
 
             LoadResult.Page(
                 data = orders,

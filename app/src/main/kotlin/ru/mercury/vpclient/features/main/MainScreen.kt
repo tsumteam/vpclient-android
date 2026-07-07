@@ -41,8 +41,8 @@ import ru.mercury.vpclient.features.catalog_root.navigation.CatalogRootRoute
 import ru.mercury.vpclient.features.consultants.ConsultantsScreen
 import ru.mercury.vpclient.features.consultants.navigation.ConsultantsRoute
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
-import ru.mercury.vpclient.features.fitting.FittingScreen
-import ru.mercury.vpclient.features.fitting.navigation.FittingRoute
+import ru.mercury.vpclient.features.compilations.CompilationsScreen
+import ru.mercury.vpclient.features.compilations.navigation.CompilationsRoute
 import ru.mercury.vpclient.features.home.HomeScreen
 import ru.mercury.vpclient.features.home.navigation.HomeRoute
 import ru.mercury.vpclient.features.main.event.MainTabsEventManager
@@ -82,7 +82,7 @@ fun MainScreen(
     LaunchedEffect(route.selectedTab) {
         when (route.selectedTab) {
             MainRoute.CATALOG_TAB -> viewModel.dispatch(MainIntent.SelectTab(CatalogRootRoute))
-            MainRoute.FITTING_TAB -> viewModel.dispatch(MainIntent.SelectTab(FittingRoute))
+            MainRoute.FITTING_TAB -> viewModel.dispatch(MainIntent.SelectTab(CompilationsRoute))
         }
     }
 
@@ -271,11 +271,11 @@ private fun MainScreenContent(
                 )
 
                 NavigationBarItem(
-                    selected = state.selectedRoute == FittingRoute,
+                    selected = state.selectedRoute == CompilationsRoute,
                     onClick = {
                         when {
-                            state.selectedRoute != FittingRoute -> {
-                                dispatch(MainIntent.SelectTab(FittingRoute))
+                            state.selectedRoute != CompilationsRoute -> {
+                                dispatch(MainIntent.SelectTab(CompilationsRoute))
                             }
                             else -> {
                                 navBackStack.clear()
@@ -415,7 +415,7 @@ private fun MainScreenContent(
                 entry<HomeRoute> { HomeScreen() }
                 entry<BrandsRoute> { BrandsScreen() }
                 entry<CatalogRootRoute> { CatalogRootScreen(navBackStack = catalogNavBackStack) }
-                entry<FittingRoute> { FittingScreen() }
+                entry<CompilationsRoute> { CompilationsScreen() }
                 entry<ConsultantsRoute> { ConsultantsScreen() }
                 entry<ProfileStackRoute> { ProfileStackScreen(navBackStack = profileNavBackStack) }
             }

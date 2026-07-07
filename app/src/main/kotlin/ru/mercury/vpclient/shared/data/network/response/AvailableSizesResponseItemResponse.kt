@@ -7,6 +7,8 @@ import kotlinx.serialization.Serializable
 data class AvailableSizesResponseItemResponse(
     @SerialName("sizeFullName") val sizeFullName: String? = null,
     @SerialName("sizeId") val sizeId: String? = null,
+    @SerialName("russianSizeId") val russianSizeId: Int? = null,
+    @SerialName("russianSize") val russianSize: String? = null,
     @SerialName("inOrder") val inOrder: Boolean? = null,
     @SerialName("inStock") val inStock: Boolean? = null,
     @SerialName("inStockShops") val inStockShops: List<String>? = null,

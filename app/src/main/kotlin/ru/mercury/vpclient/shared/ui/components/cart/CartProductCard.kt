@@ -34,6 +34,9 @@ import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
 import ru.mercury.vpclient.shared.data.entity.CartProductSize
+import ru.mercury.vpclient.shared.ui.components.product.ProductBrandBox
+import ru.mercury.vpclient.shared.ui.components.product.ProductSwipeableCard
+import ru.mercury.vpclient.shared.ui.components.product.ProductSwipeableCardState
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
@@ -158,45 +161,47 @@ fun CartProductCard(
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
-        CartProductSwipeableCard(
-            leadingActionsContent = { swipeProgress, onSwipeActionClick ->
-                CartProductLeadingSwipeActions(
-                    swipeProgress = swipeProgress,
-                    isReturnOriginalVisible = state.isReturnOriginalSwipeActionVisible,
-                    isShowAlternativesVisible = state.isShowAlternativesSwipeActionVisible,
-                    isHideAlternativesVisible = state.isHideAlternativesSwipeActionVisible,
-                    onReturnOriginalClick = { onSwipeActionClick(state.onReturnOriginalSwipeClick) },
-                    onShowAlternativesClick = { onSwipeActionClick(state.onShowAlternativesSwipeClick) },
-                    onHideAlternativesClick = { onSwipeActionClick(state.onHideAlternativesSwipeClick) }
-                )
-            },
-            trailingActionsContent = { swipeProgress, onSwipeActionClick ->
-                when {
-                    state.useFittingSwipeActions -> {
-                        CartProductFittingSwipeActions(
-                            swipeProgress = swipeProgress,
-                            onEditClick = { onSwipeActionClick(state.onEditSwipeClick) },
-                            onReturnToBasketClick = { onSwipeActionClick(state.onReturnToBasketSwipeClick) }
-                        )
+        ProductSwipeableCard(
+            state = ProductSwipeableCardState(
+                leadingActionsContent = { swipeProgress, onSwipeActionClick ->
+                    CartProductLeadingSwipeActions(
+                        swipeProgress = swipeProgress,
+                        isReturnOriginalVisible = state.isReturnOriginalSwipeActionVisible,
+                        isShowAlternativesVisible = state.isShowAlternativesSwipeActionVisible,
+                        isHideAlternativesVisible = state.isHideAlternativesSwipeActionVisible,
+                        onReturnOriginalClick = { onSwipeActionClick(state.onReturnOriginalSwipeClick) },
+                        onShowAlternativesClick = { onSwipeActionClick(state.onShowAlternativesSwipeClick) },
+                        onHideAlternativesClick = { onSwipeActionClick(state.onHideAlternativesSwipeClick) }
+                    )
+                },
+                trailingActionsContent = { swipeProgress, onSwipeActionClick ->
+                    when {
+                        state.useFittingSwipeActions -> {
+                            CartProductFittingSwipeActions(
+                                swipeProgress = swipeProgress,
+                                onEditClick = { onSwipeActionClick(state.onEditSwipeClick) },
+                                onReturnToBasketClick = { onSwipeActionClick(state.onReturnToBasketSwipeClick) }
+                            )
+                        }
+                        else -> {
+                            CartProductTrailingSwipeActions(
+                                swipeProgress = swipeProgress,
+                                isEditVisible = state.isEditSwipeActionVisible,
+                                isDetachFromLookVisible = state.isDetachFromLookSwipeActionVisible,
+                                isDeleteVisible = true,
+                                onEditClick = { onSwipeActionClick(state.onEditSwipeClick) },
+                                onDetachFromLookClick = { onSwipeActionClick(state.onDetachFromLookSwipeClick) },
+                                onDeleteClick = { onSwipeActionClick(state.onDeleteSwipeClick) }
+                            )
+                        }
                     }
-                    else -> {
-                        CartProductTrailingSwipeActions(
-                            swipeProgress = swipeProgress,
-                            isEditVisible = state.isEditSwipeActionVisible,
-                            isDetachFromLookVisible = state.isDetachFromLookSwipeActionVisible,
-                            isDeleteVisible = true,
-                            onEditClick = { onSwipeActionClick(state.onEditSwipeClick) },
-                            onDetachFromLookClick = { onSwipeActionClick(state.onDetachFromLookSwipeClick) },
-                            onDeleteClick = { onSwipeActionClick(state.onDeleteSwipeClick) }
-                        )
-                    }
-                }
-            },
-            leadingSwipeSize = (88 * state.leadingSwipeActionsCount).dp,
-            trailingSwipeSize = (88 * state.trailingSwipeActionsCount).dp,
-            swipeKey = state.swipeKey,
-            openedSwipeKey = state.openedSwipeKey,
-            onSwipeOpen = state.onSwipeOpen
+                },
+                leadingSwipeSize = (88 * state.leadingSwipeActionsCount).dp,
+                trailingSwipeSize = (88 * state.trailingSwipeActionsCount).dp,
+                swipeKey = state.swipeKey,
+                openedSwipeKey = state.openedSwipeKey,
+                onSwipeOpen = state.onSwipeOpen
+            )
         ) {
             ConstraintLayout(
                 modifier = Modifier
@@ -238,7 +243,7 @@ fun CartProductCard(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    CartBrandBox(
+                    ProductBrandBox(
                         entity = BrandEntity(
                             brand = product.brand,
                             urlBrandLogo = product.urlBrandLogo

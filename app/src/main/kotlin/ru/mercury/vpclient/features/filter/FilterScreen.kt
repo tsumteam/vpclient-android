@@ -112,8 +112,8 @@ import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.cart.CartIconButton
 import ru.mercury.vpclient.shared.ui.components.cart.FittingIconButton
 import ru.mercury.vpclient.shared.ui.components.cart.MessengerIconButton
-import ru.mercury.vpclient.shared.ui.components.catalog.CatalogProductCard
-import ru.mercury.vpclient.shared.ui.components.catalog.CatalogProductCardState
+import ru.mercury.vpclient.shared.ui.components.product.ProductCard
+import ru.mercury.vpclient.shared.ui.components.product.ProductCardState
 import ru.mercury.vpclient.shared.ui.components.filters.FilterBrandFavoritesBar
 import ru.mercury.vpclient.shared.ui.components.filters.FilterProductsLoadingContent
 import ru.mercury.vpclient.shared.ui.components.filters.FilterScreenTitle
@@ -547,8 +547,8 @@ private fun FilterScreenContent(
                             ) { index ->
                                 val entity = pagingItems[index]
                                 if (entity != null) {
-                                    CatalogProductCard(
-                                        state = CatalogProductCardState(
+                                    ProductCard(
+                                        state = ProductCardState(
                                             entity = entity,
                                             isInBasket = state.isProductInBasket(entity),
                                             onClick = { dispatch(FilterIntent.ProductClick(entity.id)) },

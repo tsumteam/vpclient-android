@@ -9,13 +9,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import ru.mercury.vpclient.R
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 
 @Composable
@@ -27,26 +25,20 @@ fun ClientAsyncImage(
     contentDescription: String? = null
 ) {
     val context = LocalContext.current
-    val isInspectionMode = LocalInspectionMode.current
     val painter = ColorPainter(MaterialTheme.colorScheme.surfaceVariant)
 
     AsyncImage(
         model = ImageRequest.Builder(context)
             .data(imageUrl)
             .crossfade(true)
-            .apply {
-                if (isInspectionMode) {
-                    placeholder(R.drawable.ic_placeholder)
-                }
-            }
             .build(),
         contentDescription = contentDescription,
         modifier = modifier,
         contentScale = contentScale,
         alignment = alignment,
-        placeholder = if (isInspectionMode) null else painter,
-        error = if (isInspectionMode) null else painter,
-        fallback = if (isInspectionMode) null else painter,
+        placeholder = painter,
+        error = painter,
+        fallback = painter,
         onError = { state ->
             Log.e("2", "imageUrl = $imageUrl, state = ${state.result.throwable}")
         }

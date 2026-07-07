@@ -29,7 +29,13 @@ interface CatalogViewHistoryProductDao {
             imageUrls,
             additionalColorPhotoUrls,
             position,
-            actionLabels
+            actionLabels,
+            NULL AS lookActionPrice,
+            NULL AS lookActionPriceWithoutDiscount,
+            NULL AS lookActionName,
+            NULL AS lookActionDiscountPercentage,
+            NULL AS availableSizes,
+            0 AS isOneSize
         FROM CatalogViewHistoryProducts
         ORDER BY position ASC
         """
@@ -53,7 +59,13 @@ interface CatalogViewHistoryProductDao {
             imageUrls,
             additionalColorPhotoUrls,
             position,
-            actionLabels
+            actionLabels,
+            NULL AS lookActionPrice,
+            NULL AS lookActionPriceWithoutDiscount,
+            NULL AS lookActionName,
+            NULL AS lookActionDiscountPercentage,
+            NULL AS availableSizes,
+            0 AS isOneSize
         FROM CatalogViewHistoryProducts
         ORDER BY position ASC
         """
@@ -80,7 +92,13 @@ interface CatalogViewHistoryProductDao {
             imageUrls,
             additionalColorPhotoUrls,
             position,
-            actionLabels
+            actionLabels,
+            NULL AS lookActionPrice,
+            NULL AS lookActionPriceWithoutDiscount,
+            NULL AS lookActionName,
+            NULL AS lookActionDiscountPercentage,
+            NULL AS availableSizes,
+            0 AS isOneSize
         FROM CatalogViewHistoryProducts
         WHERE id = :id
         LIMIT 1

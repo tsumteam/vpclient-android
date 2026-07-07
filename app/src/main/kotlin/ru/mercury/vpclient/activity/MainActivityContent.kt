@@ -23,6 +23,8 @@ import ru.mercury.vpclient.features.cart.CartScreen
 import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.features.auth_code.CodeScreen
 import ru.mercury.vpclient.features.auth_code.navigation.CodeRoute
+import ru.mercury.vpclient.features.compilation.CompilationScreen
+import ru.mercury.vpclient.features.compilation.navigation.CompilationRoute
 import ru.mercury.vpclient.features.consultant.ConsultantScreen
 import ru.mercury.vpclient.features.consultant.navigation.ConsultantRoute
 import ru.mercury.vpclient.features.details.DetailsScreen
@@ -90,6 +92,7 @@ fun MainActivityContent(
                 entry<ProfileLoyaltyTermsRoute> { ProfileLoyaltyTermsScreen(it) }
                 entry<CartRoute> { CartScreen(it) }
                 entry<DetailsRoute> { DetailsScreen(it) }
+                entry<CompilationRoute> { CompilationScreen(it) }
                 entry<FittingConfirmationRoute> { FittingConfirmationScreen(it) }
                 entry<FittingInfoRoute> { FittingInfoScreen(it) }
                 entry<FittingAddressesRoute> { FittingAddressesScreen(it) }

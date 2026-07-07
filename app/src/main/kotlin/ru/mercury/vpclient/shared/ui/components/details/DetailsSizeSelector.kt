@@ -1,16 +1,11 @@
 package ru.mercury.vpclient.shared.ui.components.details
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,11 +16,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import ru.mercury.vpclient.shared.ui.components.product.ProductSizeButtonsRow
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.medium14
 import ru.mercury.vpclient.shared.ui.theme.regular12
-import ru.mercury.vpclient.shared.ui.theme.regular14
 
 data class SizeSelectorState(
     val sizes: List<SizeState>,
@@ -57,7 +52,7 @@ fun DetailsSizeSelector(
     ConstraintLayout(
         modifier = modifier.fillMaxWidth()
     ) {
-        val (titleRef, tableButtonRef, textsRef, sizeListRef, statusRef) = createRefs()
+        val (titleRef, tableButtonRef, sizeButtonsRowRef, statusRef) = createRefs()
 
         Text(
             text = stringResource(ClientStrings.DetailsSizeTitle),
@@ -90,50 +85,15 @@ fun DetailsSizeSelector(
             }
         }
 
-        Column(
-            modifier = Modifier.constrainAs(textsRef) {
-                width = Dimension.wrapContent
-                height = Dimension.value(54.dp)
-                start.linkTo(parent.start, 16.dp)
-                top.linkTo(sizeListRef.top)
-                bottom.linkTo(sizeListRef.bottom)
-            },
-            verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterVertically)
-        ) {
-            Text(
-                text = state.topText,
-                style = MaterialTheme.typography.regular14.copy(
-                    color = MaterialTheme.colorScheme.onBackground,
-                    letterSpacing = .2.sp
-                )
-            )
-
-            Text(
-                text = state.bottomText,
-                style = MaterialTheme.typography.regular14.copy(
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    letterSpacing = .2.sp
-                )
-            )
-        }
-
-        LazyRow(
-            modifier = Modifier.constrainAs(sizeListRef) {
+        ProductSizeButtonsRow(
+            state = state,
+            modifier = Modifier.constrainAs(sizeButtonsRowRef) {
                 width = Dimension.fillToConstraints
-                start.linkTo(textsRef.end, 16.dp)
+                start.linkTo(parent.start)
                 top.linkTo(titleRef.bottom, 16.dp)
                 end.linkTo(parent.end)
-            },
-            contentPadding = PaddingValues(end = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            itemsIndexed(state.sizes) { index, sizeState ->
-                DetailsSizeButton(
-                    state = sizeState,
-                    onClick = { state.onSizeClick(index) }
-                )
             }
-        }
+        )
 
         Text(
             text = when {
@@ -148,7 +108,7 @@ fun DetailsSizeSelector(
             },
             modifier = Modifier.constrainAs(statusRef) {
                 centerHorizontallyTo(parent)
-                top.linkTo(sizeListRef.bottom, 16.dp)
+                top.linkTo(sizeButtonsRowRef.bottom, 16.dp)
             },
             style = MaterialTheme.typography.regular12.copy(
                 color = when {

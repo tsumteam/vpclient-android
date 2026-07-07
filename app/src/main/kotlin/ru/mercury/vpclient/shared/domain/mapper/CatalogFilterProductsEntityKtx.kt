@@ -3,11 +3,12 @@ package ru.mercury.vpclient.shared.domain.mapper
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.encodeToJsonElement
 import ru.mercury.vpclient.shared.data.FORMAT_RUB
-import ru.mercury.vpclient.shared.data.network.response.BasketAddLineOperationRequestItemResponse
 import ru.mercury.vpclient.shared.data.network.request.BasketOperationRequest
+import ru.mercury.vpclient.shared.data.network.response.BasketAddLineOperationRequestItemResponse
 import ru.mercury.vpclient.shared.data.network.type.BasketOperationRequestType
-import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CartProductEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
@@ -17,7 +18,7 @@ import kotlin.math.roundToInt
 private val CatalogFilterProductsEntity.cardImageUrls: List<String>
     get() = when {
         imageUrls.isNotEmpty() -> imageUrls
-        !imageUrl.isNullOrEmpty() -> listOfNotNull(imageUrl)
+        imageUrl.isNotEmpty() -> listOfNotNull(imageUrl)
         else -> emptyList()
     }
 
@@ -89,11 +90,24 @@ fun CatalogFilterProductsEntity.optimisticCartProductEntity(position: Int, lineI
     )
 }
 
+fun CatalogFilterProductsEntity.messageSheetProductEntity(): ProductEntity {
+    return ProductEntity.Empty.copy(
+        id = id,
+        name = name,
+        itemId = itemId,
+        brand = brand,
+        colorName = colorId,
+        urlBrandLogo = urlBrandLogo,
+        shortDescription = name,
+        price = price,
+        priceWithoutDiscount = priceWithoutDiscount,
+        colorImageUrls = imagePages
+    )
+}
+
 private val catalogFilterProductJson = Json {
     explicitNulls = false
 }
-
-// fixme
 
 val CatalogFilterProductsEntity.cardPrice: String
     get() = price.formattedPrice()
@@ -106,6 +120,52 @@ val CatalogFilterProductsEntity.cardDiscountedPrice: String?
 
 val CatalogFilterProductsEntity.cardDiscountLabel: String?
     get() = price.discountLabel(priceWithoutDiscount)
+
+val CatalogFilterProductsEntity.fullPrice: Double
+    get() = priceWithoutDiscount ?: price
+
+val CatalogFilterProductsEntity.fullPriceText: String
+    get() = fullPrice.roundToInt().formatPriceText()
+
+val CatalogFilterProductsEntity.priceText: String
+    get() = price.roundToInt().formatPriceText()
+
+val CatalogFilterProductsEntity.isDiscountVisible: Boolean
+    get() = fullPrice > price
+
+val CatalogFilterProductsEntity.discountPercentText: String
+    get() {
+        val percent = ((fullPrice - price) / fullPrice * 100).roundToInt()
+        return "-$percent%"
+    }
+
+val CatalogFilterProductsEntity.compilationBenefitFullPrice: Double
+    get() = lookActionPriceWithoutDiscount ?: price
+
+val CatalogFilterProductsEntity.compilationBenefitDiscountPrice: Double
+    get() = lookActionPrice ?: price
+
+val CatalogFilterProductsEntity.compilationBenefitFullPriceText: String
+    get() = compilationBenefitFullPrice.roundToInt().formatPriceText()
+
+val CatalogFilterProductsEntity.compilationBenefitDiscountPriceText: String
+    get() = compilationBenefitDiscountPrice.roundToInt().formatPriceText()
+
+val CatalogFilterProductsEntity.isCompilationBenefitDiscountVisible: Boolean
+    get() = compilationBenefitFullPrice > compilationBenefitDiscountPrice
+
+val CatalogFilterProductsEntity.compilationBenefitDiscountPercentText: String
+    get() {
+        val percent = lookActionDiscountPercentage ?: when {
+            compilationBenefitFullPrice == 0.0 -> 0
+            else -> ((compilationBenefitFullPrice - compilationBenefitDiscountPrice) / compilationBenefitFullPrice * 100).roundToInt()
+        }
+        return "-$percent%"
+    }
+
+fun Int.formatPriceText(): String {
+    return "%,d ₽".format(this).replace(',', ' ')
+}
 
 private fun Double?.formattedPrice(): String {
     return when {

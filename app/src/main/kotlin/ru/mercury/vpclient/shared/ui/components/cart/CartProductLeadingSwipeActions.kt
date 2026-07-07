@@ -14,6 +14,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
+import ru.mercury.vpclient.shared.ui.components.SwipeActionBox
+import ru.mercury.vpclient.shared.ui.components.SwipeActionBoxState
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 
@@ -38,12 +40,15 @@ fun CartProductLeadingSwipeActions(
                 .clipToBounds(),
             contentAlignment = Alignment.CenterEnd
         ) {
-            CartProductSwipeAction(
-                imageVector = null,
-                text = stringResource(ClientStrings.CartReturnOriginal),
-                backgroundColor = MaterialTheme.colorScheme.outline,
-                contentHorizontalAlignment = Alignment.End,
-                onClick = onReturnOriginalClick
+            SwipeActionBox(
+                state = SwipeActionBoxState(
+                    imageVector = null,
+                    text = stringResource(ClientStrings.CartReturnOriginal),
+                    backgroundColor = MaterialTheme.colorScheme.outline,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    contentHorizontalAlignment = Alignment.End,
+                    onClick = onReturnOriginalClick
+                )
             )
         }
     }
@@ -56,13 +61,15 @@ fun CartProductLeadingSwipeActions(
                 .clipToBounds(),
             contentAlignment = Alignment.CenterEnd
         ) {
-            CartProductSwipeAction(
-                imageVector = null,
-                text = stringResource(ClientStrings.CartShowAlternatives),
-                backgroundColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                contentColor = MaterialTheme.colorScheme.onBackground,
-                contentHorizontalAlignment = Alignment.End,
-                onClick = onShowAlternativesClick
+            SwipeActionBox(
+                state = SwipeActionBoxState(
+                    imageVector = null,
+                    text = stringResource(ClientStrings.CartShowAlternatives),
+                    backgroundColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                    contentColor = MaterialTheme.colorScheme.onBackground,
+                    contentHorizontalAlignment = Alignment.End,
+                    onClick = onShowAlternativesClick
+                )
             )
         }
     }
@@ -75,13 +82,15 @@ fun CartProductLeadingSwipeActions(
                 .clipToBounds(),
             contentAlignment = Alignment.CenterEnd
         ) {
-            CartProductSwipeAction(
-                imageVector = null,
-                text = stringResource(ClientStrings.CartHideAlternativesList),
-                backgroundColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                contentColor = MaterialTheme.colorScheme.onBackground,
-                contentHorizontalAlignment = Alignment.End,
-                onClick = onHideAlternativesClick
+            SwipeActionBox(
+                state = SwipeActionBoxState(
+                    imageVector = null,
+                    text = stringResource(ClientStrings.CartHideAlternativesList),
+                    backgroundColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                    contentColor = MaterialTheme.colorScheme.onBackground,
+                    contentHorizontalAlignment = Alignment.End,
+                    onClick = onHideAlternativesClick
+                )
             )
         }
     }

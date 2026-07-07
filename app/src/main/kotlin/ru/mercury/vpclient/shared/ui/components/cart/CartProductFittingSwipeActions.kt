@@ -14,6 +14,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
+import ru.mercury.vpclient.shared.ui.components.SwipeActionBox
+import ru.mercury.vpclient.shared.ui.components.SwipeActionBoxState
 import ru.mercury.vpclient.shared.ui.icons.Edit24
 import ru.mercury.vpclient.shared.ui.icons.ReturnToBasket24
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
@@ -36,11 +38,14 @@ fun CartProductFittingSwipeActions(
             .clipToBounds(),
         contentAlignment = Alignment.CenterStart
     ) {
-        CartProductSwipeAction(
-            imageVector = Edit24,
-            text = stringResource(ClientStrings.CartEdit),
-            backgroundColor = MaterialTheme.colorScheme.surface2,
-            onClick = onEditClick
+        SwipeActionBox(
+            state = SwipeActionBoxState(
+                imageVector = Edit24,
+                text = stringResource(ClientStrings.CartEdit),
+                backgroundColor = MaterialTheme.colorScheme.surface2,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                onClick = onEditClick
+            )
         )
     }
 
@@ -51,11 +56,14 @@ fun CartProductFittingSwipeActions(
             .clipToBounds(),
         contentAlignment = Alignment.CenterStart
     ) {
-        CartProductSwipeAction(
-            imageVector = ReturnToBasket24,
-            text = stringResource(ClientStrings.CartFittingReturnToBasket),
-            backgroundColor = MaterialTheme.colorScheme.primary,
-            onClick = onReturnToBasketClick
+        SwipeActionBox(
+            state = SwipeActionBoxState(
+                imageVector = ReturnToBasket24,
+                text = stringResource(ClientStrings.CartFittingReturnToBasket),
+                backgroundColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                onClick = onReturnToBasketClick
+            )
         )
     }
 }

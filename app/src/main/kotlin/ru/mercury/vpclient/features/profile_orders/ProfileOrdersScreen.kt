@@ -4,6 +4,7 @@ package ru.mercury.vpclient.features.profile_orders
 
 import android.content.ClipData
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,14 +32,20 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
+import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -52,7 +59,6 @@ import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.profile_orders.event.ProfileOrdersEvent
 import ru.mercury.vpclient.features.profile_orders.intent.ProfileOrdersIntent
 import ru.mercury.vpclient.features.profile_orders.model.ProfileOrdersModel
-import ru.mercury.vpclient.features.profile_orders.model.profileOrdersPreviewItems
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedPullToRefreshBox
@@ -62,7 +68,10 @@ import ru.mercury.vpclient.shared.ui.components.cart.FittingIconButton
 import ru.mercury.vpclient.shared.ui.components.cart.MessengerIconButton
 import ru.mercury.vpclient.shared.ui.components.profile.ProfileOrderItem
 import ru.mercury.vpclient.shared.ui.components.profile.ProfileOrderItemState
+import ru.mercury.vpclient.shared.ui.components.profile.ProfileOrderProductState
+import ru.mercury.vpclient.shared.ui.components.profile.ProfileOrderStatusType
 import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
+import ru.mercury.vpclient.shared.ui.icons.Empty210
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.ktx.isRefreshLoading
 import ru.mercury.vpclient.shared.ui.placeholder
@@ -71,6 +80,7 @@ import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.divider
 import ru.mercury.vpclient.shared.ui.theme.medium18
+import ru.mercury.vpclient.shared.ui.theme.regular14
 
 @Composable
 fun ProfileOrdersScreen(
@@ -182,61 +192,92 @@ private fun ProfileOrdersScreenContent(
                 )
             }
         ) {
-            SharedLazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = innerPadding + PaddingValues(top = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(
-                    when {
-                        pagingItems.isRefreshLoading -> 8.dp
-                        else -> 0.dp
-                    }
-                ),
-                userScrollEnabled = !pagingItems.isRefreshLoading
-            ) {
-                if (pagingItems.isRefreshLoading) {
-                    items(
-                        count = 3
+            when {
+                !pagingItems.isRefreshLoading && pagingItems.itemCount == 0 -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterVertically)
                     ) {
-                        Spacer(
+                        Icon(
+                            imageVector = Empty210, // fixme заменить иконку
+                            contentDescription = null,
+                            tint = Color.Unspecified,
+                            modifier = Modifier.size(width = 210.dp, height = 111.dp)
+                        )
+
+                        Text(
+                            text = stringResource(ClientStrings.ProfileOrdersEmptyMessage),
                             modifier = Modifier
-                                .padding(horizontal = 16.dp)
-                                .fillMaxWidth()
-                                .height(205.dp)
-                                .placeholder(
-                                    visible = pagingItems.isRefreshLoading,
-                                    highlight = PlaceholderHighlight.shimmer(),
-                                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                                    shape = RoundedCornerShape(4.dp)
-                                )
+                                .padding(horizontal = 32.dp)
+                                .fillMaxWidth(),
+                            style = MaterialTheme.typography.regular14.copy(
+                                color = MaterialTheme.colorScheme.secondary,
+                                textAlign = TextAlign.Center
+                            )
                         )
                     }
-                } else {
-                    items(
-                        count = pagingItems.itemCount,
-                        key = pagingItems.itemKey { order -> order.orderNumber },
-                        contentType = pagingItems.itemContentType()
-                    ) { index ->
-                        val order = pagingItems[index]
-
-                        if (order != null) {
-                            ProfileOrderItem(
-                                state = order,
-                                onClick = {
-                                    dispatch(
-                                        ProfileOrdersIntent.OrderClick(
-                                            orderNumber = order.orderNumber,
-                                            amount = order.amount
+                }
+                else -> {
+                    SharedLazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = innerPadding + PaddingValues(top = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(
+                            when {
+                                pagingItems.isRefreshLoading -> 8.dp
+                                else -> 0.dp
+                            }
+                        ),
+                        userScrollEnabled = !pagingItems.isRefreshLoading
+                    ) {
+                        if (pagingItems.isRefreshLoading) {
+                            items(
+                                count = 3
+                            ) {
+                                Spacer(
+                                    modifier = Modifier
+                                        .padding(horizontal = 16.dp)
+                                        .fillMaxWidth()
+                                        .height(205.dp)
+                                        .placeholder(
+                                            visible = pagingItems.isRefreshLoading,
+                                            highlight = PlaceholderHighlight.shimmer(),
+                                            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                            shape = RoundedCornerShape(4.dp)
                                         )
-                                    )
-                                },
-                                onCopyClick = copyOrderNumber,
-                                onMoreClick = {}
-                            )
+                                )
+                            }
+                        } else {
+                            items(
+                                count = pagingItems.itemCount,
+                                key = pagingItems.itemKey { order -> order.orderNumber },
+                                contentType = pagingItems.itemContentType()
+                            ) { index ->
+                                val order = pagingItems[index]
 
-                            HorizontalDivider(
-                                modifier = Modifier.padding(start = 16.dp),
-                                color = MaterialTheme.colorScheme.divider
-                            )
+                                if (order != null) {
+                                    ProfileOrderItem(
+                                        state = order,
+                                        onClick = {
+                                            dispatch(
+                                                ProfileOrdersIntent.OrderClick(
+                                                    orderNumber = order.orderNumber,
+                                                    amount = order.amount
+                                                )
+                                            )
+                                        },
+                                        onCopyClick = copyOrderNumber,
+                                        onMoreClick = {}
+                                    )
+
+                                    HorizontalDivider(
+                                        modifier = Modifier.padding(start = 16.dp),
+                                        color = MaterialTheme.colorScheme.divider
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -248,15 +289,108 @@ private fun ProfileOrdersScreenContent(
 @PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Composable
-private fun ProfileOrdersScreenContentPreview() {
-    val pagingItems = remember {
-        MutableStateFlow(PagingData.from(profileOrdersPreviewItems()))
+private fun ProfileOrdersScreenContentPreview(
+    @PreviewParameter(ProfileOrdersModelPreviewParameterProvider::class) state: ProfileOrdersPreviewState
+) {
+    val pagingItems = remember(state) {
+        MutableStateFlow(
+            PagingData.from(
+                data = state.items,
+                sourceLoadStates = state.sourceLoadStates
+            )
+        )
     }.collectAsLazyPagingItems()
 
     ProfileOrdersScreenContent(
-        state = ProfileOrdersModel(),
+        state = state.state,
         pagingItems = pagingItems,
         dispatch = {},
         copyOrderNumber = {}
+    )
+}
+
+private data class ProfileOrdersPreviewState(
+    val state: ProfileOrdersModel,
+    val items: List<ProfileOrderItemState>,
+    val sourceLoadStates: LoadStates
+)
+
+private class ProfileOrdersModelPreviewParameterProvider: PreviewParameterProvider<ProfileOrdersPreviewState> {
+
+    private val idleLoadStates = LoadStates(
+        refresh = LoadState.NotLoading(endOfPaginationReached = false),
+        prepend = LoadState.NotLoading(endOfPaginationReached = false),
+        append = LoadState.NotLoading(endOfPaginationReached = false)
+    )
+    private val loadingLoadStates = LoadStates(
+        refresh = LoadState.Loading,
+        prepend = LoadState.NotLoading(endOfPaginationReached = false),
+        append = LoadState.NotLoading(endOfPaginationReached = false)
+    )
+
+    override val values: Sequence<ProfileOrdersPreviewState> = sequenceOf(
+        ProfileOrdersPreviewState(
+            state = ProfileOrdersModel(),
+            items = emptyList(),
+            sourceLoadStates = idleLoadStates
+        ),
+        ProfileOrdersPreviewState(
+            state = ProfileOrdersModel(),
+            items = emptyList(),
+            sourceLoadStates = loadingLoadStates
+        ),
+        ProfileOrdersPreviewState(
+            state = ProfileOrdersModel(
+                cartCount = 3,
+                cartBadge = 1,
+                fittingCount = 2
+            ),
+            items = listOf(
+                ProfileOrderItemState(
+                    numberTitleRes = ClientStrings.ProfileOrdersNumber,
+                    orderNumber = "4143-31Т",
+                    amount = "1 359 950 ₽",
+                    statusPrefix = "Не завершен:",
+                    statusDescription = "в процессе оплаты, не доставлен",
+                    statusType = ProfileOrderStatusType.NotFinished,
+                    showPaymentBadge = true,
+                    products = List(4) {
+                        ProfileOrderProductState(
+                            imageUrl = ""
+                        )
+                    },
+                    hiddenProductsCount = 2
+                ),
+                ProfileOrderItemState(
+                    numberTitleRes = ClientStrings.ProfileOrdersNumber,
+                    orderNumber = "72878-Т",
+                    amount = "200 000 ₽",
+                    statusPrefix = "Не завершен:",
+                    statusDescription = "не оплачен, не доставлен",
+                    statusType = ProfileOrderStatusType.NotFinished,
+                    showPaymentBadge = false,
+                    products = List(2) {
+                        ProfileOrderProductState(
+                            imageUrl = ""
+                        )
+                    }
+                ),
+                ProfileOrderItemState(
+                    numberTitleRes = ClientStrings.ProfileOrdersNumber,
+                    orderNumber = "728778-Т",
+                    amount = "459 000 ₽",
+                    statusPrefix = "Завершен:",
+                    statusDescription = "оплачен, доставлен",
+                    statusType = ProfileOrderStatusType.Finished,
+                    showPaymentBadge = false,
+                    products = List(2) {
+                        ProfileOrderProductState(
+                            imageUrl = ""
+                        )
+                    }
+                )
+            ),
+            sourceLoadStates = idleLoadStates
+        )
     )
 }

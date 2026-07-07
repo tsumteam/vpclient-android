@@ -21,6 +21,7 @@ import ru.mercury.vpclient.shared.data.network.request.AuthenticationLoginReques
 import ru.mercury.vpclient.shared.data.network.request.AuthenticationRegisterRequest
 import ru.mercury.vpclient.shared.data.network.request.AvailableColorsRequest
 import ru.mercury.vpclient.shared.data.network.request.AvailableLocationsRequest
+import ru.mercury.vpclient.shared.data.network.request.AvailableMultipleSizesRequest
 import ru.mercury.vpclient.shared.data.network.request.AvailableSizesRequest
 import ru.mercury.vpclient.shared.data.network.request.AxLoyaltyCardAuthRequest
 import ru.mercury.vpclient.shared.data.network.request.AxLoyaltyCardCalcAndReserveBonusPayRequest
@@ -138,6 +139,8 @@ import ru.mercury.vpclient.shared.data.network.response.ApproveFittingExpiration
 import ru.mercury.vpclient.shared.data.network.response.AvailableColorsResponse
 import ru.mercury.vpclient.shared.data.network.response.AvailableLocationsForProductResponse
 import ru.mercury.vpclient.shared.data.network.response.AvailableLocationsResponse
+import ru.mercury.vpclient.shared.data.network.response.AvailableMultipleSizesItemsResponse
+import ru.mercury.vpclient.shared.data.network.response.AvailableMultipleSizesResponse
 import ru.mercury.vpclient.shared.data.network.response.AvailableSizesResponse
 import ru.mercury.vpclient.shared.data.network.response.AxLoyaltyCardAuthResponse
 import ru.mercury.vpclient.shared.data.network.response.AxLoyaltyCardCalcAndReserveBonusPayResponse
@@ -808,6 +811,14 @@ class NetworkService @Inject constructor(
         request: AvailableSizesRequest
     ): BaseResponse<AvailableSizesResponse> {
         return ktorHttpClient.post("catalog/available/sizes") {
+            setBody(request)
+        }.body()
+    }
+
+    suspend fun catalogAvailableForMultipleSizes(
+        request: AvailableMultipleSizesRequest
+    ): BaseResponse<AvailableMultipleSizesItemsResponse> {
+        return ktorHttpClient.post("catalog/available-for-multiple/sizes") {
             setBody(request)
         }.body()
     }

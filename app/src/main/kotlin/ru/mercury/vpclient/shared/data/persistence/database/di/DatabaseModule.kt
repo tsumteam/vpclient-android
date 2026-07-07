@@ -18,6 +18,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogViewHisto
 import ru.mercury.vpclient.shared.data.persistence.database.dao.ClientDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.ClientDeliveryAddressDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CompilationDao
+import ru.mercury.vpclient.shared.data.persistence.database.dao.CompilationPreviewPageDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.EmployeeBadgeDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.EmployeeDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.FilterValuesDao
@@ -59,6 +60,11 @@ object DatabaseModule {
 
     @Provides
     fun compilationDao(database: AppDatabase): CompilationDao = database.compilationDao()
+
+    @Provides
+    fun compilationPreviewPageDao(database: AppDatabase): CompilationPreviewPageDao {
+        return database.compilationPreviewPageDao()
+    }
 
     @Provides
     fun catalogCategoryDao(database: AppDatabase): CatalogCategoryDao {

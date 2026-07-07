@@ -46,8 +46,8 @@ import ru.mercury.vpclient.shared.ui.components.PagingLoadingBox
 import ru.mercury.vpclient.shared.ui.components.SharedPullToRefreshBox
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.cart.CartIconButton
-import ru.mercury.vpclient.shared.ui.components.catalog.CatalogProductCard
-import ru.mercury.vpclient.shared.ui.components.catalog.CatalogProductCardState
+import ru.mercury.vpclient.shared.ui.components.product.ProductCard
+import ru.mercury.vpclient.shared.ui.components.product.ProductCardState
 import ru.mercury.vpclient.shared.ui.components.filters.FilterProductCardPlaceholder
 import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
 import ru.mercury.vpclient.shared.ui.icons.Search24
@@ -179,8 +179,8 @@ private fun ProfileViewHistoryScreenContent(
                             ) { index ->
                                 val entity = pagingItems[index]
                                 if (entity != null) {
-                                    CatalogProductCard(
-                                        state = CatalogProductCardState(
+                                    ProductCard(
+                                        state = ProductCardState(
                                             entity = entity,
                                             isInBasket = state.isProductInBasket(entity),
                                             onClick = { dispatch(ProfileViewHistoryIntent.ProductClick(entity.id)) },

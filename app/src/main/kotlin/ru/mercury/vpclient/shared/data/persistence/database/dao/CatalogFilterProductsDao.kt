@@ -18,6 +18,9 @@ interface CatalogFilterProductsDao {
     @Query("SELECT * FROM CatalogFilterProducts WHERE categoryId = :categoryId AND titleCategoryId = :titleCategoryId ORDER BY position ASC")
     fun selectFlow(categoryId: Int, titleCategoryId: Int): Flow<List<CatalogFilterProductsEntity>>
 
+    @Query("SELECT * FROM CatalogFilterProducts WHERE categoryId = :categoryId ORDER BY titleCategoryId ASC, position ASC")
+    fun selectFlow(categoryId: Int): Flow<List<CatalogFilterProductsEntity>>
+
     @Query("SELECT * FROM CatalogFilterProducts WHERE id = :id LIMIT 1")
     fun selectFlow(id: String): Flow<CatalogFilterProductsEntity>
 
@@ -29,4 +32,7 @@ interface CatalogFilterProductsDao {
 
     @Query("DELETE FROM CatalogFilterProducts WHERE categoryId = :categoryId AND titleCategoryId = :titleCategoryId")
     suspend fun remove(categoryId: Int, titleCategoryId: Int)
+
+    @Query("DELETE FROM CatalogFilterProducts WHERE categoryId = :categoryId")
+    suspend fun remove(categoryId: Int)
 }

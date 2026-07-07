@@ -10,7 +10,7 @@ import ru.mercury.vpclient.features.consultant.navigation.ConsultantRoute
 import ru.mercury.vpclient.features.consultants.event.ConsultantsEvents
 import ru.mercury.vpclient.features.consultants.intent.ConsultantsIntent
 import ru.mercury.vpclient.features.consultants.model.ConsultantsModel
-import ru.mercury.vpclient.features.fitting.navigation.FittingRoute
+import ru.mercury.vpclient.features.compilations.navigation.CompilationsRoute
 import ru.mercury.vpclient.features.main.event.MainTabsEventManager
 import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
@@ -99,7 +99,7 @@ class ConsultantsViewModel @Inject constructor(
                         if (employee?.entity?.isActive == false) {
                             setActiveEmployeeUseCase(intent.employeeId).getOrThrow()
                         }
-                        MainTabsEventManager.send(FittingRoute)
+                        MainTabsEventManager.send(CompilationsRoute)
                     }
                 }
             }

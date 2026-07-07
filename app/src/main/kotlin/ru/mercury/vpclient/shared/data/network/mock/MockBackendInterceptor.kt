@@ -24,11 +24,8 @@ class MockBackendInterceptor(
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
-        val enabled = BuildConfig.DEBUG &&
-            (context.isMockBackendMarkerEnabled || settingsDataStore.get().getValueBlocking(PreferenceKey.MockBackendEnabled) == true)
-        if (!enabled || !request.isMockBackendRequest) {
-            return chain.proceed(request)
-        }
+        val enabled = BuildConfig.DEBUG && context.isMockBackendMarkerEnabled
+        if (!enabled) return chain.proceed(request)
 
         when (request.mockEndpoint) {
             LOYALTY_LINK_ENDPOINT -> context.pendingMockLoyaltyCardNumber = request.loyaltyCardNumberFromBody
@@ -81,12 +78,6 @@ class MockBackendInterceptor(
         pendingMockLoyaltyCardNumber = null
     }
 
-    private val okhttp3.Request.isMockBackendRequest: Boolean
-        get() = mockEndpoint in MOCK_BACKEND_ENDPOINTS ||
-            mockEndpoint.isActivityCountersEndpoint ||
-            mockEndpoint.isEmployeeBadgesEndpoint ||
-            mockEndpoint.isEmployeeEndpoint
-
     private val okhttp3.Request.mockEndpoint: String
         get() = url.encodedPath
                 .trim('/')
@@ -115,9 +106,19 @@ class MockBackendInterceptor(
             USER_CURRENT_USER_ENDPOINT -> CURRENT_USER_RESPONSE
             CLIENT_MY_EMPLOYEES_ENDPOINT -> MY_EMPLOYEES_RESPONSE
             CLIENT_ACTIVE_EMPLOYEE_ENDPOINT -> activeEmployeeResponse(context.activeMockEmployeeId)
+            COMPILATIONS_CLIENT_ENDPOINT -> COMPILATIONS_CLIENT_RESPONSE
+            BASKET_ENDPOINT -> BASKET_OPERATION_RESPONSE
             LOYALTY_LINK_BY_PHONE_ENDPOINT -> LOYALTY_LINK_BY_PHONE_RESPONSE
             LOYALTY_CARD_INFO_ENDPOINT -> context.mockLoyaltyCardNumber?.let(::loyaltyCardInfoResponse) ?: EMPTY_LOYALTY_CARD_INFO_RESPONSE
             else -> when {
+                mockEndpoint.isCompilationsClientByCompilationIdEndpoint -> compilationsClientByCompilationIdResponse(
+                    mockEndpoint.compilationIdFromEndpoint
+                )
+                mockEndpoint.isCompilationsClientLookByLookIdEndpoint -> compilationsClientLookByLookIdResponse(
+                    mockEndpoint.lookIdFromEndpoint
+                )
+                mockEndpoint.isCompilationsClientLookByLookIdToBasketEndpoint -> TRUE_RESPONSE
+                mockEndpoint.isBasketByPairedUserIdEndpoint -> basketResponse()
                 mockEndpoint.isActivityCountersEndpoint -> ACTIVITY_COUNTERS_RESPONSE
                 mockEndpoint.isEmployeeBadgesEndpoint -> employeeBadgesResponse(mockEndpoint.employeeIdFromBadgesEndpoint)
                 mockEndpoint.isEmployeeEndpoint -> activeEmployeeResponse(mockEndpoint.employeeIdFromEmployeeEndpoint)
@@ -139,6 +140,32 @@ class MockBackendInterceptor(
 
     private val String.isActivityCountersEndpoint: Boolean
         get() = startsWith("$ACTIVITY_COUNTERS_ENDPOINT/")
+
+    private val String.isCompilationsClientByCompilationIdEndpoint: Boolean
+        get() = startsWith("$COMPILATIONS_CLIENT_ENDPOINT/") &&
+            !startsWith("$COMPILATIONS_CLIENT_LOOK_ENDPOINT/")
+
+    private val String.compilationIdFromEndpoint: Int
+        get() = removePrefix("$COMPILATIONS_CLIENT_ENDPOINT/")
+            .toIntOrNull()
+            ?: DEFAULT_MOCK_COMPILATION_ID
+
+    private val String.isCompilationsClientLookByLookIdEndpoint: Boolean
+        get() = startsWith("$COMPILATIONS_CLIENT_LOOK_ENDPOINT/") &&
+            !endsWith(COMPILATIONS_CLIENT_LOOK_TO_BASKET_SUFFIX)
+
+    private val String.isCompilationsClientLookByLookIdToBasketEndpoint: Boolean
+        get() = startsWith("$COMPILATIONS_CLIENT_LOOK_ENDPOINT/") &&
+            endsWith(COMPILATIONS_CLIENT_LOOK_TO_BASKET_SUFFIX)
+
+    private val String.lookIdFromEndpoint: Int
+        get() = removePrefix("$COMPILATIONS_CLIENT_LOOK_ENDPOINT/")
+            .removeSuffix(COMPILATIONS_CLIENT_LOOK_TO_BASKET_SUFFIX)
+            .toIntOrNull()
+            ?: DEFAULT_MOCK_LOOK_ID
+
+    private val String.isBasketByPairedUserIdEndpoint: Boolean
+        get() = startsWith("$BASKET_ENDPOINT/") && count { char -> char == '/' } == 1
 
     private val String.isEmployeeEndpoint: Boolean
         get() = startsWith("$CLIENT_MY_EMPLOYEE_ENDPOINT/")
@@ -162,15 +189,23 @@ class MockBackendInterceptor(
         const val CLIENT_MY_EMPLOYEE_ENDPOINT = "client/my-employee"
         const val CLIENT_ACTIVE_EMPLOYEE_ENDPOINT = "client/active-employee"
         const val ACTIVITY_COUNTERS_ENDPOINT = "activity/counters"
+        const val BASKET_ENDPOINT = "basket"
+        const val COMPILATIONS_CLIENT_ENDPOINT = "compilations/client"
+        const val COMPILATIONS_CLIENT_LOOK_ENDPOINT = "compilations/client/look"
+        const val COMPILATIONS_CLIENT_LOOK_TO_BASKET_SUFFIX = "/to-basket"
         const val LOYALTY_LINK_ENDPOINT = "loyalty/link"
         const val LOYALTY_VERIFY_LINK_ENDPOINT = "loyalty/verify-link"
         const val LOYALTY_LINK_BY_PHONE_ENDPOINT = "loyalty/link-by-phone"
         const val LOYALTY_LINK_BY_PHONE_CONTINUE_ENDPOINT = "loyalty/link-by-phone-continue"
         const val LOYALTY_CARD_INFO_ENDPOINT = "loyalty/card-info"
+        const val DEFAULT_MOCK_COMPILATION_ID = 103
+        const val DEFAULT_MOCK_LOOK_ID = 10301
         const val AUTHENTICATION_RESPONSE = """{"data":"ok","error":null,"errors":null,"type":null,"title":null,"status":200,"traceId":null}"""
         const val TOKEN_RESPONSE = """{"data":{"token":"mock-user-token"},"error":null,"errors":null,"type":null,"title":null,"status":200,"traceId":null}"""
         const val CURRENT_USER_RESPONSE = """{"data":{"clientEmail":"mock.client@example.com","clientMiddleName":"","clientName":"Мок","clientPhone":"+79990000000","clientSurname":"Клиент","isAvailableFittingHome":true,"code":"MOCK_CLIENT_1","createDate":"2026-01-01T00:00:00Z","deviceId":"mock-device","disableCommunications":false,"gender":"masculine","id":1,"isBoutique":false,"isEmployee":false,"isRegistered":true,"useDiginetica":false},"error":null,"errors":null,"type":null,"title":null,"status":200,"traceId":null}"""
         const val ACTIVITY_COUNTERS_RESPONSE = """{"data":{"items":[{"type":"messages","value":7},{"type":"basket","value":2},{"type":"order","value":1},{"type":"fitting","value":1},{"type":"compilation","value":3},{"type":"clientNotification","value":1}]},"error":null,"errors":null,"type":null,"title":null,"status":200,"traceId":null}"""
+        const val TRUE_RESPONSE = """{"data":true,"error":null,"errors":null,"type":null,"title":null,"status":200,"traceId":null}"""
+        const val BASKET_OPERATION_RESPONSE = """{"data":{},"error":null,"errors":null,"type":null,"title":null,"status":200,"traceId":null}"""
         const val LOYALTY_OPERATION_RESPONSE = """{"data":{"error":null},"error":null,"errors":null,"type":null,"title":null,"status":200,"traceId":null}"""
         const val LOYALTY_LINK_BY_PHONE_RESPONSE = """{"data":{"isNeedVerification":true,"error":null},"error":null,"errors":null,"type":null,"title":null,"status":200,"traceId":null}"""
         const val EMPTY_LOYALTY_CARD_INFO_RESPONSE = """{"data":{"loyaltyCardNumber":"","bonusAmount":0,"clientName":"","typeCard":"black","qrCode":""},"error":null,"errors":null,"type":null,"title":null,"status":200,"traceId":null}"""
@@ -182,6 +217,8 @@ class MockBackendInterceptor(
             USER_CURRENT_USER_ENDPOINT,
             CLIENT_MY_EMPLOYEES_ENDPOINT,
             CLIENT_ACTIVE_EMPLOYEE_ENDPOINT,
+            COMPILATIONS_CLIENT_ENDPOINT,
+            BASKET_ENDPOINT,
             LOYALTY_LINK_ENDPOINT,
             LOYALTY_VERIFY_LINK_ENDPOINT,
             LOYALTY_LINK_BY_PHONE_ENDPOINT,
@@ -232,7 +269,158 @@ class MockBackendInterceptor(
             )
         )
 
+        const val COMPILATIONS_CLIENT_RESPONSE = """{"data":{"items":[{"badge":1,"id":101,"collageUrl":"https://picsum.photos/seed/vp-client-compilation-1/300/450","photoUrl":"https://picsum.photos/seed/vp-client-compilation-1/300/450","name":"Новые поступления","description":"Свежие образы недели","createDate":"2026-07-11T10:00:00Z","looksQty":5,"lookProductsQty":36,"isStatsAvailable":false},{"badge":1,"id":102,"collageUrl":"https://picsum.photos/seed/vp-client-compilation-2/300/450","photoUrl":"https://picsum.photos/seed/vp-client-compilation-2/300/450","name":"Sporty&Riche","description":"Комфортные комплекты для города","createDate":"2026-07-05T10:00:00Z","looksQty":4,"lookProductsQty":28,"isStatsAvailable":false},{"badge":0,"id":103,"collageUrl":"https://picsum.photos/seed/vp-client-compilation-3/300/450","photoUrl":"https://picsum.photos/seed/vp-client-compilation-3/300/450","name":"BLV/Hotel","description":"Капсула для путешествия","createDate":"2026-06-17T10:00:00Z","looksQty":5,"lookProductsQty":36,"isStatsAvailable":false},{"badge":0,"id":104,"collageUrl":"https://picsum.photos/seed/vp-client-compilation-4/300/450","photoUrl":"https://picsum.photos/seed/vp-client-compilation-4/300/450","name":"Летние образы","description":"Легкие комплекты для жарких дней","createDate":"2026-06-07T10:00:00Z","looksQty":8,"lookProductsQty":45,"isStatsAvailable":false},{"badge":1,"id":105,"collageUrl":"https://picsum.photos/seed/vp-client-compilation-5/300/450","photoUrl":"https://picsum.photos/seed/vp-client-compilation-5/300/450","name":"Деловая поездка","description":"Вещи для встреч и ужинов","createDate":"2026-05-28T10:00:00Z","looksQty":6,"lookProductsQty":31,"isStatsAvailable":false},{"badge":0,"id":106,"collageUrl":"https://picsum.photos/seed/vp-client-compilation-6/300/450","photoUrl":"https://picsum.photos/seed/vp-client-compilation-6/300/450","name":"Вечерний выход","description":"Акцентные образы для мероприятий","createDate":"2026-05-18T10:00:00Z","looksQty":3,"lookProductsQty":19,"isStatsAvailable":false}]},"error":null,"errors":null,"type":null,"title":null,"status":200,"traceId":null}"""
+
         val MY_EMPLOYEES_RESPONSE = """{"data":{"items":[${MOCK_EMPLOYEES.joinToString(",")}]},"error":null,"errors":null,"type":null,"title":null,"status":200,"traceId":null}"""
+
+        fun compilationsClientByCompilationIdResponse(compilationId: Int): String {
+            val looks = (1..5).joinToString(",") { index ->
+                lookInfo(
+                    lookId = compilationId * 100 + index
+                )
+            }
+            return """{"data":{"compilationInfo":${compilationInfo(compilationId)},"looks":[$looks]},"error":null,"errors":null,"type":null,"title":null,"status":200,"traceId":null}"""
+        }
+
+        fun compilationsClientLookByLookIdResponse(lookId: Int): String {
+            val products = (1..6).joinToString(",") { index ->
+                product(
+                    lookId = lookId,
+                    index = index
+                )
+            }
+            return """{"data":{"lookInfo":${lookInfo(lookId)},"products":[$products]},"error":null,"errors":null,"type":null,"title":null,"status":200,"traceId":null}"""
+        }
+
+        fun basketResponse(): String {
+            val lines = (1..2).joinToString(",") { index ->
+                val lookId = DEFAULT_MOCK_LOOK_ID + index - 1
+                basketLine(
+                    lookId = lookId,
+                    index = index
+                )
+            }
+            val looks = (1..2).joinToString(",") { index ->
+                val lookId = DEFAULT_MOCK_LOOK_ID + index - 1
+                """{"imageUrl":"https://picsum.photos/seed/vp-client-look-$lookId/900/1200","lookId":"$lookId","name":"${lookName(lookId)}"}"""
+            }
+            return """{"data":{"editor":"mock","id":"mock-basket","lines":[$lines],"looks":[$looks],"catalogActionDisclaimer":null,"timestamp":"2026-07-07T10:00:00Z","version":1},"error":null,"errors":null,"type":null,"title":null,"status":200,"traceId":null}"""
+        }
+
+        fun compilationInfo(compilationId: Int): String {
+            return """{"id":$compilationId,"collageUrl":"https://picsum.photos/seed/vp-client-compilation-$compilationId/900/1200","photoUrl":"https://picsum.photos/seed/vp-client-compilation-$compilationId/900/1200","name":"${compilationName(compilationId)}","description":"${compilationDescription(compilationId)}","createDate":"2026-07-07T10:00:00Z","looksQty":5,"lookProductsQty":30,"isStatsAvailable":false}"""
+        }
+
+        fun lookInfo(lookId: Int): String {
+            return """{"id":$lookId,"collageUrl":"https://picsum.photos/seed/vp-client-look-$lookId/900/1200","photoUrl":"https://picsum.photos/seed/vp-client-look-$lookId/900/1200","meta":null,"name":"${lookName(lookId)}","createDate":"2026-07-07T10:00:00Z","lookProductsQty":6,"isStatsAvailable":false}"""
+        }
+
+        fun basketLine(lookId: Int, index: Int): String {
+            return """{"lineId":"mock-basket-line-$index","lookId":"$lookId","order":$index,"paySwitch":true,"products":[{"productId":"mock-product-$lookId-$index","product":${product(lookId, index)}}],"quantity":1,"barcode":null,"locationId":null,"locationAsString":null,"controls":null,"alternatives":[]}"""
+        }
+
+        fun product(lookId: Int, index: Int): String {
+            val imageUrl = "https://picsum.photos/seed/vp-client-product-$lookId-$index/800/1100"
+            return """{"oneSize":true,"article":"MOCK-$lookId-$index","brand":"${productBrand(index)}","urlBrandLogo":null,"colorId":"${productColorId(index)}","colorName":"${productColorName(index)}","eKttId":"mock-ektt-$lookId-$index","id":"mock-product-$lookId-$index","imageUrl":"$imageUrl","imageUrls":["$imageUrl"],"isCharity":false,"isSeasonDisplay":true,"itemId":"mock-item-$lookId-$index","lookId":"$lookId","name":"${productName(index)}","order":$index,"paySwitch":true,"price":${productPrice(index)},"priceWithoutDiscount":${productPriceWithoutDiscount(index)},"currentRetailPrice":${productPrice(index)},"quantity":1,"season":"FW26","sizes":[{"availableStockQuantity":2.0,"id":"NS","inOrder":false,"inStock":true,"inStockShops":["BLV"],"isFavorite":false,"isLastInStock":false,"name":"One Size","sizeForFilter":"NS","onlyInVipSite":false,"onlyInTransit":false}],"actions":[],"onlyInTransit":false,"onlyInVipSite":false,"breadcrumbs":["Женское","Подборка"],"compilationLookProductId":$lookId$index,"isGiftCard":false,"discountPercentage":0,"additionalColors":[]}"""
+        }
+
+        fun compilationName(compilationId: Int): String {
+            return when (compilationId) {
+                101 -> "Новые поступления"
+                102 -> "Sporty&Riche"
+                103 -> "BLV/Hotel"
+                104 -> "Летние образы"
+                105 -> "Деловая поездка"
+                106 -> "Вечерний выход"
+                else -> "Mock подборка"
+            }
+        }
+
+        fun compilationDescription(compilationId: Int): String {
+            return when (compilationId) {
+                101 -> "Свежие образы недели"
+                102 -> "Комфортные комплекты для города"
+                103 -> "Капсула для путешествия"
+                104 -> "Легкие комплекты для жарких дней"
+                105 -> "Вещи для встреч и ужинов"
+                106 -> "Акцентные образы для мероприятий"
+                else -> "Подборка консультанта"
+            }
+        }
+
+        fun lookName(lookId: Int): String {
+            val index = lookId % 100
+            return when (index) {
+                1 -> "ОБРАЗ С ЖАКЕТОМ И ШЕЛКОВОЙ ЮБКОЙ"
+                2 -> "ОБРАЗ С ТРЕНЧЕМ И КАШЕМИРОМ"
+                3 -> "ОБРАЗ С ПЛАТЬЕМ И МЮЛЯМИ"
+                4 -> "ОБРАЗ С БРЮКАМИ И ТОПОМ"
+                else -> "ОБРАЗ С АКЦЕНТНЫМ АКСЕССУАРОМ"
+            }
+        }
+
+        fun productBrand(index: Int): String {
+            return when (index) {
+                1 -> "SAINT LAURENT"
+                2 -> "BRUNELLO CUCINELLI"
+                3 -> "LORO PIANA"
+                4 -> "THE ROW"
+                5 -> "JIL SANDER"
+                else -> "BOTTEGA VENETA"
+            }
+        }
+
+        fun productName(index: Int): String {
+            return when (index) {
+                1 -> "Жакет из шерсти"
+                2 -> "Юбка из шелка"
+                3 -> "Джемпер из кашемира"
+                4 -> "Брюки прямого кроя"
+                5 -> "Кожаные мюли"
+                else -> "Сумка с плетением"
+            }
+        }
+
+        fun productColorId(index: Int): String {
+            return when (index) {
+                1 -> "black"
+                2 -> "ivory"
+                3 -> "grey"
+                4 -> "navy"
+                5 -> "beige"
+                else -> "green"
+            }
+        }
+
+        fun productColorName(index: Int): String {
+            return when (index) {
+                1 -> "Черный"
+                2 -> "Айвори"
+                3 -> "Серый"
+                4 -> "Темно-синий"
+                5 -> "Бежевый"
+                else -> "Зеленый"
+            }
+        }
+
+        fun productPrice(index: Int): Double {
+            return when (index) {
+                1 -> 219_900.0
+                2 -> 129_900.0
+                3 -> 92_500.0
+                4 -> 74_900.0
+                5 -> 68_500.0
+                else -> 189_900.0
+            }
+        }
+
+        fun productPriceWithoutDiscount(index: Int): String {
+            return when (index) {
+                2 -> "159900.0"
+                5 -> "82500.0"
+                else -> "null"
+            }
+        }
 
         fun activeEmployeeResponse(employeeId: String): String {
             val employee = MOCK_EMPLOYEES.firstOrNull { employee -> employee.contains(""""employeeId":"$employeeId"""") }

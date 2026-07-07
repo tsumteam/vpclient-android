@@ -27,7 +27,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
 import ru.mercury.vpclient.shared.domain.mapper.detailsMessageProductArticle
 import ru.mercury.vpclient.shared.domain.mapper.detailsMessageProductName
 import ru.mercury.vpclient.shared.ui.components.PriceText
-import ru.mercury.vpclient.shared.ui.components.cart.CartBrandBox
+import ru.mercury.vpclient.shared.ui.components.product.ProductBrandBox
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
@@ -61,7 +61,7 @@ fun DetailsMessageProductCard(
                 modifier = Modifier.weight(1F),
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
-                CartBrandBox(
+                ProductBrandBox(
                     entity = BrandEntity(
                         brand = entity.brand.orEmpty(),
                         urlBrandLogo = entity.urlBrandLogo

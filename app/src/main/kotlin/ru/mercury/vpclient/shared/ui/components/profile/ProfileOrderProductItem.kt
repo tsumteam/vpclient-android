@@ -22,7 +22,7 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
-import ru.mercury.vpclient.shared.ui.components.cart.CartBrandBox
+import ru.mercury.vpclient.shared.ui.components.product.ProductBrandBox
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
@@ -71,7 +71,7 @@ fun ProfileOrderProductItem(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                CartBrandBox(
+                ProductBrandBox(
                     entity = BrandEntity(
                         brand = state.brand,
                         urlBrandLogo = state.urlBrandLogo

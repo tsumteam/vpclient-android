@@ -18,8 +18,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
-import ru.mercury.vpclient.shared.ui.components.catalog.CatalogProductCard
-import ru.mercury.vpclient.shared.ui.components.catalog.CatalogProductCardState
+import ru.mercury.vpclient.shared.ui.components.product.ProductCard
+import ru.mercury.vpclient.shared.ui.components.product.ProductCardState
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.livretMedium18
@@ -62,8 +62,8 @@ fun DetailsWearWithSection(
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     row.forEach { product ->
-                        CatalogProductCard(
-                            state = CatalogProductCardState(
+                        ProductCard(
+                            state = ProductCardState(
                                 entity = product,
                                 isInBasket = state.isProductInBasket(product),
                                 onClick = { state.onProductClick(product.id) },

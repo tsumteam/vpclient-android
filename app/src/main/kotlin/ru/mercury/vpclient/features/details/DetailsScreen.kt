@@ -66,9 +66,9 @@ import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.features.details_cart_added_sheet.DetailsCartAddedSheet
 import ru.mercury.vpclient.features.details_cart_added_sheet.intent.DetailsCartAddedSheetIntent
 import ru.mercury.vpclient.features.details_cart_added_sheet.model.DetailsCartAddedSheetModel
-import ru.mercury.vpclient.features.details_message_sheet.DetailsMessageSheet
-import ru.mercury.vpclient.features.details_message_sheet.intent.DetailsMessageSheetIntent
-import ru.mercury.vpclient.features.details_message_sheet.model.DetailsMessageSheetModel
+import ru.mercury.vpclient.features.details_message_sheet.DetailsChatSheet
+import ru.mercury.vpclient.features.details_message_sheet.intent.DetailsChatIntent
+import ru.mercury.vpclient.features.details_message_sheet.model.DetailsChatModel
 import ru.mercury.vpclient.features.details_wear_with_sheet.DetailsWearWithSheet
 import ru.mercury.vpclient.features.details_wear_with_sheet.intent.DetailsWearWithSheetIntent
 import ru.mercury.vpclient.features.details_wear_with_sheet.model.DetailsWearWithSheetModel
@@ -135,17 +135,17 @@ fun DetailsScreen(
     )
 
     if (state.isMessageSheetVisible) {
-        DetailsMessageSheet(
-            state = DetailsMessageSheetModel(
+        DetailsChatSheet(
+            state = DetailsChatModel(
                 productEntity = state.productEntity
             ),
             dispatch = { intent ->
                 when (intent) {
-                    is DetailsMessageSheetIntent.CommentChange -> Unit
-                    is DetailsMessageSheetIntent.SendClick -> {
+                    is DetailsChatIntent.CommentChange -> Unit
+                    is DetailsChatIntent.SendClick -> {
                         viewModel.dispatch(DetailsIntent.HideMessageSheet)
                     }
-                    is DetailsMessageSheetIntent.DismissRequest -> {
+                    is DetailsChatIntent.DismissRequest -> {
                         viewModel.dispatch(DetailsIntent.HideMessageSheet)
                     }
                 }

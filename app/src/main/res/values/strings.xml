@@ -117,6 +117,10 @@
     <string name="fitting_products_sheet_title">ВЫБЕРИТЕ ТОВАРЫ</string>
     <string name="fitting_products_sheet_select">Выбрать</string>
     <string name="fitting_compilations_empty_message">На данный момент у Вас нет ни одной подборки. Обратитесь к Вашему персональному консультанту</string>
+    <string name="fitting_compilation_discuss_in_chat">Обсудить\nв чате</string>
+    <string name="compilation_chat_sheet_title">ОБСУДИТЬ С КОНСУЛЬТАНТОМ</string>
+    <string name="compilation_preview_discuss_in_chat">Обсудить в чате</string>
+    <string name="compilation_preview_add_to_basket_description">Выберите нужные размеры сейчас или сделайте это потом в корзине</string>
     <plurals name="fitting_compilation_looks">
         <item quantity="one">%1$d образ</item>
         <item quantity="few">%1$d образа</item>
@@ -278,6 +282,15 @@
     <string name="details_cart_added_sheet_title">ТОВАР ДОБАВЛЕН В КОРЗИНУ</string>
     <string name="details_cart_added_sheet_continue_shopping">Продолжить покупки</string>
     <string name="details_cart_added_sheet_cart">Перейти в корзину</string>
+    <string name="compilation_cart_added_sheet_title">ОБРАЗ ДОБАВЛЕН В КОРЗИНУ</string>
+    <string name="compilation_cart_added_sheet_return_to_compilation">Вернуться в подборку</string>
+    <string name="compilation_cart_added_sheet_cart">Перейти в корзину</string>
+    <string name="compilation_preview_promotion_details">Подробнее</string>
+    <string name="compilation_preview_promotion_text">Сейчас действует акция%1$s,\nпри покупке всего образа для Вас будет\nскидка %2$s</string>
+    <string name="compilation_benefit_sheet_title">ВАША ВЫГОДА</string>
+    <string name="compilation_benefit_sheet_full_price">Полная стоимость образа: %1$s</string>
+    <string name="compilation_benefit_sheet_discount_price">Стоимость с учетом акции: %1$s</string>
+    <string name="compilation_benefit_sheet_benefit">Выгода при покупке образа: %1$s</string>
     <string name="details_complete_set_title">ДОПОЛНИТЕ КОМПЛЕКТ</string>
     <string name="details_field_brand">Бренд</string>
     <string name="details_field_color">Цвет</string>
@@ -344,6 +357,7 @@
     <string name="profile_orders_amount">Сумма заказа %1$s</string>
     <string name="profile_orders_awaiting_payment">Ожидает оплаты</string>
     <string name="profile_orders_more_products">Еще %1$d</string>
+    <string name="profile_orders_empty_message">На данный момент Вы не создали ни одного заказа.</string>
     <string name="profile_loyalty_add_card_title_caps">ДОБАВИТЬ КАРТУ ЛОЯЛЬНОСТИ</string>
     <string name="profile_loyalty_add_card_phone_mode_caps">ПО НОМЕРУ ТЕЛЕФОНА</string>
     <string name="profile_loyalty_add_card_card_mode_caps">ПО НОМЕРУ КАРТЫ</string>

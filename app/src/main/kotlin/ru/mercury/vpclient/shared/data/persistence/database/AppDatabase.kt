@@ -14,6 +14,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogViewHisto
 import ru.mercury.vpclient.shared.data.persistence.database.dao.ClientDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.ClientDeliveryAddressDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CompilationDao
+import ru.mercury.vpclient.shared.data.persistence.database.dao.CompilationPreviewPageDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.EmployeeBadgeDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.EmployeeDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.FilterValuesDao
@@ -32,6 +33,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogViewHi
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ClientDeliveryAddressEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ClientEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CompilationEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.CompilationPreviewPageEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeBadgeEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesEntity
@@ -55,6 +57,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
         ClientDeliveryAddressEntity::class,
         ClientEntity::class,
         CompilationEntity::class,
+        CompilationPreviewPageEntity::class,
         EmployeeEntity::class,
         EmployeeBadgeEntity::class,
         FittingProductEntity::class,
@@ -78,6 +81,7 @@ abstract class AppDatabase: RoomDatabase() {
     abstract fun clientDao(): ClientDao
     abstract fun clientDeliveryAddressDao(): ClientDeliveryAddressDao
     abstract fun compilationDao(): CompilationDao
+    abstract fun compilationPreviewPageDao(): CompilationPreviewPageDao
     abstract fun employeeDao(): EmployeeDao
     abstract fun employeeBadgeDao(): EmployeeBadgeDao
     abstract fun pagingKeyDao(): PagingKeyDao
@@ -89,6 +93,6 @@ abstract class AppDatabase: RoomDatabase() {
 
     companion object {
         const val DATABASE_NAME = "vpclient.db"
-        const val DATABASE_VERSION = 74
+        const val DATABASE_VERSION = 79
     }
 }

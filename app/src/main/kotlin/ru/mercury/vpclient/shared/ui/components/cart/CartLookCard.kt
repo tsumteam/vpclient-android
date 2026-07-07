@@ -23,6 +23,10 @@ import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
 import ru.mercury.vpclient.shared.data.entity.CartProductSize
+import ru.mercury.vpclient.shared.ui.components.SwipeActionBox
+import ru.mercury.vpclient.shared.ui.components.SwipeActionBoxState
+import ru.mercury.vpclient.shared.ui.components.product.ProductSwipeableCard
+import ru.mercury.vpclient.shared.ui.components.product.ProductSwipeableCardState
 import ru.mercury.vpclient.shared.ui.icons.Delete24
 import ru.mercury.vpclient.shared.ui.icons.Disassemble24
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
@@ -38,6 +42,7 @@ fun CartLookCard(
     onAddClick: () -> Unit,
     onProductClick: (CartProduct) -> Unit,
     onSelectSizeClick: (CartProduct) -> Unit,
+    modifier: Modifier = Modifier,
     onSizeClick: (CartProduct, CartProductSize) -> Unit = { _, _ -> },
     onBuySwitchChange: (CartProduct, Boolean) -> Unit,
     onAlternativeClick: (CartProductAlternative) -> Unit,
@@ -57,8 +62,7 @@ fun CartLookCard(
     swipeKey: String? = null,
     openedSwipeKey: String? = null,
     onSwipeOpen: (String?) -> Unit = {},
-    selectedAlternativeId: String? = null,
-    modifier: Modifier = Modifier
+    selectedAlternativeId: String? = null
 ) {
     Column(
         modifier = modifier
@@ -70,44 +74,52 @@ fun CartLookCard(
                 shape = RoundedCornerShape(8.dp)
             )
     ) {
-        CartProductSwipeableCard(
-            trailingActionsContent = { swipeProgress, onSwipeActionClick ->
-                val actionWidth = 88.dp * swipeProgress
+        ProductSwipeableCard(
+            state = ProductSwipeableCardState(
+                trailingActionsContent = { swipeProgress, onSwipeActionClick ->
+                    val actionWidth = 88.dp * swipeProgress
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(actionWidth)
-                        .clipToBounds(),
-                    contentAlignment = Alignment.CenterStart
-                ) {
-                    CartProductSwipeAction(
-                        imageVector = Disassemble24,
-                        text = stringResource(ClientStrings.CartDisassembleLook),
-                        backgroundColor = MaterialTheme.colorScheme.surface2,
-                        onClick = { onSwipeActionClick(onDisassembleLookSwipeClick) }
-                    )
-                }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .width(actionWidth)
+                            .clipToBounds(),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        SwipeActionBox(
+                            state = SwipeActionBoxState(
+                                imageVector = Disassemble24,
+                                text = stringResource(ClientStrings.CartDisassembleLook),
+                                backgroundColor = MaterialTheme.colorScheme.surface2,
+                                contentColor = MaterialTheme.colorScheme.onPrimary,
+                                onClick = { onSwipeActionClick(onDisassembleLookSwipeClick) }
+                            )
+                        )
+                    }
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(actionWidth)
-                        .clipToBounds(),
-                    contentAlignment = Alignment.CenterStart
-                ) {
-                    CartProductSwipeAction(
-                        imageVector = Delete24,
-                        text = stringResource(ClientStrings.CartDelete),
-                        backgroundColor = MaterialTheme.colorScheme.error,
-                        onClick = { onSwipeActionClick(onDeleteLookSwipeClick) }
-                    )
-                }
-            },
-            trailingSwipeSize = 176.dp,
-            swipeKey = swipeKey,
-            openedSwipeKey = openedSwipeKey,
-            onSwipeOpen = onSwipeOpen
+                    Box(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .width(actionWidth)
+                            .clipToBounds(),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        SwipeActionBox(
+                            state = SwipeActionBoxState(
+                                imageVector = Delete24,
+                                text = stringResource(ClientStrings.CartDelete),
+                                backgroundColor = MaterialTheme.colorScheme.error,
+                                contentColor = MaterialTheme.colorScheme.onPrimary,
+                                onClick = { onSwipeActionClick(onDeleteLookSwipeClick) }
+                            )
+                        )
+                    }
+                },
+                trailingSwipeSize = 176.dp,
+                swipeKey = swipeKey,
+                openedSwipeKey = openedSwipeKey,
+                onSwipeOpen = onSwipeOpen
+            )
         ) {
             CartLookHeader(
                 name = lookName,

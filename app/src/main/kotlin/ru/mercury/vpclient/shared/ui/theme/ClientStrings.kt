@@ -123,6 +123,10 @@ object ClientStrings {
     val FittingProductsSheetTitle get() = R.string.fitting_products_sheet_title
     val FittingProductsSheetSelect get() = R.string.fitting_products_sheet_select
     val FittingCompilationsEmptyMessage get() = R.string.fitting_compilations_empty_message
+    val FittingCompilationDiscussInChat get() = R.string.fitting_compilation_discuss_in_chat
+    val CompilationChatSheetTitle get() = R.string.compilation_chat_sheet_title
+    val CompilationPreviewDiscussInChat get() = R.string.compilation_preview_discuss_in_chat
+    val CompilationPreviewAddToBasketDescription get() = R.string.compilation_preview_add_to_basket_description
     val FittingCompilationLooks get() = R.plurals.fitting_compilation_looks
     val FittingCompilationThings get() = R.plurals.fitting_compilation_things
 
@@ -231,6 +235,15 @@ object ClientStrings {
     val DetailsCartAddedSheetTitle get() = R.string.details_cart_added_sheet_title
     val DetailsCartAddedSheetContinueShopping get() = R.string.details_cart_added_sheet_continue_shopping
     val DetailsCartAddedSheetCart get() = R.string.details_cart_added_sheet_cart
+    val CompilationCartAddedSheetTitle get() = R.string.compilation_cart_added_sheet_title
+    val CompilationCartAddedSheetReturnToCompilation get() = R.string.compilation_cart_added_sheet_return_to_compilation
+    val CompilationCartAddedSheetCart get() = R.string.compilation_cart_added_sheet_cart
+    val CompilationPreviewPromotionDetails get() = R.string.compilation_preview_promotion_details
+    val CompilationPreviewPromotionText get() = R.string.compilation_preview_promotion_text
+    val CompilationBenefitSheetTitle get() = R.string.compilation_benefit_sheet_title
+    val CompilationBenefitSheetFullPrice get() = R.string.compilation_benefit_sheet_full_price
+    val CompilationBenefitSheetDiscountPrice get() = R.string.compilation_benefit_sheet_discount_price
+    val CompilationBenefitSheetBenefit get() = R.string.compilation_benefit_sheet_benefit
     val DetailsCompleteSetTitle get() = R.string.details_complete_set_title
     val DetailsFieldBrand get() = R.string.details_field_brand
     val DetailsFieldColor get() = R.string.details_field_color
@@ -320,6 +333,7 @@ object ClientStrings {
     val ProfileOrdersAmount get() = R.string.profile_orders_amount
     val ProfileOrdersAwaitingPayment get() = R.string.profile_orders_awaiting_payment
     val ProfileOrdersMoreProducts get() = R.string.profile_orders_more_products
+    val ProfileOrdersEmptyMessage get() = R.string.profile_orders_empty_message
     val ProfileOrderSubtitle get() = R.string.profile_order_subtitle
     val ProfileOrderSubtitleWithoutDate get() = R.string.profile_order_subtitle_without_date
     val ProfileOrderPaymentMethod get() = R.string.profile_order_payment_method

@@ -14,6 +14,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
+import ru.mercury.vpclient.shared.ui.components.SwipeActionBox
+import ru.mercury.vpclient.shared.ui.components.SwipeActionBoxState
 import ru.mercury.vpclient.shared.ui.icons.BasketFilled24
 import ru.mercury.vpclient.shared.ui.icons.Delete24
 import ru.mercury.vpclient.shared.ui.icons.Edit24
@@ -42,11 +44,14 @@ fun CartProductTrailingSwipeActions(
                 .clipToBounds(),
             contentAlignment = Alignment.CenterStart
         ) {
-            CartProductSwipeAction(
-                imageVector = Edit24,
-                text = stringResource(ClientStrings.CartEdit),
-                backgroundColor = MaterialTheme.colorScheme.surface2,
-                onClick = onEditClick
+            SwipeActionBox(
+                state = SwipeActionBoxState(
+                    imageVector = Edit24,
+                    text = stringResource(ClientStrings.CartEdit),
+                    backgroundColor = MaterialTheme.colorScheme.surface2,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    onClick = onEditClick
+                )
             )
         }
     }
@@ -59,11 +64,14 @@ fun CartProductTrailingSwipeActions(
                 .clipToBounds(),
             contentAlignment = Alignment.CenterStart
         ) {
-            CartProductSwipeAction(
-                imageVector = BasketFilled24,
-                text = stringResource(ClientStrings.CartDetachFromLook),
-                backgroundColor = MaterialTheme.colorScheme.secondary,
-                onClick = onDetachFromLookClick
+            SwipeActionBox(
+                state = SwipeActionBoxState(
+                    imageVector = BasketFilled24,
+                    text = stringResource(ClientStrings.CartDetachFromLook),
+                    backgroundColor = MaterialTheme.colorScheme.secondary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    onClick = onDetachFromLookClick
+                )
             )
         }
     }
@@ -76,11 +84,14 @@ fun CartProductTrailingSwipeActions(
                 .clipToBounds(),
             contentAlignment = Alignment.CenterStart
         ) {
-            CartProductSwipeAction(
-                imageVector = Delete24,
-                text = stringResource(ClientStrings.CartDelete),
-                backgroundColor = MaterialTheme.colorScheme.error,
-                onClick = onDeleteClick
+            SwipeActionBox(
+                state = SwipeActionBoxState(
+                    imageVector = Delete24,
+                    text = stringResource(ClientStrings.CartDelete),
+                    backgroundColor = MaterialTheme.colorScheme.error,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    onClick = onDeleteClick
+                )
             )
         }
     }
