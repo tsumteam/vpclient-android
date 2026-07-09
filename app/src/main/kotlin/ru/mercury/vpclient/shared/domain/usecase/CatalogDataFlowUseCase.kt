@@ -4,13 +4,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import ru.mercury.vpclient.shared.coroutines.SharedDispatchers
 import ru.mercury.vpclient.shared.data.CatalogPagerPage
-import ru.mercury.vpclient.shared.data.entity.CatalogTabData
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogCategoryDao
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogCategoryEntity
 import ru.mercury.vpclient.shared.data.persistence.datastore.PreferenceKey
 import ru.mercury.vpclient.shared.data.persistence.datastore.SettingsDataStore
 import ru.mercury.vpclient.shared.domain.mapper.isBasic
 import ru.mercury.vpclient.shared.domain.mapper.isTop
+import ru.mercury.vpclient.shared.ui.components.catalog.CatalogTabData
 import javax.inject.Inject
 
 class CatalogDataFlowUseCase @Inject constructor(

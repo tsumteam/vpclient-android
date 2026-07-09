@@ -10,6 +10,7 @@ import dagger.hilt.components.SingletonComponent
 import ru.mercury.vpclient.shared.data.persistence.database.AppDatabase
 import ru.mercury.vpclient.shared.data.persistence.database.dao.ActivityCounterDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CartProductDao
+import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogBrandDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogCategoryDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogFilterDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogFilterProductsDao
@@ -21,6 +22,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.dao.CompilationDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CompilationPreviewPageDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.EmployeeBadgeDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.EmployeeDao
+import ru.mercury.vpclient.shared.data.persistence.database.dao.FavoriteBrandDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.FilterValuesDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.FilterValuesQuantityDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.FittingProductDao
@@ -75,6 +77,9 @@ object DatabaseModule {
     fun cartProductDao(database: AppDatabase): CartProductDao = database.cartProductDao()
 
     @Provides
+    fun catalogBrandDao(database: AppDatabase): CatalogBrandDao = database.catalogBrandDao()
+
+    @Provides
     fun catalogFilterDao(database: AppDatabase): CatalogFilterDao = database.catalogFilterDao()
 
     @Provides
@@ -97,6 +102,9 @@ object DatabaseModule {
 
     @Provides
     fun employeeBadgeDao(database: AppDatabase): EmployeeBadgeDao = database.employeeBadgeDao()
+
+    @Provides
+    fun favoriteBrandDao(database: AppDatabase): FavoriteBrandDao = database.favoriteBrandDao()
 
     @Provides
     fun filterValuesDao(database: AppDatabase): FilterValuesDao = database.filterValuesDao()

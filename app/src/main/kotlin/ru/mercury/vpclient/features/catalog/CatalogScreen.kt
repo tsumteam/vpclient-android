@@ -45,7 +45,6 @@ import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.catalog.event.CatalogEvent
 import ru.mercury.vpclient.features.catalog.intent.CatalogIntent
 import ru.mercury.vpclient.features.catalog.model.CatalogModel
-import ru.mercury.vpclient.shared.data.entity.CatalogTabData
 import ru.mercury.vpclient.shared.data.network.type.CatalogCategoryType
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogCategoryEntity
 import ru.mercury.vpclient.shared.domain.usecase.CatalogDataFlowUseCase.CatalogData
@@ -56,7 +55,8 @@ import ru.mercury.vpclient.shared.ui.components.cart.CartIconButton
 import ru.mercury.vpclient.shared.ui.components.cart.FittingIconButton
 import ru.mercury.vpclient.shared.ui.components.cart.MessengerIconButton
 import ru.mercury.vpclient.shared.ui.components.catalog.CatalogClothingCard
-import ru.mercury.vpclient.shared.ui.components.catalog.CatalogTabRow
+import ru.mercury.vpclient.shared.ui.components.catalog.CatalogTabData
+import ru.mercury.vpclient.shared.ui.components.catalog.TabRow
 import ru.mercury.vpclient.shared.ui.icons.Search24
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
@@ -95,7 +95,9 @@ private fun CatalogScreenContent(
     dispatch: (CatalogIntent) -> Unit,
     snackbarHostStateError: SnackbarHostState
 ) {
-    val pagerState = rememberPagerState(pageCount = { state.catalogData.pages.size.coerceAtLeast(1) })
+    val pagerState = rememberPagerState(
+        pageCount = { state.catalogData.pages.size.coerceAtLeast(1) }
+    )
     val scope = rememberCoroutineScope()
     var selectionInitialized by remember(state.catalogData.tabs) { mutableStateOf(false) }
 
@@ -171,7 +173,7 @@ private fun CatalogScreenContent(
                     )
                 )
 
-                CatalogTabRow(
+                TabRow(
                     tabs = state.catalogData.tabs,
                     selectedTabIndex = pagerState.currentPage,
                     onTabClick = { index -> scope.launch { pagerState.animateScrollToPage(index) } }
@@ -222,9 +224,7 @@ private fun CatalogScreenContent(
                         ) { index, entity ->
                             CatalogClothingCard(
                                 entity = entity,
-                                modifier = Modifier.clickable {
-                                    dispatch(CatalogIntent.CategoryClick(entity))
-                                }
+                                modifier = Modifier.clickable { dispatch(CatalogIntent.CategoryClick(entity)) }
                             )
 
                             if (index != entities.lastIndex) {

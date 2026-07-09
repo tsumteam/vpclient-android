@@ -346,6 +346,14 @@
     <string name="profile_information">Информация</string>
     <string name="profile_qr_code">Ваш QR-код</string>
     <string name="profile_favorite_brands">Любимые бренды</string>
+    <string name="profile_brands_woman_tab_caps">ЖЕНСКОЕ</string>
+    <string name="profile_brands_man_tab_caps">МУЖСКОЕ</string>
+    <string name="profile_brands_child_tab_caps">ДЕТСКОЕ</string>
+    <string name="profile_brands_empty_message">Добавьте любимые бренды для быстрого доступа на главном экране и в каталоге</string>
+    <string name="profile_brands_add_favorite_brands">Добавить любимые бренды</string>
+    <string name="profile_brands_change_favorite_brands">Изменить любимые бренды</string>
+    <string name="profile_brands_save">Сохранить</string>
+    <string name="profile_brands_empty_search">По Вашему запросу ничего не найдено.\nПопробуйте изменить условия поиска</string>
     <string name="profile_recently_viewed">Вы недавно смотрели</string>
     <string name="profile_recently_viewed_caps">ВЫ НЕДАВНО СМОТРЕЛИ</string>
     <string name="profile_watch_more">Смотреть еще</string>

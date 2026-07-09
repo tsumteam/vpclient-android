@@ -19,10 +19,16 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.activity.intent.MainActivityIntent
-import ru.mercury.vpclient.features.cart.CartScreen
-import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.features.auth_code.CodeScreen
 import ru.mercury.vpclient.features.auth_code.navigation.CodeRoute
+import ru.mercury.vpclient.features.auth_login.LoginScreen
+import ru.mercury.vpclient.features.auth_login.navigation.LoginRoute
+import ru.mercury.vpclient.features.auth_register.RegisterScreen
+import ru.mercury.vpclient.features.auth_register.navigation.RegisterRoute
+import ru.mercury.vpclient.features.auth_welcome.WelcomeScreen
+import ru.mercury.vpclient.features.auth_welcome.navigation.WelcomeRoute
+import ru.mercury.vpclient.features.cart.CartScreen
+import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.features.compilation.CompilationScreen
 import ru.mercury.vpclient.features.compilation.navigation.CompilationRoute
 import ru.mercury.vpclient.features.consultant.ConsultantScreen
@@ -37,26 +43,22 @@ import ru.mercury.vpclient.features.fitting_info.FittingInfoScreen
 import ru.mercury.vpclient.features.fitting_info.navigation.FittingInfoRoute
 import ru.mercury.vpclient.features.fitting_success.FittingSuccessScreen
 import ru.mercury.vpclient.features.fitting_success.navigation.FittingSuccessRoute
-import ru.mercury.vpclient.features.auth_login.LoginScreen
-import ru.mercury.vpclient.features.auth_login.navigation.LoginRoute
 import ru.mercury.vpclient.features.main.MainScreen
 import ru.mercury.vpclient.features.main.navigation.MainRoute
 import ru.mercury.vpclient.features.media.MediaScreen
 import ru.mercury.vpclient.features.media.navigation.MediaRoute
-import ru.mercury.vpclient.features.profile_qr.ProfileQrScreen
-import ru.mercury.vpclient.features.profile_qr.navigation.ProfileQrRoute
+import ru.mercury.vpclient.features.profile_brands.ProfileBrandsScreen
+import ru.mercury.vpclient.features.profile_brands.navigation.ProfileBrandsRoute
 import ru.mercury.vpclient.features.profile_loyalty_info.ProfileLoyaltyInfoScreen
 import ru.mercury.vpclient.features.profile_loyalty_info.navigation.ProfileLoyaltyInfoRoute
 import ru.mercury.vpclient.features.profile_loyalty_qr.ProfileLoyaltyQrScreen
 import ru.mercury.vpclient.features.profile_loyalty_qr.navigation.ProfileLoyaltyQrRoute
 import ru.mercury.vpclient.features.profile_loyalty_terms.ProfileLoyaltyTermsScreen
 import ru.mercury.vpclient.features.profile_loyalty_terms.navigation.ProfileLoyaltyTermsRoute
+import ru.mercury.vpclient.features.profile_qr.ProfileQrScreen
+import ru.mercury.vpclient.features.profile_qr.navigation.ProfileQrRoute
 import ru.mercury.vpclient.features.video.VideoScreen
 import ru.mercury.vpclient.features.video.navigation.VideoRoute
-import ru.mercury.vpclient.features.auth_register.RegisterScreen
-import ru.mercury.vpclient.features.auth_register.navigation.RegisterRoute
-import ru.mercury.vpclient.features.auth_welcome.WelcomeScreen
-import ru.mercury.vpclient.features.auth_welcome.navigation.WelcomeRoute
 import ru.mercury.vpclient.shared.data.event.CenterLoading
 import ru.mercury.vpclient.shared.navigation.BackRoute
 import ru.mercury.vpclient.shared.ui.components.LoadingBox
@@ -90,6 +92,7 @@ fun MainActivityContent(
                 entry<ProfileLoyaltyInfoRoute> { ProfileLoyaltyInfoScreen() }
                 entry<ProfileLoyaltyQrRoute> { ProfileLoyaltyQrScreen(it) }
                 entry<ProfileLoyaltyTermsRoute> { ProfileLoyaltyTermsScreen(it) }
+                entry<ProfileBrandsRoute> { ProfileBrandsScreen() }
                 entry<CartRoute> { CartScreen(it) }
                 entry<DetailsRoute> { DetailsScreen(it) }
                 entry<CompilationRoute> { CompilationScreen(it) }

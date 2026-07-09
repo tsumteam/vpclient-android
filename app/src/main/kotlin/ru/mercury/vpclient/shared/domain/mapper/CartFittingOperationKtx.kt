@@ -1,16 +1,15 @@
-package ru.mercury.vpclient.shared.domain.usecase
+package ru.mercury.vpclient.shared.domain.mapper
 
 import kotlinx.serialization.json.Json
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.network.NetworkService
 import ru.mercury.vpclient.shared.data.network.response.FittingDeliveryResponse
-import ru.mercury.vpclient.shared.domain.mapper.handleResponseResult
 
-internal val fittingOperationJson = Json {
+val fittingOperationJson = Json {
     explicitNulls = false
 }
 
-internal suspend fun NetworkService.fittingDeliveryForProduct(
+suspend fun NetworkService.fittingDeliveryForProduct(
     pairedUserId: String,
     product: CartProduct
 ): FittingDeliveryResponse? {

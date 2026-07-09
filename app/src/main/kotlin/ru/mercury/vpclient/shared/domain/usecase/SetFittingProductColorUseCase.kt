@@ -10,6 +10,8 @@ import ru.mercury.vpclient.shared.data.network.response.FittingChangeLineColorOp
 import ru.mercury.vpclient.shared.data.network.type.FittingOperationRequestType
 import ru.mercury.vpclient.shared.data.persistence.datastore.PreferenceKey
 import ru.mercury.vpclient.shared.data.persistence.datastore.SettingsDataStore
+import ru.mercury.vpclient.shared.domain.mapper.fittingDeliveryForProduct
+import ru.mercury.vpclient.shared.domain.mapper.fittingOperationJson
 import ru.mercury.vpclient.shared.domain.mapper.handleResponse
 import javax.inject.Inject
 

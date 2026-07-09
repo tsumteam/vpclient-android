@@ -322,6 +322,14 @@ object ClientStrings {
     val ProfileInformation get() = R.string.profile_information
     val ProfileQrCode get() = R.string.profile_qr_code
     val ProfileFavoriteBrands get() = R.string.profile_favorite_brands
+    val ProfileBrandsWomanTabCaps get() = R.string.profile_brands_woman_tab_caps
+    val ProfileBrandsManTabCaps get() = R.string.profile_brands_man_tab_caps
+    val ProfileBrandsChildTabCaps get() = R.string.profile_brands_child_tab_caps
+    val ProfileBrandsEmptyMessage get() = R.string.profile_brands_empty_message
+    val ProfileBrandsAddFavoriteBrands get() = R.string.profile_brands_add_favorite_brands
+    val ProfileBrandsChangeFavoriteBrands get() = R.string.profile_brands_change_favorite_brands
+    val ProfileBrandsSave get() = R.string.profile_brands_save
+    val ProfileBrandsEmptySearch get() = R.string.profile_brands_empty_search
     val ProfileRecentlyViewed get() = R.string.profile_recently_viewed
     val ProfileRecentlyViewedCaps get() = R.string.profile_recently_viewed_caps
     val ProfileWatchMore get() = R.string.profile_watch_more

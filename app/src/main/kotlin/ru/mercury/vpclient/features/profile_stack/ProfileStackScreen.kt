@@ -8,8 +8,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import ru.mercury.vpclient.features.profile.ProfileScreen
 import ru.mercury.vpclient.features.profile.navigation.ProfileRoute
-import ru.mercury.vpclient.features.profile_order.ProfileOrderScreen
-import ru.mercury.vpclient.features.profile_order.navigation.ProfileOrderRoute
+import ru.mercury.vpclient.features.profile_brands.navigation.ProfileBrandsRoute
 import ru.mercury.vpclient.features.profile_contacts.ProfileContactsScreen
 import ru.mercury.vpclient.features.profile_contacts.navigation.ProfileContactsRoute
 import ru.mercury.vpclient.features.profile_delivery.ProfileDeliveryScreen
@@ -20,6 +19,8 @@ import ru.mercury.vpclient.features.profile_info.ProfileInfoScreen
 import ru.mercury.vpclient.features.profile_info.navigation.ProfileInfoRoute
 import ru.mercury.vpclient.features.profile_my_data.ProfileMyDataScreen
 import ru.mercury.vpclient.features.profile_my_data.navigation.ProfileMyDataRoute
+import ru.mercury.vpclient.features.profile_order.ProfileOrderScreen
+import ru.mercury.vpclient.features.profile_order.navigation.ProfileOrderRoute
 import ru.mercury.vpclient.features.profile_orders.ProfileOrdersScreen
 import ru.mercury.vpclient.features.profile_orders.navigation.ProfileOrdersRoute
 import ru.mercury.vpclient.features.profile_payment.ProfilePaymentScreen
@@ -77,6 +78,7 @@ fun ProfileStackScreen(
             is ProfileGiftRoute -> navBackStack.add(event)
             is ProfileContactsRoute -> navBackStack.add(event)
             is ProfileViewHistoryRoute -> navBackStack.add(event)
+            is ProfileBrandsRoute -> navBackStack.add(event)
             is BackRoute -> navBackStack.removeLastOrNull()
         }
     }

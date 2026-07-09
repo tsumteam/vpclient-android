@@ -12,7 +12,6 @@ sealed interface ProfileIntent: Intent {
     data object CollectOrderCount: ProfileIntent
     data object CollectLoyaltyCardInfoEntity: ProfileIntent
     data object CollectViewHistoryProducts: ProfileIntent
-    data object LoadCartData: ProfileIntent
     data object LoadActivityCounters: ProfileIntent
     data object LoadCatalogViewHistory: ProfileIntent
     data object LoadLoyaltyCardInfo: ProfileIntent

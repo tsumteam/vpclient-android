@@ -21,15 +21,20 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
-import ru.mercury.vpclient.shared.data.entity.CatalogTabData
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.livretRegular14
 
+data class CatalogTabData(
+    val title: String,
+    val rootId: Int,
+    val selected: Boolean
+)
+
 @Composable
-fun CatalogTabRow(
+fun TabRow(
     tabs: List<CatalogTabData>,
     selectedTabIndex: Int,
     onTabClick: (Int) -> Unit,
@@ -104,10 +109,10 @@ fun CatalogTabRow(
 @PreviewWrapper(ThemeWrapper::class)
 @Preview(showBackground = true)
 @Composable
-private fun CatalogTabRowPreview(
+private fun TabRowPreview(
     @PreviewParameter(CatalogTabsProvider::class) tabs: List<CatalogTabData>
 ) {
-    CatalogTabRow(
+    TabRow(
         tabs = tabs,
         selectedTabIndex = 0,
         onTabClick = {}

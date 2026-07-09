@@ -39,6 +39,7 @@ import ru.mercury.vpclient.shared.data.network.request.BasketOperationRequest
 import ru.mercury.vpclient.shared.data.network.request.BasketSyncRequest
 import ru.mercury.vpclient.shared.data.network.request.BottomCategoriesRequest
 import ru.mercury.vpclient.shared.data.network.request.CatalogBrandFavoriteRequest
+import ru.mercury.vpclient.shared.data.network.request.CatalogBrandsFavoriteRequest
 import ru.mercury.vpclient.shared.data.network.request.ChangeActionRequest
 import ru.mercury.vpclient.shared.data.network.request.ClientSyncRequest
 import ru.mercury.vpclient.shared.data.network.request.CompilationCopyRequest
@@ -772,6 +773,14 @@ class NetworkService @Inject constructor(
 
     suspend fun catalogBrands(): BaseResponse<CatalogBrandsResponse> {
         return ktorHttpClient.post("catalog/brands").body()
+    }
+
+    suspend fun catalogBrandsFavorites(
+        request: CatalogBrandsFavoriteRequest
+    ): BaseResponse<CatalogBrandsResponse> {
+        return ktorHttpClient.post("catalog/brands/favorites") {
+            setBody(request)
+        }.body()
     }
 
     suspend fun catalogBrandsLike(

@@ -13,13 +13,13 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 
-val Empty210: ImageVector
+val VipPlatinumEmpty: ImageVector
     get() {
-        if (_empty210 != null) {
-            return _empty210!!
+        if (_vipPlatinumEmpty != null) {
+            return _vipPlatinumEmpty!!
         }
-        _empty210 = ImageVector.Builder(
-            name = "Empty210",
+        _vipPlatinumEmpty = ImageVector.Builder(
+            name = "VipPlatinumEmpty",
             defaultWidth = 210.dp,
             defaultHeight = 111.dp,
             viewportWidth = 210F,
@@ -123,17 +123,17 @@ val Empty210: ImageVector
                 pathFillType = PathFillType.NonZero
             )
         }.build()
-        return _empty210!!
+        return _vipPlatinumEmpty!!
     }
 
-private var _empty210: ImageVector? = null
+private var _vipPlatinumEmpty: ImageVector? = null
 
 @PreviewWrapper(ThemeWrapper::class)
 @Preview(showBackground = true)
 @Composable
-private fun Empty210Preview() {
+private fun VipPlatinumEmptyPreview() {
     Icon(
-        imageVector = Empty210,
+        imageVector = VipPlatinumEmpty,
         contentDescription = null,
         tint = Color.Unspecified
     )

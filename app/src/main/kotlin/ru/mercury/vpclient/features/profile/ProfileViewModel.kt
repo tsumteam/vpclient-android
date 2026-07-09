@@ -13,6 +13,7 @@ import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.features.profile.event.ProfileEvent
 import ru.mercury.vpclient.features.profile.intent.ProfileIntent
 import ru.mercury.vpclient.features.profile.model.ProfileModel
+import ru.mercury.vpclient.features.profile_brands.navigation.ProfileBrandsRoute
 import ru.mercury.vpclient.features.profile_info.navigation.ProfileInfoRoute
 import ru.mercury.vpclient.features.profile_loyalty_add_card_sheet.model.ProfileLoyaltyAddCardMode
 import ru.mercury.vpclient.features.profile_loyalty_info.navigation.ProfileLoyaltyInfoRoute
@@ -31,18 +32,15 @@ import ru.mercury.vpclient.shared.data.persistence.datastore.PreferenceKey
 import ru.mercury.vpclient.shared.data.persistence.datastore.SettingsDataStore
 import ru.mercury.vpclient.shared.domain.mapper.codeResendSecondsLeft
 import ru.mercury.vpclient.shared.domain.mapper.formatPhoneForDisplay
-import ru.mercury.vpclient.shared.domain.mapper.isNotEmpty
 import ru.mercury.vpclient.shared.domain.mapper.normalizePhoneInput
 import ru.mercury.vpclient.shared.domain.mapper.orEmpty
 import ru.mercury.vpclient.shared.domain.usecase.ActivityCounterFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.ActivityCountersUseCase
-import ru.mercury.vpclient.shared.domain.usecase.CatalogViewHistoryUseCase.CatalogViewHistoryException
-import ru.mercury.vpclient.shared.domain.usecase.LoyaltyCardInfoUseCase.LoyaltyCardInfoException
-import ru.mercury.vpclient.shared.domain.usecase.LoyaltyLinkUseCase.LoyaltyLinkException
 import ru.mercury.vpclient.shared.domain.usecase.AuthValidateCodeUseCase.Companion.CODE_LENGTH
 import ru.mercury.vpclient.shared.domain.usecase.CartBadgeUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CartCountFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CatalogViewHistoryUseCase
+import ru.mercury.vpclient.shared.domain.usecase.CatalogViewHistoryUseCase.CatalogViewHistoryException
 import ru.mercury.vpclient.shared.domain.usecase.ClientEntityFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CurrentUserUseCase
 import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
@@ -54,7 +52,9 @@ import ru.mercury.vpclient.shared.domain.usecase.LogoutUseCase
 import ru.mercury.vpclient.shared.domain.usecase.LoyaltyCardInfoFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.LoyaltyCardInfoFlowUseCase.Companion.ALPHA_BANK_DISCLAIMER_HIDE_DURATION_MILLIS
 import ru.mercury.vpclient.shared.domain.usecase.LoyaltyCardInfoUseCase
+import ru.mercury.vpclient.shared.domain.usecase.LoyaltyCardInfoUseCase.LoyaltyCardInfoException
 import ru.mercury.vpclient.shared.domain.usecase.LoyaltyLinkUseCase
+import ru.mercury.vpclient.shared.domain.usecase.LoyaltyLinkUseCase.LoyaltyLinkException
 import ru.mercury.vpclient.shared.domain.usecase.VerifyLoyaltyCardByPhoneUseCase
 import ru.mercury.vpclient.shared.domain.usecase.VerifyLoyaltyCardUseCase
 import ru.mercury.vpclient.shared.domain.usecase.ViewHistoryProductsFlowUseCase
@@ -95,7 +95,6 @@ class ProfileViewModel @Inject constructor(
         dispatch(ProfileIntent.CollectOrderCount)
         dispatch(ProfileIntent.CollectLoyaltyCardInfoEntity)
         dispatch(ProfileIntent.CollectViewHistoryProducts)
-        dispatch(ProfileIntent.LoadCartData)
         dispatch(ProfileIntent.LoadActivityCounters)
         dispatch(ProfileIntent.LoadCatalogViewHistory)
         dispatch(ProfileIntent.LoadLoyaltyCardInfo)
@@ -107,18 +106,14 @@ class ProfileViewModel @Inject constructor(
                 launch {
                     cartCountFlowUseCase(Unit)
                         .distinctUntilChanged()
-                        .collectLatest { count ->
-                            reduce { it.copy(cartCount = count) }
-                        }
+                        .collectLatest { count -> reduce { it.copy(cartCount = count) } }
                 }
             }
             is ProfileIntent.CollectFittingCount -> {
                 launch {
                     fittingCountFlowUseCase(Unit)
                         .distinctUntilChanged()
-                        .collectLatest { count ->
-                            reduce { it.copy(fittingCount = count) }
-                        }
+                        .collectLatest { count -> reduce { it.copy(fittingCount = count) } }
                 }
             }
             is ProfileIntent.CollectClientEntity -> {
@@ -132,9 +127,7 @@ class ProfileViewModel @Inject constructor(
                                     loyaltyAddCardPhone = when {
                                         state.isLoyaltyAddCardSheetVisible &&
                                             state.loyaltyAddCardPhone.isBlank() -> {
-                                            formatPhoneForDisplay(
-                                                normalizePhoneInput(clientEntity.phone, maxDigits = 11)
-                                            )
+                                            formatPhoneForDisplay(normalizePhoneInput(clientEntity.phone, maxDigits = 11))
                                         }
                                         else -> state.loyaltyAddCardPhone
                                     }
@@ -147,39 +140,28 @@ class ProfileViewModel @Inject constructor(
                 launch {
                     employeeActiveFlowUseCase(Unit)
                         .distinctUntilChanged()
-                        .collectLatest { employee ->
-                            reduce { it.copy(activeEmployee = employee) }
-                            if (employee.isNotEmpty) {
-                                dispatch(ProfileIntent.LoadCartData)
-                            }
-                        }
+                        .collectLatest { employee -> reduce { it.copy(activeEmployee = employee) } }
                 }
             }
             is ProfileIntent.CollectNotificationCount -> {
                 launch {
                     activityCounterFlowUseCase(ActivityCounterType.CLIENT_NOTIFICATION)
                         .distinctUntilChanged()
-                        .collectLatest { counter ->
-                            reduce { it.copy(notificationCount = counter.value) }
-                        }
+                        .collectLatest { counter -> reduce { it.copy(notificationCount = counter.value) } }
                 }
             }
             is ProfileIntent.CollectOrderCount -> {
                 launch {
                     activityCounterFlowUseCase(ActivityCounterType.ORDER)
                         .distinctUntilChanged()
-                        .collectLatest { counter ->
-                            reduce { it.copy(orderCount = counter.value) }
-                        }
+                        .collectLatest { counter -> reduce { it.copy(orderCount = counter.value) } }
                 }
             }
             is ProfileIntent.CollectViewHistoryProducts -> {
                 launch {
                     viewHistoryProductsFlowUseCase(Unit)
                         .distinctUntilChanged()
-                        .collectLatest { products ->
-                            reduce { it.copy(viewHistoryProducts = products) }
-                        }
+                        .collectLatest { products -> reduce { it.copy(viewHistoryProducts = products) } }
                 }
             }
             is ProfileIntent.CollectLoyaltyCardInfoEntity -> {
@@ -209,15 +191,6 @@ class ProfileViewModel @Inject constructor(
                                 )
                             }
                         }
-                }
-            }
-            is ProfileIntent.LoadCartData -> {
-                launch {
-                    runCatching { loadBasketUseCase(Unit).getOrThrow() }
-                    runCatching { loadFittingUseCase(Unit).getOrThrow() }
-
-                    val badge = runCatching { cartBadgeUseCase(Unit).getOrThrow() }.getOrDefault(0)
-                    reduce { it.copy(cartBadge = badge) }
                 }
             }
             is ProfileIntent.LoadActivityCounters -> launch { activityCountersUseCase(Unit) }
@@ -273,9 +246,7 @@ class ProfileViewModel @Inject constructor(
                 }
             }
             is ProfileIntent.AlphaBankBannerMoreClick -> {
-                reduce {
-                    it.copy(isProfilePrivilegesSheetVisible = it.alphaBankBannerCardType != null)
-                }
+                reduce { it.copy(isProfilePrivilegesSheetVisible = it.alphaBankBannerCardType != null) }
             }
             is ProfileIntent.DismissAlphaBankPrivilegesSheet -> {
                 reduce { it.copy(isProfilePrivilegesSheetVisible = false) }
@@ -284,7 +255,7 @@ class ProfileViewModel @Inject constructor(
             is ProfileIntent.PurchasesClick -> launch { ProfileStackEventManager.send(ProfileOrdersRoute) }
             is ProfileIntent.InformationClick -> launch { ProfileStackEventManager.send(ProfileInfoRoute) }
             is ProfileIntent.QrCodeClick -> launch { MainEventManager.send(ProfileQrRoute) }
-            is ProfileIntent.FavoriteBrandsClick -> return
+            is ProfileIntent.FavoriteBrandsClick -> launch { MainEventManager.send(ProfileBrandsRoute) }
             is ProfileIntent.ViewHistoryViewMoreClick -> {
                 launch { ProfileStackEventManager.send(ProfileViewHistoryRoute) }
             }
@@ -328,11 +299,7 @@ class ProfileViewModel @Inject constructor(
                 }
             }
             is ProfileIntent.LoyaltyAddCardCardNumberChange -> {
-                reduce { state ->
-                    state.copy(
-                        loyaltyAddCardCardNumber = intent.cardNumber.filter(Char::isDigit)
-                    )
-                }
+                reduce { state -> state.copy(loyaltyAddCardCardNumber = intent.cardNumber.filter(Char::isDigit)) }
             }
             is ProfileIntent.LoyaltyAddCardPhoneConfirmClick -> {
                 val sheet = stateFlow.value
@@ -374,11 +341,7 @@ class ProfileViewModel @Inject constructor(
                                     }
                                 }
                                 .onFailure { throwable ->
-                                    reduce { state ->
-                                        state.copy(
-                                            isLoyaltyAddCardPhoneErrorVisible = false
-                                        )
-                                    }
+                                    reduce { state -> state.copy(isLoyaltyAddCardPhoneErrorVisible = false) }
                                     throwable.message
                                         ?.takeIf(String::isNotBlank)
                                         ?.let { message -> launch { send(ProfileEvent.SnackbarErrorMessage(message)) } }

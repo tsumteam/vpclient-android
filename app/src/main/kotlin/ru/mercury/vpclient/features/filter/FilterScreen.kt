@@ -2,8 +2,6 @@
 
 package ru.mercury.vpclient.features.filter
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,13 +18,11 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -104,6 +100,8 @@ import ru.mercury.vpclient.shared.domain.mapper.isSortChipSelected
 import ru.mercury.vpclient.shared.domain.mapper.productsQuantityWithThousandsSeparator
 import ru.mercury.vpclient.shared.domain.mapper.requireProductsQuantity
 import ru.mercury.vpclient.shared.ui.components.BrandBox
+import ru.mercury.vpclient.shared.ui.components.EmptyBox
+import ru.mercury.vpclient.shared.ui.components.EmptyBoxState
 import ru.mercury.vpclient.shared.ui.components.PagingFailureBox
 import ru.mercury.vpclient.shared.ui.components.PagingLoadingBox
 import ru.mercury.vpclient.shared.ui.components.SharedPullToRefreshBox
@@ -112,16 +110,16 @@ import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.cart.CartIconButton
 import ru.mercury.vpclient.shared.ui.components.cart.FittingIconButton
 import ru.mercury.vpclient.shared.ui.components.cart.MessengerIconButton
-import ru.mercury.vpclient.shared.ui.components.product.ProductCard
-import ru.mercury.vpclient.shared.ui.components.product.ProductCardState
 import ru.mercury.vpclient.shared.ui.components.filters.FilterBrandFavoritesBar
 import ru.mercury.vpclient.shared.ui.components.filters.FilterProductsLoadingContent
 import ru.mercury.vpclient.shared.ui.components.filters.FilterScreenTitle
 import ru.mercury.vpclient.shared.ui.components.filters.FiltersRow
 import ru.mercury.vpclient.shared.ui.components.filters.FiltersRowState
+import ru.mercury.vpclient.shared.ui.components.product.ProductCard
+import ru.mercury.vpclient.shared.ui.components.product.ProductCardState
 import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
-import ru.mercury.vpclient.shared.ui.icons.Empty210
 import ru.mercury.vpclient.shared.ui.icons.Search24
+import ru.mercury.vpclient.shared.ui.icons.VipPlatinumEmpty
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.ktx.isContentVisible
 import ru.mercury.vpclient.shared.ui.ktx.isPagingFailure
@@ -130,7 +128,6 @@ import ru.mercury.vpclient.shared.ui.ktx.isRefreshFailure
 import ru.mercury.vpclient.shared.ui.ktx.isRefreshLoading
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.medium15
 import ru.mercury.vpclient.shared.ui.theme.medium18
 import ru.mercury.vpclient.shared.ui.theme.regular15
 import kotlin.math.max
@@ -491,51 +488,15 @@ private fun FilterScreenContent(
                                     )
 
                                     if (isEmptyProductsVisible) {
-                                        Column(
-                                            modifier = Modifier
-                                                .padding(top = 85.dp)
-                                                .fillMaxWidth(),
-                                            horizontalAlignment = Alignment.CenterHorizontally
-                                        ) {
-                                            Image(
-                                                imageVector = Empty210,
-                                                contentDescription = null,
-                                                modifier = Modifier.size(width = 210.dp, height = 111.dp)
-                                            )
-
-                                            Text(
+                                        EmptyBox(
+                                            state = EmptyBoxState(
+                                                imageVector = VipPlatinumEmpty,
                                                 text = stringResource(ClientStrings.FilterEmptyProductsMessage),
-                                                modifier = Modifier.padding(top = 26.dp),
-                                                style = MaterialTheme.typography.regular15.copy(
-                                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                    lineHeight = 19.sp,
-                                                    letterSpacing = .2.sp,
-                                                    textAlign = TextAlign.Center
-                                                )
-                                            )
-
-                                            OutlinedButton(
-                                                onClick = { dispatch(FilterIntent.BackClick) },
-                                                modifier = Modifier
-                                                    .padding(top = 38.dp, start = 16.dp, end = 16.dp)
-                                                    .fillMaxWidth()
-                                                    .height(52.dp),
-                                                shape = RoundedCornerShape(8.dp),
-                                                border = BorderStroke(
-                                                    width = 1.dp,
-                                                    color = MaterialTheme.colorScheme.onBackground
-                                                )
-                                            ) {
-                                                Text(
-                                                    text = stringResource(ClientStrings.FilterEmptyProductsButton),
-                                                    style = MaterialTheme.typography.medium15.copy(
-                                                        color = MaterialTheme.colorScheme.onBackground,
-                                                        textAlign = TextAlign.Center,
-                                                        letterSpacing = .3.sp
-                                                    )
-                                                )
-                                            }
-                                        }
+                                                buttonText = stringResource(ClientStrings.FilterEmptyProductsButton),
+                                                onButtonClick = { dispatch(FilterIntent.BackClick) }
+                                            ),
+                                            modifier = Modifier.padding(top = 85.dp)
+                                        )
                                     }
                                 }
                             }

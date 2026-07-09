@@ -4,7 +4,6 @@ package ru.mercury.vpclient.features.profile_orders
 
 import android.content.ClipData
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,11 +31,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -60,6 +57,8 @@ import ru.mercury.vpclient.features.profile_orders.event.ProfileOrdersEvent
 import ru.mercury.vpclient.features.profile_orders.intent.ProfileOrdersIntent
 import ru.mercury.vpclient.features.profile_orders.model.ProfileOrdersModel
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
+import ru.mercury.vpclient.shared.ui.components.EmptyBox
+import ru.mercury.vpclient.shared.ui.components.EmptyBoxState
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedPullToRefreshBox
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
@@ -71,7 +70,7 @@ import ru.mercury.vpclient.shared.ui.components.profile.ProfileOrderItemState
 import ru.mercury.vpclient.shared.ui.components.profile.ProfileOrderProductState
 import ru.mercury.vpclient.shared.ui.components.profile.ProfileOrderStatusType
 import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
-import ru.mercury.vpclient.shared.ui.icons.Empty210
+import ru.mercury.vpclient.shared.ui.icons.VipPlatinumBagEmptyVersion2
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.ktx.isRefreshLoading
 import ru.mercury.vpclient.shared.ui.placeholder
@@ -80,7 +79,6 @@ import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.divider
 import ru.mercury.vpclient.shared.ui.theme.medium18
-import ru.mercury.vpclient.shared.ui.theme.regular14
 
 @Composable
 fun ProfileOrdersScreen(
@@ -194,31 +192,15 @@ private fun ProfileOrdersScreenContent(
         ) {
             when {
                 !pagingItems.isRefreshLoading && pagingItems.itemCount == 0 -> {
-                    Column(
+                    EmptyBox(
+                        state = EmptyBoxState(
+                            imageVector = VipPlatinumBagEmptyVersion2,
+                            text = stringResource(ClientStrings.ProfileOrdersEmptyMessage)
+                        ),
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(innerPadding),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterVertically)
-                    ) {
-                        Icon(
-                            imageVector = Empty210, // fixme заменить иконку
-                            contentDescription = null,
-                            tint = Color.Unspecified,
-                            modifier = Modifier.size(width = 210.dp, height = 111.dp)
-                        )
-
-                        Text(
-                            text = stringResource(ClientStrings.ProfileOrdersEmptyMessage),
-                            modifier = Modifier
-                                .padding(horizontal = 32.dp)
-                                .fillMaxWidth(),
-                            style = MaterialTheme.typography.regular14.copy(
-                                color = MaterialTheme.colorScheme.secondary,
-                                textAlign = TextAlign.Center
-                            )
-                        )
-                    }
+                            .padding(innerPadding)
+                    )
                 }
                 else -> {
                     SharedLazyColumn(
