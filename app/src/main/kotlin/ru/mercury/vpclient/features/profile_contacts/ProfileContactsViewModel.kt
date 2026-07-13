@@ -7,7 +7,7 @@ import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.profile_contacts.event.ProfileContactsEvent
 import ru.mercury.vpclient.features.profile_contacts.intent.ProfileContactsIntent
 import ru.mercury.vpclient.features.profile_contacts.model.ProfileContactsModel
-import ru.mercury.vpclient.features.profile_stack.event.ProfileStackEventManager
+import ru.mercury.vpclient.features.profile_root.event.ProfileRootEventManager
 import ru.mercury.vpclient.shared.data.CLIENT_SERVICE_EMAIL
 import ru.mercury.vpclient.shared.data.CLIENT_SERVICE_PHONE
 import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
@@ -30,13 +30,11 @@ class ProfileContactsViewModel @Inject constructor(
                 launch {
                     employeeActiveFlowUseCase(Unit)
                         .distinctUntilChanged()
-                        .collectLatest { employee ->
-                            reduce { it.copy(activeEmployee = employee) }
-                        }
+                        .collectLatest { employee -> reduce { it.copy(activeEmployee = employee) } }
                 }
             }
             is ProfileContactsIntent.BackClick -> {
-                launch { ProfileStackEventManager.send(BackRoute) }
+                launch { ProfileRootEventManager.send(BackRoute) }
             }
             is ProfileContactsIntent.ConsultantPhoneClick -> {
                 launch { send(ProfileContactsEvent.LaunchDialer(stateFlow.value.consultantPhone)) }

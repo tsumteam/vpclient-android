@@ -34,7 +34,9 @@ data class FilterModel(
     val selectedFilterValueChips: List<FilterChip> = emptyList(),
     val brandEntity: BrandEntity? = null,
     val isSingleLineTitle: Boolean = false,
-    val isBrandFavorited: Boolean = false,
+    val isFavoriteBrands: Boolean = false,
+    val showOnlySortFilter: Boolean = false,
+    val isBrandFavorited: Boolean? = null,
     val isRefreshing: Boolean = false,
     val isSortDialogVisible: Boolean = false,
     val isFilterValuesDialogLoading: Boolean = false,
@@ -56,6 +58,9 @@ data class FilterModel(
     val fittingCount: Int = 0,
     val activeEmployee: EmployeeEntity = EmployeeEntity.Empty
 ): Model {
+
+    val isBrandFavoritesBarVisible: Boolean
+        get() = brandEntity != null && isBrandFavorited != null
 
     val cartText: String
         get() = when {

@@ -1,4 +1,4 @@
-package ru.mercury.vpclient.shared.ui.components.filters
+package ru.mercury.vpclient.shared.ui.components.brands
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -15,10 +15,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,6 +23,8 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,12 +35,16 @@ import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.regular16
 
+data class BrandSearchFieldState(
+    val value: String,
+    val onValueChange: (String) -> Unit,
+    val onClear: () -> Unit,
+    val onSearch: () -> Unit
+)
+
 @Composable
 fun BrandSearchField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    onClear: () -> Unit,
-    onSearch: () -> Unit,
+    state: BrandSearchFieldState,
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
@@ -68,13 +70,16 @@ fun BrandSearchField(
         )
 
         BasicTextField(
-            value = value,
-            onValueChange = onValueChange,
+            value = state.value,
+            onValueChange = state.onValueChange,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
                     start = 56.dp,
-                    end = if (value.isEmpty()) 16.dp else 48.dp
+                    end = when {
+                        state.value.isEmpty() -> 16.dp
+                        else -> 48.dp
+                    }
                 ),
             singleLine = true,
             textStyle = MaterialTheme.typography.regular16.copy(
@@ -89,14 +94,14 @@ fun BrandSearchField(
             keyboardActions = KeyboardActions(
                 onSearch = {
                     focusManager.clearFocus()
-                    onSearch()
+                    state.onSearch()
                 }
             ),
             decorationBox = { innerTextField ->
                 Box(
                     contentAlignment = Alignment.CenterStart
                 ) {
-                    if (value.isEmpty()) {
+                    if (state.value.isEmpty()) {
                         Text(
                             text = stringResource(ClientStrings.FilterBrandSearchPlaceholder),
                             style = MaterialTheme.typography.regular16.copy(
@@ -112,11 +117,11 @@ fun BrandSearchField(
         )
 
         SharedAnimatedVisibility(
-            visible = value.isNotEmpty(),
+            visible = state.value.isNotEmpty(),
             modifier = Modifier.align(Alignment.CenterEnd)
         ) {
             IconButton(
-                onClick = onClear
+                onClick = state.onClear
             ) {
                 Icon(
                     imageVector = Close24,
@@ -132,13 +137,27 @@ fun BrandSearchField(
 @PreviewWrapper(ThemeWrapper::class)
 @Preview(showBackground = true)
 @Composable
-private fun BrandSearchFieldPreview() {
-    var value by remember { mutableStateOf("") }
-
+private fun BrandSearchFieldPreview(
+    @PreviewParameter(BrandSearchFieldStateProvider::class) state: BrandSearchFieldState
+) {
     BrandSearchField(
-        value = value,
-        onValueChange = { value = it },
-        onClear = { value = "" },
-        onSearch = {}
+        state = state
+    )
+}
+
+private class BrandSearchFieldStateProvider: PreviewParameterProvider<BrandSearchFieldState> {
+    override val values: Sequence<BrandSearchFieldState> = sequenceOf(
+        BrandSearchFieldState(
+            value = "",
+            onValueChange = {},
+            onClear = {},
+            onSearch = {}
+        ),
+        BrandSearchFieldState(
+            value = "Mercury",
+            onValueChange = {},
+            onClear = {},
+            onSearch = {}
+        )
     )
 }

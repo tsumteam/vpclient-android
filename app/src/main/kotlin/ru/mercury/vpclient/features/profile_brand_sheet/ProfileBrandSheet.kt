@@ -4,9 +4,6 @@ package ru.mercury.vpclient.features.profile_brand_sheet
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.awaitEachGesture
-import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.drag
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,7 +18,6 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -42,17 +38,11 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -76,7 +66,10 @@ import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
-import ru.mercury.vpclient.shared.ui.components.filters.BrandSearchField
+import ru.mercury.vpclient.shared.ui.components.brands.BrandAlphabetScrubber
+import ru.mercury.vpclient.shared.ui.components.brands.BrandAlphabetScrubberState
+import ru.mercury.vpclient.shared.ui.components.brands.BrandSearchField
+import ru.mercury.vpclient.shared.ui.components.brands.BrandSearchFieldState
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.icons.Favorited40
 import ru.mercury.vpclient.shared.ui.icons.Unfavorited40
@@ -88,7 +81,6 @@ import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.livretMedium18
 import ru.mercury.vpclient.shared.ui.theme.livretMedium19
 import ru.mercury.vpclient.shared.ui.theme.medium15
-import ru.mercury.vpclient.shared.ui.theme.regular12
 import ru.mercury.vpclient.shared.ui.theme.regular15
 
 @Composable
@@ -138,7 +130,6 @@ private fun ProfileBrandSheetContent(
 ) {
     val scope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
-    val hapticFeedback = LocalHapticFeedback.current
 
     SharedModalBottomSheet(
         onDismissRequest = {
@@ -191,10 +182,12 @@ private fun ProfileBrandSheetContent(
                     )
 
                     BrandSearchField(
-                        value = state.searchQuery,
-                        onValueChange = { query -> dispatch(ProfileBrandSheetIntent.SearchQueryChange(query)) },
-                        onClear = { dispatch(ProfileBrandSheetIntent.SearchQueryChange("")) },
-                        onSearch = { focusManager.clearFocus() },
+                        state = BrandSearchFieldState(
+                            value = state.searchQuery,
+                            onValueChange = { query -> dispatch(ProfileBrandSheetIntent.SearchQueryChange(query)) },
+                            onClear = { dispatch(ProfileBrandSheetIntent.SearchQueryChange("")) },
+                            onSearch = { focusManager.clearFocus() }
+                        ),
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp)
@@ -399,49 +392,22 @@ private fun ProfileBrandSheetContent(
                         }
 
                         if (state.isAlphabetVisible) {
-                            val letters = state.sections.map { section -> section.letter }
-                            var scrubberHeight by remember { mutableFloatStateOf(0F) }
-                            Column(
-                                modifier = Modifier
-                                    .align(Alignment.CenterEnd)
-                                    .width(18.dp)
-                                    .onSizeChanged { scrubberHeight = it.height.toFloat() }
-                                    .pointerInput(letters, letterIndices) {
-                                        awaitEachGesture {
-                                            var currentLetter: String? = null
-                                            fun scrollToY(y: Float) {
-                                                if (scrubberHeight == 0F || letters.isEmpty()) return
-                                                val index = (y / scrubberHeight * letters.size)
-                                                    .toInt()
-                                                    .coerceIn(0, letters.lastIndex)
-                                                val letter = letters[index]
-                                                val itemIndex = letterIndices[letter] ?: return
-                                                if (letter != currentLetter) {
-                                                    currentLetter = letter
-                                                    hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                                }
-                                                scope.launch { lazyListState.scrollToItem(itemIndex, scrollOffset = 1) }
-                                            }
-                                            val down = awaitFirstDown(requireUnconsumed = false)
-                                            scrollToY(down.position.y)
-                                            drag(down.id) { change ->
-                                                scrollToY(change.position.y)
-                                                change.consume()
+                            BrandAlphabetScrubber(
+                                state = BrandAlphabetScrubberState(
+                                    letters = state.letters,
+                                    onLetterSelect = { letter ->
+                                        letterIndices[letter]?.let { itemIndex ->
+                                            scope.launch {
+                                                lazyListState.scrollToItem(
+                                                    index = itemIndex,
+                                                    scrollOffset = 1
+                                                )
                                             }
                                         }
-                                    },
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                letters.forEach { letter ->
-                                    Text(
-                                        text = letter,
-                                        style = MaterialTheme.typography.regular12.copy(
-                                            color = MaterialTheme.colorScheme.error,
-                                            textAlign = TextAlign.Center
-                                        )
-                                    )
-                                }
-                            }
+                                    }
+                                ),
+                                modifier = Modifier.align(Alignment.CenterEnd)
+                            )
                         }
                     }
                 }

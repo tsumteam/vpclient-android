@@ -18,6 +18,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.ui.components.SharedAnimatedVisibility
 import ru.mercury.vpclient.shared.ui.icons.Check24
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
@@ -57,6 +58,8 @@ fun FilterSelectableRow(
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.regular15.copy(
                 color = MaterialTheme.colorScheme.onBackground,
+                lineHeight = 19.sp,
+                letterSpacing = .2.sp,
                 textAlign = TextAlign.Start
             )
         )

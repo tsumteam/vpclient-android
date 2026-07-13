@@ -46,11 +46,12 @@ class CatalogFilterProductsRemoteMediator(
                 LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
                 LoadType.APPEND -> pagingKeyEntity?.limit ?: state.config.pageSize
             }
-            val categoryEntity = catalogCategoryDao.selectNotNull(categoryId)
-            val viewType = data.viewTypeOverride ?: when {
-                categoryId == titleCategoryId -> CatalogViewType.CATALOG_LEVEL_5
-                titleCategoryId == categoryEntity.rootId -> CatalogViewType.CATALOG_LEVEL_3
-                else -> CatalogViewType.CATALOG_LEVEL_4
+            val viewType = data.viewTypeOverride ?: catalogCategoryDao.selectNotNull(categoryId).let { categoryEntity ->
+                when {
+                    categoryId == titleCategoryId -> CatalogViewType.CATALOG_LEVEL_5
+                    titleCategoryId == categoryEntity.rootId -> CatalogViewType.CATALOG_LEVEL_3
+                    else -> CatalogViewType.CATALOG_LEVEL_4
+                }
             }
             val response = handleResponseResult {
                 val request = FilteredProductsRequest(
@@ -58,7 +59,7 @@ class CatalogFilterProductsRemoteMediator(
                     sortType = data.sortType.requestValue,
                     hasUserInteractedWithStandartSizesFilter = false,
                     filters = data.selectedFilterValueChipIds.requests(
-                        categoryId = categoryEntity.id,
+                        categoryId = categoryId,
                         includeDefaultCategory = data.includeDefaultCategory
                     )
                 )

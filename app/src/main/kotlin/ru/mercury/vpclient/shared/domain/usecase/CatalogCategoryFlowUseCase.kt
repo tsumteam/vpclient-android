@@ -14,6 +14,6 @@ class CatalogCategoryFlowUseCase @Inject constructor(
 ): FlowUseCase<Int, CatalogCategoryEntity>(dispatchers.io) {
 
     override fun execute(categoryId: Int): Flow<CatalogCategoryEntity> {
-        return catalogCategoryDao.selectFlow(categoryId)
+        return catalogCategoryDao.selectNotNullFlow(categoryId)
     }
 }

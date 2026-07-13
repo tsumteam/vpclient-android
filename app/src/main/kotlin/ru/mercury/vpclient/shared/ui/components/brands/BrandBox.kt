@@ -1,4 +1,4 @@
-package ru.mercury.vpclient.shared.ui.components
+package ru.mercury.vpclient.shared.ui.components.brands
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.MaterialTheme

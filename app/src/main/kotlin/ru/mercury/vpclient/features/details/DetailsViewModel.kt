@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.activity.event.MainEventManager
+import ru.mercury.vpclient.features.brand_root.event.BrandRootEventManager
 import ru.mercury.vpclient.features.cart.navigation.CartPage
 import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.features.catalog_root.event.CatalogRootEventManager
@@ -27,18 +28,16 @@ import ru.mercury.vpclient.shared.domain.mapper.toCatalogLinkData
 import ru.mercury.vpclient.shared.domain.mapper.withCenterLoading
 import ru.mercury.vpclient.shared.domain.usecase.AddCatalogProductToBasketUseCase
 import ru.mercury.vpclient.shared.domain.usecase.AddProductToBasketUseCase
+import ru.mercury.vpclient.shared.domain.usecase.AddProductToBasketUseCase.AddProductToBasketException
 import ru.mercury.vpclient.shared.domain.usecase.CartBadgeUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CartCountFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CartProductsFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CatalogCategoryUseCase
 import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.FittingCountFlowUseCase
-import ru.mercury.vpclient.shared.domain.usecase.LoadBasketUseCase
-import ru.mercury.vpclient.shared.domain.usecase.LoadFittingUseCase
 import ru.mercury.vpclient.shared.domain.usecase.LoadProductUseCase
 import ru.mercury.vpclient.shared.domain.usecase.ProductFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.SetLastCatalogRootIdUseCase
-import ru.mercury.vpclient.shared.domain.usecase.AddProductToBasketUseCase.AddProductToBasketException
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.navigation.BackRoute
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
@@ -46,8 +45,6 @@ import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 @HiltViewModel(assistedFactory = DetailsViewModel.Factory::class)
 class DetailsViewModel @AssistedInject constructor(
     @Assisted private val route: DetailsRoute,
-    private val loadBasketUseCase: LoadBasketUseCase,
-    private val loadFittingUseCase: LoadFittingUseCase,
     private val cartBadgeUseCase: CartBadgeUseCase,
     private val cartProductsFlowUseCase: CartProductsFlowUseCase,
     private val addProductToBasketUseCase: AddProductToBasketUseCase,
@@ -125,9 +122,6 @@ class DetailsViewModel @AssistedInject constructor(
             }
             is DetailsIntent.LoadCartData -> {
                 launch {
-                    runCatching { loadBasketUseCase(Unit).getOrThrow() }
-                    runCatching { loadFittingUseCase(Unit).getOrThrow() }
-
                     val badge = runCatching { cartBadgeUseCase(Unit).getOrThrow() }.getOrDefault(0)
                     reduce { it.copy(cartBadge = badge) }
                 }
@@ -136,6 +130,7 @@ class DetailsViewModel @AssistedInject constructor(
             is DetailsIntent.BackClick -> launch {
                 when {
                     route.openedFromCart -> MainEventManager.send(BackRoute)
+                    route.isBrandRoot -> BrandRootEventManager.send(BackRoute)
                     else -> CatalogRootEventManager.send(BackRoute)
                 }
             }
@@ -235,13 +230,17 @@ class DetailsViewModel @AssistedInject constructor(
                         catalogLinkData.rootCategoryId?.let { rootCategoryId ->
                             setLastCatalogRootIdUseCase(rootCategoryId).getOrThrow()
                         }
-                        CatalogRootEventManager.send(resolvedRoute)
+                        when {
+                            route.isBrandRoot -> BrandRootEventManager.send(resolvedRoute.copy(isBrandRoot = true))
+                            else -> CatalogRootEventManager.send(resolvedRoute)
+                        }
                     }
                 }
             }
             is DetailsIntent.ProductClick -> launch {
                 when {
                     route.openedFromCart -> MainEventManager.send(DetailsRoute(intent.id, openedFromCart = true))
+                    route.isBrandRoot -> BrandRootEventManager.send(DetailsRoute(intent.id, isBrandRoot = true))
                     else -> CatalogRootEventManager.send(DetailsRoute(intent.id))
                 }
             }

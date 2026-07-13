@@ -1,4 +1,4 @@
-package ru.mercury.vpclient.features.profile_stack
+package ru.mercury.vpclient.features.profile_root
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -29,7 +29,7 @@ import ru.mercury.vpclient.features.profile_policy.ProfilePolicyScreen
 import ru.mercury.vpclient.features.profile_policy.navigation.ProfilePolicyRoute
 import ru.mercury.vpclient.features.profile_return.ProfileReturnScreen
 import ru.mercury.vpclient.features.profile_return.navigation.ProfileReturnRoute
-import ru.mercury.vpclient.features.profile_stack.event.ProfileStackEventManager
+import ru.mercury.vpclient.features.profile_root.event.ProfileRootEventManager
 import ru.mercury.vpclient.features.profile_view_history.ProfileViewHistoryScreen
 import ru.mercury.vpclient.features.profile_view_history.navigation.ProfileViewHistoryRoute
 import ru.mercury.vpclient.shared.navigation.BackRoute
@@ -37,7 +37,7 @@ import ru.mercury.vpclient.shared.ui.components.system.ClientNavDisplay
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 
 @Composable
-fun ProfileStackScreen(
+fun ProfileRootScreen(
     navBackStack: NavBackStack<NavKey>
 ) {
     ClientNavDisplay(
@@ -60,7 +60,7 @@ fun ProfileStackScreen(
     )
 
     ObserveAsEvents(
-        flow = ProfileStackEventManager.eventFlow
+        flow = ProfileRootEventManager.eventFlow
     ) { event ->
         when (event) {
             is ProfileRoute -> {

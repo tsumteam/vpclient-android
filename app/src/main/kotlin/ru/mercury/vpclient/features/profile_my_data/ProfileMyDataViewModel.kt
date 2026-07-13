@@ -10,17 +10,14 @@ import ru.mercury.vpclient.features.cart.navigation.CartPage
 import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.features.profile_my_data.intent.ProfileMyDataIntent
 import ru.mercury.vpclient.features.profile_my_data.model.ProfileMyDataModel
-import ru.mercury.vpclient.features.profile_stack.event.ProfileStackEventManager
+import ru.mercury.vpclient.features.profile_root.event.ProfileRootEventManager
 import ru.mercury.vpclient.shared.domain.mapper.formatPhoneForDisplay
-import ru.mercury.vpclient.shared.domain.mapper.isNotEmpty
 import ru.mercury.vpclient.shared.domain.usecase.CartBadgeUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CartCountFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CurrentUserUseCase
 import ru.mercury.vpclient.shared.domain.usecase.DeleteProfileUseCase
-import ru.mercury.vpclient.shared.domain.usecase.FittingCountFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
-import ru.mercury.vpclient.shared.domain.usecase.LoadBasketUseCase
-import ru.mercury.vpclient.shared.domain.usecase.LoadFittingUseCase
+import ru.mercury.vpclient.shared.domain.usecase.FittingCountFlowUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.mvi.Event
 import ru.mercury.vpclient.shared.navigation.BackRoute
@@ -30,8 +27,6 @@ import javax.inject.Inject
 class ProfileMyDataViewModel @Inject constructor(
     private val currentUserUseCase: CurrentUserUseCase,
     private val deleteProfileUseCase: DeleteProfileUseCase,
-    private val loadBasketUseCase: LoadBasketUseCase,
-    private val loadFittingUseCase: LoadFittingUseCase,
     private val cartBadgeUseCase: CartBadgeUseCase,
     private val cartCountFlowUseCase: CartCountFlowUseCase,
     private val fittingCountFlowUseCase: FittingCountFlowUseCase,
@@ -52,37 +47,25 @@ class ProfileMyDataViewModel @Inject constructor(
                 launch {
                     cartCountFlowUseCase(Unit)
                         .distinctUntilChanged()
-                        .collectLatest { count ->
-                            reduce { it.copy(cartCount = count) }
-                        }
+                        .collectLatest { count -> reduce { it.copy(cartCount = count) } }
                 }
             }
             is ProfileMyDataIntent.CollectFittingCount -> {
                 launch {
                     fittingCountFlowUseCase(Unit)
                         .distinctUntilChanged()
-                        .collectLatest { count ->
-                            reduce { it.copy(fittingCount = count) }
-                        }
+                        .collectLatest { count -> reduce { it.copy(fittingCount = count) } }
                 }
             }
             is ProfileMyDataIntent.CollectActiveEmployee -> {
                 launch {
                     employeeActiveFlowUseCase(Unit)
                         .distinctUntilChanged()
-                        .collectLatest { employee ->
-                            reduce { it.copy(activeEmployee = employee) }
-                            if (employee.isNotEmpty) {
-                                dispatch(ProfileMyDataIntent.LoadCartData)
-                            }
-                        }
+                        .collectLatest { employee -> reduce { it.copy(activeEmployee = employee) } }
                 }
             }
             is ProfileMyDataIntent.LoadCartData -> {
                 launch {
-                    runCatching { loadBasketUseCase(Unit).getOrThrow() }
-                    runCatching { loadFittingUseCase(Unit).getOrThrow() }
-
                     val badge = runCatching { cartBadgeUseCase(Unit).getOrThrow() }.getOrDefault(0)
                     reduce { it.copy(cartBadge = badge) }
                 }
@@ -102,7 +85,7 @@ class ProfileMyDataViewModel @Inject constructor(
                         }
                 }
             }
-            is ProfileMyDataIntent.BackClick -> launch { ProfileStackEventManager.send(BackRoute) }
+            is ProfileMyDataIntent.BackClick -> launch { ProfileRootEventManager.send(BackRoute) }
             is ProfileMyDataIntent.CartClick -> launch { MainEventManager.send(CartRoute()) }
             is ProfileMyDataIntent.FittingClick -> {
                 launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }

@@ -11,7 +11,7 @@ import ru.mercury.vpclient.features.fitting_confirmation.navigation.FittingConfi
 import ru.mercury.vpclient.features.profile_order.intent.ProfileOrderIntent
 import ru.mercury.vpclient.features.profile_order.model.ProfileOrderModel
 import ru.mercury.vpclient.features.profile_order.navigation.ProfileOrderRoute
-import ru.mercury.vpclient.features.profile_stack.event.ProfileStackEventManager
+import ru.mercury.vpclient.features.profile_root.event.ProfileRootEventManager
 import ru.mercury.vpclient.shared.data.event.ProfileOrderDeliveryGroupState
 import ru.mercury.vpclient.shared.domain.usecase.ProfileOrderUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
@@ -33,19 +33,11 @@ class ProfileOrderViewModel @AssistedInject constructor(
     override fun dispatch(intent: ProfileOrderIntent) {
         when (intent) {
             is ProfileOrderIntent.CollectRoute -> {
-                reduce {
-                    it.copy(
-                        orderNumber = route.orderNumber,
-                        amount = route.amount
-                    )
-                }
+                reduce { it.copy(orderNumber = route.orderNumber, amount = route.amount) }
             }
             is ProfileOrderIntent.LoadData -> {
                 launch {
-                    val details = runCatching {
-                        profileOrderUseCase(route.orderNumber).getOrThrow()
-                    }.getOrNull()
-
+                    val details = profileOrderUseCase(route.orderNumber).getOrThrow()
                     reduce {
                         when (details) {
                             null -> it.copy(isLoading = false)
@@ -83,7 +75,7 @@ class ProfileOrderViewModel @AssistedInject constructor(
                     }
                 }
             }
-            is ProfileOrderIntent.BackClick -> launch { ProfileStackEventManager.send(BackRoute) }
+            is ProfileOrderIntent.BackClick -> launch { ProfileRootEventManager.send(BackRoute) }
             is ProfileOrderIntent.DeliveryClick -> {
                 launch {
                     MainEventManager.send(

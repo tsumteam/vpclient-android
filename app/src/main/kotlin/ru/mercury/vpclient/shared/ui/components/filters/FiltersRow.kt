@@ -39,6 +39,7 @@ import ru.mercury.vpclient.shared.ui.shimmer
 
 data class FiltersRowState(
     val filterRibbonData: FilterRibbonData = FilterRibbonData.Empty,
+    val showOnlySort: Boolean = false,
     val sortSelected: Boolean = false,
     val selectedFilterValueChips: List<FilterChip> = emptyList()
 ) {
@@ -62,6 +63,7 @@ fun FiltersRow(
     val scope = rememberCoroutineScope()
     var pendingScrollChipId by remember { mutableStateOf<String?>(null) }
     val filterRibbonData = state.filterRibbonData
+    val isLoading = filterRibbonData.isEmpty && !state.showOnlySort
     val sortSelected = state.sortSelected
     val selectedFilterValueChips = state.selectedFilterValueChips
     val selectedFilterValueChipIds = selectedFilterValueChips.map(FilterChip::id).toSet()
@@ -140,7 +142,12 @@ fun FiltersRow(
         pendingScrollChipId = null
     }
 
-    Column {
+    Column(
+        modifier = when {
+            !isLoading && bottomFilterChips.isEmpty() -> Modifier.padding(bottom = 16.dp)
+            else -> Modifier
+        }
+    ) {
         LazyRow(
             state = topRowState,
             modifier = Modifier
@@ -151,7 +158,7 @@ fun FiltersRow(
             userScrollEnabled = filterRibbonData.isNotEmpty && enabled
         ) {
             when {
-                filterRibbonData.isEmpty -> {
+                isLoading -> {
                     item {
                         Box(
                             modifier = Modifier
@@ -255,7 +262,7 @@ fun FiltersRow(
         }
 
         when {
-            filterRibbonData.isEmpty -> {
+            isLoading -> {
                 LazyRow(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -382,6 +389,9 @@ private class FiltersRowStateProvider: PreviewParameterProvider<FiltersRowState>
 
     override val values: Sequence<FiltersRowState> = sequenceOf(
         FiltersRowState(),
+        FiltersRowState(
+            showOnlySort = true
+        ),
         FiltersRowState(
             filterRibbonData = filterRibbonData
         ),

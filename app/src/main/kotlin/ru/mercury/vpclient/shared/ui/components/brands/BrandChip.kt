@@ -1,4 +1,4 @@
-package ru.mercury.vpclient.shared.ui.components.filters
+package ru.mercury.vpclient.shared.ui.components.brands
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,10 +27,14 @@ import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.regular15
 
+data class BrandChipState(
+    val brand: BrandFilterValue,
+    val onClick: () -> Unit
+)
+
 @Composable
 fun BrandChip(
-    brand: BrandFilterValue,
-    onClick: () -> Unit,
+    state: BrandChipState,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -38,13 +42,13 @@ fun BrandChip(
             .height(46.dp)
             .clip(RoundedCornerShape(4.dp))
             .background(MaterialTheme.colorScheme.background)
-            .clickable(onClick = onClick),
+            .clickable(onClick = state.onClick),
         contentAlignment = Alignment.Center
     ) {
         when {
-            brand.labelPhotoUrl != null -> {
+            state.brand.labelPhotoUrl != null -> {
                 ClientAsyncImage(
-                    imageUrl = brand.labelPhotoUrl,
+                    imageUrl = state.brand.labelPhotoUrl,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(4.dp),
@@ -53,7 +57,7 @@ fun BrandChip(
             }
             else -> {
                 Text(
-                    text = brand.label,
+                    text = state.brand.label,
                     modifier = Modifier.padding(horizontal = 8.dp),
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
@@ -72,29 +76,34 @@ fun BrandChip(
 @Preview(showBackground = true)
 @Composable
 private fun BrandChipPreview(
-    @PreviewParameter(BrandFilterValueProvider::class) brand: BrandFilterValue
+    @PreviewParameter(BrandChipStateProvider::class) state: BrandChipState
 ) {
     BrandChip(
-        brand = brand,
-        onClick = {}
+        state = state
     )
 }
 
-private class BrandFilterValueProvider: PreviewParameterProvider<BrandFilterValue> {
-    override val values: Sequence<BrandFilterValue> = sequenceOf(
-        BrandFilterValue(
-            id = "mercury",
-            label = "Mercury",
-            labelPhotoUrl = null,
-            isFavorite = true,
-            isTopBrand = true
+private class BrandChipStateProvider: PreviewParameterProvider<BrandChipState> {
+    override val values: Sequence<BrandChipState> = sequenceOf(
+        BrandChipState(
+            brand = BrandFilterValue(
+                id = "mercury",
+                label = "Mercury",
+                labelPhotoUrl = null,
+                isFavorite = true,
+                isTopBrand = true
+            ),
+            onClick = {}
         ),
-        BrandFilterValue(
-            id = "loewe",
-            label = "LOEWE",
-            labelPhotoUrl = "https://example.com/brand-logo.png",
-            isFavorite = true,
-            isTopBrand = true
+        BrandChipState(
+            brand = BrandFilterValue(
+                id = "loewe",
+                label = "LOEWE",
+                labelPhotoUrl = "https://example.com/brand-logo.png",
+                isFavorite = true,
+                isTopBrand = true
+            ),
+            onClick = {}
         )
     )
 }

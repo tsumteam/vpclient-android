@@ -26,6 +26,9 @@ data class ProfileBrandSheetModel(
     val isAlphabetVisible: Boolean
         get() = searchQuery.isBlank() && sections.isNotEmpty()
 
+    val letters: List<String>
+        get() = sections.map { section -> section.letter }
+
     data class ProfileBrandSection(
         val letter: String,
         val catalogBrandEntities: List<CatalogBrandEntity>

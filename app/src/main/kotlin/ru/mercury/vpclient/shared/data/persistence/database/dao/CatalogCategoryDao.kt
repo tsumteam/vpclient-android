@@ -12,7 +12,10 @@ import ru.mercury.vpclient.shared.data.persistence.database.pojo.SubcategoryPojo
 interface CatalogCategoryDao {
 
     @Query("SELECT * FROM CatalogCategory WHERE id = :id LIMIT 1")
-    fun selectFlow(id: Int): Flow<CatalogCategoryEntity>
+    fun selectFlow(id: Int): Flow<CatalogCategoryEntity?>
+
+    @Query("SELECT * FROM CatalogCategory WHERE id = :id LIMIT 1")
+    fun selectNotNullFlow(id: Int): Flow<CatalogCategoryEntity>
 
     @Query("SELECT * FROM CatalogCategory")
     fun selectAllFlow(): Flow<List<CatalogCategoryEntity>>

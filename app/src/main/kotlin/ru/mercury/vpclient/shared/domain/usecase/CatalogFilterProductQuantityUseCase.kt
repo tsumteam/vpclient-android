@@ -27,16 +27,16 @@ class CatalogFilterProductQuantityUseCase @Inject constructor(
     override suspend fun execute(data: CatalogFilterRequestData2) {
         val categoryId = data.categoryId
         val titleCategoryId = data.titleCategoryId
-        val categoryEntity = catalogCategoryDao.selectNotNull(categoryId)
 
         handleResponse(
             request = {
-                val viewType = data.viewTypeOverride ?: categoryEntity.viewType(categoryId, titleCategoryId)
+                val viewType = data.viewTypeOverride ?: catalogCategoryDao.selectNotNull(categoryId)
+                    .viewType(categoryId, titleCategoryId)
                 val request = FilteredProductsQuantityRequest(
                     viewType = viewType,
                     hasUserInteractedWithStandartSizesFilter = false,
                     filters = data.selectedFilterValueChipIds.requests(
-                        categoryId = categoryEntity.id,
+                        categoryId = categoryId,
                         includeDefaultCategory = data.includeDefaultCategory
                     )
                 )

@@ -200,6 +200,7 @@ object ClientStrings {
     val FilterBrandFavoritesHeader get() = R.string.filter_brand_favorites_header
     val FilterBrandTopHeader get() = R.string.filter_brand_top_header
     val FilterBrandAllHeader get() = R.string.filter_brand_all_header
+    val BrandsFavoritesHeader get() = R.string.brands_favorites_header
     val FilterBrandSelectAll get() = R.string.filter_brand_select_all
     val FilterBrandEmptySearch get() = R.string.filter_brand_empty_search
     val FilterEmptyProductsMessage get() = R.string.filter_empty_products_message

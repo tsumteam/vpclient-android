@@ -4,10 +4,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.features.profile_brands.event.ProfileBrandsEvent
 import ru.mercury.vpclient.features.profile_brands.intent.ProfileBrandsIntent
 import ru.mercury.vpclient.features.profile_brands.model.ProfileBrandsModel
-import ru.mercury.vpclient.features.profile_stack.event.ProfileStackEventManager
 import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
@@ -61,7 +61,7 @@ class ProfileBrandsViewModel @Inject constructor(
                 }
                 reduce { it.copy(loadFavoriteBrandsJob = job) }
             }
-            is ProfileBrandsIntent.BackClick -> launch { ProfileStackEventManager.send(BackRoute) }
+            is ProfileBrandsIntent.BackClick -> launch { MainEventManager.send(BackRoute) }
             is ProfileBrandsIntent.AddFavoriteBrandsClick -> {
                 reduce { it.copy(isBrandSheetVisible = true) }
             }

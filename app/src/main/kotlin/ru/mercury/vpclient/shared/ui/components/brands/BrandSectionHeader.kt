@@ -1,4 +1,4 @@
-package ru.mercury.vpclient.shared.ui.components.filters
+package ru.mercury.vpclient.shared.ui.components.brands
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -14,31 +14,36 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.ui.components.SharedAnimatedVisibility
-import ru.mercury.vpclient.shared.ui.preview.BooleanPreviewParameterProvider
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.livretMedium18
 import ru.mercury.vpclient.shared.ui.theme.medium15
 
+data class BrandSectionHeaderState(
+    val title: String,
+    val showSelectAll: Boolean,
+    val onSelectAll: () -> Unit
+)
+
 @Composable
-fun FilterBrandSectionHeader(
-    title: String,
-    showSelectAll: Boolean,
-    onSelectAll: () -> Unit
+fun BrandSectionHeader(
+    state: BrandSectionHeaderState,
+    modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(44.dp)
             .padding(start = 16.dp, end = 8.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = title,
+            text = state.title,
             style = MaterialTheme.typography.livretMedium18.copy(
                 color = MaterialTheme.colorScheme.error,
                 lineHeight = 26.sp,
@@ -47,11 +52,11 @@ fun FilterBrandSectionHeader(
         )
 
         SharedAnimatedVisibility(
-            visible = showSelectAll,
+            visible = state.showSelectAll,
             modifier = Modifier.align(Alignment.CenterEnd)
         ) {
             TextButton(
-                onClick = onSelectAll,
+                onClick = state.onSelectAll,
                 contentPadding = PaddingValues(horizontal = 8.dp)
             ) {
                 Text(
@@ -69,12 +74,30 @@ fun FilterBrandSectionHeader(
 @PreviewWrapper(ThemeWrapper::class)
 @Preview(showBackground = true)
 @Composable
-private fun FilterBrandSectionHeaderWithSelectAllPreview(
-    @PreviewParameter(BooleanPreviewParameterProvider::class) showSelectAll: Boolean
+private fun BrandSectionHeaderPreview(
+    @PreviewParameter(BrandSectionHeaderStateProvider::class) state: BrandSectionHeaderState
 ) {
-    FilterBrandSectionHeader(
-        title = "ТОП-БРЕНДЫ",
-        showSelectAll = showSelectAll,
-        onSelectAll = {}
+    BrandSectionHeader(
+        state = state
+    )
+}
+
+private class BrandSectionHeaderStateProvider: PreviewParameterProvider<BrandSectionHeaderState> {
+    override val values: Sequence<BrandSectionHeaderState> = sequenceOf(
+        BrandSectionHeaderState(
+            title = "ЛЮБИМЫЕ БРЕНДЫ",
+            showSelectAll = false,
+            onSelectAll = {}
+        ),
+        BrandSectionHeaderState(
+            title = "ТОП-БРЕНДЫ",
+            showSelectAll = true,
+            onSelectAll = {}
+        ),
+        BrandSectionHeaderState(
+            title = "ВСЕ БРЕНДЫ",
+            showSelectAll = false,
+            onSelectAll = {}
+        )
     )
 }

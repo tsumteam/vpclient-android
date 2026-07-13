@@ -12,9 +12,11 @@ data class FilterRoute(
     val titleCategoryId: Int,
     val subtitleCategoryId: Int,
     val isSingleLineTitle: Boolean = false,
+    val isFavoriteBrands: Boolean = false,
     val brandEntity: BrandEntity? = null,
     val initialSelectedFilterValueChips: List<FilterChip> = emptyList(),
     val hiddenFilterValueChipIds: List<String> = emptyList(),
     val viewTypeOverride: CatalogViewType? = null,
-    val actionId: Int? = null
+    val actionId: Int? = null,
+    val isBrandRoot: Boolean = false
 ): NavKey

@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -57,6 +58,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
+import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -86,6 +89,7 @@ import ru.mercury.vpclient.features.filter_tree_sheet.FilterTreeSheet
 import ru.mercury.vpclient.features.filter_tree_sheet.intent.FilterTreeIntent
 import ru.mercury.vpclient.features.filter_values_sheet.FilterValuesSheet
 import ru.mercury.vpclient.features.filter_values_sheet.intent.FilterValuesIntent
+import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.entity.FilterChip
 import ru.mercury.vpclient.shared.data.entity.FilterData
 import ru.mercury.vpclient.shared.data.entity.FilterRibbonData
@@ -99,7 +103,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesE
 import ru.mercury.vpclient.shared.domain.mapper.isSortChipSelected
 import ru.mercury.vpclient.shared.domain.mapper.productsQuantityWithThousandsSeparator
 import ru.mercury.vpclient.shared.domain.mapper.requireProductsQuantity
-import ru.mercury.vpclient.shared.ui.components.BrandBox
+import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.EmptyBox
 import ru.mercury.vpclient.shared.ui.components.EmptyBoxState
 import ru.mercury.vpclient.shared.ui.components.PagingFailureBox
@@ -107,10 +111,10 @@ import ru.mercury.vpclient.shared.ui.components.PagingLoadingBox
 import ru.mercury.vpclient.shared.ui.components.SharedPullToRefreshBox
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
+import ru.mercury.vpclient.shared.ui.components.brands.BrandBox
 import ru.mercury.vpclient.shared.ui.components.cart.CartIconButton
 import ru.mercury.vpclient.shared.ui.components.cart.FittingIconButton
 import ru.mercury.vpclient.shared.ui.components.cart.MessengerIconButton
-import ru.mercury.vpclient.shared.ui.components.filters.FilterBrandFavoritesBar
 import ru.mercury.vpclient.shared.ui.components.filters.FilterProductsLoadingContent
 import ru.mercury.vpclient.shared.ui.components.filters.FilterScreenTitle
 import ru.mercury.vpclient.shared.ui.components.filters.FiltersRow
@@ -118,7 +122,9 @@ import ru.mercury.vpclient.shared.ui.components.filters.FiltersRowState
 import ru.mercury.vpclient.shared.ui.components.product.ProductCard
 import ru.mercury.vpclient.shared.ui.components.product.ProductCardState
 import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
+import ru.mercury.vpclient.shared.ui.icons.Favorited40
 import ru.mercury.vpclient.shared.ui.icons.Search24
+import ru.mercury.vpclient.shared.ui.icons.Unfavorited40
 import ru.mercury.vpclient.shared.ui.icons.VipPlatinumEmpty
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.ktx.isContentVisible
@@ -126,7 +132,9 @@ import ru.mercury.vpclient.shared.ui.ktx.isPagingFailure
 import ru.mercury.vpclient.shared.ui.ktx.isPagingLoading
 import ru.mercury.vpclient.shared.ui.ktx.isRefreshFailure
 import ru.mercury.vpclient.shared.ui.ktx.isRefreshLoading
+import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
+import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.medium18
 import ru.mercury.vpclient.shared.ui.theme.regular15
@@ -293,6 +301,7 @@ private fun FilterScreenContent(
     val scope = rememberCoroutineScope()
     val filtersRowLoadingHeightDp = when {
         state.brandEntity != null -> 108.dp + 48.dp
+        state.showOnlySortFilter -> 50.dp
         else -> 108.dp
     }
     val filtersRowLoadingHeightPx = with(density) { filtersRowLoadingHeightDp.toPx() }
@@ -317,9 +326,31 @@ private fun FilterScreenContent(
             CenterAlignedTopAppBar(
                 title = {
                     when {
+                        pagingItems.isRefreshLoading -> {
+                            Box(
+                                modifier = Modifier
+                                    .size(width = 120.dp, height = 24.dp)
+                                    .placeholder(
+                                        visible = true,
+                                        highlight = PlaceholderHighlight.shimmer(),
+                                        color = MaterialTheme.colorScheme.surfaceVariant,
+                                        shape = RoundedCornerShape(4.dp)
+                                    )
+                            )
+                        }
+                        state.isFavoriteBrands -> {
+                            Text(
+                                text = stringResource(ClientStrings.ProfileFavoriteBrands),
+                                style = MaterialTheme.typography.medium18.copy(
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    textAlign = TextAlign.Center
+                                )
+                            )
+                        }
                         state.brandEntity != null -> {
                             BrandBox(
-                                entity = state.brandEntity
+                                entity = requireNotNull(state.brandEntity),
+                                modifier = Modifier.size(width = 120.dp, height = 24.dp)
                             )
                         }
                         state.isSingleLineTitle -> {
@@ -477,7 +508,7 @@ private fun FilterScreenContent(
                                             state.filterData.quantityEntity.productsQuantityWithThousandsSeparator
                                         ),
                                         modifier = Modifier
-                                            .padding(top = 10.dp)
+                                            .padding(top = 8.dp)
                                             .fillMaxWidth(),
                                         style = MaterialTheme.typography.regular15.copy(
                                             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -560,23 +591,44 @@ private fun FilterScreenContent(
                         filtersRowOffsetPx = filtersRowOffsetPx.coerceIn(0F, filtersRowHeightPx)
                     }
             ) {
-                Column {
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     if (state.brandEntity != null) {
-                        FilterBrandFavoritesBar(
-                            isFavorited = state.isBrandFavorited,
-                            onClick = { dispatch(FilterIntent.ToggleBrandFavorited) }
-                        )
+                        IconButton(
+                            onClick = { dispatch(FilterIntent.ToggleBrandFavorited) },
+                            modifier = Modifier
+                                .size(48.dp)
+                                .align(Alignment.CenterHorizontally)
+                                .placeholder(
+                                    visible = pagingItems.isRefreshLoading || !state.isBrandFavoritesBarVisible,
+                                    highlight = PlaceholderHighlight.shimmer(),
+                                    color = MaterialTheme.colorScheme.surfaceVariant,
+                                    shape = RoundedCornerShape(4.dp)
+                                )
+                        ) {
+                            Icon(
+                                imageVector = when {
+                                    state.isBrandFavorited == true -> Favorited40
+                                    else -> Unfavorited40
+                                },
+                                contentDescription = null,
+                                modifier = Modifier.size(40.dp),
+                                tint = Color.Unspecified
+                            )
+                        }
                     }
 
                     FiltersRow(
                         state = FiltersRowState(
                             filterRibbonData = when {
-                                pagingItems.isRefreshLoading -> FilterRibbonData.Empty
+                                pagingItems.isRefreshLoading || state.showOnlySortFilter -> FilterRibbonData.Empty
                                 else -> state.filterData.filterRibbonData
                             },
+                            showOnlySort = state.showOnlySortFilter,
                             sortSelected = !pagingItems.isRefreshLoading && state.selectedSortType.isSortChipSelected,
                             selectedFilterValueChips = when {
-                                pagingItems.isRefreshLoading -> emptyList()
+                                pagingItems.isRefreshLoading || state.showOnlySortFilter -> emptyList()
                                 else -> state.selectedFilterValueChips
                             }
                         ),
@@ -596,21 +648,32 @@ private fun FilterScreenContent(
 @Preview
 @Composable
 private fun FilterScreenPreview(
-    @PreviewParameter(FilterModelProvider::class) state: Pair<FilterModel, List<CatalogFilterProductsEntity>>
+    @PreviewParameter(FilterModelProvider::class) state: FilterPreviewState
 ) {
-    val pagingItems = remember {
-        MutableStateFlow(PagingData.from(state.second))
+    val pagingItems = remember(state) {
+        MutableStateFlow(
+            PagingData.from(
+                data = state.items,
+                sourceLoadStates = state.sourceLoadStates
+            )
+        )
     }.collectAsLazyPagingItems()
 
     FilterScreenContent(
-        state = state.first,
+        state = state.model,
         pagingItems = pagingItems,
         dispatch = {},
         snackbarHostStateError = remember { SnackbarHostState() }
     )
 }
 
-private class FilterModelProvider: PreviewParameterProvider<Pair<FilterModel, List<CatalogFilterProductsEntity>>> {
+private data class FilterPreviewState(
+    val model: FilterModel,
+    val items: List<CatalogFilterProductsEntity>,
+    val sourceLoadStates: LoadStates
+)
+
+private class FilterModelProvider: PreviewParameterProvider<FilterPreviewState> {
 
     private val titleCatalogCategoryEntity = CatalogCategoryEntity(
         id = 10,
@@ -711,90 +774,115 @@ private class FilterModelProvider: PreviewParameterProvider<Pair<FilterModel, Li
         )
     )
 
-    override val values: Sequence<Pair<FilterModel, List<CatalogFilterProductsEntity>>> = sequenceOf(
-        FilterModel() to productsEntities,
-        FilterModel(
-            filterData = FilterData(
-                filterTitleEntity = FilterTitleEntity(
-                    titleCatalogCategoryEntity = titleCatalogCategoryEntity,
-                    subtitleCatalogCategoryEntity = subtitleCatalogCategoryEntity
-                ),
-                filterRibbonData = FilterRibbonData(
-                    topFilterChips = listOf(
-                        FilterChip(
-                            id = "brand",
-                            label = "Бренд"
+    private val idleLoadStates = LoadStates(
+        refresh = LoadState.NotLoading(endOfPaginationReached = false),
+        prepend = LoadState.NotLoading(endOfPaginationReached = false),
+        append = LoadState.NotLoading(endOfPaginationReached = false)
+    )
+    private val loadingLoadStates = LoadStates(
+        refresh = LoadState.Loading,
+        prepend = LoadState.NotLoading(endOfPaginationReached = false),
+        append = LoadState.NotLoading(endOfPaginationReached = false)
+    )
+
+    override val values: Sequence<FilterPreviewState> = sequenceOf(
+        FilterPreviewState(
+            model = FilterModel(
+                brandEntity = BrandEntity(
+                    brand = "WOOL&COTTON",
+                    urlBrandLogo = null
+                )
+            ),
+            items = emptyList(),
+            sourceLoadStates = loadingLoadStates
+        ),
+        FilterPreviewState(
+            model = FilterModel(
+                filterData = FilterData(
+                    filterTitleEntity = FilterTitleEntity(
+                        titleCatalogCategoryEntity = titleCatalogCategoryEntity,
+                        subtitleCatalogCategoryEntity = subtitleCatalogCategoryEntity
+                    ),
+                    filterRibbonData = FilterRibbonData(
+                        topFilterChips = listOf(
+                            FilterChip(id = "brand", label = "Бренд"),
+                            FilterChip(id = "size", label = "Размер"),
+                            FilterChip(id = "color", label = "Цвет")
                         ),
-                        FilterChip(
-                            id = "size",
-                            label = "Размер"
+                        topFilterValueChips = listOf(
+                            FilterChip(id = "brand_nike", label = "Nike"),
+                            FilterChip(id = "brand_adidas", label = "Adidas")
                         ),
-                        FilterChip(
-                            id = "color",
-                            label = "Цвет"
+                        bottomFilterChips = listOf(
+                            FilterChip(id = "materialAttribute", label = "Материал"),
+                            FilterChip(id = "attribute_length", label = "Длина")
                         )
                     ),
-                    topFilterValueChips = listOf(
-                        FilterChip(
-                            id = "brand_nike",
-                            label = "Nike"
-                        ),
-                        FilterChip(
-                            id = "brand_adidas",
-                            label = "Adidas"
-                        )
-                    ),
-                    bottomFilterChips = listOf(
-                        FilterChip(
-                            id = "materialAttribute",
-                            label = "Материал"
-                        ),
-                        FilterChip(
-                            id = "attribute_length",
-                            label = "Длина"
-                        )
-                    )
-                ),
-                quantityEntity = quantityEntity,
-                filterValuesEntities = listOf(
-                    FilterValuesEntity(
-                        chipId = "attribute_length",
-                        title = "Длина",
-                        items = listOf(
-                            FilterValueItemEntity(id = "attribute_length_mini", label = "Мини"),
-                            FilterValueItemEntity(id = "attribute_length_midi", label = "Миди"),
-                            FilterValueItemEntity(id = "attribute_length_maxi", label = "Макси")
+                    quantityEntity = quantityEntity,
+                    filterValuesEntities = listOf(
+                        FilterValuesEntity(
+                            chipId = "attribute_length",
+                            title = "Длина",
+                            items = listOf(
+                                FilterValueItemEntity(id = "attribute_length_mini", label = "Мини"),
+                                FilterValueItemEntity(id = "attribute_length_midi", label = "Миди"),
+                                FilterValueItemEntity(id = "attribute_length_maxi", label = "Макси")
+                            )
                         )
                     )
                 )
-            )
-        ) to productsEntities,
-        FilterModel(
-            filterData = FilterData(
-                filterTitleEntity = FilterTitleEntity(
-                    titleCatalogCategoryEntity = titleCatalogCategoryEntity,
-                    subtitleCatalogCategoryEntity = subtitleCatalogCategoryEntity
-                ),
-                filterRibbonData = FilterRibbonData(
-                    topFilterChips = listOf(
-                        FilterChip(
-                            id = "brand",
-                            label = "Бренд"
-                        ),
-                        FilterChip(
-                            id = "size",
-                            label = "Размер"
-                        ),
-                        FilterChip(
-                            id = "color",
-                            label = "Цвет"
-                        )
+            ),
+            items = productsEntities,
+            sourceLoadStates = idleLoadStates
+        ),
+        FilterPreviewState(
+            model = FilterModel(
+                filterData = FilterData(
+                    filterTitleEntity = FilterTitleEntity(
+                        titleCatalogCategoryEntity = titleCatalogCategoryEntity,
+                        subtitleCatalogCategoryEntity = subtitleCatalogCategoryEntity
                     ),
-                    topFilterValueChips = emptyList(),
-                    bottomFilterChips = emptyList()
+                    filterRibbonData = FilterRibbonData(
+                        topFilterChips = listOf(
+                            FilterChip(id = "brand", label = "Бренд"),
+                            FilterChip(id = "size", label = "Размер"),
+                            FilterChip(id = "color", label = "Цвет")
+                        ),
+                        topFilterValueChips = emptyList(),
+                        bottomFilterChips = emptyList()
+                    ),
+                    quantityEntity = emptyQuantityEntity
+                )
+            ),
+            items = emptyList(),
+            sourceLoadStates = idleLoadStates
+        ),
+        FilterPreviewState(
+            model = FilterModel(
+                filterData = FilterData(
+                    filterTitleEntity = FilterTitleEntity(
+                        titleCatalogCategoryEntity = titleCatalogCategoryEntity,
+                        subtitleCatalogCategoryEntity = subtitleCatalogCategoryEntity
+                    ),
+                    filterRibbonData = FilterRibbonData(
+                        topFilterChips = listOf(
+                            FilterChip(id = "brand", label = "Бренд"),
+                            FilterChip(id = "size", label = "Размер"),
+                            FilterChip(id = "color", label = "Цвет")
+                        ),
+                        topFilterValueChips = emptyList(),
+                        bottomFilterChips = emptyList()
+                    ),
+                    quantityEntity = quantityEntity
                 ),
-                quantityEntity = emptyQuantityEntity
-            )
-        ) to emptyList()
+                brandEntity = BrandEntity(
+                    brand = "WOOL&COTTON",
+                    urlBrandLogo = null
+                ),
+                isBrandFavorited = true
+            ),
+            items = productsEntities,
+            sourceLoadStates = idleLoadStates
+        )
     )
 }

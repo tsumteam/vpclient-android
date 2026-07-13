@@ -21,7 +21,7 @@ import ru.mercury.vpclient.features.profile_loyalty_qr.navigation.ProfileLoyalty
 import ru.mercury.vpclient.features.profile_my_data.navigation.ProfileMyDataRoute
 import ru.mercury.vpclient.features.profile_orders.navigation.ProfileOrdersRoute
 import ru.mercury.vpclient.features.profile_qr.navigation.ProfileQrRoute
-import ru.mercury.vpclient.features.profile_stack.event.ProfileStackEventManager
+import ru.mercury.vpclient.features.profile_root.event.ProfileRootEventManager
 import ru.mercury.vpclient.features.profile_view_history.navigation.ProfileViewHistoryRoute
 import ru.mercury.vpclient.shared.data.CODE_RESEND_TIMER_DELAY
 import ru.mercury.vpclient.shared.data.entity.LoyaltyCardType
@@ -251,13 +251,13 @@ class ProfileViewModel @Inject constructor(
             is ProfileIntent.DismissAlphaBankPrivilegesSheet -> {
                 reduce { it.copy(isProfilePrivilegesSheetVisible = false) }
             }
-            is ProfileIntent.MyDataClick -> launch { ProfileStackEventManager.send(ProfileMyDataRoute) }
-            is ProfileIntent.PurchasesClick -> launch { ProfileStackEventManager.send(ProfileOrdersRoute) }
-            is ProfileIntent.InformationClick -> launch { ProfileStackEventManager.send(ProfileInfoRoute) }
+            is ProfileIntent.MyDataClick -> launch { ProfileRootEventManager.send(ProfileMyDataRoute) }
+            is ProfileIntent.PurchasesClick -> launch { ProfileRootEventManager.send(ProfileOrdersRoute) }
+            is ProfileIntent.InformationClick -> launch { ProfileRootEventManager.send(ProfileInfoRoute) }
             is ProfileIntent.QrCodeClick -> launch { MainEventManager.send(ProfileQrRoute) }
             is ProfileIntent.FavoriteBrandsClick -> launch { MainEventManager.send(ProfileBrandsRoute) }
             is ProfileIntent.ViewHistoryViewMoreClick -> {
-                launch { ProfileStackEventManager.send(ProfileViewHistoryRoute) }
+                launch { ProfileRootEventManager.send(ProfileViewHistoryRoute) }
             }
             is ProfileIntent.ViewHistoryProductClick -> {
                 launch { MainEventManager.send(DetailsRoute(intent.productId, openedFromCart = true)) }

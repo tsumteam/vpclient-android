@@ -247,6 +247,7 @@
     <string name="filter_brand_favorites_header">ЛЮБИМЫЕ</string>
     <string name="filter_brand_top_header">ТОП-БРЕНДЫ</string>
     <string name="filter_brand_all_header">ВСЕ БРЕНДЫ</string>
+    <string name="brands_favorites_header">ЛЮБИМЫЕ БРЕНДЫ</string>
     <string name="filter_brand_select_all">Выбрать все</string>
     <string name="filter_brand_empty_search">По Вашему запросу ничего не найдено</string>
     <string name="filter_empty_products_message">По Вашему запросу ничего не найдено</string>

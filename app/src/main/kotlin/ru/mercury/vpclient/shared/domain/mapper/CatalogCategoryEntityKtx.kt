@@ -11,6 +11,9 @@ val CatalogCategoryEntity.isEmpty
 val CatalogCategoryEntity.isNotEmpty
     get() = this != CatalogCategoryEntity.Empty
 
+val CatalogCategoryEntity?.orEmpty: CatalogCategoryEntity
+    get() = this ?: CatalogCategoryEntity.Empty
+
 val CatalogCategoryEntity.isBasic: Boolean
     get() = level == CatalogCategoryEntity.LEVEL_BASIC
 

@@ -46,7 +46,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntit
 import ru.mercury.vpclient.shared.data.persistence.database.pojo.EmployeePojo
 import ru.mercury.vpclient.shared.domain.mapper.boutiqueAddress
 import ru.mercury.vpclient.shared.domain.mapper.isPhotoEmpty
-import ru.mercury.vpclient.shared.ui.components.BrandBox
+import ru.mercury.vpclient.shared.ui.components.brands.BrandBox
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost

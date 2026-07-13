@@ -4,8 +4,8 @@ package ru.mercury.vpclient.shared.domain.usecase
 
 import ru.mercury.vpclient.shared.coroutines.SharedDispatchers
 import ru.mercury.vpclient.shared.data.entity.FilterValuesRequestData
-import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.network.NetworkService
+import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.network.request.CatalogFilterRequest
 import ru.mercury.vpclient.shared.data.network.request.FilterValuesRequest
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogCategoryDao
@@ -31,12 +31,11 @@ class CatalogFilterValuesUseCase @Inject constructor(
         val categoryId = data.categoryId
         val titleCategoryId = data.titleCategoryId
         val chipId = data.chipId
-        val categoryEntity = catalogCategoryDao.selectNotNull(categoryId)
         val existingPicker = catalogFilterDao.select(categoryId, titleCategoryId)
             ?.toFilterValuesPickers()
             ?.firstOrNull { picker -> picker.chipId == chipId }
         val requestFilters = data.selectedFilterValueChipIds.requests(
-            categoryId = categoryEntity.id,
+            categoryId = categoryId,
             includeDefaultCategory = data.includeDefaultCategory
         )
         val filterType = chipId.substringBefore("_")
@@ -54,7 +53,8 @@ class CatalogFilterValuesUseCase @Inject constructor(
 
         handleResponse(
             request = {
-                val viewType = data.viewTypeOverride ?: categoryEntity.viewType(categoryId, titleCategoryId)
+                val viewType = data.viewTypeOverride ?: catalogCategoryDao.selectNotNull(categoryId)
+                    .viewType(categoryId, titleCategoryId)
                 val request = FilterValuesRequest(
                     filterType = filterTypeDto,
                     filterSubtype = filterSubtype,

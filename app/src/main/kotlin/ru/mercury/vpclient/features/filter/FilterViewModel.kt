@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.activity.event.MainEventManager
+import ru.mercury.vpclient.features.brand_root.event.BrandRootEventManager
 import ru.mercury.vpclient.features.cart.navigation.CartPage
 import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.features.catalog_root.event.CatalogRootEventManager
@@ -47,10 +48,11 @@ import ru.mercury.vpclient.shared.domain.mapper.values
 import ru.mercury.vpclient.shared.domain.usecase.BrandFavoriteStatusUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CartCountFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CartProductsFlowUseCase
-import ru.mercury.vpclient.shared.domain.usecase.CatalogFilterProductsPagingDataUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CatalogFilterProductQuantityUseCase
+import ru.mercury.vpclient.shared.domain.usecase.CatalogFilterProductsPagingDataUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CatalogFilterValuesUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CatalogFiltersUseCase
+import ru.mercury.vpclient.shared.domain.usecase.CatalogFiltersUseCase.CatalogFiltersException
 import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.FilterDataFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.FilterValuesEntityFlowUseCase
@@ -60,6 +62,7 @@ import ru.mercury.vpclient.shared.domain.usecase.FittingCountFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.ResetFilterValuesQuantityUseCase
 import ru.mercury.vpclient.shared.domain.usecase.ToggleBasketProductUseCase
 import ru.mercury.vpclient.shared.domain.usecase.ToggleBrandFavoriteUseCase
+import ru.mercury.vpclient.shared.domain.usecase.ToggleBrandFavoriteUseCase.ToggleBrandFavoriteException
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.navigation.BackRoute
 
@@ -118,7 +121,8 @@ class FilterViewModel @AssistedInject constructor(
                     it.copy(
                         selectedFilterValueChips = route.initialSelectedFilterValueChips,
                         brandEntity = route.brandEntity,
-                        isSingleLineTitle = route.isSingleLineTitle
+                        isSingleLineTitle = route.isSingleLineTitle,
+                        isFavoriteBrands = route.isFavoriteBrands
                     )
                 }
             }
@@ -133,7 +137,12 @@ class FilterViewModel @AssistedInject constructor(
                     ).collectLatest { data ->
                         val topFilterValueChipsById = data.filterRibbonData.topFilterValueChips.associateBy(FilterChip::id)
                         val refreshedSelectedFilterValueChips = stateFlow.value.selectedFilterValueChips.map { chip -> topFilterValueChipsById[chip.id] ?: chip }
-                        reduce { it.copy(filterData = data, selectedFilterValueChips = refreshedSelectedFilterValueChips) }
+                        reduce {
+                            it.copy(
+                                filterData = data,
+                                selectedFilterValueChips = refreshedSelectedFilterValueChips
+                            )
+                        }
                     }
                 }
             }
@@ -172,14 +181,12 @@ class FilterViewModel @AssistedInject constructor(
                 launch {
                     employeeActiveFlowUseCase(Unit)
                         .distinctUntilChanged()
-                        .collectLatest { employee ->
-                            reduce { it.copy(activeEmployee = employee) }
-                        }
+                        .collectLatest { employee -> reduce { it.copy(activeEmployee = employee) } }
                 }
             }
             is FilterIntent.LoadCatalogFilters -> {
                 launch {
-                    catalogFiltersUseCase(
+                    val hasFilters = catalogFiltersUseCase(
                         CatalogFilterRequestData2(
                             categoryId = route.categoryId,
                             titleCategoryId = route.titleCategoryId,
@@ -188,6 +195,7 @@ class FilterViewModel @AssistedInject constructor(
                             viewTypeOverride = route.viewTypeOverride
                         )
                     ).getOrThrow()
+                    reduce { it.copy(showOnlySortFilter = !hasFilters) }
                 }
             }
             is FilterIntent.LoadProductsQuantity -> {
@@ -213,14 +221,30 @@ class FilterViewModel @AssistedInject constructor(
                 launch { send(FilterEvent.RefreshProducts) }
             }
             is FilterIntent.RefreshCompleted -> reduce { it.copy(isRefreshing = false) }
-            is FilterIntent.BackClick -> launch { CatalogRootEventManager.send(BackRoute) }
+            is FilterIntent.BackClick -> {
+                launch {
+                    when {
+                        route.isBrandRoot -> BrandRootEventManager.send(BackRoute)
+                        else -> CatalogRootEventManager.send(BackRoute)
+                    }
+                }
+            }
             is FilterIntent.CartClick -> launch { MainEventManager.send(CartRoute()) }
             is FilterIntent.FittingClick -> {
                 launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
             }
             is FilterIntent.MessengerClick -> return
             is FilterIntent.ProductClick -> {
-                launch { CatalogRootEventManager.send(DetailsRoute(intent.id)) }
+                launch {
+                    val detailsRoute = DetailsRoute(
+                        id = intent.id,
+                        isBrandRoot = route.isBrandRoot
+                    )
+                    when {
+                        route.isBrandRoot -> BrandRootEventManager.send(detailsRoute)
+                        else -> CatalogRootEventManager.send(detailsRoute)
+                    }
+                }
             }
             is FilterIntent.ProductBasketClick -> {
                 launch { toggleBasketProductUseCase(intent.product).getOrThrow() }
@@ -603,7 +627,7 @@ class FilterViewModel @AssistedInject constructor(
                 val brandId = route.topBarBrandId() ?: return
                 val chipId = route.topBarBrandChipId() ?: return
                 launch {
-                    val currentIsFavorite = stateFlow.value.isBrandFavorited
+                    val currentIsFavorite = stateFlow.value.isBrandFavorited ?: return@launch
                     val nextIsFavorite = !currentIsFavorite
                     toggleBrandFavoriteUseCase(
                         ToggleBrandFavoriteUseCase.Params(
@@ -621,7 +645,16 @@ class FilterViewModel @AssistedInject constructor(
 
     override fun catch(throwable: Throwable) {
         when (throwable) {
-            is RoomException, is RoomSQLiteException -> launch { send(FilterEvent.SnackbarMessage(throwable.message.orEmpty())) }
+            is CatalogFiltersException -> {
+                reduce { it.copy(showOnlySortFilter = true) }
+                launch { send(FilterEvent.SnackbarMessage(throwable.message)) }
+            }
+            is ToggleBrandFavoriteException -> {
+                launch { send(FilterEvent.SnackbarMessage(throwable.message)) }
+            }
+            is RoomException, is RoomSQLiteException -> {
+                launch { send(FilterEvent.SnackbarMessage(throwable.message.orEmpty())) }
+            }
             is ClientException -> launch { send(FilterEvent.SnackbarMessage(throwable.message)) }
             else -> super.catch(throwable)
         }

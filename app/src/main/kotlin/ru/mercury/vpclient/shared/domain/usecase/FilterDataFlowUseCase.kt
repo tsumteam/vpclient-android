@@ -33,7 +33,10 @@ class FilterDataFlowUseCase @Inject constructor(
             catalogCategoryDao.selectFlow(titleCategoryId),
             catalogCategoryDao.selectFlow(subtitleCategoryId)
         ) { titleCatalogCategoryEntity, subtitleCatalogCategoryEntity ->
-            FilterTitleEntity(titleCatalogCategoryEntity, subtitleCatalogCategoryEntity)
+            FilterTitleEntity(
+                titleCatalogCategoryEntity.orEmpty,
+                subtitleCatalogCategoryEntity.orEmpty
+            )
         }
         val filterRibbonDataFlow = catalogFilterDao.selectFlow(
             categoryId,

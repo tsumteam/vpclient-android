@@ -8,7 +8,7 @@ import kotlinx.coroutines.launch
 import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
-import ru.mercury.vpclient.features.profile_stack.event.ProfileStackEventManager
+import ru.mercury.vpclient.features.profile_root.event.ProfileRootEventManager
 import ru.mercury.vpclient.features.profile_view_history.intent.ProfileViewHistoryIntent
 import ru.mercury.vpclient.features.profile_view_history.model.ProfileViewHistoryModel
 import ru.mercury.vpclient.shared.domain.usecase.AddCatalogProductToBasketUseCase
@@ -76,7 +76,7 @@ class ProfileViewHistoryViewModel @Inject constructor(
                     reduce { it.copy(cartBadge = badge) }
                 }
             }
-            is ProfileViewHistoryIntent.BackClick -> launch { ProfileStackEventManager.send(BackRoute) }
+            is ProfileViewHistoryIntent.BackClick -> launch { ProfileRootEventManager.send(BackRoute) }
             is ProfileViewHistoryIntent.SearchClick -> return
             is ProfileViewHistoryIntent.CartClick -> launch { MainEventManager.send(CartRoute()) }
             is ProfileViewHistoryIntent.ProductClick -> {

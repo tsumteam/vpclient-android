@@ -2,8 +2,8 @@ package ru.mercury.vpclient.shared.domain.usecase
 
 import ru.mercury.vpclient.shared.coroutines.SharedDispatchers
 import ru.mercury.vpclient.shared.data.entity.CatalogFilterRequestData2
-import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.network.NetworkService
+import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.network.request.FilteredProductsQuantityRequest
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogCategoryDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.FilterValuesQuantityDao
@@ -25,16 +25,16 @@ class FilterValuesQuantityUseCase @Inject constructor(
         val data = params.data
         val categoryId = data.categoryId
         val titleCategoryId = data.titleCategoryId
-        val categoryEntity = catalogCategoryDao.selectNotNull(categoryId)
 
         handleResponse(
             request = {
-                val viewType = data.viewTypeOverride ?: categoryEntity.viewType(categoryId, titleCategoryId)
+                val viewType = data.viewTypeOverride ?: catalogCategoryDao.selectNotNull(categoryId)
+                    .viewType(categoryId, titleCategoryId)
                 val request = FilteredProductsQuantityRequest(
                     viewType = viewType,
                     hasUserInteractedWithStandartSizesFilter = false,
                     filters = data.selectedFilterValueChipIds.requests(
-                        categoryId = categoryEntity.id,
+                        categoryId = categoryId,
                         includeDefaultCategory = data.includeDefaultCategory
                     )
                 )

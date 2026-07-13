@@ -11,17 +11,15 @@ import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.features.cart.navigation.CartPage
 import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.features.profile_order.navigation.ProfileOrderRoute
-import ru.mercury.vpclient.shared.domain.paging.ProfileOrdersPagingSource
 import ru.mercury.vpclient.features.profile_orders.event.ProfileOrdersEvent
 import ru.mercury.vpclient.features.profile_orders.intent.ProfileOrdersIntent
 import ru.mercury.vpclient.features.profile_orders.model.ProfileOrdersModel
-import ru.mercury.vpclient.features.profile_stack.event.ProfileStackEventManager
+import ru.mercury.vpclient.features.profile_root.event.ProfileRootEventManager
+import ru.mercury.vpclient.shared.domain.paging.ProfileOrdersPagingSource
 import ru.mercury.vpclient.shared.domain.usecase.CartBadgeUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CartCountFlowUseCase
-import ru.mercury.vpclient.shared.domain.usecase.FittingCountFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
-import ru.mercury.vpclient.shared.domain.usecase.LoadBasketUseCase
-import ru.mercury.vpclient.shared.domain.usecase.LoadFittingUseCase
+import ru.mercury.vpclient.shared.domain.usecase.FittingCountFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.ProfileOrdersUseCase
 import ru.mercury.vpclient.shared.domain.usecase.UserIdUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
@@ -31,8 +29,6 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileOrdersViewModel @Inject constructor(
     private val userIdUseCase: UserIdUseCase,
-    private val loadBasketUseCase: LoadBasketUseCase,
-    private val loadFittingUseCase: LoadFittingUseCase,
     private val cartBadgeUseCase: CartBadgeUseCase,
     private val cartCountFlowUseCase: CartCountFlowUseCase,
     private val fittingCountFlowUseCase: FittingCountFlowUseCase,
@@ -68,34 +64,25 @@ class ProfileOrdersViewModel @Inject constructor(
                 launch {
                     cartCountFlowUseCase(Unit)
                         .distinctUntilChanged()
-                        .collectLatest { count ->
-                            reduce { it.copy(cartCount = count) }
-                        }
+                        .collectLatest { count -> reduce { it.copy(cartCount = count) } }
                 }
             }
             is ProfileOrdersIntent.CollectFittingCount -> {
                 launch {
                     fittingCountFlowUseCase(Unit)
                         .distinctUntilChanged()
-                        .collectLatest { count ->
-                            reduce { it.copy(fittingCount = count) }
-                        }
+                        .collectLatest { count -> reduce { it.copy(fittingCount = count) } }
                 }
             }
             is ProfileOrdersIntent.CollectActiveEmployee -> {
                 launch {
                     employeeActiveFlowUseCase(Unit)
                         .distinctUntilChanged()
-                        .collectLatest { employee ->
-                            reduce { it.copy(activeEmployee = employee) }
-                        }
+                        .collectLatest { employee -> reduce { it.copy(activeEmployee = employee) } }
                 }
             }
             is ProfileOrdersIntent.LoadCartData -> {
                 launch {
-                    runCatching { loadBasketUseCase(Unit).getOrThrow() }
-                    runCatching { loadFittingUseCase(Unit).getOrThrow() }
-
                     val badge = runCatching { cartBadgeUseCase(Unit).getOrThrow() }.getOrDefault(0)
                     reduce { it.copy(cartBadge = badge) }
                 }
@@ -104,16 +91,9 @@ class ProfileOrdersViewModel @Inject constructor(
                 if (stateFlow.value.isRefreshing) return
                 reduce { it.copy(isRefreshing = true) }
                 launch { send(ProfileOrdersEvent.RefreshOrders) }
-                launch {
-                    runCatching { loadBasketUseCase(Unit).getOrThrow() }
-                    runCatching { loadFittingUseCase(Unit).getOrThrow() }
-
-                    val badge = runCatching { cartBadgeUseCase(Unit).getOrThrow() }.getOrDefault(0)
-                    reduce { it.copy(cartBadge = badge) }
-                }
             }
             is ProfileOrdersIntent.RefreshCompleted -> reduce { it.copy(isRefreshing = false) }
-            is ProfileOrdersIntent.BackClick -> launch { ProfileStackEventManager.send(BackRoute) }
+            is ProfileOrdersIntent.BackClick -> launch { ProfileRootEventManager.send(BackRoute) }
             is ProfileOrdersIntent.NotificationClick -> return
             is ProfileOrdersIntent.CartClick -> launch { MainEventManager.send(CartRoute()) }
             is ProfileOrdersIntent.FittingClick -> {
@@ -122,7 +102,7 @@ class ProfileOrdersViewModel @Inject constructor(
             is ProfileOrdersIntent.MessengerClick -> return
             is ProfileOrdersIntent.OrderClick -> {
                 launch {
-                    ProfileStackEventManager.send(
+                    ProfileRootEventManager.send(
                         ProfileOrderRoute(
                             orderNumber = intent.orderNumber,
                             amount = intent.amount
