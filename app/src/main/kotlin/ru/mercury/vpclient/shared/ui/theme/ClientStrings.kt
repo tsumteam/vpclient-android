@@ -8,6 +8,9 @@ object ClientStrings {
     val CommonRetry get() = R.string.common_retry
     val CommonReset get() = R.string.common_reset
 
+    val HomeGiftCards get() = R.string.home_gift_cards
+    val HomeWatchMore get() = R.string.home_watch_more
+
     val AgreementPersonalData get() = R.string.agreement_personal_data
     val AgreementTermsOfUse get() = R.string.agreement_terms_of_use
     val AgreementPrivacyPolicy get() = R.string.agreement_privacy_policy

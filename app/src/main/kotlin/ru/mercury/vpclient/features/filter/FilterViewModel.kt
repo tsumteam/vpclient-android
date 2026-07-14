@@ -23,6 +23,7 @@ import ru.mercury.vpclient.features.filter.event.FilterEvent
 import ru.mercury.vpclient.features.filter.intent.FilterIntent
 import ru.mercury.vpclient.features.filter.model.FilterModel
 import ru.mercury.vpclient.features.filter.navigation.FilterRoute
+import ru.mercury.vpclient.features.home_root.event.HomeRootEventManager
 import ru.mercury.vpclient.shared.data.entity.CatalogFilterProductsData
 import ru.mercury.vpclient.shared.data.entity.CatalogFilterRequestData2
 import ru.mercury.vpclient.shared.data.entity.FilterChip
@@ -121,6 +122,7 @@ class FilterViewModel @AssistedInject constructor(
                     it.copy(
                         selectedFilterValueChips = route.initialSelectedFilterValueChips,
                         brandEntity = route.brandEntity,
+                        titleOverride = route.titleOverride,
                         isSingleLineTitle = route.isSingleLineTitle,
                         isFavoriteBrands = route.isFavoriteBrands
                     )
@@ -224,6 +226,8 @@ class FilterViewModel @AssistedInject constructor(
             is FilterIntent.BackClick -> {
                 launch {
                     when {
+                        route.isHomeRoot -> HomeRootEventManager.send(BackRoute)
+                        route.isMainRoot -> MainEventManager.send(BackRoute)
                         route.isBrandRoot -> BrandRootEventManager.send(BackRoute)
                         else -> CatalogRootEventManager.send(BackRoute)
                     }
@@ -238,9 +242,13 @@ class FilterViewModel @AssistedInject constructor(
                 launch {
                     val detailsRoute = DetailsRoute(
                         id = intent.id,
-                        isBrandRoot = route.isBrandRoot
+                        isBrandRoot = route.isBrandRoot,
+                        isHomeRoot = route.isHomeRoot,
+                        isMainRoot = route.isMainRoot
                     )
                     when {
+                        route.isHomeRoot -> HomeRootEventManager.send(detailsRoute)
+                        route.isMainRoot -> MainEventManager.send(detailsRoute)
                         route.isBrandRoot -> BrandRootEventManager.send(detailsRoute)
                         else -> CatalogRootEventManager.send(detailsRoute)
                     }

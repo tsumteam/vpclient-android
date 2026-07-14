@@ -1,4 +1,4 @@
-package ru.mercury.vpclient.shared.ui.components
+package ru.mercury.vpclient.shared.ui.components.product
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
@@ -19,7 +19,7 @@ import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.regular12
 
 @Composable
-fun DiscountBadge(
+fun ProductDiscountBadge(
     percentText: String,
     modifier: Modifier = Modifier
 ) {
@@ -87,7 +87,12 @@ fun DiscountBadge(
 
         Text(
             text = percentText,
-            style = MaterialTheme.typography.regular12.copy(color = MaterialTheme.colorScheme.onPrimary, lineHeight = 16.sp, letterSpacing = .2.sp, textAlign = TextAlign.Center)
+            style = MaterialTheme.typography.regular12.copy(
+                color = MaterialTheme.colorScheme.onPrimary,
+                lineHeight = 16.sp,
+                letterSpacing = .2.sp,
+                textAlign = TextAlign.Center
+            )
         )
     }
 }
@@ -95,8 +100,8 @@ fun DiscountBadge(
 @PreviewWrapper(ThemeWrapper::class)
 @Preview(showBackground = true)
 @Composable
-private fun DiscountBadgePreview() {
-    DiscountBadge(
+private fun ProductDiscountBadgePreview() {
+    ProductDiscountBadge(
         percentText = "-20%"
     )
 }

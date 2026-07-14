@@ -33,6 +33,7 @@ data class FilterModel(
     val selectedSortType: SortType = SortType.OurChoice,
     val selectedFilterValueChips: List<FilterChip> = emptyList(),
     val brandEntity: BrandEntity? = null,
+    val titleOverride: String? = null,
     val isSingleLineTitle: Boolean = false,
     val isFavoriteBrands: Boolean = false,
     val showOnlySortFilter: Boolean = false,

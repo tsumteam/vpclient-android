@@ -39,11 +39,11 @@ import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.compilation_add_to_basket_sheet.intent.CompilationAddToBasketSheetIntent
 import ru.mercury.vpclient.features.compilation_add_to_basket_sheet.model.CompilationAddToBasketSheetModel
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
-import ru.mercury.vpclient.shared.ui.components.CompilationPreviewBasketProductCard
-import ru.mercury.vpclient.shared.ui.components.CompilationPreviewBasketProductCardState
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
+import ru.mercury.vpclient.shared.ui.components.compilations.CompilationProductCard
+import ru.mercury.vpclient.shared.ui.components.compilations.CompilationProductCardState
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
@@ -148,8 +148,8 @@ fun CompilationAddToBasketSheet(
                     items = state.productEntities,
                     key = { entity -> entity.id }
                 ) { entity ->
-                    CompilationPreviewBasketProductCard(
-                        state = CompilationPreviewBasketProductCardState(
+                    CompilationProductCard(
+                        state = CompilationProductCardState(
                             entity = entity,
                             checked = entity.id in state.selectedProductIds,
                             onCheckedChange = { checked ->

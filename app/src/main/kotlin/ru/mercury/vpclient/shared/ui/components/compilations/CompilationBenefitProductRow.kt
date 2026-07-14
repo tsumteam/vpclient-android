@@ -1,4 +1,4 @@
-package ru.mercury.vpclient.shared.ui.components
+package ru.mercury.vpclient.shared.ui.components.compilations
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,12 +25,13 @@ import ru.mercury.vpclient.shared.domain.mapper.compilationBenefitDiscountPriceT
 import ru.mercury.vpclient.shared.domain.mapper.compilationBenefitFullPriceText
 import ru.mercury.vpclient.shared.domain.mapper.isCompilationBenefitDiscountVisible
 import ru.mercury.vpclient.shared.ui.components.product.ProductBrandBox
+import ru.mercury.vpclient.shared.ui.components.product.ProductDiscountBadge
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.regular14
 
 @Composable
-fun CompilationPreviewBenefitProductRow(
+fun CompilationBenefitProductRow(
     entity: CatalogFilterProductsEntity,
     modifier: Modifier = Modifier
 ) {
@@ -117,7 +118,7 @@ fun CompilationPreviewBenefitProductRow(
                     )
                 )
 
-                DiscountBadge(
+                ProductDiscountBadge(
                     percentText = entity.compilationBenefitDiscountPercentText
                 )
             }

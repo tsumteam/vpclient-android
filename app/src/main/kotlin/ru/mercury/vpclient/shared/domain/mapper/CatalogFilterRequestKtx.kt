@@ -16,6 +16,7 @@ fun String.isFilterValuesDialogChipId(): Boolean {
         CatalogFilterRequest.BRAND,
         CatalogFilterRequest.CATEGORY,
         CatalogFilterRequest.COLOR,
+        CatalogFilterRequest.HUMAN_ID,
         CatalogFilterRequest.PRICE,
         CatalogFilterRequest.SIZE -> true
         else -> false
@@ -26,6 +27,7 @@ fun String.isRequestAffectingCatalogFilterValueChipId(): Boolean {
     return startsWith("${CatalogFilterRequest.CATEGORY}_") ||
         startsWith("${CatalogFilterRequest.BRAND}_") ||
         startsWith("${CatalogFilterRequest.COLOR}_") ||
+        startsWith("${CatalogFilterRequest.HUMAN_ID}_") ||
         startsWith("${CatalogFilterRequest.PRICE}_") ||
         startsWith("${CatalogFilterRequest.SIZE}_") ||
         startsWith("${CatalogFilterRequest.ACTION}_") ||
@@ -87,6 +89,12 @@ private fun String.toCatalogFilterRequestEntry(): RequestEntry? {
                 valueType = CatalogFilterValueType.ID
             )
         }
+        startsWith("${CatalogFilterRequest.HUMAN_ID}_") -> {
+            stringRequestEntry(
+                chipId = this,
+                filterType = CatalogFilterRequest.HUMAN_ID
+            )
+        }
         startsWith("${CatalogFilterRequest.PRICE}_range_") -> {
             priceRequestEntry(chipId = this)
         }
@@ -130,6 +138,20 @@ private fun simpleRequestEntry(
         key = RequestKey(filterType = filterType, filterSubtype = null),
         value = CatalogFilterValueRequest(
             valueType = valueType,
+            value = JsonPrimitive(value)
+        )
+    )
+}
+
+private fun stringRequestEntry(
+    chipId: String,
+    filterType: String
+): RequestEntry? {
+    val value = chipId.substringAfter("${filterType}_", "").ifBlank { return null }
+    return RequestEntry(
+        key = RequestKey(filterType = filterType, filterSubtype = null),
+        value = CatalogFilterValueRequest(
+            valueType = CatalogFilterValueType.STRING,
             value = JsonPrimitive(value)
         )
     )

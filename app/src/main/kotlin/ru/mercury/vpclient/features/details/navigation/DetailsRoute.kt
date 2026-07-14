@@ -7,6 +7,10 @@ import kotlinx.serialization.Serializable
 @Serializable
 class DetailsRoute(
     val id: String,
+    val itemId: String? = null,
+    val colorId: String? = null,
     val openedFromCart: Boolean = false,
-    val isBrandRoot: Boolean = false
+    val isBrandRoot: Boolean = false,
+    val isHomeRoot: Boolean = false,
+    val isMainRoot: Boolean = false
 ): NavKey

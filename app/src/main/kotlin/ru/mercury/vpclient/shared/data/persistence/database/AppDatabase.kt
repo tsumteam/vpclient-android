@@ -23,6 +23,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.dao.FilterValuesDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.FilterValuesQuantityDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.FittingProductDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.LoyaltyCardInfoDao
+import ru.mercury.vpclient.shared.data.persistence.database.dao.MainScreenSectionDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.PagingKeyDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.ProductDao
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ActivityCounterEntity
@@ -44,6 +45,8 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesE
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesQuantityEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FittingProductEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.LoyaltyCardInfoEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.MainScreenSectionEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.MainScreenSectionItemEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.PagingKeyEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
 
@@ -68,6 +71,8 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
         FavoriteBrandEntity::class,
         FittingProductEntity::class,
         LoyaltyCardInfoEntity::class,
+        MainScreenSectionEntity::class,
+        MainScreenSectionItemEntity::class,
         PagingKeyEntity::class,
         ProductEntity::class
     ],
@@ -98,9 +103,10 @@ abstract class AppDatabase: RoomDatabase() {
     abstract fun fittingProductDao(): FittingProductDao
     abstract fun activityCounterDao(): ActivityCounterDao
     abstract fun loyaltyCardInfoDao(): LoyaltyCardInfoDao
+    abstract fun mainScreenSectionDao(): MainScreenSectionDao
 
     companion object {
         const val DATABASE_NAME = "vpclient.db"
-        const val DATABASE_VERSION = 81
+        const val DATABASE_VERSION = 85
     }
 }

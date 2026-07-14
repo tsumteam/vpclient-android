@@ -35,9 +35,9 @@ import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.compilation_cart_added_sheet.intent.CompilationCartAddedSheetIntent
 import ru.mercury.vpclient.features.compilation_cart_added_sheet.model.CompilationCartAddedSheetModel
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CompilationPreviewPageEntity
-import ru.mercury.vpclient.shared.ui.components.CompilationPreviewCartAddedCard
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
+import ru.mercury.vpclient.shared.ui.components.compilations.CompilationCartAddedCard
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.livretMedium18
@@ -85,7 +85,7 @@ fun CompilationCartAddedSheet(
                 )
             }
             item {
-                CompilationPreviewCartAddedCard(
+                CompilationCartAddedCard(
                     entity = state.pageEntity
                 )
             }

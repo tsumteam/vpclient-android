@@ -4,7 +4,7 @@ compile-sdk = "36"
 sdk-extension = "19"
 target-sdk = "36"
 jdk = "21"
-agp = "9.2.1"
+agp = "9.3.0"
 
 kotlin = "2.3.21"
 kotlinx-coroutines = "1.11.0"

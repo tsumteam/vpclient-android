@@ -26,19 +26,27 @@ class LoadProductUseCase @Inject constructor(
     private val catalogViewHistoryProductDao: CatalogViewHistoryProductDao,
     private val productDao: ProductDao,
     dispatchers: SharedDispatchers
-): UseCase<String, Unit>(dispatchers.io) {
+): UseCase<LoadProductUseCase.Params, Unit>(dispatchers.io) {
 
-    override suspend fun execute(id: String) {
-        val request = catalogFilterProductsDao.select(id)?.let { catalogEntity ->
+    override suspend fun execute(params: Params) {
+        val request = catalogFilterProductsDao.select(params.id)?.let { catalogEntity ->
             DetailCardRequest(
                 itemId = catalogEntity.itemId,
                 colorId = catalogEntity.colorId
             )
-        } ?: catalogViewHistoryProductDao.select(id)?.let { viewHistoryEntity ->
+        } ?: catalogViewHistoryProductDao.select(params.id)?.let { viewHistoryEntity ->
             DetailCardRequest(
                 itemId = viewHistoryEntity.itemId,
                 colorId = viewHistoryEntity.colorId
             )
+        } ?: when {
+            params.itemId?.isNotEmpty() == true && params.colorId?.isNotEmpty() == true -> {
+                DetailCardRequest(
+                    itemId = params.itemId,
+                    colorId = params.colorId
+                )
+            }
+            else -> null
         } ?: return
 
         handleResponse(
@@ -52,7 +60,7 @@ class LoadProductUseCase @Inject constructor(
                         ?: colors.firstOrNull()
                 }
                 val entity = ProductEntity(
-                    id = id,
+                    id = params.id,
                     name = response.name,
                     itemId = response.itemId,
                     categoryId = response.categoryId,
@@ -143,4 +151,10 @@ class LoadProductUseCase @Inject constructor(
             }
         )
     }
+
+    data class Params(
+        val id: String,
+        val itemId: String? = null,
+        val colorId: String? = null
+    )
 }

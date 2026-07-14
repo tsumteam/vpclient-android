@@ -38,9 +38,9 @@ import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.compilation_benefit_sheet.intent.CompilationBenefitSheetIntent
 import ru.mercury.vpclient.features.compilation_benefit_sheet.model.CompilationBenefitSheetModel
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
-import ru.mercury.vpclient.shared.ui.components.CompilationPreviewBenefitProductRow
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
+import ru.mercury.vpclient.shared.ui.components.compilations.CompilationBenefitProductRow
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
@@ -103,7 +103,7 @@ fun CompilationBenefitSheet(
             ) {
                 state.productEntities.forEach { entity ->
                     item {
-                        CompilationPreviewBenefitProductRow(
+                        CompilationBenefitProductRow(
                             entity = entity
                         )
                     }

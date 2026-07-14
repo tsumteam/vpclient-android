@@ -52,7 +52,6 @@ import ru.mercury.vpclient.shared.domain.mapper.cardDiscountLabel
 import ru.mercury.vpclient.shared.domain.mapper.imagePages
 import ru.mercury.vpclient.shared.domain.mapper.isDiscountLabelVisible
 import ru.mercury.vpclient.shared.ui.components.brands.BrandBox
-import ru.mercury.vpclient.shared.ui.components.DiscountBadge
 import ru.mercury.vpclient.shared.ui.components.PriceText
 import ru.mercury.vpclient.shared.ui.components.SharedHorizontalPagerIndicator
 import ru.mercury.vpclient.shared.ui.components.catalog.CatalogProductColorsRow
@@ -309,7 +308,7 @@ fun ProductCard(
         )
 
         if (entity.isDiscountLabelVisible) {
-            DiscountBadge(
+            ProductDiscountBadge(
                 percentText = entity.cardDiscountLabel.orEmpty(),
                 modifier = Modifier.constrainAs(discountBadge) {
                     start.linkTo(parent.start)

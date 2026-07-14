@@ -1,4 +1,4 @@
-package ru.mercury.vpclient.shared.ui.components
+package ru.mercury.vpclient.shared.ui.components.message
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -30,15 +30,15 @@ import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.regular15
 
-data class ChatMessageInputState(
+data class MessageInputState(
     val commentText: String,
     val onCommentChange: (String) -> Unit,
     val onSendClick: () -> Unit
 )
 
 @Composable
-fun ChatMessageInput(
-    state: ChatMessageInputState,
+fun MessageInput(
+    state: MessageInputState,
     modifier: Modifier = Modifier
 ) {
     var textFieldLineCount by remember { mutableIntStateOf(1) }
@@ -101,10 +101,10 @@ fun ChatMessageInput(
 @PreviewWrapper(ThemeWrapper::class)
 @Preview(showBackground = true)
 @Composable
-private fun ChatMessageInputPreview(
-    @PreviewParameter(ChatMessageInputStateProvider::class) state: ChatMessageInputState
+private fun MessageInputPreview(
+    @PreviewParameter(MessageInputStateProvider::class) state: MessageInputState
 ) {
-    ChatMessageInput(
+    MessageInput(
         state = state,
         modifier = Modifier
             .fillMaxWidth()
@@ -112,20 +112,20 @@ private fun ChatMessageInputPreview(
     )
 }
 
-private class ChatMessageInputStateProvider: PreviewParameterProvider<ChatMessageInputState> {
+private class MessageInputStateProvider: PreviewParameterProvider<MessageInputState> {
 
-    override val values: Sequence<ChatMessageInputState> = sequenceOf(
-        ChatMessageInputState(
+    override val values: Sequence<MessageInputState> = sequenceOf(
+        MessageInputState(
             commentText = "",
             onCommentChange = {},
             onSendClick = {}
         ),
-        ChatMessageInputState(
+        MessageInputState(
             commentText = "Комментарий",
             onCommentChange = {},
             onSendClick = {}
         ),
-        ChatMessageInputState(
+        MessageInputState(
             commentText = "Первая строка\nВторая строка\nТретья строка\nЧетвертая строка",
             onCommentChange = {},
             onSendClick = {}

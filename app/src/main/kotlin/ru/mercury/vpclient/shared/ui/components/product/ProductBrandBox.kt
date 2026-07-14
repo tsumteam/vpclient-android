@@ -1,6 +1,5 @@
 package ru.mercury.vpclient.shared.ui.components.product
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -22,7 +21,6 @@ fun ProductBrandBox(
     entity: BrandEntity,
     modifier: Modifier = Modifier
 ) {
-    Log.e("2", "entity = $entity")
     Box(
         modifier = modifier,
         contentAlignment = Alignment.CenterStart

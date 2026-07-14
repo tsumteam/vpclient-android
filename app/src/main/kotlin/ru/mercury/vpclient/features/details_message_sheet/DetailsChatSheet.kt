@@ -32,10 +32,10 @@ import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.details_message_sheet.intent.DetailsChatIntent
 import ru.mercury.vpclient.features.details_message_sheet.model.DetailsChatModel
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
-import ru.mercury.vpclient.shared.ui.components.ChatMessageInput
-import ru.mercury.vpclient.shared.ui.components.ChatMessageInputState
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.details.DetailsMessageProductCard
+import ru.mercury.vpclient.shared.ui.components.message.MessageInput
+import ru.mercury.vpclient.shared.ui.components.message.MessageInputState
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
@@ -100,8 +100,8 @@ fun DetailsChatSheet(
                 entity = inlinedState.productEntity
             )
 
-            ChatMessageInput(
-                state = ChatMessageInputState(
+            MessageInput(
+                state = MessageInputState(
                     commentText = inlinedState.commentText,
                     onCommentChange = { comment -> sheetDispatch(DetailsChatIntent.CommentChange(comment)) },
                     onSendClick = { sheetDispatch(DetailsChatIntent.SendClick(inlinedState.commentText)) }

@@ -2,6 +2,8 @@ package ru.mercury.vpclient.shared.data.persistence.database.converter
 
 import androidx.room.TypeConverter
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonObject
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
 import ru.mercury.vpclient.shared.data.entity.CartProductSize
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValueItemEntity
@@ -15,6 +17,16 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductRelate
 class Converter {
 
     private val json = Json
+
+    @TypeConverter
+    fun fromJsonObject(value: JsonObject?): String? {
+        return value?.toString()
+    }
+
+    @TypeConverter
+    fun toJsonObject(data: String?): JsonObject? {
+        return data?.let { value -> json.parseToJsonElement(value).jsonObject }
+    }
 
     @TypeConverter
     fun fromList(list: List<String>): String {

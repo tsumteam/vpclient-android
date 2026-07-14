@@ -1,5 +1,8 @@
 package ru.mercury.vpclient.features.home.intent
 
+import ru.mercury.vpclient.shared.data.entity.HomeSectionEntity
+import ru.mercury.vpclient.shared.data.entity.HomeSectionItemEntity
+import ru.mercury.vpclient.shared.data.entity.TabType
 import ru.mercury.vpclient.shared.mvi.Intent
 
 sealed interface HomeIntent: Intent {
@@ -13,4 +16,10 @@ sealed interface HomeIntent: Intent {
     data object CartClick: HomeIntent
     data object FittingClick: HomeIntent
     data object MessengerClick: HomeIntent
+    data object CollectMainScreenSections: HomeIntent
+    data class LoadMainScreenSections(val tab: TabType): HomeIntent
+    data class SelectTab(val tab: TabType): HomeIntent
+    data class ProductClick(val item: HomeSectionItemEntity): HomeIntent
+    data class SectionItemClick(val item: HomeSectionItemEntity): HomeIntent
+    data class SectionViewMoreClick(val section: HomeSectionEntity): HomeIntent
 }

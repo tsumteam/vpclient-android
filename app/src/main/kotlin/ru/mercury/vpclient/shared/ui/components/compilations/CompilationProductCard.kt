@@ -1,4 +1,4 @@
-package ru.mercury.vpclient.shared.ui.components
+package ru.mercury.vpclient.shared.ui.components.compilations
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -36,7 +36,7 @@ import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.regular14
 
-data class CompilationPreviewBasketProductCardState(
+data class CompilationProductCardState(
     val entity: CatalogFilterProductsEntity,
     val checked: Boolean,
     val onCheckedChange: (Boolean) -> Unit,
@@ -44,8 +44,8 @@ data class CompilationPreviewBasketProductCardState(
 )
 
 @Composable
-fun CompilationPreviewBasketProductCard(
-    state: CompilationPreviewBasketProductCardState,
+fun CompilationProductCard(
+    state: CompilationProductCardState,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -145,16 +145,16 @@ fun CompilationPreviewBasketProductCard(
 @PreviewWrapper(ThemeWrapper::class)
 @Preview(showBackground = true)
 @Composable
-private fun CompilationPreviewBasketProductCardPreview(
-    @PreviewParameter(CompilationPreviewBasketProductCardStateProvider::class) state: CompilationPreviewBasketProductCardState
+private fun CompilationProductCardPreview(
+    @PreviewParameter(CompilationProductCardStateProvider::class) state: CompilationProductCardState
 ) {
-    CompilationPreviewBasketProductCard(
+    CompilationProductCard(
         state = state
     )
 }
 
-private class CompilationPreviewBasketProductCardStateProvider:
-    PreviewParameterProvider<CompilationPreviewBasketProductCardState> {
+private class CompilationProductCardStateProvider:
+    PreviewParameterProvider<CompilationProductCardState> {
 
     private val entity = CatalogFilterProductsEntity.Empty.copy(
         id = "preview-1",
@@ -166,18 +166,18 @@ private class CompilationPreviewBasketProductCardStateProvider:
         imageUrl = ""
     )
 
-    override val values: Sequence<CompilationPreviewBasketProductCardState> = sequenceOf(
-        CompilationPreviewBasketProductCardState(
+    override val values: Sequence<CompilationProductCardState> = sequenceOf(
+        CompilationProductCardState(
             entity = entity,
             checked = true,
             onCheckedChange = {}
         ),
-        CompilationPreviewBasketProductCardState(
+        CompilationProductCardState(
             entity = entity,
             checked = false,
             onCheckedChange = {}
         ),
-        CompilationPreviewBasketProductCardState(
+        CompilationProductCardState(
             entity = entity,
             checked = true,
             onCheckedChange = {},

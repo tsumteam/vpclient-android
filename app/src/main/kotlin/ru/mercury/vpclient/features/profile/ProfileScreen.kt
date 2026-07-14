@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
@@ -69,14 +68,16 @@ import ru.mercury.vpclient.features.profile_privileges_sheet.ProfilePrivilegesSh
 import ru.mercury.vpclient.features.profile_privileges_sheet.intent.ProfilePrivilegeIntent
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.entity.LoyaltyCardType
+import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.LoyaltyCardInfoEntity
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
-import ru.mercury.vpclient.shared.ui.components.brands.BrandBox
 import ru.mercury.vpclient.shared.ui.components.IndicatorIcon
 import ru.mercury.vpclient.shared.ui.components.NotificationIconButton
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
+import ru.mercury.vpclient.shared.ui.components.SharedLazyRow
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
+import ru.mercury.vpclient.shared.ui.components.brands.BrandBox
 import ru.mercury.vpclient.shared.ui.components.cart.CartIconButton
 import ru.mercury.vpclient.shared.ui.components.cart.FittingIconButton
 import ru.mercury.vpclient.shared.ui.components.cart.MessengerIconButton
@@ -689,12 +690,13 @@ private fun ProfileScreenContent(
                         )
                     }
                     item {
-                        LazyRow(
+                        SharedLazyRow(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(156.dp),
                             contentPadding = PaddingValues(horizontal = 16.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            userScrollEnabled = !state.isViewHistoryLoading
                         ) {
                             when {
                                 state.isViewHistoryLoading -> {
@@ -833,6 +835,24 @@ private class ProfileModelPreviewParameterProvider: PreviewParameterProvider<Pro
                 bonusAmount = 0,
                 typeCard = LoyaltyCardType.Silver
             )
+        ),
+        ProfileModel(
+            viewHistoryProducts = List(11) { index ->
+                CatalogFilterProductsEntity.Empty.copy(
+                    id = "preview-${index + 1}",
+                    itemId = "item-${index + 1}",
+                    colorId = "color-${index + 1}",
+                    name = "Товар ${index + 1}",
+                    brand = when (index % 3) {
+                        0 -> "SAINT LAURENT"
+                        1 -> "BRUNELLO CUCINELLI"
+                        else -> "TOM FORD"
+                    },
+                    imageUrl = "",
+                    imageUrls = listOf(""),
+                    position = index
+                )
+            }
         )
     )
 }

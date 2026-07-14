@@ -26,7 +26,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
 import ru.mercury.vpclient.shared.domain.mapper.cardDiscountLabel
 import ru.mercury.vpclient.shared.domain.mapper.isDiscountLabelVisible
 import ru.mercury.vpclient.shared.ui.components.brands.BrandBox
-import ru.mercury.vpclient.shared.ui.components.DiscountBadge
+import ru.mercury.vpclient.shared.ui.components.product.ProductDiscountBadge
 import ru.mercury.vpclient.shared.ui.components.PriceText
 import ru.mercury.vpclient.shared.ui.icons.Message24
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
@@ -118,7 +118,7 @@ fun DetailsProductInfoBox(
             }
 
             if (state.productEntity.isDiscountLabelVisible) {
-                DiscountBadge(
+                ProductDiscountBadge(
                     percentText = state.productEntity.cardDiscountLabel.orEmpty(),
                     modifier = Modifier.padding(top = 6.dp)
                 )

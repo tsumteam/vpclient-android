@@ -1,4 +1,4 @@
-package ru.mercury.vpclient.shared.ui.components
+package ru.mercury.vpclient.shared.ui.components.compilations
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,7 +21,7 @@ import ru.mercury.vpclient.shared.ui.theme.medium17
 import ru.mercury.vpclient.shared.ui.theme.regular15
 
 @Composable
-fun CompilationPreviewCartAddedCard(
+fun CompilationCartAddedCard(
     entity: CompilationPreviewPageEntity,
     modifier: Modifier = Modifier
 ) {

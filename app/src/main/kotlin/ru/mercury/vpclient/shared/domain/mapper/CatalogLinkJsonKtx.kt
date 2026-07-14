@@ -34,20 +34,32 @@ fun JsonObject.toCatalogLinkData(): CatalogLinkData? {
         filter.toFilterChipIds()
     }
     val selectedFilterValueChips = response.filters.flatMap { filter ->
-        filter.toFilterChips()
+        when {
+            filter.isHidden -> emptyList()
+            filter.filterType == CatalogFilterRequest.CATEGORY -> emptyList()
+            else -> filter.toFilterChips()
+        }
     }
+    val hiddenFilterValueChipIds = response.filters
+        .filter(CatalogLinkFilterResponse::isHidden)
+        .flatMap { filter ->
+            filter.toFilterChipIds()
+        }
 
     return CatalogLinkData(
+        title = response.title?.trim()?.takeIf(String::isNotEmpty),
         viewType = response.viewType,
         rootCategoryId = response.rootCategoryId,
         categoryId = categoryId,
         selectedFilterValueChipIds = selectedFilterValueChipIds,
-        selectedFilterValueChips = selectedFilterValueChips
+        selectedFilterValueChips = selectedFilterValueChips,
+        hiddenFilterValueChipIds = hiddenFilterValueChipIds
     )
 }
 
 @Serializable
 private data class CatalogLinkResponse(
+    val title: String? = null,
     val viewType: CatalogViewType? = null,
     val rootCategoryId: Int? = null,
     val filters: List<CatalogLinkFilterResponse> = emptyList()
@@ -57,7 +69,8 @@ private data class CatalogLinkResponse(
 private data class CatalogLinkFilterResponse(
     val filterType: String? = null,
     val filterSubtype: String? = null,
-    val values: List<CatalogLinkFilterValueResponse> = emptyList()
+    val values: List<CatalogLinkFilterValueResponse> = emptyList(),
+    val isHidden: Boolean = false
 )
 
 @Serializable
@@ -122,6 +135,10 @@ private fun CatalogLinkFilterValueResponse.toFilterChipId(
         CatalogFilterRequest.COLOR,
         CatalogFilterRequest.SIZE -> {
             val rawValue = value?.jsonPrimitive?.contentOrNull?.toIntOrNull() ?: return null
+            "${filterType}_$rawValue"
+        }
+        CatalogFilterRequest.HUMAN_ID -> {
+            val rawValue = value?.jsonPrimitive?.contentOrNull ?: return null
             "${filterType}_$rawValue"
         }
         CatalogFilterRequest.CATEGORY -> {

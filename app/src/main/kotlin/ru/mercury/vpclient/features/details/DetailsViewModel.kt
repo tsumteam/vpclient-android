@@ -17,13 +17,13 @@ import ru.mercury.vpclient.features.details.intent.DetailsIntent
 import ru.mercury.vpclient.features.details.model.DetailsModel
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.features.filter.navigation.FilterRoute
+import ru.mercury.vpclient.features.home_root.event.HomeRootEventManager
 import ru.mercury.vpclient.features.media.navigation.MediaRoute
 import ru.mercury.vpclient.features.video.navigation.VideoRoute
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.entity.DetailsField
 import ru.mercury.vpclient.shared.data.network.type.CatalogViewType
 import ru.mercury.vpclient.shared.domain.mapper.filterRoute
-import ru.mercury.vpclient.shared.domain.mapper.isNotEmpty
 import ru.mercury.vpclient.shared.domain.mapper.toCatalogLinkData
 import ru.mercury.vpclient.shared.domain.mapper.withCenterLoading
 import ru.mercury.vpclient.shared.domain.usecase.AddCatalogProductToBasketUseCase
@@ -112,23 +112,29 @@ class DetailsViewModel @AssistedInject constructor(
                 launch {
                     employeeActiveFlowUseCase(Unit)
                         .distinctUntilChanged()
-                        .collectLatest { employee ->
-                            reduce { it.copy(activeEmployee = employee) }
-                            if (employee.isNotEmpty) {
-                                dispatch(DetailsIntent.LoadCartData)
-                            }
-                        }
+                        .collectLatest { employee -> reduce { it.copy(activeEmployee = employee) } }
                 }
             }
             is DetailsIntent.LoadCartData -> {
                 launch {
-                    val badge = runCatching { cartBadgeUseCase(Unit).getOrThrow() }.getOrDefault(0)
+                    val badge = cartBadgeUseCase(Unit).getOrThrow()
                     reduce { it.copy(cartBadge = badge) }
                 }
             }
-            is DetailsIntent.LoadProduct -> launch { loadProductUseCase(route.id).getOrThrow() }
+            is DetailsIntent.LoadProduct -> {
+                launch {
+                    val params = LoadProductUseCase.Params(
+                        id = route.id,
+                        itemId = route.itemId,
+                        colorId = route.colorId
+                    )
+                    loadProductUseCase(params).getOrThrow()
+                }
+            }
             is DetailsIntent.BackClick -> launch {
                 when {
+                    route.isHomeRoot -> HomeRootEventManager.send(BackRoute)
+                    route.isMainRoot -> MainEventManager.send(BackRoute)
                     route.openedFromCart -> MainEventManager.send(BackRoute)
                     route.isBrandRoot -> BrandRootEventManager.send(BackRoute)
                     else -> CatalogRootEventManager.send(BackRoute)
@@ -231,6 +237,8 @@ class DetailsViewModel @AssistedInject constructor(
                             setLastCatalogRootIdUseCase(rootCategoryId).getOrThrow()
                         }
                         when {
+                            route.isHomeRoot -> HomeRootEventManager.send(resolvedRoute.copy(isHomeRoot = true))
+                            route.isMainRoot -> MainEventManager.send(resolvedRoute.copy(isMainRoot = true))
                             route.isBrandRoot -> BrandRootEventManager.send(resolvedRoute.copy(isBrandRoot = true))
                             else -> CatalogRootEventManager.send(resolvedRoute)
                         }
@@ -239,6 +247,8 @@ class DetailsViewModel @AssistedInject constructor(
             }
             is DetailsIntent.ProductClick -> launch {
                 when {
+                    route.isHomeRoot -> HomeRootEventManager.send(DetailsRoute(intent.id, isHomeRoot = true))
+                    route.isMainRoot -> MainEventManager.send(DetailsRoute(intent.id, isMainRoot = true))
                     route.openedFromCart -> MainEventManager.send(DetailsRoute(intent.id, openedFromCart = true))
                     route.isBrandRoot -> BrandRootEventManager.send(DetailsRoute(intent.id, isBrandRoot = true))
                     else -> CatalogRootEventManager.send(DetailsRoute(intent.id))

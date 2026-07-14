@@ -11,6 +11,7 @@ data class FilterRoute(
     val categoryId: Int,
     val titleCategoryId: Int,
     val subtitleCategoryId: Int,
+    val titleOverride: String? = null,
     val isSingleLineTitle: Boolean = false,
     val isFavoriteBrands: Boolean = false,
     val brandEntity: BrandEntity? = null,
@@ -18,5 +19,7 @@ data class FilterRoute(
     val hiddenFilterValueChipIds: List<String> = emptyList(),
     val viewTypeOverride: CatalogViewType? = null,
     val actionId: Int? = null,
-    val isBrandRoot: Boolean = false
+    val isBrandRoot: Boolean = false,
+    val isHomeRoot: Boolean = false,
+    val isMainRoot: Boolean = false
 ): NavKey

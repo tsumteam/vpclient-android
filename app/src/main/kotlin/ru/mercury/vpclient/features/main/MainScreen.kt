@@ -39,13 +39,14 @@ import ru.mercury.vpclient.features.brands.navigation.BrandsRoute
 import ru.mercury.vpclient.features.catalog.navigation.CatalogRoute
 import ru.mercury.vpclient.features.catalog_root.CatalogRootScreen
 import ru.mercury.vpclient.features.catalog_root.navigation.CatalogRootRoute
+import ru.mercury.vpclient.features.compilations.CompilationsScreen
+import ru.mercury.vpclient.features.compilations.navigation.CompilationsRoute
 import ru.mercury.vpclient.features.consultants.ConsultantsScreen
 import ru.mercury.vpclient.features.consultants.navigation.ConsultantsRoute
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
-import ru.mercury.vpclient.features.compilations.CompilationsScreen
-import ru.mercury.vpclient.features.compilations.navigation.CompilationsRoute
-import ru.mercury.vpclient.features.home.HomeScreen
 import ru.mercury.vpclient.features.home.navigation.HomeRoute
+import ru.mercury.vpclient.features.home_root.HomeRootScreen
+import ru.mercury.vpclient.features.home_root.navigation.HomeRootRoute
 import ru.mercury.vpclient.features.main.event.MainTabsEventManager
 import ru.mercury.vpclient.features.main.intent.MainIntent
 import ru.mercury.vpclient.features.main.model.MainModel
@@ -72,6 +73,7 @@ fun MainScreen(
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
     val mainBackStack: NavBackStack<NavKey> = rememberNavBackStack(state.selectedRoute)
+    val homeBackStack: NavBackStack<NavKey> = rememberNavBackStack(HomeRoute)
     val brandBackStack: NavBackStack<NavKey> = rememberNavBackStack(BrandsRoute)
     val catalogBackStack: NavBackStack<NavKey> = rememberNavBackStack(CatalogRoute)
     val profileBackStack: NavBackStack<NavKey> = rememberNavBackStack(ProfileRoute)
@@ -92,6 +94,7 @@ fun MainScreen(
         state = state,
         dispatch = viewModel::dispatch,
         navBackStack = mainBackStack,
+        homeNavBackStack = homeBackStack,
         brandNavBackStack = brandBackStack,
         catalogNavBackStack = catalogBackStack,
         profileNavBackStack = profileBackStack
@@ -111,15 +114,17 @@ private fun MainScreenContent(
     state: MainModel,
     dispatch: (MainIntent) -> Unit,
     navBackStack: NavBackStack<NavKey>,
+    homeNavBackStack: NavBackStack<NavKey>,
     brandNavBackStack: NavBackStack<NavKey>,
     catalogNavBackStack: NavBackStack<NavKey>,
     profileNavBackStack: NavBackStack<NavKey>
 ) {
     val dividerColor = MaterialTheme.colorScheme.outlineVariant
     val navigationSuiteScaffoldState = rememberNavigationSuiteScaffoldState()
-    val isBottomBarVisible by remember(state.selectedRoute, brandNavBackStack, catalogNavBackStack) {
+    val isBottomBarVisible by remember(state.selectedRoute, homeNavBackStack, brandNavBackStack, catalogNavBackStack) {
         derivedStateOf {
             when {
+                state.selectedRoute == HomeRootRoute -> homeNavBackStack.lastOrNull() !is DetailsRoute
                 state.selectedRoute == BrandRootRoute -> brandNavBackStack.lastOrNull() !is DetailsRoute
                 state.selectedRoute != CatalogRootRoute -> true
                 else -> catalogNavBackStack.lastOrNull() !is DetailsRoute
@@ -151,15 +156,17 @@ private fun MainScreenContent(
                 containerColor = Color.White
             ) {
                 NavigationBarItem(
-                    selected = state.selectedRoute == HomeRoute,
+                    selected = state.selectedRoute == HomeRootRoute,
                     onClick = {
                         when {
-                            state.selectedRoute != HomeRoute -> {
-                                dispatch(MainIntent.SelectTab(HomeRoute))
+                            state.selectedRoute != HomeRootRoute -> {
+                                dispatch(MainIntent.SelectTab(HomeRootRoute))
                             }
                             else -> {
                                 navBackStack.clear()
                                 navBackStack.add(state.selectedRoute)
+                                homeNavBackStack.clear()
+                                homeNavBackStack.add(HomeRoute)
                             }
                         }
                     },
@@ -419,7 +426,7 @@ private fun MainScreenContent(
             },
             modifier = Modifier.fillMaxSize(),
             entryProvider = entryProvider {
-                entry<HomeRoute> { HomeScreen() }
+                entry<HomeRootRoute> { HomeRootScreen(navBackStack = homeNavBackStack) }
                 entry<BrandRootRoute> { BrandRootScreen(navBackStack = brandNavBackStack) }
                 entry<CatalogRootRoute> { CatalogRootScreen(navBackStack = catalogNavBackStack) }
                 entry<CompilationsRoute> { CompilationsScreen() }

@@ -44,6 +44,8 @@
     <string name="main_tab_fitting">Подборки</string>
     <string name="main_tab_consultants">Консуль-\nтанты</string>
     <string name="main_tab_profile">Профиль</string>
+    <string name="home_gift_cards">ПОДАРОЧНЫЕ КАРТЫ</string>
+    <string name="home_watch_more">Смотреть еще</string>
 
     <string name="catalog_watch_all">Смотреть\nвсё</string>
     <string name="catalog_view_all">Смотреть всё</string>

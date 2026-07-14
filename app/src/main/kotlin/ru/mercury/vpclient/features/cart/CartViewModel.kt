@@ -24,58 +24,56 @@ import ru.mercury.vpclient.shared.domain.mapper.clientFullName
 import ru.mercury.vpclient.shared.domain.mapper.isFeminine
 import ru.mercury.vpclient.shared.domain.mapper.moveProductAfterDrag
 import ru.mercury.vpclient.shared.domain.mapper.withCenterLoading
-import ru.mercury.vpclient.shared.domain.usecase.AddProductSizeUseCase.AddProductSizeException
 import ru.mercury.vpclient.shared.domain.usecase.AddProductSizeUseCase
-import ru.mercury.vpclient.shared.domain.usecase.BasketHideAlternativesUseCase.BasketHideAlternativesException
+import ru.mercury.vpclient.shared.domain.usecase.AddProductSizeUseCase.AddProductSizeException
 import ru.mercury.vpclient.shared.domain.usecase.BasketHideAlternativesUseCase
-import ru.mercury.vpclient.shared.domain.usecase.BasketReturnOriginalUseCase.BasketReturnOriginalException
+import ru.mercury.vpclient.shared.domain.usecase.BasketHideAlternativesUseCase.BasketHideAlternativesException
 import ru.mercury.vpclient.shared.domain.usecase.BasketReturnOriginalUseCase
-import ru.mercury.vpclient.shared.domain.usecase.BasketShowAlternativesUseCase.BasketShowAlternativesException
+import ru.mercury.vpclient.shared.domain.usecase.BasketReturnOriginalUseCase.BasketReturnOriginalException
 import ru.mercury.vpclient.shared.domain.usecase.BasketShowAlternativesUseCase
+import ru.mercury.vpclient.shared.domain.usecase.BasketShowAlternativesUseCase.BasketShowAlternativesException
 import ru.mercury.vpclient.shared.domain.usecase.CartProductsFlowUseCase
-import ru.mercury.vpclient.shared.domain.usecase.ChangeFittingPaySwitchUseCase.ChangeFittingPaySwitchException
 import ru.mercury.vpclient.shared.domain.usecase.ChangeFittingPaySwitchUseCase
-import ru.mercury.vpclient.shared.domain.usecase.ChangePaySwitchUseCase.ChangePaySwitchException
+import ru.mercury.vpclient.shared.domain.usecase.ChangeFittingPaySwitchUseCase.ChangeFittingPaySwitchException
 import ru.mercury.vpclient.shared.domain.usecase.ChangePaySwitchUseCase
+import ru.mercury.vpclient.shared.domain.usecase.ChangePaySwitchUseCase.ChangePaySwitchException
 import ru.mercury.vpclient.shared.domain.usecase.CurrentUserUseCase
-import ru.mercury.vpclient.shared.domain.usecase.DeleteLookUseCase.DeleteLookException
 import ru.mercury.vpclient.shared.domain.usecase.DeleteLookUseCase
-import ru.mercury.vpclient.shared.domain.usecase.DeleteProductUseCase.DeleteProductException
+import ru.mercury.vpclient.shared.domain.usecase.DeleteLookUseCase.DeleteLookException
 import ru.mercury.vpclient.shared.domain.usecase.DeleteProductUseCase
-import ru.mercury.vpclient.shared.domain.usecase.DisassembleLookUseCase.DisassembleLookException
+import ru.mercury.vpclient.shared.domain.usecase.DeleteProductUseCase.DeleteProductException
 import ru.mercury.vpclient.shared.domain.usecase.DisassembleLookUseCase
+import ru.mercury.vpclient.shared.domain.usecase.DisassembleLookUseCase.DisassembleLookException
 import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
-import ru.mercury.vpclient.shared.domain.usecase.FittingReturnProductUseCase.FittingReturnProductException
-import ru.mercury.vpclient.shared.domain.usecase.FittingReturnProductUseCase
 import ru.mercury.vpclient.shared.domain.usecase.FittingCountFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.FittingReturnProductUseCase
+import ru.mercury.vpclient.shared.domain.usecase.FittingReturnProductUseCase.FittingReturnProductException
 import ru.mercury.vpclient.shared.domain.usecase.LoadAvailableColorsUseCase
 import ru.mercury.vpclient.shared.domain.usecase.LoadAvailableSizesUseCase
 import ru.mercury.vpclient.shared.domain.usecase.LoadBasketUseCase
 import ru.mercury.vpclient.shared.domain.usecase.LoadFittingUseCase
 import ru.mercury.vpclient.shared.domain.usecase.LoadProductUseCase
-import ru.mercury.vpclient.shared.domain.usecase.MoveProductsAfterDragUseCase.MoveProductsAfterDragException
 import ru.mercury.vpclient.shared.domain.usecase.MoveProductsAfterDragUseCase
+import ru.mercury.vpclient.shared.domain.usecase.MoveProductsAfterDragUseCase.MoveProductsAfterDragException
 import ru.mercury.vpclient.shared.domain.usecase.ProductFlowUseCase
-import ru.mercury.vpclient.shared.domain.usecase.RemoveAlternativeUseCase.RemoveAlternativeException
 import ru.mercury.vpclient.shared.domain.usecase.RemoveAlternativeUseCase
-import ru.mercury.vpclient.shared.domain.usecase.RemoveProductSizeUseCase.RemoveProductSizeException
+import ru.mercury.vpclient.shared.domain.usecase.RemoveAlternativeUseCase.RemoveAlternativeException
 import ru.mercury.vpclient.shared.domain.usecase.RemoveProductSizeUseCase
-import ru.mercury.vpclient.shared.domain.usecase.SetFittingProductColorUseCase.ChangeFittingLineColorException
+import ru.mercury.vpclient.shared.domain.usecase.RemoveProductSizeUseCase.RemoveProductSizeException
 import ru.mercury.vpclient.shared.domain.usecase.SetFittingProductColorUseCase
-import ru.mercury.vpclient.shared.domain.usecase.SetFittingProductSizeUseCase.ChangeFittingLineSizeException
+import ru.mercury.vpclient.shared.domain.usecase.SetFittingProductColorUseCase.ChangeFittingLineColorException
 import ru.mercury.vpclient.shared.domain.usecase.SetFittingProductSizeUseCase
-import ru.mercury.vpclient.shared.domain.usecase.SetProductColorUseCase.SetProductColorException
+import ru.mercury.vpclient.shared.domain.usecase.SetFittingProductSizeUseCase.ChangeFittingLineSizeException
 import ru.mercury.vpclient.shared.domain.usecase.SetProductColorUseCase
-import ru.mercury.vpclient.shared.domain.usecase.SetProductQuantityUseCase.SetProductQuantityException
+import ru.mercury.vpclient.shared.domain.usecase.SetProductColorUseCase.SetProductColorException
 import ru.mercury.vpclient.shared.domain.usecase.SetProductQuantityUseCase
-import ru.mercury.vpclient.shared.domain.usecase.SetProductSizeUseCase.SetProductSizeException
+import ru.mercury.vpclient.shared.domain.usecase.SetProductQuantityUseCase.SetProductQuantityException
 import ru.mercury.vpclient.shared.domain.usecase.SetProductSizeUseCase
-import ru.mercury.vpclient.shared.domain.usecase.SwitchProductWithAlternativeUseCase.SwitchProductWithAlternativeException
+import ru.mercury.vpclient.shared.domain.usecase.SetProductSizeUseCase.SetProductSizeException
 import ru.mercury.vpclient.shared.domain.usecase.SwitchProductWithAlternativeUseCase
+import ru.mercury.vpclient.shared.domain.usecase.SwitchProductWithAlternativeUseCase.SwitchProductWithAlternativeException
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.navigation.BackRoute
-
-private const val NO_AVAILABLE_COLORS_MESSAGE = "Для товара нет доступных цветов"
 
 @HiltViewModel(assistedFactory = CartViewModel.Factory::class)
 class CartViewModel @AssistedInject constructor(
@@ -326,7 +324,9 @@ class CartViewModel @AssistedInject constructor(
                     )
                 }
                 val sizePickerJob = launch {
-                    launch { loadProductUseCase(detailId).getOrThrow() }
+                    val params = LoadProductUseCase.Params(id = detailId)
+                    loadProductUseCase(params).getOrThrow()
+
                     productFlowUseCase(detailId).collectLatest { entity ->
                         entity.availableSizes?.let { sizes ->
                             reduce {
@@ -446,7 +446,7 @@ class CartViewModel @AssistedInject constructor(
                 launch {
                     val colors = loadAvailableColorsUseCase(intent.product).getOrThrow()
                     if (colors.isEmpty()) {
-                        send(CartEvent.SnackbarErrorMessage(NO_AVAILABLE_COLORS_MESSAGE))
+                        send(CartEvent.SnackbarErrorMessage("Для товара нет доступных цветов"))
                         return@launch
                     }
                     reduce {
@@ -774,7 +774,7 @@ class CartViewModel @AssistedInject constructor(
     }
 }
 
-private fun CartModel.fittingConfirmationRoute(productId: String): FittingConfirmationRoute? {
+private fun CartModel.fittingConfirmationRoute(productId: String): FittingConfirmationRoute? { // fixme
     val delivery = apiFittingDeliveries.firstOrNull { delivery ->
         delivery.products.any { product -> product.id == productId }
     } ?: return null

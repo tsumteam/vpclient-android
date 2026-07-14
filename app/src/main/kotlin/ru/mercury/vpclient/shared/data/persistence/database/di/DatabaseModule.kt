@@ -27,6 +27,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.dao.FilterValuesDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.FilterValuesQuantityDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.FittingProductDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.LoyaltyCardInfoDao
+import ru.mercury.vpclient.shared.data.persistence.database.dao.MainScreenSectionDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.PagingKeyDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.ProductDao
 import javax.inject.Singleton
@@ -120,6 +121,11 @@ object DatabaseModule {
     @Provides
     fun loyaltyCardInfoDao(database: AppDatabase): LoyaltyCardInfoDao {
         return database.loyaltyCardInfoDao()
+    }
+
+    @Provides
+    fun mainScreenSectionDao(database: AppDatabase): MainScreenSectionDao {
+        return database.mainScreenSectionDao()
     }
 
     @Provides

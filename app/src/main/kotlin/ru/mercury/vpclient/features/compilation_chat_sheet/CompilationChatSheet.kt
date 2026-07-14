@@ -34,11 +34,11 @@ import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.compilation_chat_sheet.intent.CompilationChatIntent
 import ru.mercury.vpclient.features.compilation_chat_sheet.model.CompilationChatModel
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CompilationEntity
-import ru.mercury.vpclient.shared.ui.components.ChatMessageInput
-import ru.mercury.vpclient.shared.ui.components.ChatMessageInputState
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.compilations.CompilationChatCard
 import ru.mercury.vpclient.shared.ui.components.compilations.CompilationChatCardState
+import ru.mercury.vpclient.shared.ui.components.message.MessageInput
+import ru.mercury.vpclient.shared.ui.components.message.MessageInputState
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
@@ -107,8 +107,8 @@ fun CompilationChatSheet(
                 modifier = Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 14.dp)
             )
 
-            ChatMessageInput(
-                state = ChatMessageInputState(
+            MessageInput(
+                state = MessageInputState(
                     commentText = commentText,
                     onCommentChange = { comment -> sheetDispatch(CompilationChatIntent.CommentChange(comment)) },
                     onSendClick = { sheetDispatch(CompilationChatIntent.SendClick(commentText)) }

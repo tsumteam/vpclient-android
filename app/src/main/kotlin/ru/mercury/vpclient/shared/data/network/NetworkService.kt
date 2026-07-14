@@ -100,6 +100,7 @@ import ru.mercury.vpclient.shared.data.network.request.LinkCardRequest
 import ru.mercury.vpclient.shared.data.network.request.LoyaltyLinkByPhoneRequest
 import ru.mercury.vpclient.shared.data.network.request.LoyaltyVerifyByPhoneRequest
 import ru.mercury.vpclient.shared.data.network.request.MainScreenAnalyticsReportRequest
+import ru.mercury.vpclient.shared.data.network.request.MainScreenSectionsRequest
 import ru.mercury.vpclient.shared.data.network.request.MessageGetRequest
 import ru.mercury.vpclient.shared.data.network.request.MessengerActivityReportRequest
 import ru.mercury.vpclient.shared.data.network.request.MotivationRequest
@@ -223,6 +224,7 @@ import ru.mercury.vpclient.shared.data.network.response.LooksWithStatsResponse
 import ru.mercury.vpclient.shared.data.network.response.LoyaltyLinkByPhoneResponse
 import ru.mercury.vpclient.shared.data.network.response.LoyaltyOperationResponse
 import ru.mercury.vpclient.shared.data.network.response.MainDeliveryResponse
+import ru.mercury.vpclient.shared.data.network.response.MainScreenSectionsResponse
 import ru.mercury.vpclient.shared.data.network.response.MessageReadGetResponse
 import ru.mercury.vpclient.shared.data.network.response.MessageReadResponse
 import ru.mercury.vpclient.shared.data.network.response.MessageResponse
@@ -1411,6 +1413,14 @@ class NetworkService @Inject constructor(
 
     suspend fun delivery(): BaseResponse<MainDeliveryResponse> {
         return ktorHttpClient.get("delivery").body()
+    }
+
+    suspend fun mainScreenSections(
+        request: MainScreenSectionsRequest
+    ): BaseResponse<MainScreenSectionsResponse> {
+        return ktorHttpClient.post("main-screen/sections") {
+            setBody(request)
+        }.body()
     }
 
     suspend fun employeeByEmployeeIdMyClientsFilters(
