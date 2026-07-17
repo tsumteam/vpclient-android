@@ -1,11 +1,12 @@
 package ru.mercury.vpclient.shared.domain.usecase
 
 import ru.mercury.vpclient.shared.coroutines.SharedDispatchers
+import ru.mercury.vpclient.shared.domain.usecase.AuthValidateCodeUseCase.CodeValidationError
 import javax.inject.Inject
 
 class AuthValidateCodeUseCase @Inject constructor(
     dispatchers: SharedDispatchers
-): UseCase<String, AuthValidateCodeUseCase.CodeValidationError?>(dispatchers.io) {
+): UseCase<String, CodeValidationError?>(dispatchers.io) {
 
     override suspend fun execute(params: String): CodeValidationError? {
         return when {

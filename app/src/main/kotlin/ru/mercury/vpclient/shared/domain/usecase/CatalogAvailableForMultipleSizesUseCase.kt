@@ -10,12 +10,13 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilter
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductAvailableSizesEntity
 import ru.mercury.vpclient.shared.domain.mapper.handleResponseResult
 import ru.mercury.vpclient.shared.domain.mapper.toProductAvailableSizesEntity
+import ru.mercury.vpclient.shared.domain.usecase.CatalogAvailableForMultipleSizesUseCase.ProductSizes
 import javax.inject.Inject
 
 class CatalogAvailableForMultipleSizesUseCase @Inject constructor(
     private val networkService: NetworkService,
     dispatchers: SharedDispatchers
-): UseCase<List<CatalogFilterProductsEntity>, List<CatalogAvailableForMultipleSizesUseCase.ProductSizes>>(dispatchers.io) {
+): UseCase<List<CatalogFilterProductsEntity>, List<ProductSizes>>(dispatchers.io) {
 
     override suspend fun execute(entities: List<CatalogFilterProductsEntity>): List<ProductSizes> {
         val requestEntities = entities.filter { entity ->

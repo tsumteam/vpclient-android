@@ -3,11 +3,12 @@ package ru.mercury.vpclient.shared.domain.usecase
 import ru.mercury.vpclient.shared.coroutines.SharedDispatchers
 import ru.mercury.vpclient.shared.domain.mapper.isValidPhoneNumber
 import ru.mercury.vpclient.shared.domain.mapper.normalizePhoneInput
+import ru.mercury.vpclient.shared.domain.usecase.AuthValidatePhoneUseCase.PhoneValidationError
 import javax.inject.Inject
 
 class AuthValidatePhoneUseCase @Inject constructor(
     dispatchers: SharedDispatchers
-): UseCase<String, AuthValidatePhoneUseCase.PhoneValidationError?>(dispatchers.io) {
+): UseCase<String, PhoneValidationError?>(dispatchers.io) {
 
     override suspend fun execute(params: String): PhoneValidationError? {
         val normalizedPhone = normalizePhoneInput(params)

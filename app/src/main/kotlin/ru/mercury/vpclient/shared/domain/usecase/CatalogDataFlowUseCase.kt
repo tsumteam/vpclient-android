@@ -10,6 +10,7 @@ import ru.mercury.vpclient.shared.data.persistence.datastore.PreferenceKey
 import ru.mercury.vpclient.shared.data.persistence.datastore.SettingsDataStore
 import ru.mercury.vpclient.shared.domain.mapper.isBasic
 import ru.mercury.vpclient.shared.domain.mapper.isTop
+import ru.mercury.vpclient.shared.domain.usecase.CatalogDataFlowUseCase.CatalogData
 import ru.mercury.vpclient.shared.ui.components.catalog.CatalogTabData
 import javax.inject.Inject
 
@@ -17,7 +18,7 @@ class CatalogDataFlowUseCase @Inject constructor(
     private val catalogCategoryDao: CatalogCategoryDao,
     private val settingsDataStore: SettingsDataStore,
     dispatchers: SharedDispatchers
-): FlowUseCase<Unit, CatalogDataFlowUseCase.CatalogData>(dispatchers.io) {
+): FlowUseCase<Unit, CatalogData>(dispatchers.io) {
 
     override fun execute(parameters: Unit): Flow<CatalogData> {
         return combine(

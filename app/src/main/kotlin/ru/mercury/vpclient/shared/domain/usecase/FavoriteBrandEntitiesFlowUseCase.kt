@@ -13,13 +13,14 @@ import ru.mercury.vpclient.shared.data.persistence.database.dao.FavoriteBrandDao
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FavoriteBrandEntity
 import ru.mercury.vpclient.shared.data.persistence.datastore.PreferenceKey
 import ru.mercury.vpclient.shared.data.persistence.datastore.SettingsDataStore
+import ru.mercury.vpclient.shared.domain.usecase.FavoriteBrandEntitiesFlowUseCase.FavoriteBrandEntities
 import javax.inject.Inject
 
 class FavoriteBrandEntitiesFlowUseCase @Inject constructor(
     private val favoriteBrandDao: FavoriteBrandDao,
     private val settingsDataStore: SettingsDataStore,
     dispatchers: SharedDispatchers
-): FlowUseCase<Unit, FavoriteBrandEntitiesFlowUseCase.FavoriteBrandEntities>(dispatchers.io) {
+): FlowUseCase<Unit, FavoriteBrandEntities>(dispatchers.io) {
 
     override fun execute(parameters: Unit): Flow<FavoriteBrandEntities> {
         val pairedUserIdFlow = settingsDataStore.getValueFlow(PreferenceKey.PairedUser)
