@@ -59,7 +59,6 @@ import ru.mercury.vpclient.shared.data.entity.LoyaltyCardDescription
 import ru.mercury.vpclient.shared.data.entity.LoyaltyCardType
 import ru.mercury.vpclient.shared.data.entity.ProfileLoyaltyInfoRowType
 import ru.mercury.vpclient.shared.data.persistence.database.entity.LoyaltyCardInfoEntity
-import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.profile.ProfileLoyaltyCard
@@ -67,7 +66,6 @@ import ru.mercury.vpclient.shared.ui.components.profile.ProfileLoyaltyCardState
 import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.divider
 import ru.mercury.vpclient.shared.ui.theme.livretMedium18
@@ -186,12 +184,7 @@ private fun ProfileLoyaltyInfoScreenContent(
                                 .padding(horizontal = 16.dp)
                                 .fillMaxWidth()
                                 .height(191.dp)
-                                .placeholder(
-                                    visible = true,
-                                    highlight = PlaceholderHighlight.shimmer(),
-                                    color = MaterialTheme.colorScheme.surfaceVariant,
-                                    shape = RoundedCornerShape(6.dp)
-                                )
+                                .placeholder(shape = RoundedCornerShape(6.dp))
                         )
                     }
 
@@ -201,12 +194,7 @@ private fun ProfileLoyaltyInfoScreenContent(
                                 .padding(start = 16.dp, top = 23.dp, end = 16.dp)
                                 .fillMaxWidth()
                                 .height(88.dp)
-                                .placeholder(
-                                    visible = true,
-                                    highlight = PlaceholderHighlight.shimmer(),
-                                    color = MaterialTheme.colorScheme.surfaceVariant,
-                                    shape = RoundedCornerShape(4.dp)
-                                )
+                                .placeholder(shape = RoundedCornerShape(4.dp))
                         )
                     }
 
@@ -216,12 +204,7 @@ private fun ProfileLoyaltyInfoScreenContent(
                                 .padding(start = 52.dp, top = 100.dp, end = 52.dp)
                                 .fillMaxWidth()
                                 .height(58.dp)
-                                .placeholder(
-                                    visible = true,
-                                    highlight = PlaceholderHighlight.shimmer(),
-                                    color = MaterialTheme.colorScheme.surfaceVariant,
-                                    shape = RoundedCornerShape(4.dp)
-                                )
+                                .placeholder(shape = RoundedCornerShape(4.dp))
                         )
                     }
                 }

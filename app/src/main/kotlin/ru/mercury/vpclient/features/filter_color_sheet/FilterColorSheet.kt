@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -48,14 +49,12 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesQ
 import ru.mercury.vpclient.shared.domain.mapper.colorValues
 import ru.mercury.vpclient.shared.domain.mapper.quantityWithThousandsSeparator
 import ru.mercury.vpclient.shared.domain.mapper.requireQuantity
-import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.SharedAnimatedVisibility
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.filters.FilterColorBox
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.livretMedium18
 import ru.mercury.vpclient.shared.ui.theme.medium15
@@ -131,50 +130,37 @@ fun FilterColorSheet(
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                         userScrollEnabled = false
                     ) {
-                        items(9) {
+                        items(
+                            count = 9
+                        ) {
                             Column(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                Box(
+                                Spacer(
                                     modifier = Modifier
                                         .width(67.dp)
                                         .height(67.dp)
-                                        .placeholder(
-                                            visible = true,
-                                            highlight = PlaceholderHighlight.shimmer(),
-                                            color = MaterialTheme.colorScheme.surfaceVariant,
-                                            shape = RoundedCornerShape(12.dp)
-                                        )
+                                        .placeholder(shape = RoundedCornerShape(12.dp))
                                 )
 
-                                Box(
+                                Spacer(
                                     modifier = Modifier
                                         .padding(top = 8.dp)
                                         .width(67.dp)
                                         .height(12.dp)
-                                        .placeholder(
-                                            visible = true,
-                                            highlight = PlaceholderHighlight.shimmer(),
-                                            color = MaterialTheme.colorScheme.surfaceVariant,
-                                            shape = RoundedCornerShape(4.dp)
-                                        )
+                                        .placeholder(shape = RoundedCornerShape(4.dp))
                                 )
                             }
                         }
                     }
 
-                    Box(
+                    Spacer(
                         modifier = Modifier
                             .padding(start = 16.dp, top = 0.dp, end = 16.dp, bottom = 8.dp)
                             .fillMaxWidth()
                             .height(56.dp)
-                            .placeholder(
-                                visible = true,
-                                highlight = PlaceholderHighlight.shimmer(),
-                                color = MaterialTheme.colorScheme.surfaceVariant,
-                                shape = RoundedCornerShape(8.dp)
-                            )
+                            .placeholder(shape = RoundedCornerShape(8.dp))
                     )
                 }
                 else -> {

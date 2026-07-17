@@ -83,11 +83,11 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductButton
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductOtherColorEntity
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
-import ru.mercury.vpclient.shared.ui.components.brands.BrandBox
 import ru.mercury.vpclient.shared.ui.components.SharedAnimatedVisibility
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
+import ru.mercury.vpclient.shared.ui.components.brands.BrandBox
 import ru.mercury.vpclient.shared.ui.components.cart.CartIconButton
 import ru.mercury.vpclient.shared.ui.components.cart.FittingIconButton
 import ru.mercury.vpclient.shared.ui.components.cart.MessengerIconButton
@@ -394,17 +394,13 @@ private fun DetailsScreenContent(
                     userScrollEnabled = false
                 ) {
                     item {
-                        Box(
+                        Spacer(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(start = 31.dp, top = 16.dp, end = 31.dp)
                                 .aspectRatio(3F / 4F)
                                 .clip(RoundedCornerShape(4.dp))
-                                .placeholder(
-                                    visible = true,
-                                    highlight = PlaceholderHighlight.shimmer(),
-                                    color = MaterialTheme.colorScheme.surfaceVariant
-                                )
+                                .placeholder()
                         )
                     }
                     item {
@@ -421,15 +417,10 @@ private fun DetailsScreenContent(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             repeat(3) {
-                                Box(
+                                Spacer(
                                     modifier = Modifier
                                         .size(6.dp)
-                                        .placeholder(
-                                            visible = true,
-                                            highlight = PlaceholderHighlight.shimmer(),
-                                            color = MaterialTheme.colorScheme.surfaceVariant,
-                                            shape = CircleShape
-                                        )
+                                        .placeholder(shape = CircleShape)
                                 )
                             }
                         }
@@ -445,18 +436,13 @@ private fun DetailsScreenContent(
                                 .fillMaxWidth()
                                 .padding(bottom = 12.dp)
                         ) {
-                            Box(
+                            Spacer(
                                 modifier = Modifier
                                     .align(Alignment.TopCenter)
                                     .padding(horizontal = 64.dp)
                                     .fillMaxWidth()
                                     .height(50.dp)
-                                    .placeholder(
-                                        visible = true,
-                                        highlight = PlaceholderHighlight.shimmer(),
-                                        color = MaterialTheme.colorScheme.surfaceVariant,
-                                        shape = RoundedCornerShape(4.dp)
-                                    )
+                                    .placeholder(shape = RoundedCornerShape(4.dp))
                             )
 
                             Column(
@@ -465,29 +451,19 @@ private fun DetailsScreenContent(
                                     .padding(start = 64.dp, top = 54.dp, end = 64.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                Box(
+                                Spacer(
                                     modifier = Modifier
                                         .fillMaxWidth(.8F)
                                         .height(14.dp)
-                                        .placeholder(
-                                            visible = true,
-                                            highlight = PlaceholderHighlight.shimmer(),
-                                            color = MaterialTheme.colorScheme.surfaceVariant,
-                                            shape = RoundedCornerShape(4.dp)
-                                        )
+                                        .placeholder(shape = RoundedCornerShape(4.dp))
                                 )
 
-                                Box(
+                                Spacer(
                                     modifier = Modifier
                                         .padding(top = 6.dp)
                                         .fillMaxWidth(.6F)
                                         .height(14.dp)
-                                        .placeholder(
-                                            visible = true,
-                                            highlight = PlaceholderHighlight.shimmer(),
-                                            color = MaterialTheme.colorScheme.surfaceVariant,
-                                            shape = RoundedCornerShape(4.dp)
-                                        )
+                                        .placeholder(shape = RoundedCornerShape(4.dp))
                                 )
                             }
                         }

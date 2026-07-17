@@ -43,6 +43,12 @@ import ru.mercury.vpclient.features.fitting_info.FittingInfoScreen
 import ru.mercury.vpclient.features.fitting_info.navigation.FittingInfoRoute
 import ru.mercury.vpclient.features.fitting_success.FittingSuccessScreen
 import ru.mercury.vpclient.features.fitting_success.navigation.FittingSuccessRoute
+import ru.mercury.vpclient.features.gift_card.GiftCardScreen
+import ru.mercury.vpclient.features.gift_card.navigation.GiftCardRoute
+import ru.mercury.vpclient.features.gift_card_checkout.GiftCardCheckoutScreen
+import ru.mercury.vpclient.features.gift_card_checkout.navigation.GiftCardCheckoutRoute
+import ru.mercury.vpclient.features.gift_card_result.GiftCardResultScreen
+import ru.mercury.vpclient.features.gift_card_result.navigation.GiftCardResultRoute
 import ru.mercury.vpclient.features.main.MainScreen
 import ru.mercury.vpclient.features.main.navigation.MainRoute
 import ru.mercury.vpclient.features.media.MediaScreen
@@ -100,6 +106,9 @@ fun MainActivityContent(
                 entry<FittingInfoRoute> { FittingInfoScreen(it) }
                 entry<FittingAddressesRoute> { FittingAddressesScreen(it) }
                 entry<FittingSuccessRoute> { FittingSuccessScreen(it) }
+                entry<GiftCardRoute> { GiftCardScreen() }
+                entry<GiftCardCheckoutRoute> { GiftCardCheckoutScreen(it) }
+                entry<GiftCardResultRoute> { GiftCardResultScreen(it) }
                 entry<ConsultantRoute> { ConsultantScreen(it) }
                 entry<MediaRoute> { MediaScreen(it) }
                 entry<VideoRoute> { VideoScreen(it) }
@@ -158,6 +167,15 @@ fun MainActivityContent(
                         if (navBackStack.lastOrNull() != event) {
                             navBackStack.add(event)
                         }
+                    }
+                    is GiftCardResultRoute -> {
+                        while (
+                            navBackStack.lastOrNull() is GiftCardRoute ||
+                            navBackStack.lastOrNull() is GiftCardCheckoutRoute
+                        ) {
+                            navBackStack.removeLastOrNull()
+                        }
+                        navBackStack.add(event)
                     }
                     else -> navBackStack.add(event)
                 }

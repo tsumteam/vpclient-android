@@ -1,8 +1,8 @@
 package ru.mercury.vpclient.shared.ui.components.filters
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,10 +15,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
-import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.shimmer
 
 @Composable
 fun FilterProductCardPlaceholder(
@@ -33,55 +31,35 @@ fun FilterProductCardPlaceholder(
             .padding(start = 12.dp, top = 30.dp, end = 12.dp, bottom = 12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Box(
+        Spacer(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(216.dp)
-                .placeholder(
-                    visible = true,
-                    highlight = PlaceholderHighlight.shimmer(),
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    shape = RoundedCornerShape(4.dp)
-                )
+                .placeholder(shape = RoundedCornerShape(4.dp))
         )
 
-        Box(
+        Spacer(
             modifier = Modifier
                 .padding(top = 13.dp)
                 .fillMaxWidth(.6F)
                 .height(14.dp)
-                .placeholder(
-                    visible = true,
-                    highlight = PlaceholderHighlight.shimmer(),
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    shape = RoundedCornerShape(4.dp)
-                )
+                .placeholder(shape = RoundedCornerShape(4.dp))
         )
 
-        Box(
+        Spacer(
             modifier = Modifier
                 .padding(top = 8.dp)
                 .fillMaxWidth(.4F)
                 .height(14.dp)
-                .placeholder(
-                    visible = true,
-                    highlight = PlaceholderHighlight.shimmer(),
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    shape = RoundedCornerShape(4.dp)
-                )
+                .placeholder(shape = RoundedCornerShape(4.dp))
         )
 
-        Box(
+        Spacer(
             modifier = Modifier
                 .padding(top = 8.dp)
                 .fillMaxWidth(.5F)
                 .height(14.dp)
-                .placeholder(
-                    visible = true,
-                    highlight = PlaceholderHighlight.shimmer(),
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    shape = RoundedCornerShape(4.dp)
-                )
+                .placeholder(shape = RoundedCornerShape(4.dp))
         )
     }
 }

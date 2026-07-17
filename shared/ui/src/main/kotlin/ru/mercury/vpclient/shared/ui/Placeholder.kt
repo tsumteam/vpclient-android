@@ -103,10 +103,11 @@ fun PlaceholderHighlight.Companion.shimmer(
     animationSpec = animationSpec
 )
 
+@Composable
 fun Modifier.placeholder(
-    visible: Boolean,
-    highlight: PlaceholderHighlight,
-    color: Color = Color.Unspecified,
+    visible: Boolean = true,
+    highlight: PlaceholderHighlight = PlaceholderHighlight.shimmer(),
+    color: Color = MaterialTheme.colorScheme.surfaceVariant,
     shape: Shape? = null,
     placeholderFadeTransitionSpec: @Composable Transition.Segment<Boolean>.() -> FiniteAnimationSpec<Float> = { spring() },
     contentFadeTransitionSpec: @Composable Transition.Segment<Boolean>.() -> FiniteAnimationSpec<Float> = { spring() }

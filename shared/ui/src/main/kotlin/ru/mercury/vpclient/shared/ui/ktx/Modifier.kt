@@ -11,11 +11,13 @@ import androidx.compose.ui.input.pointer.PointerId
 import androidx.compose.ui.input.pointer.pointerInput
 
 fun Modifier.clickableWithoutRipple(
+    enabled: Boolean = true,
     onClick: () -> Unit
 ): Modifier = composed {
     clickable(
         interactionSource = remember { MutableInteractionSource() },
         indication = null,
+        enabled = enabled,
         onClick = onClick
     )
 }

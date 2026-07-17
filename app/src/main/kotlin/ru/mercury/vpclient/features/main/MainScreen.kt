@@ -52,6 +52,7 @@ import ru.mercury.vpclient.features.main.intent.MainIntent
 import ru.mercury.vpclient.features.main.model.MainModel
 import ru.mercury.vpclient.features.main.navigation.MainRoute
 import ru.mercury.vpclient.features.profile.navigation.ProfileRoute
+import ru.mercury.vpclient.features.profile_orders.navigation.ProfileOrdersRoute
 import ru.mercury.vpclient.features.profile_root.ProfileRootScreen
 import ru.mercury.vpclient.features.profile_root.navigation.ProfileRootRoute
 import ru.mercury.vpclient.shared.ui.components.consultants.ConsultantsTabIcon
@@ -63,6 +64,7 @@ import ru.mercury.vpclient.shared.ui.icons.Fitting24
 import ru.mercury.vpclient.shared.ui.icons.Home24
 import ru.mercury.vpclient.shared.ui.icons.Profile24
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
+import ru.mercury.vpclient.shared.navigation.MainTab
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.regular11
 
@@ -85,8 +87,19 @@ fun MainScreen(
 
     LaunchedEffect(route.selectedTab) {
         when (route.selectedTab) {
-            MainRoute.CATALOG_TAB -> viewModel.dispatch(MainIntent.SelectTab(CatalogRootRoute))
-            MainRoute.FITTING_TAB -> viewModel.dispatch(MainIntent.SelectTab(CompilationsRoute))
+            MainTab.HOME -> {
+                viewModel.dispatch(MainIntent.SelectTab(HomeRootRoute))
+                homeBackStack.clear()
+                homeBackStack.add(HomeRoute)
+            }
+            MainTab.CATALOG -> viewModel.dispatch(MainIntent.SelectTab(CatalogRootRoute))
+            MainTab.FITTING -> viewModel.dispatch(MainIntent.SelectTab(CompilationsRoute))
+            MainTab.PROFILE_ORDERS -> {
+                viewModel.dispatch(MainIntent.SelectTab(ProfileRootRoute))
+                profileBackStack.clear()
+                profileBackStack.add(ProfileRoute)
+                profileBackStack.add(ProfileOrdersRoute)
+            }
         }
     }
 

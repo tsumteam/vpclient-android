@@ -7,6 +7,7 @@ import kotlinx.serialization.json.jsonObject
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
 import ru.mercury.vpclient.shared.data.entity.CartProductSize
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValueItemEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.GiftCardTemplateEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductAvailableSizesEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductButtonEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductOtherColorEntity
@@ -35,6 +36,32 @@ class Converter {
 
     @TypeConverter
     fun toList(data: String): List<String> {
+        return when {
+            data.isEmpty() -> emptyList()
+            else -> json.decodeFromString(data)
+        }
+    }
+
+    @TypeConverter
+    fun fromIntList(list: List<Int>): String {
+        return json.encodeToString(list)
+    }
+
+    @TypeConverter
+    fun toIntList(data: String): List<Int> {
+        return when {
+            data.isEmpty() -> emptyList()
+            else -> json.decodeFromString(data)
+        }
+    }
+
+    @TypeConverter
+    fun fromGiftCardTemplateEntityList(list: List<GiftCardTemplateEntity>): String {
+        return json.encodeToString(list)
+    }
+
+    @TypeConverter
+    fun toGiftCardTemplateEntityList(data: String): List<GiftCardTemplateEntity> {
         return when {
             data.isEmpty() -> emptyList()
             else -> json.decodeFromString(data)

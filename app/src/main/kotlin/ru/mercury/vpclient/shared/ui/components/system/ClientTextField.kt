@@ -180,12 +180,34 @@ fun ClientTextField(
     val isFocused = interactionSource.collectIsFocusedAsState().value
     val textState = rememberSyncedTextFieldState(value, onValueChange)
     val currentValue = textState.text.toString()
+    val errorColor by animateColorAsState(
+        targetValue = when {
+            accepted -> Color.Transparent
+            else -> MaterialTheme.colorScheme.error
+        },
+        animationSpec = tween(durationMillis = 150),
+        label = "client_text_field_accepted_error_border_color"
+    )
 
     TextField(
         state = textState,
         modifier = modifier
             .fillMaxWidth()
-            .height(52.dp),
+            .height(52.dp)
+            .drawWithContent {
+                drawContent()
+                when {
+                    errorColor.alpha > 0F -> {
+                        val strokeWidth = 1.dp.toPx()
+                        val cornerRadius = 8.dp.toPx()
+                        drawRoundRect(
+                            color = errorColor,
+                            cornerRadius = CornerRadius(cornerRadius, cornerRadius),
+                            style = Stroke(width = strokeWidth)
+                        )
+                    }
+                }
+            },
         enabled = enabled,
         textStyle = MaterialTheme.typography.regular15.copy(
             color = MaterialTheme.colorScheme.onBackground,

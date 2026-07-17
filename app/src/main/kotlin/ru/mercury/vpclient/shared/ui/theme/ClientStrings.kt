@@ -11,6 +11,37 @@ object ClientStrings {
     val HomeGiftCards get() = R.string.home_gift_cards
     val HomeWatchMore get() = R.string.home_watch_more
 
+    val GiftCardTitle get() = R.string.gift_card_title
+    val GiftCardAmount get() = R.string.gift_card_amount
+    val GiftCardAmountRange get() = R.string.gift_card_amount_range
+    val GiftCardTerms get() = R.string.gift_card_terms
+    val GiftCardTermsTitle get() = R.string.gift_card_terms_title
+    val GiftCardBuy get() = R.string.gift_card_buy
+    val GiftCardCheckoutTitle get() = R.string.gift_card_checkout_title
+    val GiftCardCheckoutEmailPlaceholder get() = R.string.gift_card_checkout_email_placeholder
+    val GiftCardCheckoutEmailHint get() = R.string.gift_card_checkout_email_hint
+    val GiftCardCheckoutEmailError get() = R.string.gift_card_checkout_email_error
+    val GiftCardCheckoutPhonePlaceholder get() = R.string.gift_card_checkout_phone_placeholder
+    val GiftCardCheckoutPhoneHint get() = R.string.gift_card_checkout_phone_hint
+    val GiftCardCheckoutPhoneError get() = R.string.gift_card_checkout_phone_error
+    val GiftCardCheckoutDeliveryDate get() = R.string.gift_card_checkout_delivery_date
+    val GiftCardCheckoutTotal get() = R.string.gift_card_checkout_total
+    val GiftCardCheckoutPayByCard get() = R.string.gift_card_checkout_pay_by_card
+    val GiftCardCheckoutPayBySbp get() = R.string.gift_card_checkout_pay_by_sbp
+    val GiftCardCheckoutToday get() = R.string.gift_card_checkout_today
+    val GiftCardCheckoutTomorrow get() = R.string.gift_card_checkout_tomorrow
+    val GiftCardCheckoutNow get() = R.string.gift_card_checkout_now
+    val GiftCardResultSuccessTitle get() = R.string.gift_card_result_success_title
+    val GiftCardResultNotPaidTitle get() = R.string.gift_card_result_not_paid_title
+    val GiftCardResultSuccessOrder get() = R.string.gift_card_result_success_order
+    val GiftCardResultSuccessDate get() = R.string.gift_card_result_success_date
+    val GiftCardResultSuccessEmail get() = R.string.gift_card_result_success_email
+    val GiftCardResultSuccessPin get() = R.string.gift_card_result_success_pin
+    val GiftCardResultSuccessInfo get() = R.string.gift_card_result_success_info
+    val GiftCardResultNotPaidInfo get() = R.string.gift_card_result_not_paid_info
+    val GiftCardResultPurchases get() = R.string.gift_card_result_purchases
+    val GiftCardResultHome get() = R.string.gift_card_result_home
+
     val AgreementPersonalData get() = R.string.agreement_personal_data
     val AgreementTermsOfUse get() = R.string.agreement_terms_of_use
     val AgreementPrivacyPolicy get() = R.string.agreement_privacy_policy

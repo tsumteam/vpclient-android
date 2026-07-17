@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -29,10 +30,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.ktx.clickableWithoutRipple
 import ru.mercury.vpclient.shared.ui.placeholder
-import ru.mercury.vpclient.shared.ui.shimmer
 
 data class SharedTabRowState(
     val selectedIndex: Int,
@@ -42,35 +41,6 @@ data class SharedTabRowState(
     val onSecondTabClick: () -> Unit,
     val isLoading: Boolean
 )
-
-private class SharedTabRowStateProvider: PreviewParameterProvider<SharedTabRowState> {
-    override val values: Sequence<SharedTabRowState> = sequenceOf(
-        SharedTabRowState(
-            selectedIndex = 0,
-            firstTabText = "Первая вкладка",
-            secondTabText = "Вторая вкладка",
-            onFirstTabClick = {},
-            onSecondTabClick = {},
-            isLoading = false
-        ),
-        SharedTabRowState(
-            selectedIndex = 1,
-            firstTabText = "Первая вкладка",
-            secondTabText = "Вторая вкладка",
-            onFirstTabClick = {},
-            onSecondTabClick = {},
-            isLoading = false
-        ),
-        SharedTabRowState(
-            selectedIndex = 0,
-            firstTabText = "Первая вкладка",
-            secondTabText = "Вторая вкладка",
-            onFirstTabClick = {},
-            onSecondTabClick = {},
-            isLoading = true
-        )
-    )
-}
 
 @Composable
 fun SharedTabRow(
@@ -99,28 +69,18 @@ fun SharedTabRow(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
-                    Box(
+                    Spacer(
                         modifier = Modifier
                             .weight(1F)
                             .height(36.dp)
-                            .placeholder(
-                                visible = true,
-                                highlight = PlaceholderHighlight.shimmer(),
-                                color = MaterialTheme.colorScheme.surfaceVariant,
-                                shape = RoundedCornerShape(10.dp)
-                            )
+                            .placeholder(shape = RoundedCornerShape(10.dp))
                     )
 
-                    Box(
+                    Spacer(
                         modifier = Modifier
                             .weight(1F)
                             .height(36.dp)
-                            .placeholder(
-                                visible = true,
-                                highlight = PlaceholderHighlight.shimmer(),
-                                color = MaterialTheme.colorScheme.surfaceVariant,
-                                shape = RoundedCornerShape(10.dp)
-                            )
+                            .placeholder(shape = RoundedCornerShape(10.dp))
                     )
                 }
             }
@@ -210,5 +170,34 @@ private fun SharedTabRowPreview(
     SharedTabRow(
         state = state,
         textStyle = MaterialTheme.typography.labelMedium
+    )
+}
+
+private class SharedTabRowStateProvider: PreviewParameterProvider<SharedTabRowState> {
+    override val values: Sequence<SharedTabRowState> = sequenceOf(
+        SharedTabRowState(
+            selectedIndex = 0,
+            firstTabText = "Первая вкладка",
+            secondTabText = "Вторая вкладка",
+            onFirstTabClick = {},
+            onSecondTabClick = {},
+            isLoading = false
+        ),
+        SharedTabRowState(
+            selectedIndex = 1,
+            firstTabText = "Первая вкладка",
+            secondTabText = "Вторая вкладка",
+            onFirstTabClick = {},
+            onSecondTabClick = {},
+            isLoading = false
+        ),
+        SharedTabRowState(
+            selectedIndex = 0,
+            firstTabText = "Первая вкладка",
+            secondTabText = "Вторая вкладка",
+            onFirstTabClick = {},
+            onSecondTabClick = {},
+            isLoading = true
+        )
     )
 }

@@ -20,11 +20,9 @@ import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.data.network.type.CatalogCategoryType
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogCategoryEntity
 import ru.mercury.vpclient.shared.domain.mapper.isEmpty
-import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.livretMedium19
 
 @Composable
@@ -37,11 +35,7 @@ fun CatalogClothingCard(
             .fillMaxWidth()
             .height(149.dp)
             .background(MaterialTheme.colorScheme.surfaceVariant)
-            .placeholder(
-                visible = entity.isEmpty,
-                highlight = PlaceholderHighlight.shimmer(),
-                color = MaterialTheme.colorScheme.surfaceVariant
-            )
+            .placeholder(visible = entity.isEmpty)
     ) {
         ClientAsyncImage(
             imageUrl = entity.photoUrl,

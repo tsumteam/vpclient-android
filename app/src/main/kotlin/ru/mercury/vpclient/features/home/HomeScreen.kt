@@ -54,7 +54,6 @@ import ru.mercury.vpclient.shared.data.entity.HomeSectionEntity
 import ru.mercury.vpclient.shared.data.entity.HomeSectionItemEntity
 import ru.mercury.vpclient.shared.data.entity.HomeSectionType
 import ru.mercury.vpclient.shared.data.entity.TabType
-import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.NotificationIconButton
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedPullToRefreshBox
@@ -81,7 +80,6 @@ import ru.mercury.vpclient.shared.ui.icons.Search24
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 
 @Composable
@@ -239,9 +237,8 @@ private fun HomeScreenContent(
             val pageData = state.pages[page]
 
             SharedPullToRefreshBox(
-                isRefreshing = pageData.tab in state.loadedTabs &&
-                    pageData.tab in state.loadMainScreenSectionsJobs,
-                onRefresh = { dispatch(HomeIntent.LoadMainScreenSections(pageData.tab)) },
+                isRefreshing = pageData.tab in state.refreshMainScreenSectionsJobs,
+                onRefresh = { dispatch(HomeIntent.RefreshMainScreenSections(pageData.tab)) },
                 modifier = Modifier.fillMaxSize()
             ) {
                 SharedLazyColumn(
@@ -257,11 +254,7 @@ private fun HomeScreenContent(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .aspectRatio(1627F / 1152F)
-                                        .placeholder(
-                                            visible = true,
-                                            highlight = PlaceholderHighlight.shimmer(),
-                                            color = MaterialTheme.colorScheme.surfaceVariant
-                                        )
+                                        .placeholder()
                                 )
                             }
                             item {
@@ -274,12 +267,7 @@ private fun HomeScreenContent(
                                     Spacer(
                                         modifier = Modifier
                                             .size(width = 200.dp, height = 24.dp)
-                                            .placeholder(
-                                                visible = true,
-                                                highlight = PlaceholderHighlight.shimmer(),
-                                                color = MaterialTheme.colorScheme.surfaceVariant,
-                                                shape = RoundedCornerShape(4.dp)
-                                            )
+                                            .placeholder(shape = RoundedCornerShape(4.dp))
                                     )
                                 }
                             }
@@ -298,12 +286,7 @@ private fun HomeScreenContent(
                                             modifier = Modifier
                                                 .size(width = 148.dp, height = 266.dp)
                                                 .clip(RoundedCornerShape(4.dp))
-                                                .placeholder(
-                                                    visible = true,
-                                                    highlight = PlaceholderHighlight.shimmer(),
-                                                    color = MaterialTheme.colorScheme.surfaceVariant,
-                                                    shape = RoundedCornerShape(4.dp)
-                                                )
+                                                .placeholder(shape = RoundedCornerShape(4.dp))
                                         )
                                     }
                                 }
@@ -313,11 +296,7 @@ private fun HomeScreenContent(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .aspectRatio(1627F / 1152F)
-                                        .placeholder(
-                                            visible = true,
-                                            highlight = PlaceholderHighlight.shimmer(),
-                                            color = MaterialTheme.colorScheme.surfaceVariant
-                                        )
+                                        .placeholder()
                                 )
                             }
                         }
@@ -377,7 +356,8 @@ private fun HomeScreenContent(
                                     HomeSectionType.GIFT_CARDS -> {
                                         HomeGiftCards(
                                             state = HomeGiftCardsState(
-                                                section = section
+                                                section = section,
+                                                onClick = { dispatch(HomeIntent.GiftCardsClick) }
                                             )
                                         )
                                     }

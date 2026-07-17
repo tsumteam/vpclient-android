@@ -48,7 +48,6 @@ import ru.mercury.vpclient.features.compilations.event.CompilationsEvent
 import ru.mercury.vpclient.features.compilations.intent.CompilationsIntent
 import ru.mercury.vpclient.features.compilations.model.CompilationsModel
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CompilationEntity
-import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.EmptyBox
 import ru.mercury.vpclient.shared.ui.components.EmptyBoxState
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
@@ -65,7 +64,6 @@ import ru.mercury.vpclient.shared.ui.icons.VipPlatinumEmpty
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.divider
 import ru.mercury.vpclient.shared.ui.theme.medium18
@@ -211,12 +209,7 @@ private fun CompilationsScreenContent(
                                     .padding(horizontal = 16.dp)
                                     .fillMaxWidth()
                                     .height(144.dp)
-                                    .placeholder(
-                                        visible = true,
-                                        highlight = PlaceholderHighlight.shimmer(),
-                                        color = MaterialTheme.colorScheme.surfaceVariant,
-                                        shape = RoundedCornerShape(4.dp)
-                                    )
+                                    .placeholder(shape = RoundedCornerShape(4.dp))
                             )
                         }
                     }

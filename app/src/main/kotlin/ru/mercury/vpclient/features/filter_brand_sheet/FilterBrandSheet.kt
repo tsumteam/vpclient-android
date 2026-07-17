@@ -86,12 +86,12 @@ import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.brands.BrandAlphabetScrubber
 import ru.mercury.vpclient.shared.ui.components.brands.BrandAlphabetScrubberState
-import ru.mercury.vpclient.shared.ui.components.brands.BrandSectionHeader
-import ru.mercury.vpclient.shared.ui.components.brands.BrandSectionHeaderState
 import ru.mercury.vpclient.shared.ui.components.brands.BrandChipsGrid
 import ru.mercury.vpclient.shared.ui.components.brands.BrandChipsGridState
 import ru.mercury.vpclient.shared.ui.components.brands.BrandSearchField
 import ru.mercury.vpclient.shared.ui.components.brands.BrandSearchFieldState
+import ru.mercury.vpclient.shared.ui.components.brands.BrandSectionHeader
+import ru.mercury.vpclient.shared.ui.components.brands.BrandSectionHeaderState
 import ru.mercury.vpclient.shared.ui.components.filters.FilterChip
 import ru.mercury.vpclient.shared.ui.components.filters.FilterSelectableRow
 import ru.mercury.vpclient.shared.ui.icons.Close24
@@ -284,8 +284,6 @@ fun FilterBrandSheet(
                                     .height(20.dp)
                                     .placeholder(
                                         visible = state.isLoading,
-                                        highlight = PlaceholderHighlight.shimmer(),
-                                        color = MaterialTheme.colorScheme.surfaceVariant,
                                         shape = RoundedCornerShape(4.dp)
                                     )
                             )
@@ -307,8 +305,6 @@ fun FilterBrandSheet(
                                                     .height(46.dp)
                                                     .placeholder(
                                                         visible = state.isLoading,
-                                                        highlight = PlaceholderHighlight.shimmer(),
-                                                        color = MaterialTheme.colorScheme.surfaceVariant,
                                                         shape = RoundedCornerShape(4.dp)
                                                     )
                                             )
@@ -324,8 +320,6 @@ fun FilterBrandSheet(
                                     .height(20.dp)
                                     .placeholder(
                                         visible = state.isLoading,
-                                        highlight = PlaceholderHighlight.shimmer(),
-                                        color = MaterialTheme.colorScheme.surfaceVariant,
                                         shape = RoundedCornerShape(4.dp)
                                     )
                             )
@@ -339,8 +333,6 @@ fun FilterBrandSheet(
                                     .height(48.dp)
                                     .placeholder(
                                         visible = state.isLoading,
-                                        highlight = PlaceholderHighlight.shimmer(),
-                                        color = MaterialTheme.colorScheme.surfaceVariant,
                                         shape = RoundedCornerShape(4.dp)
                                     )
                             )

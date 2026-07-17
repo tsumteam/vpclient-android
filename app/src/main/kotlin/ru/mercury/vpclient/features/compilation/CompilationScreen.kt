@@ -76,7 +76,6 @@ import ru.mercury.vpclient.features.details_message_sheet.model.DetailsChatModel
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CompilationPreviewPageEntity
 import ru.mercury.vpclient.shared.domain.mapper.messageSheetProductEntity
-import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
@@ -91,7 +90,6 @@ import ru.mercury.vpclient.shared.ui.icons.DotsMenu24
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.livretMedium18
 import ru.mercury.vpclient.shared.ui.theme.livretRegular13
@@ -377,25 +375,16 @@ private fun CompilationScreenContent(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(14.dp)
-                                    .placeholder(
-                                        visible = true,
-                                        highlight = PlaceholderHighlight.shimmer(),
-                                        color = MaterialTheme.colorScheme.surfaceVariant,
-                                        shape = RoundedCornerShape(4.dp)
-                                    )
+                                    .placeholder(shape = RoundedCornerShape(4.dp))
                             )
                         }
                     }
                     item {
-                        Box(
+                        Spacer(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .aspectRatio(3F / 4F)
-                                .placeholder(
-                                    visible = true,
-                                    highlight = PlaceholderHighlight.shimmer(),
-                                    color = MaterialTheme.colorScheme.surfaceVariant
-                                )
+                                .placeholder()
                         )
                     }
                     item {
@@ -407,15 +396,10 @@ private fun CompilationScreenContent(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             repeat(3) {
-                                Box(
+                                Spacer(
                                     modifier = Modifier
                                         .size(6.dp)
-                                        .placeholder(
-                                            visible = true,
-                                            highlight = PlaceholderHighlight.shimmer(),
-                                            color = MaterialTheme.colorScheme.surfaceVariant,
-                                            shape = CircleShape
-                                        )
+                                        .placeholder(shape = CircleShape)
                                 )
                             }
                         }
@@ -534,16 +518,8 @@ private fun CompilationScreenContent(
                                         entity = product,
                                         isInBasket = state.isProductInBasket(product),
                                         onClick = { dispatch(CompilationIntent.ProductClick(product.id)) },
-                                        onMessageIconClick = {
-                                            dispatch(CompilationIntent.ProductMessageClick(product))
-                                        },
-                                        onBasketIconClick = {
-                                            dispatch(
-                                                CompilationIntent.ProductBasketClick(
-                                                    productEntity = product
-                                                )
-                                            )
-                                        }
+                                        onMessageIconClick = { dispatch(CompilationIntent.ProductMessageClick(product)) },
+                                        onBasketIconClick = { dispatch(CompilationIntent.ProductBasketClick(product)) }
                                     ),
                                     modifier = Modifier.weight(1F)
                                 )

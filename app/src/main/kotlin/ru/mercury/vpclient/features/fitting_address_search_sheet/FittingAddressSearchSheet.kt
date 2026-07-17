@@ -52,7 +52,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.mercury.vpclient.features.fitting_address_search_sheet.intent.FittingAddressSearchSheetIntent
 import ru.mercury.vpclient.features.fitting_address_search_sheet.model.FittingAddressSearchModel
 import ru.mercury.vpclient.shared.data.entity.ClientDeliveryAddressSuggestion
-import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
@@ -60,7 +59,6 @@ import ru.mercury.vpclient.shared.ui.components.system.ClientTextField
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.livretMedium18
 import ru.mercury.vpclient.shared.ui.theme.medium15
@@ -183,12 +181,7 @@ private fun FittingAddressSearchSheetContent(
                                     .padding(horizontal = 16.dp)
                                     .wrapContentHeight(Alignment.CenterVertically)
                                     .height(44.dp)
-                                    .placeholder(
-                                        visible = true,
-                                        highlight = PlaceholderHighlight.shimmer(),
-                                        color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                                        shape = RoundedCornerShape(8.dp)
-                                    )
+                                    .placeholder(shape = RoundedCornerShape(8.dp))
                             )
                         }
                     }

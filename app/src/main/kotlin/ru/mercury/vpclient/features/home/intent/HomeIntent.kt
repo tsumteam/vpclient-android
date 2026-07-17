@@ -16,8 +16,10 @@ sealed interface HomeIntent: Intent {
     data object CartClick: HomeIntent
     data object FittingClick: HomeIntent
     data object MessengerClick: HomeIntent
+    data object GiftCardsClick: HomeIntent
     data object CollectMainScreenSections: HomeIntent
     data class LoadMainScreenSections(val tab: TabType): HomeIntent
+    data class RefreshMainScreenSections(val tab: TabType): HomeIntent
     data class SelectTab(val tab: TabType): HomeIntent
     data class ProductClick(val item: HomeSectionItemEntity): HomeIntent
     data class SectionItemClick(val item: HomeSectionItemEntity): HomeIntent

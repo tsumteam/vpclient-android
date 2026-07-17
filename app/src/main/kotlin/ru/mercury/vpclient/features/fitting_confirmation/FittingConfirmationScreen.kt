@@ -76,7 +76,6 @@ import ru.mercury.vpclient.shared.data.entity.FittingConfirmationDeliveryMode
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationPlaceType
 import ru.mercury.vpclient.shared.domain.mapper.itemsCount
 import ru.mercury.vpclient.shared.domain.mapper.title
-import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.LoadingBox
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
@@ -98,7 +97,6 @@ import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.disabled
 import ru.mercury.vpclient.shared.ui.theme.medium13
@@ -271,8 +269,6 @@ private fun FittingConfirmationScreenContent(
                         .height(52.dp)
                         .placeholder(
                             visible = state.isInitialIntervalsLoading,
-                            highlight = PlaceholderHighlight.shimmer(),
-                            color = MaterialTheme.colorScheme.surfaceVariant,
                             shape = RoundedCornerShape(8.dp)
                         ),
                     enabled = state.isConfirmEnabled,

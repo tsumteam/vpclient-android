@@ -22,6 +22,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.dao.FavoriteBrandDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.FilterValuesDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.FilterValuesQuantityDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.FittingProductDao
+import ru.mercury.vpclient.shared.data.persistence.database.dao.GiftCardDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.LoyaltyCardInfoDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.MainScreenSectionDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.PagingKeyDao
@@ -44,6 +45,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.FavoriteBrand
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesQuantityEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FittingProductEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.GiftCardEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.LoyaltyCardInfoEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.MainScreenSectionEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.MainScreenSectionItemEntity
@@ -70,6 +72,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
         EmployeeBadgeEntity::class,
         FavoriteBrandEntity::class,
         FittingProductEntity::class,
+        GiftCardEntity::class,
         LoyaltyCardInfoEntity::class,
         MainScreenSectionEntity::class,
         MainScreenSectionItemEntity::class,
@@ -101,12 +104,13 @@ abstract class AppDatabase: RoomDatabase() {
     abstract fun productDao(): ProductDao
     abstract fun cartProductDao(): CartProductDao
     abstract fun fittingProductDao(): FittingProductDao
+    abstract fun giftCardDao(): GiftCardDao
     abstract fun activityCounterDao(): ActivityCounterDao
     abstract fun loyaltyCardInfoDao(): LoyaltyCardInfoDao
     abstract fun mainScreenSectionDao(): MainScreenSectionDao
 
     companion object {
         const val DATABASE_NAME = "vpclient.db"
-        const val DATABASE_VERSION = 85
+        const val DATABASE_VERSION = 86
     }
 }

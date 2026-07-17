@@ -5,6 +5,7 @@ package ru.mercury.vpclient.features.filter_values_sheet
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -46,7 +47,6 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesQ
 import ru.mercury.vpclient.shared.domain.mapper.quantityWithThousandsSeparator
 import ru.mercury.vpclient.shared.domain.mapper.requireQuantity
 import ru.mercury.vpclient.shared.domain.mapper.values
-import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.SharedAnimatedVisibility
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
@@ -54,7 +54,6 @@ import ru.mercury.vpclient.shared.ui.components.filters.FilterSelectableRow
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.livretMedium18
 import ru.mercury.vpclient.shared.ui.theme.medium15
@@ -121,32 +120,22 @@ fun FilterValuesSheet(
                             .heightIn(max = 360.dp)
                     ) {
                         repeat(4) {
-                            Box(
+                            Spacer(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(start = 16.dp, end = 16.dp, bottom = 4.dp)
                                     .height(48.dp)
-                                    .placeholder(
-                                        visible = true,
-                                        highlight = PlaceholderHighlight.shimmer(),
-                                        color = MaterialTheme.colorScheme.surfaceVariant,
-                                        shape = RoundedCornerShape(4.dp)
-                                    )
+                                    .placeholder(shape = RoundedCornerShape(4.dp))
                             )
                         }
                     }
 
-                    Box(
+                    Spacer(
                         modifier = Modifier
                             .padding(start = 16.dp, top = 28.dp, end = 16.dp, bottom = 8.dp)
                             .fillMaxWidth()
                             .height(56.dp)
-                            .placeholder(
-                                visible = true,
-                                highlight = PlaceholderHighlight.shimmer(),
-                                color = MaterialTheme.colorScheme.surfaceVariant,
-                                shape = RoundedCornerShape(8.dp)
-                            )
+                            .placeholder(shape = RoundedCornerShape(8.dp))
                     )
                 }
                 else -> {
@@ -187,8 +176,6 @@ fun FilterValuesSheet(
                                 .height(52.dp)
                                 .placeholder(
                                     visible = state.isLoading,
-                                    highlight = PlaceholderHighlight.shimmer(),
-                                    color = MaterialTheme.colorScheme.surfaceVariant,
                                     shape = RoundedCornerShape(8.dp)
                                 ),
                             enabled = !state.isProductsQuantityLoading,

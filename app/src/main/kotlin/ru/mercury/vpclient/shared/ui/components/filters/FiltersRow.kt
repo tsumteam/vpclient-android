@@ -1,9 +1,9 @@
 package ru.mercury.vpclient.shared.ui.components.filters
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -13,7 +13,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -32,10 +31,8 @@ import ru.mercury.vpclient.shared.data.entity.FilterChip
 import ru.mercury.vpclient.shared.data.entity.FilterRibbonData
 import ru.mercury.vpclient.shared.domain.mapper.isEmpty
 import ru.mercury.vpclient.shared.domain.mapper.isNotEmpty
-import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.shimmer
 
 data class FiltersRowState(
     val filterRibbonData: FilterRibbonData = FilterRibbonData.Empty,
@@ -160,30 +157,20 @@ fun FiltersRow(
             when {
                 isLoading -> {
                     item {
-                        Box(
+                        Spacer(
                             modifier = Modifier
                                 .size(34.dp)
-                                .placeholder(
-                                    visible = true,
-                                    highlight = PlaceholderHighlight.shimmer(),
-                                    color = MaterialTheme.colorScheme.surfaceVariant,
-                                    shape = RoundedCornerShape(10.dp)
-                                )
+                                .placeholder(shape = RoundedCornerShape(10.dp))
                         )
                     }
                     items(
                         items = listOf(112.dp, 96.dp, 104.dp, 112.dp)
                     ) { width ->
-                        Box(
+                        Spacer(
                             modifier = Modifier
                                 .width(width)
                                 .height(34.dp)
-                                .placeholder(
-                                    visible = true,
-                                    highlight = PlaceholderHighlight.shimmer(),
-                                    color = MaterialTheme.colorScheme.surfaceVariant,
-                                    shape = RoundedCornerShape(10.dp)
-                                )
+                                .placeholder(shape = RoundedCornerShape(10.dp))
                         )
                     }
                 }
@@ -274,16 +261,11 @@ fun FiltersRow(
                     items(
                         items = listOf(120.dp, 92.dp, 108.dp, 120.dp)
                     ) { width ->
-                        Box(
+                        Spacer(
                             modifier = Modifier
                                 .width(width)
                                 .height(34.dp)
-                                .placeholder(
-                                    visible = true,
-                                    highlight = PlaceholderHighlight.shimmer(),
-                                    color = MaterialTheme.colorScheme.surfaceVariant,
-                                    shape = RoundedCornerShape(10.dp)
-                                )
+                                .placeholder(shape = RoundedCornerShape(10.dp))
                         )
                     }
                 }

@@ -12,6 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationDeliveryInterval
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
@@ -26,14 +27,15 @@ data class FittingConfirmationDaysRowState(
 fun FittingConfirmationDaysRow(
     state: FittingConfirmationDaysRowState,
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues(start = 16.dp, end = 16.dp)
+    contentPadding: PaddingValues = PaddingValues(start = 16.dp, end = 16.dp),
+    paddingTop: Dp = 24.dp
 ) {
     val days = state.intervals.distinctBy { interval -> interval.dayId }
 
     LazyRow(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = 24.dp),
+            .padding(top = paddingTop),
         contentPadding = contentPadding,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {

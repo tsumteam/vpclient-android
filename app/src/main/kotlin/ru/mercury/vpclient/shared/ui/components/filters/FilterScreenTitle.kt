@@ -23,11 +23,9 @@ import ru.mercury.vpclient.shared.data.entity.FilterTitleEntity
 import ru.mercury.vpclient.shared.data.network.type.CatalogCategoryType
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogCategoryEntity
 import ru.mercury.vpclient.shared.domain.mapper.isEmpty
-import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.ktx.clickableWithoutRipple
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.medium15
 import ru.mercury.vpclient.shared.ui.theme.regular14
 
@@ -42,7 +40,7 @@ fun FilterScreenTitle(
 
     Column(
         modifier = modifier
-            .clickableWithoutRipple(onClick)
+            .clickableWithoutRipple(onClick = onClick)
             .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(3.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -59,8 +57,6 @@ fun FilterScreenTitle(
                 .height(20.dp)
                 .placeholder(
                     visible = isTitlePlaceholderVisible,
-                    highlight = PlaceholderHighlight.shimmer(),
-                    color = MaterialTheme.colorScheme.surfaceVariant,
                     shape = RoundedCornerShape(4.dp)
                 ),
             maxLines = 1,
@@ -84,8 +80,6 @@ fun FilterScreenTitle(
                 .height(19.dp)
                 .placeholder(
                     visible = isSubtitlePlaceholderVisible,
-                    highlight = PlaceholderHighlight.shimmer(),
-                    color = MaterialTheme.colorScheme.surfaceVariant,
                     shape = RoundedCornerShape(4.dp)
                 ),
             maxLines = 1,

@@ -10,6 +10,7 @@ import ru.mercury.vpclient.features.fitting_success.model.FittingSuccessModel
 import ru.mercury.vpclient.features.main.navigation.MainRoute
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.mvi.Event
+import ru.mercury.vpclient.shared.navigation.MainTab
 import javax.inject.Inject
 
 @HiltViewModel
@@ -18,7 +19,7 @@ class FittingSuccessViewModel @Inject constructor(): ClientViewModel<FittingSucc
     override fun dispatch(intent: FittingSuccessIntent) {
         when (intent) {
             is FittingSuccessIntent.CatalogClick -> {
-                launch { MainEventManager.send(MainRoute(popUpToMain = true, selectedTab = MainRoute.CATALOG_TAB)) }
+                launch { MainEventManager.send(MainRoute(popUpToMain = true, selectedTab = MainTab.CATALOG)) }
             }
             is FittingSuccessIntent.FittingClick -> {
                 launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }

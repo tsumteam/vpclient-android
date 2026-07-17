@@ -56,7 +56,6 @@ import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.profile_orders.event.ProfileOrdersEvent
 import ru.mercury.vpclient.features.profile_orders.intent.ProfileOrdersIntent
 import ru.mercury.vpclient.features.profile_orders.model.ProfileOrdersModel
-import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.EmptyBox
 import ru.mercury.vpclient.shared.ui.components.EmptyBoxState
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
@@ -75,7 +74,6 @@ import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.ktx.isRefreshLoading
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.divider
 import ru.mercury.vpclient.shared.ui.theme.medium18
@@ -225,8 +223,6 @@ private fun ProfileOrdersScreenContent(
                                         .height(205.dp)
                                         .placeholder(
                                             visible = pagingItems.isRefreshLoading,
-                                            highlight = PlaceholderHighlight.shimmer(),
-                                            color = MaterialTheme.colorScheme.surfaceContainerHigh,
                                             shape = RoundedCornerShape(4.dp)
                                         )
                                 )

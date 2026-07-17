@@ -13,6 +13,7 @@ import ru.mercury.vpclient.features.catalog.model.CatalogModel
 import ru.mercury.vpclient.features.catalog_root.event.CatalogRootEventManager
 import ru.mercury.vpclient.features.category.navigation.CategoryRoute
 import ru.mercury.vpclient.features.filter.navigation.FilterRoute
+import ru.mercury.vpclient.features.gift_card.navigation.GiftCardRoute
 import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.network.type.CatalogCategoryType
 import ru.mercury.vpclient.shared.data.network.type.CatalogViewType
@@ -58,27 +59,21 @@ class CatalogViewModel @Inject constructor(
                 launch {
                     cartCountFlowUseCase(Unit)
                         .distinctUntilChanged()
-                        .collectLatest { count ->
-                            reduce { it.copy(cartCount = count) }
-                        }
+                        .collectLatest { count -> reduce { it.copy(cartCount = count) } }
                 }
             }
             is CatalogIntent.CollectFittingCount -> {
                 launch {
                     fittingCountFlowUseCase(Unit)
                         .distinctUntilChanged()
-                        .collectLatest { count ->
-                            reduce { it.copy(fittingCount = count) }
-                        }
+                        .collectLatest { count -> reduce { it.copy(fittingCount = count) } }
                 }
             }
             is CatalogIntent.CollectActiveEmployee -> {
                 launch {
                     employeeActiveFlowUseCase(Unit)
                         .distinctUntilChanged()
-                        .collectLatest { employee ->
-                            reduce { it.copy(activeEmployee = employee) }
-                        }
+                        .collectLatest { employee -> reduce { it.copy(activeEmployee = employee) } }
                 }
             }
             is CatalogIntent.LoadCatalogCategoriesTop -> {
@@ -90,19 +85,22 @@ class CatalogViewModel @Inject constructor(
             }
             is CatalogIntent.CategoryClick -> {
                 val entity = intent.entity
-                val route = when (entity.categoryType) {
+                when (entity.categoryType) {
+                    CatalogCategoryType.GIFT_CARD -> launch { MainEventManager.send(GiftCardRoute) }
                     CatalogCategoryType.ACTION -> {
-                        FilterRoute(
+                        val route = FilterRoute(
                             categoryId = entity.rootId,
                             titleCategoryId = entity.rootId,
                             subtitleCategoryId = entity.id,
                             viewTypeOverride = CatalogViewType.CATALOG_LEVEL_3,
                             actionId = entity.id
                         )
+                        launch { CatalogRootEventManager.send(route) }
                     }
-                    else -> CategoryRoute(entity.id)
+                    else -> {
+                        launch { CatalogRootEventManager.send(CategoryRoute(entity.id)) }
+                    }
                 }
-                launch { CatalogRootEventManager.send(route) }
             }
             is CatalogIntent.CartClick -> launch { MainEventManager.send(CartRoute()) }
             is CatalogIntent.FittingClick -> {

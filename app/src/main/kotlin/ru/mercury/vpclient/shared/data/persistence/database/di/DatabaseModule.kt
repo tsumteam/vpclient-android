@@ -26,6 +26,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.dao.FavoriteBrandDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.FilterValuesDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.FilterValuesQuantityDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.FittingProductDao
+import ru.mercury.vpclient.shared.data.persistence.database.dao.GiftCardDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.LoyaltyCardInfoDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.MainScreenSectionDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.PagingKeyDao
@@ -117,6 +118,11 @@ object DatabaseModule {
 
     @Provides
     fun fittingProductDao(database: AppDatabase): FittingProductDao = database.fittingProductDao()
+
+    @Provides
+    fun giftCardDao(database: AppDatabase): GiftCardDao {
+        return database.giftCardDao()
+    }
 
     @Provides
     fun loyaltyCardInfoDao(database: AppDatabase): LoyaltyCardInfoDao {

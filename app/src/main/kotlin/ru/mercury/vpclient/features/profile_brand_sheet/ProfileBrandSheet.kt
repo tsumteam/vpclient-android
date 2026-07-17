@@ -61,7 +61,6 @@ import ru.mercury.vpclient.features.profile_brand_sheet.intent.ProfileBrandSheet
 import ru.mercury.vpclient.features.profile_brand_sheet.model.ProfileBrandSheetModel
 import ru.mercury.vpclient.features.profile_brand_sheet.model.ProfileBrandSheetModel.ProfileBrandSection
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogBrandEntity
-import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
@@ -76,7 +75,6 @@ import ru.mercury.vpclient.shared.ui.icons.Unfavorited40
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.livretMedium18
 import ru.mercury.vpclient.shared.ui.theme.livretMedium19
@@ -193,8 +191,6 @@ private fun ProfileBrandSheetContent(
                             .padding(horizontal = 16.dp)
                             .placeholder(
                                 visible = state.isLoading,
-                                highlight = PlaceholderHighlight.shimmer(),
-                                color = MaterialTheme.colorScheme.surfaceVariant,
                                 shape = RoundedCornerShape(8.dp)
                             )
                     )
@@ -218,8 +214,6 @@ private fun ProfileBrandSheetContent(
                             .height(52.dp)
                             .placeholder(
                                 visible = state.isLoading,
-                                highlight = PlaceholderHighlight.shimmer(),
-                                color = MaterialTheme.colorScheme.surfaceVariant,
                                 shape = RoundedCornerShape(8.dp)
                             ),
                         enabled = !state.isLoading && !state.isSaving,
@@ -276,8 +270,6 @@ private fun ProfileBrandSheetContent(
                                     .height(48.dp)
                                     .placeholder(
                                         visible = state.isLoading,
-                                        highlight = PlaceholderHighlight.shimmer(),
-                                        color = MaterialTheme.colorScheme.surfaceVariant,
                                         shape = RoundedCornerShape(4.dp)
                                     )
                             )

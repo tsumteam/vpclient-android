@@ -48,7 +48,6 @@ import ru.mercury.vpclient.features.profile_order.model.ProfileOrderModel
 import ru.mercury.vpclient.features.profile_order.navigation.ProfileOrderRoute
 import ru.mercury.vpclient.shared.data.PREFIX_SPACE
 import ru.mercury.vpclient.shared.data.event.ProfileOrderDeliveryGroupState
-import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.InfoItem
 import ru.mercury.vpclient.shared.ui.components.InfoItemState
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
@@ -59,7 +58,6 @@ import ru.mercury.vpclient.shared.ui.icons.ChevronEnd24
 import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.divider
 import ru.mercury.vpclient.shared.ui.theme.medium14
@@ -167,12 +165,7 @@ private fun ProfileOrderScreenContent(
                                     else -> 179.dp
                                 }
                             )
-                            .placeholder(
-                                visible = true,
-                                highlight = PlaceholderHighlight.shimmer(),
-                                color = MaterialTheme.colorScheme.surfaceVariant,
-                                shape = RoundedCornerShape(4.dp)
-                            )
+                            .placeholder(shape = RoundedCornerShape(4.dp))
                     )
                 }
             } else {

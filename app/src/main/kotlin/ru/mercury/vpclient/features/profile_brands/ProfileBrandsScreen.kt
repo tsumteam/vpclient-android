@@ -55,7 +55,6 @@ import ru.mercury.vpclient.features.profile_brands.model.ProfileBrandsModel
 import ru.mercury.vpclient.shared.data.entity.TabType
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FavoriteBrandEntity
 import ru.mercury.vpclient.shared.domain.usecase.FavoriteBrandEntitiesFlowUseCase.FavoriteBrandEntities
-import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.EmptyBox
 import ru.mercury.vpclient.shared.ui.components.EmptyBoxState
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
@@ -70,7 +69,6 @@ import ru.mercury.vpclient.shared.ui.icons.VipPlatinumFavoriteBrands
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.divider
 import ru.mercury.vpclient.shared.ui.theme.medium15
@@ -198,8 +196,6 @@ private fun ProfileBrandsScreenContent(
                     .height(52.dp)
                     .placeholder(
                         visible = state.isLoading,
-                        highlight = PlaceholderHighlight.shimmer(),
-                        color = MaterialTheme.colorScheme.surfaceVariant,
                         shape = RoundedCornerShape(6.dp)
                     ),
                 shape = RoundedCornerShape(6.dp),
@@ -247,12 +243,7 @@ private fun ProfileBrandsScreenContent(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(48.dp)
-                                    .placeholder(
-                                        visible = true,
-                                        highlight = PlaceholderHighlight.shimmer(),
-                                        color = MaterialTheme.colorScheme.surfaceVariant,
-                                        shape = RoundedCornerShape(4.dp)
-                                    )
+                                    .placeholder(shape = RoundedCornerShape(4.dp))
                             )
                         }
                     }

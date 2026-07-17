@@ -614,8 +614,6 @@ private fun FilterScreenContent(
                                 .align(Alignment.CenterHorizontally)
                                 .placeholder(
                                     visible = pagingItems.isRefreshLoading || !state.isBrandFavoritesBarVisible,
-                                    highlight = PlaceholderHighlight.shimmer(),
-                                    color = MaterialTheme.colorScheme.surfaceVariant,
                                     shape = RoundedCornerShape(4.dp)
                                 )
                         ) {

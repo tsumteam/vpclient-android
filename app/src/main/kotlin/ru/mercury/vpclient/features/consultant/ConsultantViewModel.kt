@@ -28,6 +28,7 @@ import ru.mercury.vpclient.shared.domain.usecase.MyEmployeeUseCase
 import ru.mercury.vpclient.shared.domain.usecase.MyEmployeeUseCase.MyEmployeeException
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.navigation.BackRoute
+import ru.mercury.vpclient.shared.navigation.MainTab
 
 @HiltViewModel(assistedFactory = ConsultantViewModel.Factory::class)
 class ConsultantViewModel @AssistedInject constructor(
@@ -75,7 +76,7 @@ class ConsultantViewModel @AssistedInject constructor(
                             MainEventManager.send(
                                 MainRoute(
                                     popUpToMain = true,
-                                    selectedTab = MainRoute.FITTING_TAB
+                                    selectedTab = MainTab.FITTING
                                 )
                             )
                         }

@@ -18,7 +18,8 @@ data class HomeModel(
     val selectedTab: TabType = TabType.WOMAN,
     val pages: List<HomePage> = TabType.entries.map { tab -> HomePage(tab) },
     val loadedTabs: Set<TabType> = emptySet(),
-    val loadMainScreenSectionsJobs: Map<TabType, Job> = emptyMap()
+    val loadMainScreenSectionsJobs: Map<TabType, Job> = emptyMap(),
+    val refreshMainScreenSectionsJobs: Map<TabType, Job> = emptyMap()
 ): Model {
 
     val currentHomeSectionEntities: List<HomeSectionEntity>
@@ -28,7 +29,7 @@ data class HomeModel(
         get() = selectedTab !in loadedTabs
 
     val isCurrentPageRefreshing: Boolean
-        get() = selectedTab in loadedTabs && selectedTab in loadMainScreenSectionsJobs
+        get() = selectedTab in refreshMainScreenSectionsJobs
 
     val cartText: String
         get() = when {

@@ -61,7 +61,6 @@ import ru.mercury.vpclient.shared.data.entity.BrandsPage
 import ru.mercury.vpclient.shared.data.entity.BrandsSection
 import ru.mercury.vpclient.shared.data.entity.TabType
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogBrandEntity
-import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.SharedAnimatedVisibility
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
@@ -85,7 +84,6 @@ import ru.mercury.vpclient.shared.ui.icons.Search24
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.livretMedium18
 import ru.mercury.vpclient.shared.ui.theme.medium18
@@ -259,12 +257,7 @@ private fun BrandsScreenContent(
                                 modifier = Modifier
                                     .width(112.dp)
                                     .height(20.dp)
-                                    .placeholder(
-                                        visible = true,
-                                        highlight = PlaceholderHighlight.shimmer(),
-                                        color = MaterialTheme.colorScheme.surfaceVariant,
-                                        shape = RoundedCornerShape(4.dp)
-                                    )
+                                    .placeholder(shape = RoundedCornerShape(4.dp))
                             )
                         }
                         item {
@@ -282,12 +275,7 @@ private fun BrandsScreenContent(
                                                 modifier = Modifier
                                                     .weight(1F)
                                                     .height(46.dp)
-                                                    .placeholder(
-                                                        visible = true,
-                                                        highlight = PlaceholderHighlight.shimmer(),
-                                                        color = MaterialTheme.colorScheme.surfaceVariant,
-                                                        shape = RoundedCornerShape(4.dp)
-                                                    )
+                                                    .placeholder(shape = RoundedCornerShape(4.dp))
                                             )
                                         }
                                     }
@@ -299,12 +287,7 @@ private fun BrandsScreenContent(
                                 modifier = Modifier
                                     .width(112.dp)
                                     .height(20.dp)
-                                    .placeholder(
-                                        visible = true,
-                                        highlight = PlaceholderHighlight.shimmer(),
-                                        color = MaterialTheme.colorScheme.surfaceVariant,
-                                        shape = RoundedCornerShape(4.dp)
-                                    )
+                                    .placeholder(shape = RoundedCornerShape(4.dp))
                             )
                         }
                         item { Spacer(modifier = Modifier.height(8.dp)) }
@@ -314,12 +297,7 @@ private fun BrandsScreenContent(
                                     .fillMaxWidth()
                                     .padding(top = 8.dp)
                                     .height(48.dp)
-                                    .placeholder(
-                                        visible = true,
-                                        highlight = PlaceholderHighlight.shimmer(),
-                                        color = MaterialTheme.colorScheme.surfaceVariant,
-                                        shape = RoundedCornerShape(4.dp)
-                                    )
+                                    .placeholder(shape = RoundedCornerShape(4.dp))
                             )
                         }
                     }
@@ -497,9 +475,39 @@ private fun BrandsScreenContentPreview(
 
 private class BrandsModelProvider: PreviewParameterProvider<BrandsModel> {
     private val entities = listOf(
-        CatalogBrandEntity("", 2, "Женское", 1, "Alexander McQueen", null, false, false, null),
-        CatalogBrandEntity("", 2, "Женское", 2, "Balenciaga", null, true, true, null),
-        CatalogBrandEntity("", 2, "Женское", 3, "LOEWE", null, true, false, null)
+        CatalogBrandEntity(
+            pairedUserId = "",
+            categoryId = 2,
+            categoryName = "Женское",
+            brandId = 1,
+            name = "Alexander McQueen",
+            photoUrl = null,
+            isTopBrand = false,
+            isFavorite = false,
+            restrictionType = null
+        ),
+        CatalogBrandEntity(
+            pairedUserId = "",
+            categoryId = 2,
+            categoryName = "Женское",
+            brandId = 2,
+            name = "Balenciaga",
+            photoUrl = null,
+            isTopBrand = true,
+            isFavorite = true,
+            restrictionType = null
+        ),
+        CatalogBrandEntity(
+            pairedUserId = "",
+            categoryId = 2,
+            categoryName = "Женское",
+            brandId = 3,
+            name = "LOEWE",
+            photoUrl = null,
+            isTopBrand = true,
+            isFavorite = false,
+            restrictionType = null
+        )
     )
 
     private val contentPage = BrandsPage(

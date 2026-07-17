@@ -1786,8 +1786,12 @@ class NetworkService @Inject constructor(
         return ktorHttpClient.get("fittings/$pairedUserId/for-checkout").body()
     }
 
-    suspend fun giftCards(): BaseResponse<GiftCardResponse> {
-        return ktorHttpClient.get("gift-cards").body()
+    suspend fun giftCards(
+        category: String
+    ): BaseResponse<GiftCardResponse> {
+        return ktorHttpClient.get("gift-cards") {
+            appendQueryParameter("category", category)
+        }.body()
     }
 
     suspend fun giftCardsUpdate(): BaseResponse<JsonElement> {

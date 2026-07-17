@@ -28,10 +28,8 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogCatego
 import ru.mercury.vpclient.shared.data.persistence.database.pojo.SubcategoryPojo
 import ru.mercury.vpclient.shared.domain.mapper.isEmpty
 import ru.mercury.vpclient.shared.domain.mapper.isNotEmpty
-import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.livretMedium18
 
 @Composable
@@ -54,11 +52,7 @@ fun CatalogCategorySection(
                         .fillMaxWidth()
                         .padding(start = 64.dp, top = 9.dp, end = 64.dp)
                         .height(24.dp)
-                        .placeholder(
-                            visible = true,
-                            highlight = PlaceholderHighlight.shimmer(),
-                            shape = RoundedCornerShape(4.dp)
-                        )
+                        .placeholder(shape = RoundedCornerShape(4.dp))
                 )
 
                 LazyRow(
@@ -69,7 +63,9 @@ fun CatalogCategorySection(
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                     userScrollEnabled = false
                 ) {
-                    items(count = 4) {
+                    items(
+                        count = 4
+                    ) {
                         CatalogSubcategoryCard(
                             entity = CatalogCategoryEntity.Empty
                         )

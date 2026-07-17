@@ -69,3 +69,9 @@ val ColorScheme.primary40: Color
 
 val ColorScheme.secondary2: Color
     get() = Color(0xFF363636)
+
+val ColorScheme.midnightBlue: Color
+    get() = Color(0xFF251052)
+
+val ColorScheme.darkGray: Color
+    get() = Color(0xFFAAA6BA)

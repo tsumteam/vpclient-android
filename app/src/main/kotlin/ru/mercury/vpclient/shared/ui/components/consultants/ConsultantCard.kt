@@ -99,7 +99,6 @@ fun ConsultantCard(
                         .padding(start = 16.dp, end = 8.dp)
                         .placeholder(
                             visible = employeePojo == EmployeePojo.Empty,
-                            highlight = PlaceholderHighlight.shimmer(),
                             shape = RoundedCornerShape(4.dp)
                         )
                 ) {
@@ -112,6 +111,7 @@ fun ConsultantCard(
                             letterSpacing = .2.sp
                         )
                     )
+
                     BrandBox(
                         entity = BrandEntity(
                             brand = employeePojo.entity.employeeBrand,

@@ -21,12 +21,10 @@ import ru.mercury.vpclient.shared.domain.mapper.fittingText
 import ru.mercury.vpclient.shared.domain.mapper.hasBasketBadge
 import ru.mercury.vpclient.shared.domain.mapper.hasFittingBadge
 import ru.mercury.vpclient.shared.domain.mapper.messengerBadge
-import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.icons.Chat24
 import ru.mercury.vpclient.shared.ui.icons.Selection24
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 
 @Composable
@@ -46,7 +44,6 @@ fun ConsultantActionsRow(
                 .weight(1F)
                 .placeholder(
                     visible = employeePojo == EmployeePojo.Empty,
-                    highlight = PlaceholderHighlight.shimmer(),
                     shape = RoundedCornerShape(4.dp)
                 )
         )
@@ -62,7 +59,6 @@ fun ConsultantActionsRow(
                 .weight(1F)
                 .placeholder(
                     visible = employeePojo == EmployeePojo.Empty,
-                    highlight = PlaceholderHighlight.shimmer(),
                     shape = RoundedCornerShape(4.dp)
                 )
         )
@@ -78,7 +74,6 @@ fun ConsultantActionsRow(
                 .weight(1F)
                 .placeholder(
                     visible = employeePojo == EmployeePojo.Empty,
-                    highlight = PlaceholderHighlight.shimmer(),
                     shape = RoundedCornerShape(4.dp)
                 )
         )
@@ -92,7 +87,6 @@ fun ConsultantActionsRow(
                 .weight(1F)
                 .placeholder(
                     visible = employeePojo == EmployeePojo.Empty,
-                    highlight = PlaceholderHighlight.shimmer(),
                     shape = RoundedCornerShape(4.dp)
                 )
         )
@@ -106,7 +100,6 @@ fun ConsultantActionsRow(
                 .weight(1F)
                 .placeholder(
                     visible = employeePojo == EmployeePojo.Empty,
-                    highlight = PlaceholderHighlight.shimmer(),
                     shape = RoundedCornerShape(4.dp)
                 )
         )

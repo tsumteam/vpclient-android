@@ -70,7 +70,6 @@ import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.entity.LoyaltyCardType
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.LoyaltyCardInfoEntity
-import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.IndicatorIcon
 import ru.mercury.vpclient.shared.ui.components.NotificationIconButton
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
@@ -98,7 +97,6 @@ import ru.mercury.vpclient.shared.ui.icons.VipBadge24
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.divider
 import ru.mercury.vpclient.shared.ui.theme.livretMedium18
@@ -707,12 +705,7 @@ private fun ProfileScreenContent(
                                             modifier = Modifier
                                                 .size(width = 112.dp, height = 156.dp)
                                                 .background(MaterialTheme.colorScheme.background)
-                                                .placeholder(
-                                                    visible = true,
-                                                    highlight = PlaceholderHighlight.shimmer(),
-                                                    color = MaterialTheme.colorScheme.surfaceVariant,
-                                                    shape = RoundedCornerShape(4.dp)
-                                                )
+                                                .placeholder(shape = RoundedCornerShape(4.dp))
                                         )
                                     }
                                 }

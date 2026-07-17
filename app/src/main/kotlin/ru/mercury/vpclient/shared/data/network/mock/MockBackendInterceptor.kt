@@ -108,6 +108,7 @@ class MockBackendInterceptor(
             CLIENT_ACTIVE_EMPLOYEE_ENDPOINT -> activeEmployeeResponse(context.activeMockEmployeeId)
             COMPILATIONS_CLIENT_ENDPOINT -> COMPILATIONS_CLIENT_RESPONSE
             BASKET_ENDPOINT -> BASKET_OPERATION_RESPONSE
+            GIFT_CARDS_ENDPOINT -> GIFT_CARDS_RESPONSE
             LOYALTY_LINK_BY_PHONE_ENDPOINT -> LOYALTY_LINK_BY_PHONE_RESPONSE
             LOYALTY_CARD_INFO_ENDPOINT -> context.mockLoyaltyCardNumber?.let(::loyaltyCardInfoResponse) ?: EMPTY_LOYALTY_CARD_INFO_RESPONSE
             else -> when {
@@ -193,6 +194,7 @@ class MockBackendInterceptor(
         const val COMPILATIONS_CLIENT_ENDPOINT = "compilations/client"
         const val COMPILATIONS_CLIENT_LOOK_ENDPOINT = "compilations/client/look"
         const val COMPILATIONS_CLIENT_LOOK_TO_BASKET_SUFFIX = "/to-basket"
+        const val GIFT_CARDS_ENDPOINT = "gift-cards"
         const val LOYALTY_LINK_ENDPOINT = "loyalty/link"
         const val LOYALTY_VERIFY_LINK_ENDPOINT = "loyalty/verify-link"
         const val LOYALTY_LINK_BY_PHONE_ENDPOINT = "loyalty/link-by-phone"
@@ -209,6 +211,7 @@ class MockBackendInterceptor(
         const val LOYALTY_OPERATION_RESPONSE = """{"data":{"error":null},"error":null,"errors":null,"type":null,"title":null,"status":200,"traceId":null}"""
         const val LOYALTY_LINK_BY_PHONE_RESPONSE = """{"data":{"isNeedVerification":true,"error":null},"error":null,"errors":null,"type":null,"title":null,"status":200,"traceId":null}"""
         const val EMPTY_LOYALTY_CARD_INFO_RESPONSE = """{"data":{"loyaltyCardNumber":"","bonusAmount":0,"clientName":"","typeCard":"black","qrCode":""},"error":null,"errors":null,"type":null,"title":null,"status":200,"traceId":null}"""
+        const val GIFT_CARDS_RESPONSE = """{"data":{"items":[{"id":1,"itemId":"5296464","type":"virtual","maxAmount":1000000,"minAmount":3000,"defaultAmount":50000,"presetAmounts":[50000,100000,200000,300000,500000],"templates":[{"id":1,"templateId":1,"name":"Классическая черная карта","description":"Карта в лаконичном черном дизайне — идеальный подарок.","photoUrl":"https://st.vip-platinum.ru/catalog/cards/giftcard.jpg","termOfUse":"После внесения предоплаты карта будет отправлена получателю. Срок действия карты — один год с момента активации.","orderView":0},{"id":2,"templateId":2,"name":"Бежевая карта","description":"Карта в бежевом дизайне — идеальный подарок.","photoUrl":"https://st.vip-platinum.ru/catalog/cards/promo-page-beige.png","termOfUse":"После внесения предоплаты карта будет отправлена получателю. Срок действия карты — один год с момента активации.","orderView":1}]}]},"error":null,"errors":null,"type":null,"title":null,"status":200,"traceId":null}"""
 
         val MOCK_BACKEND_ENDPOINTS = setOf(
             AUTHENTICATION_REGISTER_ENDPOINT,
@@ -219,6 +222,7 @@ class MockBackendInterceptor(
             CLIENT_ACTIVE_EMPLOYEE_ENDPOINT,
             COMPILATIONS_CLIENT_ENDPOINT,
             BASKET_ENDPOINT,
+            GIFT_CARDS_ENDPOINT,
             LOYALTY_LINK_ENDPOINT,
             LOYALTY_VERIFY_LINK_ENDPOINT,
             LOYALTY_LINK_BY_PHONE_ENDPOINT,

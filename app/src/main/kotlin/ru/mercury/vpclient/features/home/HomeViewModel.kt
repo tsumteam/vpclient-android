@@ -10,6 +10,7 @@ import ru.mercury.vpclient.features.cart.navigation.CartPage
 import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.features.filter.navigation.FilterRoute
+import ru.mercury.vpclient.features.gift_card.navigation.GiftCardRoute
 import ru.mercury.vpclient.features.home_root.event.HomeRootEventManager
 import ru.mercury.vpclient.features.home.event.HomeEvent
 import ru.mercury.vpclient.features.home.intent.HomeIntent
@@ -98,6 +99,7 @@ class HomeViewModel @Inject constructor(
                 launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
             }
             is HomeIntent.MessengerClick -> return
+            is HomeIntent.GiftCardsClick -> launch { MainEventManager.send(GiftCardRoute) }
             is HomeIntent.SearchClick -> return
             is HomeIntent.NotificationClick -> return
             is HomeIntent.CollectMainScreenSections -> {
@@ -146,6 +148,32 @@ class HomeViewModel @Inject constructor(
                         reduce { state ->
                             state.copy(
                                 loadMainScreenSectionsJobs = state.loadMainScreenSectionsJobs + (intent.tab to job)
+                            )
+                        }
+                    }
+                }
+            }
+            is HomeIntent.RefreshMainScreenSections -> {
+                when {
+                    intent.tab in stateFlow.value.loadMainScreenSectionsJobs -> return
+                    else -> {
+                        val job = launch {
+                            mainScreenSectionsUseCase(intent.tab.mainScreenCategoryType).getOrThrow()
+                            reduce { state -> state.copy(loadedTabs = state.loadedTabs + intent.tab) }
+                        }.also { launchedJob ->
+                            launchedJob.invokeOnCompletion {
+                                reduce { state ->
+                                    state.copy(
+                                        loadMainScreenSectionsJobs = state.loadMainScreenSectionsJobs - intent.tab,
+                                        refreshMainScreenSectionsJobs = state.refreshMainScreenSectionsJobs - intent.tab
+                                    )
+                                }
+                            }
+                        }
+                        reduce { state ->
+                            state.copy(
+                                loadMainScreenSectionsJobs = state.loadMainScreenSectionsJobs + (intent.tab to job),
+                                refreshMainScreenSectionsJobs = state.refreshMainScreenSectionsJobs + (intent.tab to job)
                             )
                         }
                     }

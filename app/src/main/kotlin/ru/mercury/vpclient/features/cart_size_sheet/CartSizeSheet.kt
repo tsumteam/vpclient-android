@@ -34,7 +34,6 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.cart_size_sheet.intent.CartSizeSheetIntent
 import ru.mercury.vpclient.features.cart_size_sheet.model.CartSizeSheetModel
-import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.cart.CartSizePickerLoading
 import ru.mercury.vpclient.shared.ui.components.details.DetailsSizeSelector
@@ -43,7 +42,6 @@ import ru.mercury.vpclient.shared.ui.components.details.SizeState
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.disabled
 import ru.mercury.vpclient.shared.ui.theme.livretMedium18
@@ -128,8 +126,6 @@ fun CartSizeSheet(
                     .height(52.dp)
                     .placeholder(
                         visible = state.sizeSelectorState == SizeSelectorState.Empty,
-                        highlight = PlaceholderHighlight.shimmer(),
-                        color = MaterialTheme.colorScheme.surfaceVariant,
                         shape = RoundedCornerShape(8.dp)
                     ),
                 enabled = state.sizeSelectorState.sizes.any { it.selected },

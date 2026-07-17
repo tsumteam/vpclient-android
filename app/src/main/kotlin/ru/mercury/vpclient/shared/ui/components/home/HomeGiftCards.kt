@@ -1,5 +1,6 @@
 package ru.mercury.vpclient.shared.ui.components.home
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,7 +28,8 @@ import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.livretMedium18
 
 data class HomeGiftCardsState(
-    val section: HomeSectionEntity
+    val section: HomeSectionEntity,
+    val onClick: () -> Unit
 )
 
 @Composable
@@ -36,7 +38,9 @@ fun HomeGiftCards(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
+        modifier = modifier
+            .clickable(onClick = state.onClick)
+            .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
     ) {
         Text(
             text = state.section.title.ifEmpty { stringResource(ClientStrings.HomeGiftCards) },
@@ -80,7 +84,8 @@ private class HomeGiftCardsStateProvider: PreviewParameterProvider<HomeGiftCards
                 type = HomeSectionType.GIFT_CARDS,
                 order = 1,
                 title = "ПОДАРОЧНЫЕ КАРТЫ"
-            )
+            ),
+            onClick = {}
         )
     )
 }
