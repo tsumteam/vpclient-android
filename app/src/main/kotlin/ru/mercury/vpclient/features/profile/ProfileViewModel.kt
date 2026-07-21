@@ -13,6 +13,7 @@ import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.features.profile.event.ProfileEvent
 import ru.mercury.vpclient.features.profile.intent.ProfileIntent
 import ru.mercury.vpclient.features.profile.model.ProfileModel
+import ru.mercury.vpclient.features.notifications.navigation.NotificationsRoute
 import ru.mercury.vpclient.features.profile_brands.navigation.ProfileBrandsRoute
 import ru.mercury.vpclient.features.profile_info.navigation.ProfileInfoRoute
 import ru.mercury.vpclient.features.profile_loyalty_add_card_sheet.model.ProfileLoyaltyAddCardMode
@@ -210,7 +211,7 @@ class ProfileViewModel @Inject constructor(
                 }
                 reduce { it.copy(loyaltyCardInfoJob = job) }
             }
-            is ProfileIntent.NotificationClick -> return
+            is ProfileIntent.NotificationClick -> launch { MainEventManager.send(NotificationsRoute) }
             is ProfileIntent.AddLoyaltyCardClick -> {
                 reduce {
                     it.copy(

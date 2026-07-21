@@ -10,7 +10,6 @@ sealed interface ProfileOrdersIntent: Intent {
     data object PullToRefresh: ProfileOrdersIntent
     data object RefreshCompleted: ProfileOrdersIntent
     data object BackClick: ProfileOrdersIntent
-    data object NotificationClick: ProfileOrdersIntent
     data object CartClick: ProfileOrdersIntent
     data object FittingClick: ProfileOrdersIntent
     data object MessengerClick: ProfileOrdersIntent

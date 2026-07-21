@@ -42,6 +42,7 @@ import ru.mercury.vpclient.shared.data.network.request.CatalogBrandFavoriteReque
 import ru.mercury.vpclient.shared.data.network.request.CatalogBrandsFavoriteRequest
 import ru.mercury.vpclient.shared.data.network.request.ChangeActionRequest
 import ru.mercury.vpclient.shared.data.network.request.ClientSyncRequest
+import ru.mercury.vpclient.shared.data.network.request.ClientNotificationsRequest
 import ru.mercury.vpclient.shared.data.network.request.CompilationCopyRequest
 import ru.mercury.vpclient.shared.data.network.request.CompilationCreateRequest
 import ru.mercury.vpclient.shared.data.network.request.CompilationLookSaveRequest
@@ -164,6 +165,8 @@ import ru.mercury.vpclient.shared.data.network.response.CatalogScanHistoryDtoRes
 import ru.mercury.vpclient.shared.data.network.response.CheckOutAddressesDtoResponse
 import ru.mercury.vpclient.shared.data.network.response.CheckUserResponse
 import ru.mercury.vpclient.shared.data.network.response.ClientActivityInfoItemsResponse
+import ru.mercury.vpclient.shared.data.network.response.ClientNotificationsFiltersResponse
+import ru.mercury.vpclient.shared.data.network.response.ClientNotificationsResponse
 import ru.mercury.vpclient.shared.data.network.response.ClientAddressDtoResponse
 import ru.mercury.vpclient.shared.data.network.response.ClientAddressWithCoordinateItemsResponse
 import ru.mercury.vpclient.shared.data.network.response.CompilationItemsResponse
@@ -373,6 +376,26 @@ class NetworkService @Inject constructor(
 
     suspend fun clientActiveEmployee(): BaseResponse<EmployeeResponse> {
         return ktorHttpClient.get("client/active-employee").body()
+    }
+
+    suspend fun clientNotificationsFilters(
+        request: ClientNotificationsRequest
+    ): BaseResponse<ClientNotificationsFiltersResponse> {
+        return ktorHttpClient.post("client-notifications/filters") {
+            setBody(request)
+        }.body()
+    }
+
+    suspend fun clientNotifications(
+        limit: Int,
+        paginationToken: String? = null,
+        request: ClientNotificationsRequest
+    ): BaseResponse<ClientNotificationsResponse> {
+        return ktorHttpClient.post("client-notifications") {
+            appendQueryParameter("limit", limit)
+            appendQueryParameter("paginationToken", paginationToken)
+            setBody(request)
+        }.body()
     }
 
     suspend fun clientEmployee(

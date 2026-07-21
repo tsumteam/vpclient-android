@@ -346,27 +346,29 @@ private class ProfileOrderModelProvider: PreviewParameterProvider<ProfileOrderMo
                             price = "100 000 ₽",
                             size = "IT 40 | RU 42",
                             status = "Не оплачен",
-                            quantity = 1
+                            quantity = 1,
+                            isGiftCard = false
                         )
                     )
                 ),
                 ProfileOrderDeliveryGroupState(
                     id = "delivery_2",
-                    date = "13 июня 2026 с 14:00 до 16:00",
-                    address = "Brioni, Третьяковский проезд",
+                    date = "25 октября 2026, 12:00",
+                    address = "ivanov@mail.ru, +7 985 998-87-77",
                     products = listOf(
                         ProfileOrderProductItemState(
-                            productId = "79306777",
+                            productId = "gift-card",
                             imageUrl = "",
-                            brand = "DOLCE & GABBANA",
+                            brand = "VIP Platinum",
                             urlBrandLogo = null,
-                            name = "Рубашка",
-                            color = "Розовый",
-                            article = "79306777",
+                            name = "Подарочная карта",
+                            color = "",
+                            article = "",
                             price = "100 000 ₽",
-                            size = "IT 40 | RU 42",
-                            status = "",
-                            quantity = 1
+                            size = "",
+                            status = "Не оплачен",
+                            quantity = 1,
+                            isGiftCard = true
                         )
                     )
                 )

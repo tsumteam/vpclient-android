@@ -30,12 +30,7 @@ class LoginViewModel @Inject constructor(
                             reduce { it.copy(phoneValidationError = phoneValidationError) }
                         }
                         else -> {
-                            reduce {
-                                it.copy(
-                                    phoneValidationError = null,
-                                    isLoading = true
-                                )
-                            }
+                            reduce { it.copy(phoneValidationError = null, isLoading = true) }
                             loginUseCase(stateFlow.value.phone).getOrThrow()
                             MainEventManager.send(CodeRoute)
                         }

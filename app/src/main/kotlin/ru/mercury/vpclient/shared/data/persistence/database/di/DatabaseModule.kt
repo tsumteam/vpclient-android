@@ -18,6 +18,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogFilterPro
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogViewHistoryProductDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.ClientDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.ClientDeliveryAddressDao
+import ru.mercury.vpclient.shared.data.persistence.database.dao.ClientNotificationDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CompilationDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CompilationPreviewPageDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.EmployeeBadgeDao
@@ -60,6 +61,11 @@ object DatabaseModule {
     @Provides
     fun clientDeliveryAddressDao(database: AppDatabase): ClientDeliveryAddressDao {
         return database.clientDeliveryAddressDao()
+    }
+
+    @Provides
+    fun clientNotificationDao(database: AppDatabase): ClientNotificationDao {
+        return database.clientNotificationDao()
     }
 
     @Provides

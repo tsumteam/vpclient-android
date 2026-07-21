@@ -3,20 +3,23 @@
 package ru.mercury.vpclient.activity
 
 import android.Manifest
+import android.content.Intent
 import android.os.Build
+import android.provider.Settings
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
+import ru.mercury.vpclient.activity.event.MainActivityEvent
 import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.activity.intent.MainActivityIntent
 import ru.mercury.vpclient.features.auth_code.CodeScreen
@@ -53,6 +56,8 @@ import ru.mercury.vpclient.features.main.MainScreen
 import ru.mercury.vpclient.features.main.navigation.MainRoute
 import ru.mercury.vpclient.features.media.MediaScreen
 import ru.mercury.vpclient.features.media.navigation.MediaRoute
+import ru.mercury.vpclient.features.notifications.NotificationsScreen
+import ru.mercury.vpclient.features.notifications.navigation.NotificationsRoute
 import ru.mercury.vpclient.features.profile_brands.ProfileBrandsScreen
 import ru.mercury.vpclient.features.profile_brands.navigation.ProfileBrandsRoute
 import ru.mercury.vpclient.features.profile_loyalty_info.ProfileLoyaltyInfoScreen
@@ -79,6 +84,7 @@ fun MainActivityContent(
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
     if (state.startDestination == null) return
 
+    val context = LocalContext.current
     val navBackStack: NavBackStack<NavKey> = rememberNavBackStack(requireNotNull(state.startDestination))
     val requestPermissions = rememberRequestMultiplePermissions(if (Build.VERSION.SDK_INT >= 33) arrayOf(Manifest.permission.POST_NOTIFICATIONS) else emptyArray())
 
@@ -112,6 +118,7 @@ fun MainActivityContent(
                 entry<ConsultantRoute> { ConsultantScreen(it) }
                 entry<MediaRoute> { MediaScreen(it) }
                 entry<VideoRoute> { VideoScreen(it) }
+                entry<NotificationsRoute> { NotificationsScreen() }
             }
         )
 
@@ -120,7 +127,40 @@ fun MainActivityContent(
         )
     }
 
-    LaunchedEffect(Unit) { requestPermissions() }
+    /*if (state.isPushNotificationsSheetVisible) {
+        PushNotificationsSheet(
+            state = PushNotificationsSheetModel(),
+            dispatch = { intent ->
+                when (intent) {
+                    is PushNotificationsSheetIntent.EnableClick -> {
+                        viewModel.dispatch(MainActivityIntent.PushNotificationsSheetEnableClick)
+                    }
+                    is PushNotificationsSheetIntent.DismissClick -> {
+                        viewModel.dispatch(MainActivityIntent.PushNotificationsSheetDismissClick)
+                    }
+                }
+            }
+        )
+    }*/
+
+    ObserveAsEvents(
+        flow = viewModel.eventFlow
+    ) { event ->
+        when (event) {
+            is MainActivityEvent.RequestPushNotificationsPermission -> {
+                when {
+                    Build.VERSION.SDK_INT >= 33 -> requestPermissions()
+                    else -> {
+                        context.startActivity(
+                            Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                                putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    }
 
     ObserveAsEvents(
         flow = MainEventManager.eventFlow

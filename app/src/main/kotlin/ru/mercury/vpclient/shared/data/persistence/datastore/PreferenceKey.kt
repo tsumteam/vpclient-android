@@ -21,4 +21,6 @@ sealed class PreferenceKey<T>(
     data object Autofill: PreferenceKey<Boolean>(booleanPreferencesKey("autofill"))
     data object LastCatalogRootId: PreferenceKey<Int>(intPreferencesKey("lastCatalogRootId"))
     data object DisclaimerCloseTimestamp: PreferenceKey<Long>(longPreferencesKey("disclaimerCloseTimestamp"))
+    data object PushNotificationsPromptTimestamp: PreferenceKey<Long>(longPreferencesKey("pushNotificationsPromptTimestamp"))
+    data object PushNotificationsPromptRejected: PreferenceKey<Boolean>(booleanPreferencesKey("pushNotificationsPromptRejected"))
 }

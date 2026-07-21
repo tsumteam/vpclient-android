@@ -92,6 +92,7 @@ fun OrderResponse.toProfileOrderDetails(): ProfileOrderDetails {
         deliveries = deliveries.orEmpty().mapIndexed { index, delivery ->
             delivery.toProfileOrderDelivery(
                 index = index,
+                isOrderWithGiftCard = isOrderWithGiftCard == true,
                 paymentStatus = paymentStatus,
                 paymentStatusAsString = paymentStatusAsString.orEmpty()
             )
@@ -101,13 +102,29 @@ fun OrderResponse.toProfileOrderDetails(): ProfileOrderDetails {
 
 private fun OrderDeliveryResponse.toProfileOrderDelivery(
     index: Int,
+    isOrderWithGiftCard: Boolean,
     paymentStatus: OrderPaymentStatus?,
     paymentStatusAsString: String
 ): ProfileOrderDelivery {
+    val giftCardProduct = when {
+        isOrderWithGiftCard -> products.orEmpty().firstOrNull()
+        else -> products.orEmpty().firstOrNull { product -> product.isOrderVirtualGiftCard == true }
+    }
+    val isGiftCardDelivery = isOrderWithGiftCard || giftCardProduct?.isOrderVirtualGiftCard == true
+
     return ProfileOrderDelivery(
         id = deliveryId.orEmpty().ifBlank { "delivery_$index" },
-        date = deliveryTime.profileOrderDeliveryDate,
-        address = address?.address.orEmpty(),
+        date = when {
+            isGiftCardDelivery -> giftCardProduct?.giftCardSendDateTime.profileOrderGiftCardSendDate
+            else -> deliveryTime.profileOrderDeliveryDate
+        },
+        address = when {
+            isGiftCardDelivery -> listOf(
+                giftCardProduct?.giftCardEmailReceiver.orEmpty(),
+                formatPhoneForDisplay(giftCardProduct?.giftCardPhoneReceiver.orEmpty())
+            ).filter { value -> value.isNotBlank() }.joinToString(separator = ", ")
+            else -> address?.address.orEmpty()
+        },
         products = products.orEmpty().mapIndexed { productIndex, product ->
             product.toProfileOrderDetailsProduct(
                 index = productIndex,
@@ -148,7 +165,8 @@ private fun OrderProductResponse.toProfileOrderDetailsProduct(
             OrderPaymentStatus.NOT_PAID -> paymentStatusAsString
             else -> logisticStatusAsStringForClient.orEmpty()
         },
-        quantity = product?.quantity?.takeIf { it > 0 } ?: 1
+        quantity = product?.quantity?.takeIf { it > 0 } ?: 1,
+        isGiftCard = isOrderVirtualGiftCard == true
     )
 }
 
@@ -175,9 +193,16 @@ private val DeliveryTimeResponse?.profileOrderDeliveryDate: String
         }
     }
 
+private val String?.profileOrderGiftCardSendDate: String
+    get() {
+        val dateTime = this?.profileOrderLocalDateTime() ?: return ""
+        return dateTime.format(profileOrderGiftCardSendDateFormatter)
+    }
+
 private fun String.profileOrderLocalDateTime(): LocalDateTime? {
     return runCatching { OffsetDateTime.parse(this).toLocalDateTime() }
         .getOrNull()
+        ?: runCatching { OffsetDateTime.parse(this, profileOrderApiDateTimeFormatter).toLocalDateTime() }.getOrNull()
         ?: runCatching { LocalDateTime.parse(this, DateTimeFormatter.ISO_LOCAL_DATE_TIME) }.getOrNull()
 }
 
@@ -219,7 +244,11 @@ private val profileOrderLocale = Locale.forLanguageTag("ru")
 
 private val profileOrderCreationDateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", profileOrderLocale)
 
+private val profileOrderApiDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ", Locale.US)
+
 private val profileOrderDeliveryDateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy", profileOrderLocale)
+
+private val profileOrderGiftCardSendDateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy, HH:mm", profileOrderLocale)
 
 private val profileOrderTimeFormatter = DateTimeFormatter.ofPattern("HH:mm", profileOrderLocale)
 

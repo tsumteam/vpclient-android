@@ -410,4 +410,17 @@ object ClientStrings {
     val MyDataDeleteDialogMessage get() = R.string.my_data_delete_dialog_message
     val MyDataDeleteCancel get() = R.string.my_data_delete_cancel
     val MyDataDeleteConfirm get() = R.string.my_data_delete_confirm
+
+    val NotificationsTitle get() = R.string.notifications_title
+    val NotificationsAllCaps get() = R.string.notifications_all_caps
+    val NotificationsConsultantsCaps get() = R.string.notifications_consultants_caps
+    val NotificationsCatalogsAndActionsCaps get() = R.string.notifications_catalogs_and_actions_caps
+    val NotificationsEmpty get() = R.string.notifications_empty
+    val NotificationsFilterEmpty get() = R.string.notifications_filter_empty
+    val NotificationsYesterday get() = R.string.notifications_yesterday
+
+    val PushNotificationsSheetTitle get() = R.string.push_notifications_sheet_title
+    val PushNotificationsSheetDescription get() = R.string.push_notifications_sheet_description
+    val PushNotificationsSheetEnable get() = R.string.push_notifications_sheet_enable
+    val PushNotificationsSheetNotNow get() = R.string.push_notifications_sheet_not_now
 }

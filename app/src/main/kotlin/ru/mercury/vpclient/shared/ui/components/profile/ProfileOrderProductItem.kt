@@ -18,6 +18,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -40,7 +42,8 @@ data class ProfileOrderProductItemState(
     val price: String,
     val size: String,
     val status: String,
-    val quantity: Int
+    val quantity: Int,
+    val isGiftCard: Boolean
 )
 
 @Composable
@@ -81,33 +84,35 @@ fun ProfileOrderProductItem(
                         .height(24.dp)
                 )
 
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    horizontalAlignment = Alignment.End
-                ) {
-                    if (state.status.isNotBlank()) {
+                when {
+                    !state.isGiftCard -> Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalAlignment = Alignment.End
+                    ) {
+                        if (state.status.isNotBlank()) {
+                            Text(
+                                text = state.status,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                style = MaterialTheme.typography.regular14.copy(
+                                    color = MaterialTheme.colorScheme.error,
+                                    lineHeight = 18.sp,
+                                    letterSpacing = .2.sp
+                                )
+                            )
+                        }
+
                         Text(
-                            text = state.status,
+                            text = state.size,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             style = MaterialTheme.typography.regular14.copy(
-                                color = MaterialTheme.colorScheme.error,
+                                color = MaterialTheme.colorScheme.onBackground,
                                 lineHeight = 18.sp,
                                 letterSpacing = .2.sp
                             )
                         )
                     }
-
-                    Text(
-                        text = state.size,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        style = MaterialTheme.typography.regular14.copy(
-                            color = MaterialTheme.colorScheme.onBackground,
-                            lineHeight = 18.sp,
-                            letterSpacing = .2.sp
-                        )
-                    )
                 }
             }
 
@@ -123,29 +128,33 @@ fun ProfileOrderProductItem(
                 )
             )
 
-            Text(
-                text = state.color,
-                modifier = Modifier.padding(top = 4.dp),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.regular14.copy(
-                    color = MaterialTheme.colorScheme.onBackground,
-                    lineHeight = 18.sp,
-                    letterSpacing = .2.sp
-                )
-            )
+            when {
+                !state.isGiftCard -> {
+                    Text(
+                        text = state.color,
+                        modifier = Modifier.padding(top = 4.dp),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = MaterialTheme.typography.regular14.copy(
+                            color = MaterialTheme.colorScheme.onBackground,
+                            lineHeight = 18.sp,
+                            letterSpacing = .2.sp
+                        )
+                    )
 
-            Text(
-                text = stringResource(ClientStrings.CartArticle, state.article),
-                modifier = Modifier.padding(top = 4.dp),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.regular14.copy(
-                    color = MaterialTheme.colorScheme.onBackground,
-                    lineHeight = 18.sp,
-                    letterSpacing = .2.sp
-                )
-            )
+                    Text(
+                        text = stringResource(ClientStrings.CartArticle, state.article),
+                        modifier = Modifier.padding(top = 4.dp),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = MaterialTheme.typography.regular14.copy(
+                            color = MaterialTheme.colorScheme.onBackground,
+                            lineHeight = 18.sp,
+                            letterSpacing = .2.sp
+                        )
+                    )
+                }
+            }
 
             Spacer(
                 modifier = Modifier.weight(1F)
@@ -184,9 +193,18 @@ fun ProfileOrderProductItem(
 @PreviewWrapper(ThemeWrapper::class)
 @Preview(showBackground = true)
 @Composable
-private fun ProfileOrderProductItemPreview() {
+private fun ProfileOrderProductItemPreview(
+    @PreviewParameter(ProfileOrderProductItemStatePreviewParameterProvider::class) state: ProfileOrderProductItemState
+) {
     ProfileOrderProductItem(
-        state = ProfileOrderProductItemState(
+        state = state,
+        onClick = {}
+    )
+}
+
+private class ProfileOrderProductItemStatePreviewParameterProvider: PreviewParameterProvider<ProfileOrderProductItemState> {
+    override val values: Sequence<ProfileOrderProductItemState> = sequenceOf(
+        ProfileOrderProductItemState(
             productId = "7930630",
             imageUrl = "",
             brand = "MVST",
@@ -197,8 +215,22 @@ private fun ProfileOrderProductItemPreview() {
             price = "100 000 ₽",
             size = "IT 40 | RU 42",
             status = "Не оплачен",
-            quantity = 1
+            quantity = 1,
+            isGiftCard = false
         ),
-        onClick = {}
+        ProfileOrderProductItemState(
+            productId = "gift-card",
+            imageUrl = "",
+            brand = "VIP Platinum",
+            urlBrandLogo = null,
+            name = "Подарочная карта",
+            color = "",
+            article = "",
+            price = "100 000 ₽",
+            size = "",
+            status = "Не оплачен",
+            quantity = 1,
+            isGiftCard = true
+        )
     )
 }

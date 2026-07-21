@@ -12,5 +12,6 @@ data class ProfileOrderDetailsProduct(
     val price: String,
     val size: String,
     val status: String,
-    val quantity: Int
+    val quantity: Int,
+    val isGiftCard: Boolean
 )

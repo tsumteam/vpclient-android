@@ -65,7 +65,8 @@ class ProfileOrderViewModel @AssistedInject constructor(
                                                 price = product.price,
                                                 size = product.size,
                                                 status = product.status,
-                                                quantity = product.quantity
+                                                quantity = product.quantity,
+                                                isGiftCard = product.isGiftCard
                                             )
                                         }
                                     )

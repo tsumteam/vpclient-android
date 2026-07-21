@@ -6,5 +6,6 @@ import ru.mercury.vpclient.shared.mvi.Model
 data class MainActivityModel(
     val splashLoading: Boolean = true,
     val startDestination: NavKey? = null,
-    val centerLoading: Boolean = false
+    val centerLoading: Boolean = false,
+    val isPushNotificationsSheetVisible: Boolean = false
 ): Model

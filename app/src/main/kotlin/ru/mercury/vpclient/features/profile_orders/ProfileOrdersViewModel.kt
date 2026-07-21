@@ -94,7 +94,6 @@ class ProfileOrdersViewModel @Inject constructor(
             }
             is ProfileOrdersIntent.RefreshCompleted -> reduce { it.copy(isRefreshing = false) }
             is ProfileOrdersIntent.BackClick -> launch { ProfileRootEventManager.send(BackRoute) }
-            is ProfileOrdersIntent.NotificationClick -> return
             is ProfileOrdersIntent.CartClick -> launch { MainEventManager.send(CartRoute()) }
             is ProfileOrdersIntent.FittingClick -> {
                 launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }

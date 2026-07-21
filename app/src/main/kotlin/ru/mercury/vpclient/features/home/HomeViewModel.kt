@@ -15,6 +15,7 @@ import ru.mercury.vpclient.features.home_root.event.HomeRootEventManager
 import ru.mercury.vpclient.features.home.event.HomeEvent
 import ru.mercury.vpclient.features.home.intent.HomeIntent
 import ru.mercury.vpclient.features.home.model.HomeModel
+import ru.mercury.vpclient.features.notifications.navigation.NotificationsRoute
 import ru.mercury.vpclient.shared.data.entity.HomePage
 import ru.mercury.vpclient.shared.data.entity.TabType
 import ru.mercury.vpclient.shared.data.network.error.ClientException
@@ -101,7 +102,7 @@ class HomeViewModel @Inject constructor(
             is HomeIntent.MessengerClick -> return
             is HomeIntent.GiftCardsClick -> launch { MainEventManager.send(GiftCardRoute) }
             is HomeIntent.SearchClick -> return
-            is HomeIntent.NotificationClick -> return
+            is HomeIntent.NotificationClick -> launch { MainEventManager.send(NotificationsRoute) }
             is HomeIntent.CollectMainScreenSections -> {
                 TabType.entries.forEach { tab ->
                     launch {

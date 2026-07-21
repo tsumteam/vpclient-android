@@ -14,6 +14,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogFilterPro
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogViewHistoryProductDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.ClientDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.ClientDeliveryAddressDao
+import ru.mercury.vpclient.shared.data.persistence.database.dao.ClientNotificationDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CompilationDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CompilationPreviewPageDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.EmployeeBadgeDao
@@ -37,6 +38,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilter
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogViewHistoryProductEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ClientDeliveryAddressEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ClientEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.ClientNotificationEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CompilationEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CompilationPreviewPageEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeBadgeEntity
@@ -66,6 +68,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
         CatalogCategoryEntity::class,
         ClientDeliveryAddressEntity::class,
         ClientEntity::class,
+        ClientNotificationEntity::class,
         CompilationEntity::class,
         CompilationPreviewPageEntity::class,
         EmployeeEntity::class,
@@ -95,6 +98,7 @@ abstract class AppDatabase: RoomDatabase() {
     abstract fun catalogCategoryDao(): CatalogCategoryDao
     abstract fun clientDao(): ClientDao
     abstract fun clientDeliveryAddressDao(): ClientDeliveryAddressDao
+    abstract fun clientNotificationDao(): ClientNotificationDao
     abstract fun compilationDao(): CompilationDao
     abstract fun compilationPreviewPageDao(): CompilationPreviewPageDao
     abstract fun employeeDao(): EmployeeDao
@@ -111,6 +115,6 @@ abstract class AppDatabase: RoomDatabase() {
 
     companion object {
         const val DATABASE_NAME = "vpclient.db"
-        const val DATABASE_VERSION = 86
+        const val DATABASE_VERSION = 87
     }
 }

@@ -458,4 +458,17 @@
     <string name="my_data_delete_dialog_message">После удаления профиля Вам будет недоступна история покупок, подборок и чат с продавцом.</string>
     <string name="my_data_delete_cancel">Отмена</string>
     <string name="my_data_delete_confirm">Удалить</string>
+
+    <string name="notifications_title">Уведомления</string>
+    <string name="notifications_all_caps">ВСЕ</string>
+    <string name="notifications_consultants_caps">ОТ КОНСУЛЬТАНТОВ</string>
+    <string name="notifications_catalogs_and_actions_caps">КАТАЛОГИ И АКЦИИ</string>
+    <string name="notifications_empty">У Вас пока нет уведомлений</string>
+    <string name="notifications_filter_empty">По выбранному фильтру уведомлений нет</string>
+    <string name="notifications_yesterday">Вчера</string>
+
+    <string name="push_notifications_sheet_title">Не пропустите важное</string>
+    <string name="push_notifications_sheet_description">Разрешите получение уведомлений,\nчтобы не пропускать новые акции, подборки\nи сообщения от Вашего консультанта.</string>
+    <string name="push_notifications_sheet_enable">ВКЛЮЧИТЬ УВЕДОМЛЕНИЯ</string>
+    <string name="push_notifications_sheet_not_now">Не сейчас</string>
 </resources>
