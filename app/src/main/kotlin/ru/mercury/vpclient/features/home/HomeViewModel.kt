@@ -16,6 +16,7 @@ import ru.mercury.vpclient.features.home.event.HomeEvent
 import ru.mercury.vpclient.features.home.intent.HomeIntent
 import ru.mercury.vpclient.features.home.model.HomeModel
 import ru.mercury.vpclient.features.notifications.navigation.NotificationsRoute
+import ru.mercury.vpclient.features.search.navigation.SearchRoute
 import ru.mercury.vpclient.shared.data.entity.HomePage
 import ru.mercury.vpclient.shared.data.entity.TabType
 import ru.mercury.vpclient.shared.data.network.error.ClientException
@@ -24,6 +25,7 @@ import ru.mercury.vpclient.shared.data.network.type.MainScreenLinkType
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
 import ru.mercury.vpclient.shared.domain.mapper.mainScreenCategoryType
+import ru.mercury.vpclient.shared.domain.mapper.catalogRootId
 import ru.mercury.vpclient.shared.domain.mapper.toCatalogLinkData
 import ru.mercury.vpclient.shared.domain.usecase.ActivityCounterFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CartBadgeUseCase
@@ -34,6 +36,7 @@ import ru.mercury.vpclient.shared.domain.usecase.HomeSectionEntitiesFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.MainScreenSectionsUseCase
 import ru.mercury.vpclient.shared.domain.usecase.MainScreenSectionsUseCase.MainScreenSectionsException
 import ru.mercury.vpclient.shared.domain.usecase.SetLastCatalogRootIdUseCase
+import ru.mercury.vpclient.shared.domain.usecase.SelectedTabFlowUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import javax.inject.Inject
 
@@ -46,21 +49,36 @@ class HomeViewModel @Inject constructor(
     private val activityCounterFlowUseCase: ActivityCounterFlowUseCase,
     private val homeSectionEntitiesFlowUseCase: HomeSectionEntitiesFlowUseCase,
     private val mainScreenSectionsUseCase: MainScreenSectionsUseCase,
+    private val selectedTabFlowUseCase: SelectedTabFlowUseCase,
     private val setLastCatalogRootIdUseCase: SetLastCatalogRootIdUseCase
 ): ClientViewModel<HomeIntent, HomeModel, HomeEvent>(HomeModel()) {
 
     init {
+        dispatch(HomeIntent.CollectSelectedTab)
         dispatch(HomeIntent.CollectCartCount)
         dispatch(HomeIntent.CollectFittingCount)
         dispatch(HomeIntent.CollectActiveEmployee)
         dispatch(HomeIntent.CollectNotificationCount)
         dispatch(HomeIntent.LoadCartData)
         dispatch(HomeIntent.CollectMainScreenSections)
-        dispatch(HomeIntent.LoadMainScreenSections(TabType.WOMAN))
     }
 
     override fun dispatch(intent: HomeIntent) {
         when (intent) {
+            is HomeIntent.CollectSelectedTab -> {
+                launch {
+                    selectedTabFlowUseCase(Unit)
+                        .distinctUntilChanged()
+                        .collectLatest { tab ->
+                            val shouldLoad = tab !in stateFlow.value.loadedTabs &&
+                                tab !in stateFlow.value.loadMainScreenSectionsJobs
+                            reduce { state -> state.copy(selectedTab = tab) }
+                            if (shouldLoad) {
+                                dispatch(HomeIntent.LoadMainScreenSections(tab))
+                            }
+                        }
+                }
+            }
             is HomeIntent.CollectCartCount -> {
                 launch {
                     cartCountFlowUseCase(Unit)
@@ -101,7 +119,7 @@ class HomeViewModel @Inject constructor(
             }
             is HomeIntent.MessengerClick -> return
             is HomeIntent.GiftCardsClick -> launch { MainEventManager.send(GiftCardRoute) }
-            is HomeIntent.SearchClick -> return
+            is HomeIntent.SearchClick -> launch { MainEventManager.send(SearchRoute()) }
             is HomeIntent.NotificationClick -> launch { MainEventManager.send(NotificationsRoute) }
             is HomeIntent.CollectMainScreenSections -> {
                 TabType.entries.forEach { tab ->
@@ -184,6 +202,7 @@ class HomeViewModel @Inject constructor(
                 val shouldLoad = intent.tab !in stateFlow.value.loadedTabs &&
                     intent.tab !in stateFlow.value.loadMainScreenSectionsJobs
                 reduce { state -> state.copy(selectedTab = intent.tab) }
+                launch { setLastCatalogRootIdUseCase(intent.tab.catalogRootId).getOrThrow() }
                 when {
                     shouldLoad -> dispatch(HomeIntent.LoadMainScreenSections(intent.tab))
                 }

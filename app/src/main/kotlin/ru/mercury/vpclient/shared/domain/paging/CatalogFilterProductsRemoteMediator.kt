@@ -8,7 +8,10 @@ import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import ru.mercury.vpclient.shared.data.entity.CatalogFilterProductsData
+import ru.mercury.vpclient.shared.data.DEFAULT_PAGE_SIZE
+import ru.mercury.vpclient.shared.data.entity.SearchResultsMetadata
 import ru.mercury.vpclient.shared.data.network.NetworkService
+import ru.mercury.vpclient.shared.data.network.request.DigineticaFilteredProductsRequest
 import ru.mercury.vpclient.shared.data.network.request.FilteredProductsRequest
 import ru.mercury.vpclient.shared.data.network.type.CatalogViewType
 import ru.mercury.vpclient.shared.data.persistence.database.AppDatabase
@@ -21,6 +24,9 @@ import ru.mercury.vpclient.shared.domain.mapper.entity
 import ru.mercury.vpclient.shared.domain.mapper.handleResponseResult
 import ru.mercury.vpclient.shared.domain.mapper.requestValue
 import ru.mercury.vpclient.shared.domain.mapper.requests
+import ru.mercury.vpclient.shared.domain.usecase.SetSearchResultsMetadataUseCase
+import ru.mercury.vpclient.shared.domain.usecase.DigineticaSearchEventUseCase
+import ru.mercury.vpclient.shared.domain.usecase.DigineticaSearchEventUseCase.Params
 
 class CatalogFilterProductsRemoteMediator(
     private val data: CatalogFilterProductsData,
@@ -28,14 +34,17 @@ class CatalogFilterProductsRemoteMediator(
     private val appDatabase: AppDatabase,
     private val catalogCategoryDao: CatalogCategoryDao,
     private val catalogFilterProductsDao: CatalogFilterProductsDao,
-    private val pagingKeyDao: PagingKeyDao
+    private val pagingKeyDao: PagingKeyDao,
+    private val setSearchResultsMetadataUseCase: SetSearchResultsMetadataUseCase,
+    private val digineticaSearchEventUseCase: DigineticaSearchEventUseCase
 ): RemoteMediator<Int, CatalogFilterProductsEntity>() {
 
     override suspend fun load(loadType: LoadType, state: PagingState<Int, CatalogFilterProductsEntity>): MediatorResult {
         return try {
             val categoryId = data.categoryId
             val titleCategoryId = data.titleCategoryId
-            val pagingKeyEntity = pagingKeyDao.select(categoryId, titleCategoryId)
+            val searchText = data.searchText
+            val pagingKeyEntity = pagingKeyDao.select(categoryId, titleCategoryId, searchText)
             val loadOffset = when (loadType) {
                 LoadType.REFRESH -> 0
                 LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
@@ -53,25 +62,75 @@ class CatalogFilterProductsRemoteMediator(
                     else -> CatalogViewType.CATALOG_LEVEL_4
                 }
             }
-            val response = handleResponseResult {
-                val request = FilteredProductsRequest(
-                    viewType = viewType,
-                    sortType = data.sortType.requestValue,
-                    hasUserInteractedWithStandartSizesFilter = false,
-                    filters = data.selectedFilterValueChipIds.requests(
-                        categoryId = categoryId,
-                        includeDefaultCategory = data.includeDefaultCategory
-                    )
-                )
-                networkService.catalogProducts(loadLimit, loadOffset, request)
+            val products = when {
+                searchText.isNotEmpty() -> {
+                    val response = handleResponseResult {
+                        val filteredProductsRequest = FilteredProductsRequest(
+                            viewType = viewType,
+                            sortType = data.sortType.requestValue,
+                            hasUserInteractedWithStandartSizesFilter = false,
+                            filters = data.selectedFilterValueChipIds.requests(
+                                categoryId = categoryId,
+                                includeDefaultCategory = data.includeDefaultCategory
+                            )
+                        )
+                        val request = DigineticaFilteredProductsRequest(
+                            searchText = searchText,
+                            filteredProductsRequest = filteredProductsRequest
+                        )
+                        networkService.catalogByTextProductsDiginetica(loadLimit, loadOffset, request)
+                    }.getOrThrow()
+                    setSearchResultsMetadataUseCase(
+                        SearchResultsMetadata(
+                            categoryId = categoryId,
+                            titleCategoryId = titleCategoryId,
+                            searchText = searchText,
+                            searchRequestId = data.searchRequestId,
+                            correction = response.correction,
+                            catalogLink = response.catalogLink
+                        )
+                    ).getOrThrow()
+                    val items = response.products?.items.orEmpty()
+                    if (response.catalogLink == null) {
+                        items.chunked(DEFAULT_PAGE_SIZE)
+                            .ifEmpty { listOf(emptyList()) }
+                            .forEachIndexed { index, pageItems ->
+                            runCatching {
+                                digineticaSearchEventUseCase(
+                                    Params(
+                                        pageNumber = (loadOffset / DEFAULT_PAGE_SIZE) + index,
+                                        pageProducts = pageItems.mapNotNull { product ->
+                                            product.id?.takeIf(String::isNotEmpty)
+                                        },
+                                        searchTerm = searchText
+                                    )
+                                ).getOrThrow()
+                            }
+                        }
+                    }
+                    items
+                }
+                else -> {
+                    handleResponseResult {
+                        val request = FilteredProductsRequest(
+                            viewType = viewType,
+                            sortType = data.sortType.requestValue,
+                            hasUserInteractedWithStandartSizesFilter = false,
+                            filters = data.selectedFilterValueChipIds.requests(
+                                categoryId = categoryId,
+                                includeDefaultCategory = data.includeDefaultCategory
+                            )
+                        )
+                        networkService.catalogProducts(loadLimit, loadOffset, request)
+                    }.getOrThrow().items.orEmpty()
+                }
             }
-            val products = response.getOrThrow().items.orEmpty()
             val isEndOfPaginationReached = products.size < loadLimit
 
             appDatabase.withTransaction {
                 if (loadType == LoadType.REFRESH) {
-                    pagingKeyDao.remove(categoryId, titleCategoryId)
-                    catalogFilterProductsDao.remove(categoryId, titleCategoryId)
+                    pagingKeyDao.remove(categoryId, titleCategoryId, searchText)
+                    catalogFilterProductsDao.remove(categoryId, titleCategoryId, searchText)
                 }
                 pagingKeyDao.upsert(
                     PagingKeyEntity(
@@ -79,7 +138,8 @@ class CatalogFilterProductsRemoteMediator(
                         titleCategoryId = titleCategoryId,
                         offset = if (isEndOfPaginationReached) null else loadOffset + products.size,
                         limit = state.config.pageSize,
-                        paginationToken = null
+                        paginationToken = null,
+                        searchText = searchText
                     )
                 )
                 catalogFilterProductsDao.upsert(
@@ -87,6 +147,7 @@ class CatalogFilterProductsRemoteMediator(
                         product.entity(
                             categoryId = categoryId,
                             titleCategoryId = titleCategoryId,
+                            searchText = searchText,
                             position = loadOffset + index
                         )
                     }

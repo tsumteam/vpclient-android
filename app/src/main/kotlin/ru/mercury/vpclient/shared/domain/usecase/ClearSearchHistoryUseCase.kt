@@ -1,0 +1,24 @@
+@file:Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
+
+package ru.mercury.vpclient.shared.domain.usecase
+
+import ru.mercury.vpclient.shared.coroutines.SharedDispatchers
+import ru.mercury.vpclient.shared.data.entity.TabType
+import ru.mercury.vpclient.shared.data.persistence.datastore.PreferenceKey
+import ru.mercury.vpclient.shared.data.persistence.datastore.SettingsDataStore
+import javax.inject.Inject
+
+class ClearSearchHistoryUseCase @Inject constructor(
+    private val settingsDataStore: SettingsDataStore,
+    dispatchers: SharedDispatchers
+): UseCase<TabType, Unit>(dispatchers.io) {
+
+    override suspend fun execute(tab: TabType) {
+        val preferenceKey = when (tab) {
+            TabType.WOMAN -> PreferenceKey.SearchHistoryWoman
+            TabType.MAN -> PreferenceKey.SearchHistoryMan
+            TabType.CHILD -> PreferenceKey.SearchHistoryChild
+        }
+        settingsDataStore.removeValue(preferenceKey)
+    }
+}

@@ -48,6 +48,31 @@ object NetworkModule {
 
     @Provides
     @Singleton
+    @DigineticaHttpClient
+    fun provideDigineticaHttpClient(): HttpClient {
+        return HttpClient(OkHttp) {
+            defaultRequest {
+                url("https://tracking-app.diginetica.net/")
+                contentType(ContentType.Application.Json)
+            }
+            install(ContentNegotiation) {
+                json(
+                    Json {
+                        ignoreUnknownKeys = true
+                        explicitNulls = false
+                    }
+                )
+            }
+            install(HttpTimeout) {
+                requestTimeoutMillis = REQUEST_TIMEOUT_MILLIS
+                connectTimeoutMillis = CONNECT_TIMEOUT_MILLIS
+                socketTimeoutMillis = SOCKET_TIMEOUT_SECONDS
+            }
+        }
+    }
+
+    @Provides
+    @Singleton
     fun provideKtorHttpClient(
         @ApplicationContext context: Context,
         settingsDataStore: Provider<SettingsDataStore>

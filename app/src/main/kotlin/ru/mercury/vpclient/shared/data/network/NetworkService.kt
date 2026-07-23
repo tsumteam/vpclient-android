@@ -40,6 +40,7 @@ import ru.mercury.vpclient.shared.data.network.request.BasketSyncRequest
 import ru.mercury.vpclient.shared.data.network.request.BottomCategoriesRequest
 import ru.mercury.vpclient.shared.data.network.request.CatalogBrandFavoriteRequest
 import ru.mercury.vpclient.shared.data.network.request.CatalogBrandsFavoriteRequest
+import ru.mercury.vpclient.shared.data.network.request.CatalogByTextSuggestsDigineticaRequest
 import ru.mercury.vpclient.shared.data.network.request.ChangeActionRequest
 import ru.mercury.vpclient.shared.data.network.request.ClientSyncRequest
 import ru.mercury.vpclient.shared.data.network.request.ClientNotificationsRequest
@@ -254,7 +255,6 @@ import ru.mercury.vpclient.shared.data.network.response.RemoveBackgroundResponse
 import ru.mercury.vpclient.shared.data.network.response.ReserveResponse
 import ru.mercury.vpclient.shared.data.network.response.StringItemsResponse
 import ru.mercury.vpclient.shared.data.network.response.SuggestionResponse
-import ru.mercury.vpclient.shared.data.network.response.SuggestsSearchResponse
 import ru.mercury.vpclient.shared.data.network.response.TasksImportResultResponse
 import ru.mercury.vpclient.shared.data.network.response.TokenResponse
 import ru.mercury.vpclient.shared.data.network.response.TransferResponse
@@ -957,9 +957,19 @@ class NetworkService @Inject constructor(
 
     suspend fun catalogByTextSuggestsDiginetica(
         limit: Int? = null,
-        request: SuggestsSearchResponse
+        request: CatalogByTextSuggestsDigineticaRequest
     ): BaseResponse<SuggestionResponse> {
         return ktorHttpClient.post("catalog/by-text/suggests/diginetica") {
+            appendQueryParameter("limit", limit)
+            setBody(request)
+        }.body()
+    }
+
+    suspend fun catalogByTextSuggests(
+        limit: Int? = null,
+        request: CatalogByTextSuggestsDigineticaRequest
+    ): BaseResponse<SuggestionResponse> {
+        return ktorHttpClient.post("catalog/by-text/suggests") {
             appendQueryParameter("limit", limit)
             setBody(request)
         }.body()

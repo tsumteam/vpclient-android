@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.features.brand_root.event.BrandRootEventManager
+import ru.mercury.vpclient.features.search.navigation.SearchRoute
 import ru.mercury.vpclient.features.brands.event.BrandsEvent
 import ru.mercury.vpclient.features.brands.intent.BrandsIntent
 import ru.mercury.vpclient.features.brands.model.BrandsModel
@@ -33,6 +34,9 @@ import ru.mercury.vpclient.shared.domain.usecase.CatalogBrandsUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CatalogBrandsUseCase.CatalogBrandsException
 import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.FittingCountFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.SelectedTabFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.SetLastCatalogRootIdUseCase
+import ru.mercury.vpclient.shared.domain.mapper.catalogRootId
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import javax.inject.Inject
 
@@ -41,6 +45,8 @@ class BrandsViewModel @Inject constructor(
     private val cartCountFlowUseCase: CartCountFlowUseCase,
     private val fittingCountFlowUseCase: FittingCountFlowUseCase,
     private val employeeActiveFlowUseCase: EmployeeActiveFlowUseCase,
+    private val selectedTabFlowUseCase: SelectedTabFlowUseCase,
+    private val setLastCatalogRootIdUseCase: SetLastCatalogRootIdUseCase,
     private val catalogBrandEntitiesFlowUseCase: CatalogBrandEntitiesFlowUseCase,
     private val catalogBrandsUseCase: CatalogBrandsUseCase,
     private val catalogBrandFavoriteUseCase: CatalogBrandFavoriteUseCase,
@@ -48,6 +54,7 @@ class BrandsViewModel @Inject constructor(
 ): ClientViewModel<BrandsIntent, BrandsModel, BrandsEvent>(BrandsModel()) {
 
     init {
+        dispatch(BrandsIntent.CollectSelectedTab)
         dispatch(BrandsIntent.CollectBrands)
         dispatch(BrandsIntent.CollectCartCount)
         dispatch(BrandsIntent.CollectFittingCount)
@@ -57,6 +64,23 @@ class BrandsViewModel @Inject constructor(
 
     override fun dispatch(intent: BrandsIntent) {
         when (intent) {
+            is BrandsIntent.CollectSelectedTab -> {
+                launch {
+                    selectedTabFlowUseCase(Unit)
+                        .distinctUntilChanged()
+                        .collectLatest { tab ->
+                            val page = stateFlow.value.pages.first { page -> page.tab == tab }
+                            val favoriteBrandsCount = page.favoriteBrandEntities.size
+                            reduce {
+                                it.copy(
+                                    selectedTab = tab,
+                                    favoriteBrandsText = favoriteBrandsCount.takeIf { count -> count > 0 }?.toString().orEmpty(),
+                                    isFavoriteBrandsButtonVisible = favoriteBrandsCount > 0
+                                )
+                            }
+                        }
+                }
+            }
             is BrandsIntent.CollectBrands -> {
                 TabType.entries.forEach { tab ->
                     launch {
@@ -175,7 +199,7 @@ class BrandsViewModel @Inject constructor(
                     BrandRootEventManager.send(route)
                 }
             }
-            is BrandsIntent.SearchClick -> return
+            is BrandsIntent.SearchClick -> launch { MainEventManager.send(SearchRoute()) }
             is BrandsIntent.SelectTab -> {
                 val page = stateFlow.value.pages.first { page -> page.tab == intent.tab }
                 val favoriteBrandsCount = page.favoriteBrandEntities.size
@@ -189,6 +213,7 @@ class BrandsViewModel @Inject constructor(
                         isFavoriteBrandsButtonVisible = favoriteBrandsCount > 0
                     )
                 }
+                launch { setLastCatalogRootIdUseCase(intent.tab.catalogRootId).getOrThrow() }
             }
             is BrandsIntent.BrandClick -> {
                 launch {

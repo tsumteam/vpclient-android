@@ -4,12 +4,13 @@ import androidx.room.Entity
 
 @Entity(
     tableName = "CatalogFilter",
-    primaryKeys = ["categoryId", "titleCategoryId"]
+    primaryKeys = ["categoryId", "titleCategoryId", "searchText"]
 )
 data class CatalogFilterEntity(
     val categoryId: Int,
     val titleCategoryId: Int,
-    val filtersJson: String
+    val filtersJson: String,
+    val searchText: String = ""
 ) {
     companion object {
         val Empty = CatalogFilterEntity(

@@ -20,6 +20,7 @@ class CurrentUserUseCase @Inject constructor(
             networkService.userCurrentUser()
         }.getOrThrow()
         settingsDataStore.setValue(PreferenceKey.UserId, currentUser.code.orEmpty())
+        settingsDataStore.setValue(PreferenceKey.UseDiginetica, currentUser.useDiginetica == true)
         return currentUser
     }
 }

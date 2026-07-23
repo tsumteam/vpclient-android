@@ -45,11 +45,13 @@ import ru.mercury.vpclient.shared.domain.mapper.requestFilterValueChipIds
 import ru.mercury.vpclient.shared.domain.mapper.toPriceRangeChipData
 import ru.mercury.vpclient.shared.domain.mapper.topBarBrandChipId
 import ru.mercury.vpclient.shared.domain.mapper.topBarBrandId
+import ru.mercury.vpclient.shared.domain.mapper.toCatalogLinkData
 import ru.mercury.vpclient.shared.domain.mapper.values
 import ru.mercury.vpclient.shared.domain.usecase.BrandFavoriteStatusUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CartCountFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CartProductsFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CatalogFilterProductQuantityUseCase
+import ru.mercury.vpclient.shared.domain.usecase.CatalogFilterProductQuantityUseCase.CatalogFilterProductQuantityException
 import ru.mercury.vpclient.shared.domain.usecase.CatalogFilterProductsPagingDataUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CatalogFilterValuesUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CatalogFiltersUseCase
@@ -61,11 +63,13 @@ import ru.mercury.vpclient.shared.domain.usecase.FilterValuesQuantityEntityFlowU
 import ru.mercury.vpclient.shared.domain.usecase.FilterValuesQuantityUseCase
 import ru.mercury.vpclient.shared.domain.usecase.FittingCountFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.ResetFilterValuesQuantityUseCase
+import ru.mercury.vpclient.shared.domain.usecase.SearchResultsMetadataFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.ToggleBasketProductUseCase
 import ru.mercury.vpclient.shared.domain.usecase.ToggleBrandFavoriteUseCase
 import ru.mercury.vpclient.shared.domain.usecase.ToggleBrandFavoriteUseCase.ToggleBrandFavoriteException
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.navigation.BackRoute
+import ru.mercury.vpclient.shared.data.entity.SearchSource
 
 @HiltViewModel(assistedFactory = FilterViewModel.Factory::class)
 class FilterViewModel @AssistedInject constructor(
@@ -84,6 +88,7 @@ class FilterViewModel @AssistedInject constructor(
     private val catalogFilterValuesUseCase: CatalogFilterValuesUseCase,
     private val filterValuesQuantityUseCase: FilterValuesQuantityUseCase,
     private val resetFilterValuesQuantityUseCase: ResetFilterValuesQuantityUseCase,
+    private val searchResultsMetadataFlowUseCase: SearchResultsMetadataFlowUseCase,
     private val brandFavoriteStatusUseCase: BrandFavoriteStatusUseCase,
     private val toggleBrandFavoriteUseCase: ToggleBrandFavoriteUseCase
 ): ClientViewModel<FilterIntent, FilterModel, FilterEvent>(FilterModel()) {
@@ -96,7 +101,9 @@ class FilterViewModel @AssistedInject constructor(
                 selectedFilterValueChipIds = route.requestFilterValueChipIds(state.selectedRequestAffectingFilterValueChipIds),
                 includeDefaultCategory = route.includeDefaultCategory(),
                 viewTypeOverride = route.viewTypeOverride,
-                sortType = state.selectedSortType
+                sortType = state.selectedSortType,
+                searchText = route.searchText.orEmpty(),
+                searchRequestId = route.searchRequestId
             )
         }
         .distinctUntilChanged()
@@ -105,6 +112,7 @@ class FilterViewModel @AssistedInject constructor(
 
     init {
         dispatch(FilterIntent.CollectRoute)
+        dispatch(FilterIntent.CollectSearchResultsMetadata)
         dispatch(FilterIntent.CollectFilterData)
         dispatch(FilterIntent.CollectCartCount)
         dispatch(FilterIntent.CollectCartProducts)
@@ -128,13 +136,78 @@ class FilterViewModel @AssistedInject constructor(
                     )
                 }
             }
+            is FilterIntent.CollectSearchResultsMetadata -> {
+                val searchText = route.searchText.orEmpty()
+                if (searchText.isEmpty()) return
+                launch {
+                    searchResultsMetadataFlowUseCase(Unit)
+                        .distinctUntilChanged()
+                        .collectLatest { metadata ->
+                            if (
+                                metadata.categoryId != route.categoryId ||
+                                metadata.titleCategoryId != route.titleCategoryId ||
+                                metadata.searchText != searchText ||
+                                metadata.searchRequestId != route.searchRequestId
+                            ) {
+                                return@collectLatest
+                            }
+                            val correction = metadata.correction?.trim()?.takeIf(String::isNotEmpty)
+                            when (val catalogLinkData = metadata.catalogLink?.toCatalogLinkData()) {
+                                null -> {
+                                    correction?.let { title ->
+                                        reduce { it.copy(titleOverride = title) }
+                                    }
+                                }
+                                else -> {
+                                    val categoryId = catalogLinkData.categoryId
+                                        ?: catalogLinkData.rootCategoryId
+                                        ?: return@collectLatest
+                                    val rootCategoryId = catalogLinkData.rootCategoryId ?: route.titleCategoryId
+                                    val catalogLinkRoute = FilterRoute(
+                                        categoryId = categoryId,
+                                        titleCategoryId = rootCategoryId,
+                                        subtitleCategoryId = categoryId,
+                                        titleOverride = catalogLinkData.title ?: correction,
+                                        isSingleLineTitle = true,
+                                        initialSelectedFilterValueChips = catalogLinkData.selectedFilterValueChips,
+                                        hiddenFilterValueChipIds = catalogLinkData.hiddenFilterValueChipIds,
+                                        viewTypeOverride = catalogLinkData.viewType,
+                                        searchSource = route.searchSource,
+                                        isBrandRoot = route.isBrandRoot,
+                                        isHomeRoot = route.isHomeRoot,
+                                        isMainRoot = route.isMainRoot
+                                    )
+                                    when {
+                                        route.isHomeRoot -> {
+                                            HomeRootEventManager.send(BackRoute)
+                                            HomeRootEventManager.send(catalogLinkRoute)
+                                        }
+                                        route.isMainRoot -> {
+                                            MainEventManager.send(BackRoute)
+                                            MainEventManager.send(catalogLinkRoute)
+                                        }
+                                        route.isBrandRoot -> {
+                                            BrandRootEventManager.send(BackRoute)
+                                            BrandRootEventManager.send(catalogLinkRoute)
+                                        }
+                                        else -> {
+                                            CatalogRootEventManager.send(BackRoute)
+                                            CatalogRootEventManager.send(catalogLinkRoute)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                }
+            }
             is FilterIntent.CollectFilterData -> {
                 launch {
                     filterDataFlowUseCase(
                         FilterRequestData(
                             categoryId = route.categoryId,
                             titleCategoryId = route.titleCategoryId,
-                            subtitleCategoryId = route.subtitleCategoryId
+                            subtitleCategoryId = route.subtitleCategoryId,
+                            searchText = route.searchText.orEmpty()
                         )
                     ).collectLatest { data ->
                         val topFilterValueChipsById = data.filterRibbonData.topFilterValueChips.associateBy(FilterChip::id)
@@ -187,18 +260,23 @@ class FilterViewModel @AssistedInject constructor(
                 }
             }
             is FilterIntent.LoadCatalogFilters -> {
-                launch {
+                stateFlow.value.loadCatalogFiltersJob?.cancel()
+                val job = launch {
                     val hasFilters = catalogFiltersUseCase(
                         CatalogFilterRequestData2(
                             categoryId = route.categoryId,
                             titleCategoryId = route.titleCategoryId,
                             selectedFilterValueChipIds = route.requestFilterValueChipIds(stateFlow.value.selectedRequestAffectingFilterValueChipIds),
                             includeDefaultCategory = route.includeDefaultCategory(),
-                            viewTypeOverride = route.viewTypeOverride
+                            viewTypeOverride = route.viewTypeOverride,
+                            searchText = route.searchText.orEmpty()
                         )
                     ).getOrThrow()
                     reduce { it.copy(showOnlySortFilter = !hasFilters) }
+                }.also { launchedJob ->
+                    launchedJob.invokeOnCompletion { reduce { it.copy(loadCatalogFiltersJob = null) } }
                 }
+                reduce { it.copy(loadCatalogFiltersJob = job) }
             }
             is FilterIntent.LoadProductsQuantity -> {
                 stateFlow.value.loadProductsQuantityJob?.cancel()
@@ -209,7 +287,8 @@ class FilterViewModel @AssistedInject constructor(
                             titleCategoryId = route.titleCategoryId,
                             selectedFilterValueChipIds = route.requestFilterValueChipIds(stateFlow.value.selectedRequestAffectingFilterValueChipIds),
                             includeDefaultCategory = route.includeDefaultCategory(),
-                            viewTypeOverride = route.viewTypeOverride
+                            viewTypeOverride = route.viewTypeOverride,
+                            searchText = route.searchText.orEmpty()
                         )
                     ).getOrThrow()
                 }.also { launchedJob ->
@@ -242,6 +321,7 @@ class FilterViewModel @AssistedInject constructor(
                 launch {
                     val detailsRoute = DetailsRoute(
                         id = intent.id,
+                        openedFromCart = route.searchSource == SearchSource.CART,
                         isBrandRoot = route.isBrandRoot,
                         isHomeRoot = route.isHomeRoot,
                         isMainRoot = route.isMainRoot
@@ -332,7 +412,8 @@ class FilterViewModel @AssistedInject constructor(
                             chipId = chip.id,
                             selectedFilterValueChipIds = route.requestFilterValueChipIds(stateFlow.value.selectedRequestAffectingFilterValueChipIds),
                             includeDefaultCategory = route.includeDefaultCategory(),
-                            viewTypeOverride = route.viewTypeOverride
+                            viewTypeOverride = route.viewTypeOverride,
+                            searchText = route.searchText.orEmpty()
                         )
                     ).getOrThrow()
                 }
@@ -504,7 +585,8 @@ class FilterViewModel @AssistedInject constructor(
                                 titleCategoryId = route.titleCategoryId,
                                 selectedFilterValueChipIds = route.requestFilterValueChipIds(stateFlow.value.currentDialogSelectedFilterValueChipIds()),
                                 includeDefaultCategory = route.includeDefaultCategory(),
-                                viewTypeOverride = route.viewTypeOverride
+                                viewTypeOverride = route.viewTypeOverride,
+                                searchText = route.searchText.orEmpty()
                             )
                         )
                     ).getOrThrow()
@@ -655,6 +737,9 @@ class FilterViewModel @AssistedInject constructor(
         when (throwable) {
             is CatalogFiltersException -> {
                 reduce { it.copy(showOnlySortFilter = true) }
+                launch { send(FilterEvent.SnackbarMessage(throwable.message)) }
+            }
+            is CatalogFilterProductQuantityException -> {
                 launch { send(FilterEvent.SnackbarMessage(throwable.message)) }
             }
             is ToggleBrandFavoriteException -> {

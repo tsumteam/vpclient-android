@@ -1,9 +1,11 @@
+@file:Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
+
 package ru.mercury.vpclient.shared.domain.usecase
 
 import androidx.room.withTransaction
 import ru.mercury.vpclient.shared.coroutines.SharedDispatchers
-import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.network.NetworkService
+import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.persistence.database.AppDatabase
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogViewHistoryProductDao
 import ru.mercury.vpclient.shared.domain.mapper.entity
@@ -15,20 +17,14 @@ class CatalogViewHistoryUseCase @Inject constructor(
     private val networkService: NetworkService,
     private val catalogViewHistoryProductDao: CatalogViewHistoryProductDao,
     dispatchers: SharedDispatchers
-): UseCase<Unit, Unit>(dispatchers.io) {
+): UseCase<Int, Unit>(dispatchers.io) {
 
-    override suspend fun execute(params: Unit) {
+    override suspend fun execute(limit: Int) {
         handleResponse(
-            request = {
-                networkService.catalogViewHistory(
-                    limit = PROFILE_VIEW_HISTORY_LIMIT
-                )
-            },
+            request = { networkService.catalogViewHistory(limit) },
             onSuccess = { response ->
                 val entities = response.items.orEmpty().mapIndexed { index, item ->
-                    item.entity(
-                        position = index
-                    )
+                    item.entity(index)
                 }
                 appDatabase.withTransaction {
                     catalogViewHistoryProductDao.delete()
@@ -43,7 +39,8 @@ class CatalogViewHistoryUseCase @Inject constructor(
         override val message: String
     ): ClientException(message)
 
-    private companion object {
-        private const val PROFILE_VIEW_HISTORY_LIMIT = 11
+    companion object {
+        const val PROFILE_VIEW_HISTORY_LIMIT = 11
+        const val SEARCH_VIEW_HISTORY_LIMIT = 10
     }
 }

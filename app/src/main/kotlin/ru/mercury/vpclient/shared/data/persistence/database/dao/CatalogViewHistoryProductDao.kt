@@ -35,7 +35,8 @@ interface CatalogViewHistoryProductDao {
             NULL AS lookActionName,
             NULL AS lookActionDiscountPercentage,
             NULL AS availableSizes,
-            0 AS isOneSize
+            0 AS isOneSize,
+            '' AS searchText
         FROM CatalogViewHistoryProducts
         ORDER BY position ASC
         """
@@ -65,7 +66,8 @@ interface CatalogViewHistoryProductDao {
             NULL AS lookActionName,
             NULL AS lookActionDiscountPercentage,
             NULL AS availableSizes,
-            0 AS isOneSize
+            0 AS isOneSize,
+            '' AS searchText
         FROM CatalogViewHistoryProducts
         ORDER BY position ASC
         """
@@ -98,7 +100,8 @@ interface CatalogViewHistoryProductDao {
             NULL AS lookActionName,
             NULL AS lookActionDiscountPercentage,
             NULL AS availableSizes,
-            0 AS isOneSize
+            0 AS isOneSize,
+            '' AS searchText
         FROM CatalogViewHistoryProducts
         WHERE id = :id
         LIMIT 1

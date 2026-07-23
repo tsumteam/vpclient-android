@@ -6,6 +6,7 @@ import ru.mercury.vpclient.shared.data.entity.TabType
 import ru.mercury.vpclient.shared.mvi.Intent
 
 sealed interface HomeIntent: Intent {
+    data object CollectSelectedTab: HomeIntent
     data object CollectCartCount: HomeIntent
     data object CollectFittingCount: HomeIntent
     data object CollectActiveEmployee: HomeIntent

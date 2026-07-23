@@ -8,5 +8,7 @@ data class CatalogFilterProductsData(
     val selectedFilterValueChipIds: Set<String>,
     val includeDefaultCategory: Boolean = true,
     val viewTypeOverride: CatalogViewType? = null,
-    val sortType: SortType
+    val sortType: SortType,
+    val searchText: String = "",
+    val searchRequestId: String? = null
 )

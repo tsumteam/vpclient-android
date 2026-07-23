@@ -27,12 +27,15 @@ class CatalogFilterProductsPagingDataUseCase @Inject constructor(
     private val catalogCategoryDao: CatalogCategoryDao,
     private val catalogFilterProductsDao: CatalogFilterProductsDao,
     private val pagingKeyDao: PagingKeyDao,
+    private val setSearchResultsMetadataUseCase: SetSearchResultsMetadataUseCase,
+    private val digineticaSearchEventUseCase: DigineticaSearchEventUseCase,
     dispatchers: SharedDispatchers
 ): FlowUseCase<CatalogFilterProductsData, PagingData<CatalogFilterProductsEntity>>(dispatchers.io) {
 
     override fun execute(data: CatalogFilterProductsData): Flow<PagingData<CatalogFilterProductsEntity>> {
         val categoryId = data.categoryId
         val titleCategoryId = data.titleCategoryId
+        val searchText = data.searchText
 
         return Pager(
             config = PagingConfig(
@@ -45,10 +48,12 @@ class CatalogFilterProductsPagingDataUseCase @Inject constructor(
                 appDatabase = appDatabase,
                 catalogCategoryDao = catalogCategoryDao,
                 catalogFilterProductsDao = catalogFilterProductsDao,
-                pagingKeyDao = pagingKeyDao
+                pagingKeyDao = pagingKeyDao,
+                setSearchResultsMetadataUseCase = setSearchResultsMetadataUseCase,
+                digineticaSearchEventUseCase = digineticaSearchEventUseCase
             ),
             pagingSourceFactory = {
-                catalogFilterProductsDao.pagingSource(categoryId, titleCategoryId)
+                catalogFilterProductsDao.pagingSource(categoryId, titleCategoryId, searchText)
             }
         ).flow
     }

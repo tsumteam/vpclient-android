@@ -8,6 +8,7 @@ import ru.mercury.vpclient.shared.coroutines.SharedDispatchers
 import ru.mercury.vpclient.shared.data.entity.CatalogFilterRequestData2
 import ru.mercury.vpclient.shared.data.network.NetworkService
 import ru.mercury.vpclient.shared.data.network.error.ClientException
+import ru.mercury.vpclient.shared.data.network.request.DigineticaFiltersRequest
 import ru.mercury.vpclient.shared.data.network.request.FiltersRequest
 import ru.mercury.vpclient.shared.data.persistence.database.AppDatabase
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogCategoryDao
@@ -29,6 +30,7 @@ class CatalogFiltersUseCase @Inject constructor(
     override suspend fun execute(data: CatalogFilterRequestData2): Boolean {
         val categoryId = data.categoryId
         val titleCategoryId = data.titleCategoryId
+        val searchText = data.searchText
         var hasFilters = false
 
         handleResponse(
@@ -43,7 +45,16 @@ class CatalogFiltersUseCase @Inject constructor(
                         includeDefaultCategory = data.includeDefaultCategory
                     )
                 )
-                networkService.catalogFilters(request)
+                when {
+                    searchText.isNotEmpty() -> {
+                        val digineticaRequest = DigineticaFiltersRequest(
+                            searchText = searchText,
+                            filtersRequest = request
+                        )
+                        networkService.catalogByTextFiltersDiginetica(digineticaRequest)
+                    }
+                    else -> networkService.catalogFilters(request)
+                }
             },
             onSuccess = { response ->
                 val filters = response.filters.orEmpty()
@@ -56,10 +67,11 @@ class CatalogFiltersUseCase @Inject constructor(
                 val catalogFilterEntity = CatalogFilterEntity(
                     categoryId = categoryId,
                     titleCategoryId = titleCategoryId,
-                    filtersJson = filtersJson
+                    filtersJson = filtersJson,
+                    searchText = searchText
                 )
                 appDatabase.withTransaction {
-                    catalogFilterDao.delete(categoryId, titleCategoryId)
+                    catalogFilterDao.delete(categoryId, titleCategoryId, searchText)
                     catalogFilterDao.upsert(catalogFilterEntity)
                 }
             },

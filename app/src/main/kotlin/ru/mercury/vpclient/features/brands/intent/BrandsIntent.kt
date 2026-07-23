@@ -5,6 +5,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogBrandE
 import ru.mercury.vpclient.shared.mvi.Intent
 
 sealed interface BrandsIntent: Intent {
+    data object CollectSelectedTab: BrandsIntent
     data object CollectBrands: BrandsIntent
     data object CollectCartCount: BrandsIntent
     data object CollectFittingCount: BrandsIntent

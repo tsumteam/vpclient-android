@@ -29,6 +29,7 @@ class FilterDataFlowUseCase @Inject constructor(
         val categoryId = data.categoryId
         val titleCategoryId = data.titleCategoryId
         val subtitleCategoryId = data.subtitleCategoryId
+        val searchText = data.searchText
         val filterTitleFlow = combine(
             catalogCategoryDao.selectFlow(titleCategoryId),
             catalogCategoryDao.selectFlow(subtitleCategoryId)
@@ -40,7 +41,8 @@ class FilterDataFlowUseCase @Inject constructor(
         }
         val filterRibbonDataFlow = catalogFilterDao.selectFlow(
             categoryId,
-            titleCategoryId
+            titleCategoryId,
+            searchText
         ).map { catalogFilterEntity ->
             when {
                 catalogFilterEntity == null -> FilterRibbonData.Empty to emptyList()
@@ -49,7 +51,8 @@ class FilterDataFlowUseCase @Inject constructor(
         }
         val productsQuantityFlow = catalogFilterProductsQuantityDao.selectFlow(
             categoryId,
-            titleCategoryId
+            titleCategoryId,
+            searchText
         ).map { entity -> entity.orEmpty }
 
         return combine(

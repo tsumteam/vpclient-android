@@ -11,6 +11,12 @@ object ClientStrings {
     val HomeGiftCards get() = R.string.home_gift_cards
     val HomeWatchMore get() = R.string.home_watch_more
 
+    val SearchPlaceholder get() = R.string.search_placeholder
+    val SearchCancel get() = R.string.search_cancel
+    val SearchRecentlySearchedCaps get() = R.string.search_recently_searched_caps
+    val SearchClear get() = R.string.search_clear
+    val SearchRecentlyViewedCaps get() = R.string.search_recently_viewed_caps
+
     val GiftCardTitle get() = R.string.gift_card_title
     val GiftCardAmount get() = R.string.gift_card_amount
     val GiftCardAmountRange get() = R.string.gift_card_amount_range

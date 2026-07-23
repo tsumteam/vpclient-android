@@ -14,6 +14,7 @@ import ru.mercury.vpclient.features.banner.navigation.BannerRoute
 import ru.mercury.vpclient.features.cart.navigation.CartPage
 import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.features.home_root.event.HomeRootEventManager
+import ru.mercury.vpclient.features.search.navigation.SearchRoute
 import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
@@ -50,7 +51,7 @@ class BannerViewModel @AssistedInject constructor(
                 }
             }
             is BannerIntent.BackClick -> launch { HomeRootEventManager.send(BackRoute) }
-            is BannerIntent.SearchClick -> return
+            is BannerIntent.SearchClick -> launch { MainEventManager.send(SearchRoute()) }
             is BannerIntent.FittingClick -> {
                 launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
             }
@@ -61,7 +62,9 @@ class BannerViewModel @AssistedInject constructor(
 
     override fun catch(throwable: Throwable) {
         when (throwable) {
-            is ClientException -> launch { send(BannerEvent.SnackbarErrorMessage(throwable.message)) }
+            is ClientException -> {
+                launch { send(BannerEvent.SnackbarErrorMessage(throwable.message)) }
+            }
             is RoomException, is RoomSQLiteException -> {
                 launch { send(BannerEvent.SnackbarErrorMessage(throwable.message.orEmpty())) }
             }

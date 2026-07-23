@@ -4,6 +4,7 @@ import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.entity.FilterChip
+import ru.mercury.vpclient.shared.data.entity.SearchSource
 import ru.mercury.vpclient.shared.data.network.type.CatalogViewType
 
 @Serializable
@@ -18,6 +19,9 @@ data class FilterRoute(
     val initialSelectedFilterValueChips: List<FilterChip> = emptyList(),
     val hiddenFilterValueChipIds: List<String> = emptyList(),
     val viewTypeOverride: CatalogViewType? = null,
+    val searchText: String? = null,
+    val searchRequestId: String? = null,
+    val searchSource: SearchSource = SearchSource.CATALOG,
     val actionId: Int? = null,
     val isBrandRoot: Boolean = false,
     val isHomeRoot: Boolean = false,

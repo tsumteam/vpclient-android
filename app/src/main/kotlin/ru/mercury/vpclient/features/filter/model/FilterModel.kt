@@ -51,6 +51,7 @@ data class FilterModel(
     val filterValuesDialogProductsQuantityJob: Job? = null,
     val filterValuesDialogPickerCollectionJob: Job? = null,
     val filterValuesDialogQuantityCollectionJob: Job? = null,
+    val loadCatalogFiltersJob: Job? = null,
     val loadProductsQuantityJob: Job? = null,
     val basketProductIds: Set<String> = emptySet(),
     val basketProductKeys: Set<String> = emptySet(),
@@ -62,6 +63,9 @@ data class FilterModel(
 
     val isBrandFavoritesBarVisible: Boolean
         get() = brandEntity != null && isBrandFavorited != null
+
+    val isCatalogFiltersLoading: Boolean
+        get() = loadCatalogFiltersJob?.isActive == true
 
     val cartText: String
         get() = when {

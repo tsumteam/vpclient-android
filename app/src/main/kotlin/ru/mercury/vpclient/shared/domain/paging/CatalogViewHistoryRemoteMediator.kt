@@ -30,7 +30,8 @@ class CatalogViewHistoryRemoteMediator(
         return try {
             val pagingKeyEntity = pagingKeyDao.select(
                 categoryId = CATALOG_VIEW_HISTORY_CATEGORY_ID,
-                titleCategoryId = CATALOG_VIEW_HISTORY_TITLE_CATEGORY_ID
+                titleCategoryId = CATALOG_VIEW_HISTORY_TITLE_CATEGORY_ID,
+                searchText = ""
             )
             val paginationToken = when (loadType) {
                 LoadType.REFRESH -> null
@@ -62,7 +63,8 @@ class CatalogViewHistoryRemoteMediator(
                 if (loadType == LoadType.REFRESH) {
                     pagingKeyDao.remove(
                         categoryId = CATALOG_VIEW_HISTORY_CATEGORY_ID,
-                        titleCategoryId = CATALOG_VIEW_HISTORY_TITLE_CATEGORY_ID
+                        titleCategoryId = CATALOG_VIEW_HISTORY_TITLE_CATEGORY_ID,
+                        searchText = ""
                     )
                     catalogViewHistoryProductDao.delete()
                 }

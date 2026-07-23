@@ -4,6 +4,7 @@ import ru.mercury.vpclient.shared.coroutines.SharedDispatchers
 import ru.mercury.vpclient.shared.data.entity.CatalogFilterRequestData2
 import ru.mercury.vpclient.shared.data.network.NetworkService
 import ru.mercury.vpclient.shared.data.network.error.ClientException
+import ru.mercury.vpclient.shared.data.network.request.DigineticaFilteredProductsQuantityRequest
 import ru.mercury.vpclient.shared.data.network.request.FilteredProductsQuantityRequest
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogCategoryDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.FilterValuesQuantityDao
@@ -38,7 +39,16 @@ class FilterValuesQuantityUseCase @Inject constructor(
                         includeDefaultCategory = data.includeDefaultCategory
                     )
                 )
-                networkService.catalogFilterProductsQuantity(request)
+                when {
+                    data.searchText.isNotEmpty() -> {
+                        val digineticaRequest = DigineticaFilteredProductsQuantityRequest(
+                            searchText = data.searchText,
+                            request = request
+                        )
+                        networkService.catalogByTextFilterProductsQuantity(digineticaRequest)
+                    }
+                    else -> networkService.catalogFilterProductsQuantity(request)
+                }
             },
             onSuccess = { response ->
                 val filterValuesQuantityEntity = FilterValuesQuantityEntity(

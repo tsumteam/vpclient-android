@@ -17,6 +17,8 @@ import ru.mercury.vpclient.shared.domain.usecase.CatalogBrandUnlikeUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CatalogBrandUnlikeUseCase.CatalogBrandUnlikeException
 import ru.mercury.vpclient.shared.domain.usecase.FavoriteBrandEntitiesFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.SelectedTabFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.SetLastCatalogRootIdUseCase
+import ru.mercury.vpclient.shared.domain.mapper.catalogRootId
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.navigation.BackRoute
 import javax.inject.Inject
@@ -24,6 +26,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileBrandsViewModel @Inject constructor(
     private val selectedTabFlowUseCase: SelectedTabFlowUseCase,
+    private val setLastCatalogRootIdUseCase: SetLastCatalogRootIdUseCase,
     private val favoriteBrandEntitiesFlowUseCase: FavoriteBrandEntitiesFlowUseCase,
     private val catalogBrandFavoritesUseCase: CatalogBrandFavoritesUseCase,
     private val catalogBrandUnlikeUseCase: CatalogBrandUnlikeUseCase
@@ -68,7 +71,10 @@ class ProfileBrandsViewModel @Inject constructor(
             is ProfileBrandsIntent.HideBrandSheet -> {
                 reduce { it.copy(isBrandSheetVisible = false) }
             }
-            is ProfileBrandsIntent.SelectTab -> reduce { it.copy(selectedTab = intent.tab) }
+            is ProfileBrandsIntent.SelectTab -> {
+                reduce { it.copy(selectedTab = intent.tab) }
+                launch { setLastCatalogRootIdUseCase(intent.tab.catalogRootId).getOrThrow() }
+            }
             is ProfileBrandsIntent.BrandDeleteClick -> {
                 launch {
                     val params = CatalogBrandUnlikeUseCase.Params(

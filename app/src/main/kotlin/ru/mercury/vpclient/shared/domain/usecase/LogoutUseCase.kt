@@ -20,5 +20,6 @@ class LogoutUseCase @Inject constructor(
             PreferenceKey.UserId,
             PreferenceKey.PairedUser
         )
+        settingsDataStore.removeValue(PreferenceKey.UseDiginetica)
     }
 }

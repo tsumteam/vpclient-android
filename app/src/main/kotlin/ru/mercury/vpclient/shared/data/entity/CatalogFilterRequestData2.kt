@@ -7,5 +7,6 @@ data class CatalogFilterRequestData2( // fixme
     val titleCategoryId: Int,
     val selectedFilterValueChipIds: Set<String>,
     val includeDefaultCategory: Boolean = true,
-    val viewTypeOverride: CatalogViewType? = null
+    val viewTypeOverride: CatalogViewType? = null,
+    val searchText: String = ""
 )

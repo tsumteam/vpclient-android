@@ -11,6 +11,7 @@ import ru.mercury.vpclient.features.compilation.navigation.CompilationRoute
 import ru.mercury.vpclient.features.compilations.event.CompilationsEvent
 import ru.mercury.vpclient.features.compilations.intent.CompilationsIntent
 import ru.mercury.vpclient.features.compilations.model.CompilationsModel
+import ru.mercury.vpclient.features.search.navigation.SearchRoute
 import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
@@ -58,18 +59,14 @@ class CompilationsViewModel @Inject constructor(
                 launch {
                     cartCountFlowUseCase(Unit)
                         .distinctUntilChanged()
-                        .collectLatest { count ->
-                            reduce { it.copy(cartCount = count) }
-                        }
+                        .collectLatest { count -> reduce { it.copy(cartCount = count) } }
                 }
             }
             is CompilationsIntent.CollectFittingCount -> {
                 launch {
                     fittingCountFlowUseCase(Unit)
                         .distinctUntilChanged()
-                        .collectLatest { count ->
-                            reduce { it.copy(fittingCount = count) }
-                        }
+                        .collectLatest { count -> reduce { it.copy(fittingCount = count) } }
                 }
             }
             is CompilationsIntent.CollectCartProducts -> {
@@ -111,7 +108,7 @@ class CompilationsViewModel @Inject constructor(
                 launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
             }
             is CompilationsIntent.MessengerClick -> return
-            is CompilationsIntent.SearchClick -> return
+            is CompilationsIntent.SearchClick -> launch { MainEventManager.send(SearchRoute()) }
             is CompilationsIntent.CompilationClick -> {
                 launch { MainEventManager.send(CompilationRoute(intent.id)) }
             }

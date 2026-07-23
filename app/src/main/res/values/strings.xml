@@ -46,6 +46,13 @@
     <string name="main_tab_profile">Профиль</string>
     <string name="home_gift_cards">ПОДАРОЧНЫЕ КАРТЫ</string>
     <string name="home_watch_more">Смотреть еще</string>
+
+    <string name="search_placeholder">Найти</string>
+    <string name="search_cancel">Отменить</string>
+    <string name="search_recently_searched_caps">ВЫ НЕДАВНО ИСКАЛИ</string>
+    <string name="search_clear">Очистить</string>
+    <string name="search_recently_viewed_caps">ВЫ НЕДАВНО СМОТРЕЛИ</string>
+
     <string name="gift_card_title">ПОДАРОЧНАЯ КАРТА</string>
     <string name="gift_card_amount">Сумма</string>
     <string name="gift_card_amount_range">Номинал должен быть не менее %1$s и не более %2$s</string>

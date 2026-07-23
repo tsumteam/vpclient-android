@@ -46,6 +46,8 @@ import ru.mercury.vpclient.features.fitting_info.FittingInfoScreen
 import ru.mercury.vpclient.features.fitting_info.navigation.FittingInfoRoute
 import ru.mercury.vpclient.features.fitting_success.FittingSuccessScreen
 import ru.mercury.vpclient.features.fitting_success.navigation.FittingSuccessRoute
+import ru.mercury.vpclient.features.filter.FilterScreen
+import ru.mercury.vpclient.features.filter.navigation.FilterRoute
 import ru.mercury.vpclient.features.gift_card.GiftCardScreen
 import ru.mercury.vpclient.features.gift_card.navigation.GiftCardRoute
 import ru.mercury.vpclient.features.gift_card_checkout.GiftCardCheckoutScreen
@@ -68,6 +70,8 @@ import ru.mercury.vpclient.features.profile_loyalty_terms.ProfileLoyaltyTermsScr
 import ru.mercury.vpclient.features.profile_loyalty_terms.navigation.ProfileLoyaltyTermsRoute
 import ru.mercury.vpclient.features.profile_qr.ProfileQrScreen
 import ru.mercury.vpclient.features.profile_qr.navigation.ProfileQrRoute
+import ru.mercury.vpclient.features.search.SearchScreen
+import ru.mercury.vpclient.features.search.navigation.SearchRoute
 import ru.mercury.vpclient.features.video.VideoScreen
 import ru.mercury.vpclient.features.video.navigation.VideoRoute
 import ru.mercury.vpclient.shared.data.event.CenterLoading
@@ -107,6 +111,7 @@ fun MainActivityContent(
                 entry<ProfileBrandsRoute> { ProfileBrandsScreen() }
                 entry<CartRoute> { CartScreen(it) }
                 entry<DetailsRoute> { DetailsScreen(it) }
+                entry<FilterRoute> { FilterScreen(it) }
                 entry<CompilationRoute> { CompilationScreen(it) }
                 entry<FittingConfirmationRoute> { FittingConfirmationScreen(it) }
                 entry<FittingInfoRoute> { FittingInfoScreen(it) }
@@ -119,6 +124,7 @@ fun MainActivityContent(
                 entry<MediaRoute> { MediaScreen(it) }
                 entry<VideoRoute> { VideoScreen(it) }
                 entry<NotificationsRoute> { NotificationsScreen() }
+                entry<SearchRoute> { SearchScreen(it) }
             }
         )
 

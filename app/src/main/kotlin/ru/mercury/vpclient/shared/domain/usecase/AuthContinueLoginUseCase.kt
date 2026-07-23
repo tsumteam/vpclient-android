@@ -2,8 +2,8 @@ package ru.mercury.vpclient.shared.domain.usecase
 
 import ru.mercury.vpclient.shared.coroutines.SharedDispatchers
 import ru.mercury.vpclient.shared.data.FORMAT_PHONE_NUMBER
-import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.network.NetworkService
+import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.network.request.AuthenticationContinueLoginRequest
 import ru.mercury.vpclient.shared.data.persistence.database.dao.ClientDao
 import ru.mercury.vpclient.shared.data.persistence.datastore.PreferenceKey
@@ -35,8 +35,12 @@ class AuthContinueLoginUseCase @Inject constructor(
                 settingsDataStore.setValue(PreferenceKey.UserToken, tokenResponse.token.orEmpty())
 
                 val currentUser = networkService.userCurrentUser()
+
                 val userId = currentUser.data?.code.orEmpty()
                 settingsDataStore.setValue(PreferenceKey.UserId, userId)
+
+                val useDiginetica = currentUser.data?.useDiginetica == true
+                settingsDataStore.setValue(PreferenceKey.UseDiginetica, useDiginetica)
 
                 val activeEmployee = networkService.clientActiveEmployee()
                 val activeEmployeeId = activeEmployee.data?.employeeId.orEmpty()

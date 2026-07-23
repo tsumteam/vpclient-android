@@ -42,6 +42,7 @@ import ru.mercury.vpclient.shared.domain.usecase.CartBadgeUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CartCountFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CatalogViewHistoryUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CatalogViewHistoryUseCase.CatalogViewHistoryException
+import ru.mercury.vpclient.shared.domain.usecase.CatalogViewHistoryUseCase.Companion.PROFILE_VIEW_HISTORY_LIMIT
 import ru.mercury.vpclient.shared.domain.usecase.ClientEntityFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CurrentUserUseCase
 import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
@@ -197,7 +198,7 @@ class ProfileViewModel @Inject constructor(
             is ProfileIntent.LoadActivityCounters -> launch { activityCountersUseCase(Unit) }
             is ProfileIntent.LoadCatalogViewHistory -> {
                 val job = launch {
-                    catalogViewHistoryUseCase(Unit).getOrThrow()
+                    catalogViewHistoryUseCase(PROFILE_VIEW_HISTORY_LIMIT).getOrThrow()
                 }.also { launchedJob ->
                     launchedJob.invokeOnCompletion { reduce { it.copy(viewHistoryJob = null) } }
                 }

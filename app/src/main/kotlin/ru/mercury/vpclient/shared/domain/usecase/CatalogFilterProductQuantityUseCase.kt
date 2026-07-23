@@ -6,6 +6,8 @@ import androidx.room.withTransaction
 import ru.mercury.vpclient.shared.coroutines.SharedDispatchers
 import ru.mercury.vpclient.shared.data.entity.CatalogFilterRequestData2
 import ru.mercury.vpclient.shared.data.network.NetworkService
+import ru.mercury.vpclient.shared.data.network.error.ClientException
+import ru.mercury.vpclient.shared.data.network.request.DigineticaFilteredProductsQuantityRequest
 import ru.mercury.vpclient.shared.data.network.request.FilteredProductsQuantityRequest
 import ru.mercury.vpclient.shared.data.persistence.database.AppDatabase
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogCategoryDao
@@ -27,6 +29,7 @@ class CatalogFilterProductQuantityUseCase @Inject constructor(
     override suspend fun execute(data: CatalogFilterRequestData2) {
         val categoryId = data.categoryId
         val titleCategoryId = data.titleCategoryId
+        val searchText = data.searchText
 
         handleResponse(
             request = {
@@ -40,19 +43,34 @@ class CatalogFilterProductQuantityUseCase @Inject constructor(
                         includeDefaultCategory = data.includeDefaultCategory
                     )
                 )
-                networkService.catalogFilterProductsQuantity(request)
+                when {
+                    searchText.isNotEmpty() -> {
+                        val digineticaRequest = DigineticaFilteredProductsQuantityRequest(
+                            searchText = searchText,
+                            request = request
+                        )
+                        networkService.catalogByTextFilterProductsQuantity(digineticaRequest)
+                    }
+                    else -> networkService.catalogFilterProductsQuantity(request)
+                }
             },
             onSuccess = { response ->
                 val catalogFilterProductsQuantityEntity = CatalogFilterProductsQuantityEntity(
                     categoryId = categoryId,
                     titleCategoryId = titleCategoryId,
-                    productsQuantity = response.quantity
+                    productsQuantity = response.quantity,
+                    searchText = searchText
                 )
                 appDatabase.withTransaction {
-                    catalogFilterProductsQuantityDao.delete(categoryId, titleCategoryId)
+                    catalogFilterProductsQuantityDao.delete(categoryId, titleCategoryId, searchText)
                     catalogFilterProductsQuantityDao.upsert(catalogFilterProductsQuantityEntity)
                 }
-            }
+            },
+            onFailure = { error -> throw CatalogFilterProductQuantityException(error.message) }
         )
     }
+
+    data class CatalogFilterProductQuantityException(
+        override val message: String
+    ): ClientException(message)
 }

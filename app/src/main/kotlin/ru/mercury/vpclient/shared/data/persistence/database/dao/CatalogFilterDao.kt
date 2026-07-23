@@ -9,15 +9,15 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilter
 @Dao
 interface CatalogFilterDao {
 
-    @Query("SELECT * FROM CatalogFilter WHERE categoryId = :categoryId AND titleCategoryId = :titleCategoryId LIMIT 1")
-    fun selectFlow(categoryId: Int, titleCategoryId: Int): Flow<CatalogFilterEntity?>
+    @Query("SELECT * FROM CatalogFilter WHERE categoryId = :categoryId AND titleCategoryId = :titleCategoryId AND searchText = :searchText LIMIT 1")
+    fun selectFlow(categoryId: Int, titleCategoryId: Int, searchText: String): Flow<CatalogFilterEntity?>
 
-    @Query("SELECT * FROM CatalogFilter WHERE categoryId = :categoryId AND titleCategoryId = :titleCategoryId LIMIT 1")
-    suspend fun select(categoryId: Int, titleCategoryId: Int): CatalogFilterEntity?
+    @Query("SELECT * FROM CatalogFilter WHERE categoryId = :categoryId AND titleCategoryId = :titleCategoryId AND searchText = :searchText LIMIT 1")
+    suspend fun select(categoryId: Int, titleCategoryId: Int, searchText: String): CatalogFilterEntity?
 
     @Upsert
     suspend fun upsert(entity: CatalogFilterEntity)
 
-    @Query("DELETE FROM CatalogFilter WHERE categoryId = :categoryId AND titleCategoryId = :titleCategoryId")
-    suspend fun delete(categoryId: Int, titleCategoryId: Int)
+    @Query("DELETE FROM CatalogFilter WHERE categoryId = :categoryId AND titleCategoryId = :titleCategoryId AND searchText = :searchText")
+    suspend fun delete(categoryId: Int, titleCategoryId: Int, searchText: String)
 }

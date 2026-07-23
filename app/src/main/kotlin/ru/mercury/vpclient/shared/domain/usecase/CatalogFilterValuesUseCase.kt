@@ -7,6 +7,7 @@ import ru.mercury.vpclient.shared.data.entity.FilterValuesRequestData
 import ru.mercury.vpclient.shared.data.network.NetworkService
 import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.network.request.CatalogFilterRequest
+import ru.mercury.vpclient.shared.data.network.request.DigineticaFilterValuesRequest
 import ru.mercury.vpclient.shared.data.network.request.FilterValuesRequest
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogCategoryDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogFilterDao
@@ -31,7 +32,7 @@ class CatalogFilterValuesUseCase @Inject constructor(
         val categoryId = data.categoryId
         val titleCategoryId = data.titleCategoryId
         val chipId = data.chipId
-        val existingPicker = catalogFilterDao.select(categoryId, titleCategoryId)
+        val existingPicker = catalogFilterDao.select(categoryId, titleCategoryId, data.searchText)
             ?.toFilterValuesPickers()
             ?.firstOrNull { picker -> picker.chipId == chipId }
         val requestFilters = data.selectedFilterValueChipIds.requests(
@@ -63,7 +64,16 @@ class CatalogFilterValuesUseCase @Inject constructor(
                     hasUserInteractedWithStandartSizesFilter = false,
                     filters = requestFilters
                 )
-                networkService.catalogFilterValues(request)
+                when {
+                    data.searchText.isNotEmpty() -> {
+                        val digineticaRequest = DigineticaFilterValuesRequest(
+                            searchText = data.searchText,
+                            request = request
+                        )
+                        networkService.catalogByTextFilterValues(digineticaRequest)
+                    }
+                    else -> networkService.catalogFilterValues(request)
+                }
             },
             onSuccess = { response ->
                 val filterValuesEntity = response.filterValues.orEmpty().toFilterValuesEntity(

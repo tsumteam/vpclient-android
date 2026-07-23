@@ -8,5 +8,6 @@ data class FilterValuesRequestData(
     val chipId: String,
     val selectedFilterValueChipIds: Set<String>,
     val includeDefaultCategory: Boolean = true,
-    val viewTypeOverride: CatalogViewType? = null
+    val viewTypeOverride: CatalogViewType? = null,
+    val searchText: String = ""
 )

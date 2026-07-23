@@ -7,11 +7,13 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductRelate
 fun CatalogProductSearchCardV2Response.entity(
     categoryId: Int,
     titleCategoryId: Int,
+    searchText: String,
     position: Int
 ): CatalogFilterProductsEntity {
     return CatalogFilterProductsEntity(
         categoryId = categoryId,
         titleCategoryId = titleCategoryId,
+        searchText = searchText,
         position = position,
         id = id.orEmpty(),
         itemId = itemId.orEmpty(),

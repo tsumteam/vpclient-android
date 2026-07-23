@@ -12,13 +12,13 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilter
 interface CatalogFilterProductsDao {
 
     @Transaction
-    @Query("SELECT * FROM CatalogFilterProducts WHERE categoryId = :categoryId AND titleCategoryId = :titleCategoryId ORDER BY position ASC")
-    fun pagingSource(categoryId: Int, titleCategoryId: Int): PagingSource<Int, CatalogFilterProductsEntity>
+    @Query("SELECT * FROM CatalogFilterProducts WHERE categoryId = :categoryId AND titleCategoryId = :titleCategoryId AND searchText = :searchText ORDER BY position ASC")
+    fun pagingSource(categoryId: Int, titleCategoryId: Int, searchText: String): PagingSource<Int, CatalogFilterProductsEntity>
 
-    @Query("SELECT * FROM CatalogFilterProducts WHERE categoryId = :categoryId AND titleCategoryId = :titleCategoryId ORDER BY position ASC")
-    fun selectFlow(categoryId: Int, titleCategoryId: Int): Flow<List<CatalogFilterProductsEntity>>
+    @Query("SELECT * FROM CatalogFilterProducts WHERE categoryId = :categoryId AND titleCategoryId = :titleCategoryId AND searchText = :searchText ORDER BY position ASC")
+    fun selectFlow(categoryId: Int, titleCategoryId: Int, searchText: String): Flow<List<CatalogFilterProductsEntity>>
 
-    @Query("SELECT * FROM CatalogFilterProducts WHERE categoryId = :categoryId ORDER BY titleCategoryId ASC, position ASC")
+    @Query("SELECT * FROM CatalogFilterProducts WHERE categoryId = :categoryId AND searchText = '' ORDER BY titleCategoryId ASC, position ASC")
     fun selectFlow(categoryId: Int): Flow<List<CatalogFilterProductsEntity>>
 
     @Query("SELECT * FROM CatalogFilterProducts WHERE id = :id LIMIT 1")
@@ -30,9 +30,9 @@ interface CatalogFilterProductsDao {
     @Upsert
     suspend fun upsert(entities: List<CatalogFilterProductsEntity>)
 
-    @Query("DELETE FROM CatalogFilterProducts WHERE categoryId = :categoryId AND titleCategoryId = :titleCategoryId")
-    suspend fun remove(categoryId: Int, titleCategoryId: Int)
+    @Query("DELETE FROM CatalogFilterProducts WHERE categoryId = :categoryId AND titleCategoryId = :titleCategoryId AND searchText = :searchText")
+    suspend fun remove(categoryId: Int, titleCategoryId: Int, searchText: String)
 
-    @Query("DELETE FROM CatalogFilterProducts WHERE categoryId = :categoryId")
+    @Query("DELETE FROM CatalogFilterProducts WHERE categoryId = :categoryId AND searchText = ''")
     suspend fun remove(categoryId: Int)
 }

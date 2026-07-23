@@ -632,17 +632,17 @@ private fun FilterScreenContent(
                     FiltersRow(
                         state = FiltersRowState(
                             filterRibbonData = when {
-                                pagingItems.isRefreshLoading || state.showOnlySortFilter -> FilterRibbonData.Empty
+                                pagingItems.isRefreshLoading || state.isCatalogFiltersLoading || state.showOnlySortFilter -> FilterRibbonData.Empty
                                 else -> state.filterData.filterRibbonData
                             },
                             showOnlySort = state.showOnlySortFilter,
-                            sortSelected = !pagingItems.isRefreshLoading && state.selectedSortType.isSortChipSelected,
+                            sortSelected = !pagingItems.isRefreshLoading && !state.isCatalogFiltersLoading && state.selectedSortType.isSortChipSelected,
                             selectedFilterValueChips = when {
-                                pagingItems.isRefreshLoading || state.showOnlySortFilter -> emptyList()
+                                pagingItems.isRefreshLoading || state.isCatalogFiltersLoading || state.showOnlySortFilter -> emptyList()
                                 else -> state.selectedFilterValueChips
                             }
                         ),
-                        enabled = !pagingItems.isRefreshLoading,
+                        enabled = !pagingItems.isRefreshLoading && !state.isCatalogFiltersLoading,
                         onSortClick = { dispatch(FilterIntent.ShowSortDialog) },
                         onFilterChipClick = { chipId -> dispatch(FilterIntent.FilterChipClick(chipId)) },
                         onFilterValueChipClick = { chipId -> dispatch(FilterIntent.ToggleFilterValueChip(chipId)) },

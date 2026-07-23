@@ -115,6 +115,6 @@ abstract class AppDatabase: RoomDatabase() {
 
     companion object {
         const val DATABASE_NAME = "vpclient.db"
-        const val DATABASE_VERSION = 87
+        const val DATABASE_VERSION = 88
     }
 }
