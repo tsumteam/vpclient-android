@@ -22,7 +22,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -71,6 +70,8 @@ import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
 import ru.mercury.vpclient.shared.ui.icons.CirclePlus24
 import ru.mercury.vpclient.shared.ui.icons.DotsMenu24
+import ru.mercury.vpclient.shared.ui.icons.Selected24
+import ru.mercury.vpclient.shared.ui.icons.Unselected24
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
@@ -271,9 +272,14 @@ private fun FittingAddressesScreenContent(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        RadioButton(
-                            selected = state.pendingClientAddressId == address.id,
-                            onClick = null
+                        Icon(
+                            imageVector = when {
+                                state.pendingClientAddressId == address.id -> Selected24
+                                else -> Unselected24
+                            },
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp),
+                            tint = MaterialTheme.colorScheme.onBackground
                         )
 
                         Text(

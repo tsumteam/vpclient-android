@@ -22,7 +22,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -53,6 +52,8 @@ import ru.mercury.vpclient.shared.data.entity.CartFittingSheetOption
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.icons.Close24
+import ru.mercury.vpclient.shared.ui.icons.Selected24
+import ru.mercury.vpclient.shared.ui.icons.Unselected24
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.disabled
@@ -165,10 +166,17 @@ fun CartFittingSheet(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    RadioButton(
-                        selected = selectedOption == CartFittingSheetOption.AllProducts,
-                        enabled = state.allProductsCount > 0,
-                        onClick = null
+                    Icon(
+                        imageVector = when {
+                            selectedOption == CartFittingSheetOption.AllProducts -> Selected24
+                            else -> Unselected24
+                        },
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp),
+                        tint = when {
+                            state.allProductsCount > 0 -> MaterialTheme.colorScheme.onBackground
+                            else -> MaterialTheme.colorScheme.outline
+                        }
                     )
 
                     Column(
@@ -212,10 +220,14 @@ fun CartFittingSheet(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    RadioButton(
-                        selected = selectedOption == CartFittingSheetOption.PaymentProducts,
-                        enabled = true,
-                        onClick = null
+                    Icon(
+                        imageVector = when {
+                            selectedOption == CartFittingSheetOption.PaymentProducts -> Selected24
+                            else -> Unselected24
+                        },
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp),
+                        tint = MaterialTheme.colorScheme.onBackground
                     )
 
                     Column(
@@ -259,10 +271,17 @@ fun CartFittingSheet(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    RadioButton(
-                        selected = selectedOption == CartFittingSheetOption.Manual,
-                        enabled = state.allProductsCount > 0,
-                        onClick = null
+                    Icon(
+                        imageVector = when {
+                            selectedOption == CartFittingSheetOption.Manual -> Selected24
+                            else -> Unselected24
+                        },
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp),
+                        tint = when {
+                            state.allProductsCount > 0 -> MaterialTheme.colorScheme.onBackground
+                            else -> MaterialTheme.colorScheme.outline
+                        }
                     )
 
                     Column(
