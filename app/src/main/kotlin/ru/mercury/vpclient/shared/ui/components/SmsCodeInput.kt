@@ -176,7 +176,7 @@ fun SmsCodeInput(
 @Preview
 @Composable
 private fun SmsCodeInputPreview(
-    @PreviewParameter(SmsCodeInputSmsCodeInputStateProvider::class) state: SmsCodeInputState
+    @PreviewParameter(SmsCodeInputStateProvider::class) state: SmsCodeInputState
 ) {
     SmsCodeInput(
         state = state,
@@ -185,7 +185,7 @@ private fun SmsCodeInputPreview(
     )
 }
 
-private class SmsCodeInputSmsCodeInputStateProvider: PreviewParameterProvider<SmsCodeInputState> {
+private class SmsCodeInputStateProvider: PreviewParameterProvider<SmsCodeInputState> {
     override val values: Sequence<SmsCodeInputState> = sequenceOf(
         SmsCodeInputState(value = "", isErrorVisible = false),
         SmsCodeInputState(value = "123", isErrorVisible = false),

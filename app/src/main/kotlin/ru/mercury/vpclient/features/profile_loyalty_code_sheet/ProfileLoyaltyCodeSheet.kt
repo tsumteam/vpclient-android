@@ -18,7 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -37,15 +37,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.autofill.ContentType
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentType
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -60,7 +61,8 @@ import ru.mercury.vpclient.features.profile_loyalty_code_sheet.intent.ProfileLoy
 import ru.mercury.vpclient.features.profile_loyalty_code_sheet.model.ProfileLoyaltyCodeModel
 import ru.mercury.vpclient.shared.domain.mapper.formatCodeResendTime
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
-import ru.mercury.vpclient.shared.ui.components.system.ClientTextField
+import ru.mercury.vpclient.shared.ui.components.SmsCodeInput
+import ru.mercury.vpclient.shared.ui.components.SmsCodeInputState
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
@@ -126,15 +128,20 @@ fun ProfileLoyaltyCodeSheet(
                 )
             )
 
-            ClientTextField(
-                value = state.code,
+            SmsCodeInput(
+                state = SmsCodeInputState(
+                    value = state.code,
+                    isErrorVisible = state.isCodeErrorVisible
+                ),
                 onValueChange = { sheetDispatch(ProfileLoyaltyCodeIntent.CodeChange(it)) },
-                placeholder = stringResource(ClientStrings.ProfileLoyaltyCodePlaceholder),
-                accepted = true,
+                focusRequester = focusRequester,
                 modifier = Modifier
                     .padding(start = 16.dp, top = 24.dp, end = 16.dp)
-                    .focusRequester(focusRequester),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    .fillMaxWidth()
+                    .semantics { contentType = ContentType.SmsOtpCode },
+                keyboardActions = KeyboardActions(
+                    onDone = { sheetDispatch(ProfileLoyaltyCodeIntent.ConfirmClick) }
+                )
             )
 
             if (state.isCodeErrorVisible) {
