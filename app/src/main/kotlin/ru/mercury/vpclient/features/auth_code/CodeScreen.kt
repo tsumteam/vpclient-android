@@ -191,15 +191,13 @@ private fun CodeScreenContent(
     ) { innerPadding ->
         SharedLazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = innerPadding + PaddingValues(horizontal = 16.dp),
+            contentPadding = innerPadding + PaddingValues(start = 16.dp, top = 36.dp, end = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
                 Text(
                     text = stringResource(ClientStrings.CodeTitle),
-                    modifier = Modifier
-                        .padding(top = 36.dp)
-                        .fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     style = MaterialTheme.typography.livretMedium21.copy(
                         color = MaterialTheme.colorScheme.onBackground,
                         textAlign = TextAlign.Center
@@ -229,9 +227,9 @@ private fun CodeScreenContent(
                         )
                     )
 
-                    if (state.codeValidationError != null) {
+                    if (state.isCodeValidationErrorVisible) {
                         Text(
-                            text = when (state.codeValidationError) {
+                            text = when (requireNotNull(state.codeValidationError)) {
                                 CodeValidationError.Empty -> stringResource(ClientStrings.CodeEmptyError)
                                 CodeValidationError.Invalid -> stringResource(ClientStrings.CodeInvalidError)
                             },

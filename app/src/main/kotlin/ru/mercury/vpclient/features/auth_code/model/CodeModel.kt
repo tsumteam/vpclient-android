@@ -1,9 +1,9 @@
 package ru.mercury.vpclient.features.auth_code.model
 
 import kotlinx.coroutines.Job
-import ru.mercury.vpclient.shared.mvi.Model
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ClientEntity
 import ru.mercury.vpclient.shared.domain.usecase.AuthValidateCodeUseCase.CodeValidationError
+import ru.mercury.vpclient.shared.mvi.Model
 
 data class CodeModel(
     val code: String = "",
@@ -20,4 +20,7 @@ data class CodeModel(
 
     val isConfirmEnabled: Boolean
         get() = !isLoading
+
+    val isCodeValidationErrorVisible: Boolean
+        get() = codeValidationError != null
 }

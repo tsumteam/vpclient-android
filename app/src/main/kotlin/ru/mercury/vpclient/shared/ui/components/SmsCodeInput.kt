@@ -45,10 +45,6 @@ import ru.mercury.vpclient.shared.domain.usecase.AuthValidateCodeUseCase.Compani
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.medium17
 
-private val SmsCodeInputCellMaxSize = 56.dp
-private val SmsCodeInputCellSpacing = 9.dp
-private val SmsCodeInputCellShape = RoundedCornerShape(8.dp)
-
 data class SmsCodeInputState(
     val value: String,
     val isErrorVisible: Boolean
@@ -104,9 +100,9 @@ fun SmsCodeInput(
             BoxWithConstraints(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                val totalSpacing = SmsCodeInputCellSpacing * (CODE_LENGTH - 1).toFloat()
+                val totalSpacing = 9.dp * (CODE_LENGTH - 1).toFloat()
                 val cellSize = ((maxWidth - totalSpacing) / CODE_LENGTH.toFloat())
-                    .coerceAtMost(SmsCodeInputCellMaxSize)
+                    .coerceAtMost(56.dp)
 
                 Row(
                     modifier = Modifier
@@ -119,7 +115,7 @@ fun SmsCodeInput(
                             keyboardController?.show()
                         },
                     horizontalArrangement = Arrangement.spacedBy(
-                        space = SmsCodeInputCellSpacing,
+                        space = 9.dp,
                         alignment = Alignment.CenterHorizontally
                     ),
                     verticalAlignment = Alignment.CenterVertically
@@ -134,7 +130,7 @@ fun SmsCodeInput(
                                 .size(cellSize)
                                 .background(
                                     color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                                    shape = SmsCodeInputCellShape
+                                    shape = RoundedCornerShape(8.dp)
                                 )
                                 .border(
                                     width = 1.dp,
@@ -143,7 +139,7 @@ fun SmsCodeInput(
                                     } else {
                                         transparentColor
                                     },
-                                    shape = SmsCodeInputCellShape
+                                    shape = RoundedCornerShape(8.dp)
                                 ),
                             contentAlignment = Alignment.Center
                         ) {
