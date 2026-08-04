@@ -6,24 +6,24 @@ import ru.mercury.vpclient.shared.domain.mapper.compilationBenefitFullPrice
 import ru.mercury.vpclient.shared.domain.mapper.formatPriceText
 import kotlin.math.roundToInt
 
-data class CompilationBenefitSheetModel(
-    val productEntities: List<CatalogFilterProductsEntity>
+data class CompilationBenefitModel(
+    val catalogFilterProductsEntities: List<CatalogFilterProductsEntity>
 ) {
     val fullPriceText: String
         get() {
-            val price = productEntities.sumOf { entity -> entity.compilationBenefitFullPrice.roundToInt() }
+            val price = catalogFilterProductsEntities.sumOf { entity -> entity.compilationBenefitFullPrice.roundToInt() }
             return price.formatPriceText()
         }
 
     val discountPriceText: String
         get() {
-            val price = productEntities.sumOf { entity -> entity.compilationBenefitDiscountPrice.roundToInt() }
+            val price = catalogFilterProductsEntities.sumOf { entity -> entity.compilationBenefitDiscountPrice.roundToInt() }
             return price.formatPriceText()
         }
 
     val benefitText: String
         get() {
-            val price = productEntities.sumOf { entity ->
+            val price = catalogFilterProductsEntities.sumOf { entity ->
                 (entity.compilationBenefitFullPrice - entity.compilationBenefitDiscountPrice).roundToInt()
             }
             return price.formatPriceText()

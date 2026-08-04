@@ -2,7 +2,6 @@
 
 package ru.mercury.vpclient.features.compilation_benefit_sheet
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,8 +34,8 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.features.compilation_benefit_sheet.intent.CompilationBenefitSheetIntent
-import ru.mercury.vpclient.features.compilation_benefit_sheet.model.CompilationBenefitSheetModel
+import ru.mercury.vpclient.features.compilation_benefit_sheet.intent.CompilationBenefitIntent
+import ru.mercury.vpclient.features.compilation_benefit_sheet.model.CompilationBenefitModel
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
@@ -50,20 +49,14 @@ import ru.mercury.vpclient.shared.ui.theme.regular14
 
 @Composable
 fun CompilationBenefitSheet(
-    state: CompilationBenefitSheetModel,
-    dispatch: (CompilationBenefitSheetIntent) -> Unit
+    state: CompilationBenefitModel,
+    dispatch: (CompilationBenefitIntent) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
-    val sheetDispatch: (CompilationBenefitSheetIntent) -> Unit = { intent ->
-        scope.launch {
-            sheetState.hide()
-            dispatch(intent)
-        }
-    }
 
     SharedModalBottomSheet(
-        onDismissRequest = { dispatch(CompilationBenefitSheetIntent.DismissRequest) },
+        onDismissRequest = { dispatch(CompilationBenefitIntent.DismissRequest) },
         modifier = Modifier
             .fillMaxHeight()
             .statusBarsPadding(),
@@ -79,7 +72,12 @@ fun CompilationBenefitSheet(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { sheetDispatch(CompilationBenefitSheetIntent.DismissRequest) }
+                        onClick = {
+                            scope.launch {
+                                sheetState.hide()
+                                dispatch(CompilationBenefitIntent.DismissRequest)
+                            }
+                        }
                     ) {
                         Icon(
                             imageVector = Close24,
@@ -96,12 +94,10 @@ fun CompilationBenefitSheet(
             )
 
             SharedLazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.background),
+                modifier = Modifier.fillMaxWidth(),
                 contentPadding = PaddingValues(bottom = 24.dp)
             ) {
-                state.productEntities.forEach { entity ->
+                state.catalogFilterProductsEntities.forEach { entity ->
                     item {
                         CompilationBenefitProductRow(
                             entity = entity
@@ -162,7 +158,7 @@ fun CompilationBenefitSheet(
 @Preview(showBackground = true)
 @Composable
 private fun CompilationBenefitSheetPreview(
-    @PreviewParameter(CompilationBenefitSheetModelProvider::class) state: CompilationBenefitSheetModel
+    @PreviewParameter(CompilationBenefitSheetModelProvider::class) state: CompilationBenefitModel
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -174,10 +170,10 @@ private fun CompilationBenefitSheetPreview(
     }
 }
 
-private class CompilationBenefitSheetModelProvider: PreviewParameterProvider<CompilationBenefitSheetModel> {
-    override val values: Sequence<CompilationBenefitSheetModel> = sequenceOf(
-        CompilationBenefitSheetModel(
-            productEntities = listOf(
+private class CompilationBenefitSheetModelProvider: PreviewParameterProvider<CompilationBenefitModel> {
+    override val values: Sequence<CompilationBenefitModel> = sequenceOf(
+        CompilationBenefitModel(
+            catalogFilterProductsEntities = listOf(
                 CatalogFilterProductsEntity.Empty.copy(
                     id = "preview-1",
                     itemId = "79393030",

@@ -62,8 +62,8 @@ import ru.mercury.vpclient.features.compilation_add_to_basket_sheet.CompilationA
 import ru.mercury.vpclient.features.compilation_add_to_basket_sheet.intent.CompilationAddToBasketSheetIntent
 import ru.mercury.vpclient.features.compilation_add_to_basket_sheet.model.CompilationAddToBasketSheetModel
 import ru.mercury.vpclient.features.compilation_benefit_sheet.CompilationBenefitSheet
-import ru.mercury.vpclient.features.compilation_benefit_sheet.intent.CompilationBenefitSheetIntent
-import ru.mercury.vpclient.features.compilation_benefit_sheet.model.CompilationBenefitSheetModel
+import ru.mercury.vpclient.features.compilation_benefit_sheet.intent.CompilationBenefitIntent
+import ru.mercury.vpclient.features.compilation_benefit_sheet.model.CompilationBenefitModel
 import ru.mercury.vpclient.features.compilation_cart_added_sheet.CompilationCartAddedSheet
 import ru.mercury.vpclient.features.compilation_cart_added_sheet.intent.CompilationCartAddedSheetIntent
 import ru.mercury.vpclient.features.compilation_cart_added_sheet.model.CompilationCartAddedSheetModel
@@ -222,12 +222,12 @@ fun CompilationScreen(
 
     if (state.isCompilationBenefitSheetVisible) {
         CompilationBenefitSheet(
-            state = CompilationBenefitSheetModel(
-                productEntities = state.selectedLookProductEntities
+            state = CompilationBenefitModel(
+                catalogFilterProductsEntities = state.selectedLookProductEntities
             ),
             dispatch = { intent ->
                 when (intent) {
-                    is CompilationBenefitSheetIntent.DismissRequest -> {
+                    is CompilationBenefitIntent.DismissRequest -> {
                         viewModel.dispatch(CompilationIntent.HideBenefitSheet)
                     }
                 }
