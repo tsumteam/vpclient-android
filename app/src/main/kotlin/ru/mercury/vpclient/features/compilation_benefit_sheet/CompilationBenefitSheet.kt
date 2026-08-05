@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -39,6 +41,7 @@ import ru.mercury.vpclient.features.compilation_benefit_sheet.model.CompilationB
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
+import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.compilations.CompilationBenefitProductRow
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
@@ -62,53 +65,55 @@ fun CompilationBenefitSheet(
             .statusBarsPadding(),
         sheetState = sheetState
     ) {
-        Column {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(ClientStrings.CompilationBenefitSheetTitle),
-                        style = MaterialTheme.typography.livretMedium18
-                    )
-                },
-                navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            scope.launch {
-                                sheetState.hide()
-                                dispatch(CompilationBenefitIntent.DismissRequest)
+        SharedScaffold(
+            topBar = {
+                CenterAlignedTopAppBar(
+                    title = {
+                        Text(
+                            text = stringResource(ClientStrings.CompilationBenefitSheetTitle),
+                            style = MaterialTheme.typography.livretMedium18
+                        )
+                    },
+                    navigationIcon = {
+                        IconButton(
+                            onClick = {
+                                scope.launch {
+                                    sheetState.hide()
+                                    dispatch(CompilationBenefitIntent.DismissRequest)
+                                }
                             }
+                        ) {
+                            Icon(
+                                imageVector = Close24,
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp)
+                            )
                         }
-                    ) {
-                        Icon(
-                            imageVector = Close24,
-                            contentDescription = null,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
-                    titleContentColor = MaterialTheme.colorScheme.onBackground
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                        navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
+                        titleContentColor = MaterialTheme.colorScheme.onBackground
+                    )
                 )
-            )
-
+            }
+        ) { innerPadding ->
             SharedLazyColumn(
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(bottom = 24.dp)
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = innerPadding + PaddingValues(bottom = 24.dp)
             ) {
-                state.catalogFilterProductsEntities.forEach { entity ->
-                    item {
-                        CompilationBenefitProductRow(
-                            entity = entity
-                        )
-                    }
-                    item {
-                        HorizontalDivider(
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            color = MaterialTheme.colorScheme.outlineVariant
-                        )
-                    }
+                items(
+                    items = state.catalogFilterProductsEntities,
+                    key = { entity -> entity.id }
+                ) { entity ->
+                    CompilationBenefitProductRow(
+                        entity = entity
+                    )
+
+                    HorizontalDivider(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        color = MaterialTheme.colorScheme.outlineVariant
+                    )
                 }
                 item {
                     Column(
