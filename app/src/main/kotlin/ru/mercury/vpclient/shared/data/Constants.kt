@@ -20,6 +20,7 @@ const val FORMAT_RUB = "%s ₽"
 const val FORMAT_PLUS = "+%s"
 const val FORMAT_PHONE_NUMBER = "+%s"
 const val FORMAT_QUANTITY = "х %s"
+const val LOYALTY_PHONE_NUMBER_LENGTH = 11
 
 const val PREFIX_SPACE = " "
 

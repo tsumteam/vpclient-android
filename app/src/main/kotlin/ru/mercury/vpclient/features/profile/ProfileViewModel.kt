@@ -10,10 +10,10 @@ import ru.mercury.vpclient.features.auth_welcome.navigation.WelcomeRoute
 import ru.mercury.vpclient.features.cart.navigation.CartPage
 import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
+import ru.mercury.vpclient.features.notifications.navigation.NotificationsRoute
 import ru.mercury.vpclient.features.profile.event.ProfileEvent
 import ru.mercury.vpclient.features.profile.intent.ProfileIntent
 import ru.mercury.vpclient.features.profile.model.ProfileModel
-import ru.mercury.vpclient.features.notifications.navigation.NotificationsRoute
 import ru.mercury.vpclient.features.profile_brands.navigation.ProfileBrandsRoute
 import ru.mercury.vpclient.features.profile_info.navigation.ProfileInfoRoute
 import ru.mercury.vpclient.features.profile_loyalty_add_card_sheet.model.ProfileLoyaltyAddCardMode
@@ -25,6 +25,7 @@ import ru.mercury.vpclient.features.profile_qr.navigation.ProfileQrRoute
 import ru.mercury.vpclient.features.profile_root.event.ProfileRootEventManager
 import ru.mercury.vpclient.features.profile_view_history.navigation.ProfileViewHistoryRoute
 import ru.mercury.vpclient.shared.data.CODE_RESEND_TIMER_DELAY
+import ru.mercury.vpclient.shared.data.LOYALTY_PHONE_NUMBER_LENGTH
 import ru.mercury.vpclient.shared.data.entity.LoyaltyCardType
 import ru.mercury.vpclient.shared.data.network.type.ActivityCounterType
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
@@ -48,6 +49,7 @@ import ru.mercury.vpclient.shared.domain.usecase.CurrentUserUseCase
 import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.FittingCountFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.LinkLoyaltyCardByPhoneUseCase
+import ru.mercury.vpclient.shared.domain.usecase.LinkLoyaltyCardByPhoneUseCase.LinkLoyaltyCardByPhoneException
 import ru.mercury.vpclient.shared.domain.usecase.LoadBasketUseCase
 import ru.mercury.vpclient.shared.domain.usecase.LoadFittingUseCase
 import ru.mercury.vpclient.shared.domain.usecase.LogoutUseCase
@@ -129,7 +131,12 @@ class ProfileViewModel @Inject constructor(
                                     loyaltyAddCardPhone = when {
                                         state.isLoyaltyAddCardSheetVisible &&
                                             state.loyaltyAddCardPhone.isBlank() -> {
-                                            formatPhoneForDisplay(normalizePhoneInput(clientEntity.phone, maxDigits = 11))
+                                            formatPhoneForDisplay(
+                                                normalizePhoneInput(
+                                                    raw = clientEntity.phone,
+                                                    maxDigits = LOYALTY_PHONE_NUMBER_LENGTH
+                                                )
+                                            )
                                         }
                                         else -> state.loyaltyAddCardPhone
                                     }
@@ -219,7 +226,10 @@ class ProfileViewModel @Inject constructor(
                         isLoyaltyAddCardSheetVisible = true,
                         loyaltyAddCardMode = ProfileLoyaltyAddCardMode.Phone,
                         loyaltyAddCardPhone = formatPhoneForDisplay(
-                            normalizePhoneInput(it.clientEntity.phone, maxDigits = 11)
+                            normalizePhoneInput(
+                                raw = it.clientEntity.phone,
+                                maxDigits = LOYALTY_PHONE_NUMBER_LENGTH
+                            )
                         ),
                         loyaltyAddCardCardNumber = "",
                         isLoyaltyAddCardPhoneErrorVisible = false
@@ -295,7 +305,12 @@ class ProfileViewModel @Inject constructor(
             is ProfileIntent.LoyaltyAddCardPhoneChange -> {
                 reduce { state ->
                     state.copy(
-                        loyaltyAddCardPhone = formatPhoneForDisplay(normalizePhoneInput(intent.phone, maxDigits = 11)),
+                        loyaltyAddCardPhone = formatPhoneForDisplay(
+                            normalizePhoneInput(
+                                raw = intent.phone,
+                                maxDigits = LOYALTY_PHONE_NUMBER_LENGTH
+                            )
+                        ),
                         isLoyaltyAddCardPhoneErrorVisible = false
                     )
                 }
@@ -306,48 +321,48 @@ class ProfileViewModel @Inject constructor(
             is ProfileIntent.LoyaltyAddCardPhoneConfirmClick -> {
                 val sheet = stateFlow.value
                 if (sheet.isLoyaltyAddCardSheetVisible) {
-                    val phone = normalizePhoneInput(sheet.loyaltyAddCardPhone, maxDigits = 11)
-                    if (phone.length != 11) {
+                    val phone = normalizePhoneInput(
+                        raw = sheet.loyaltyAddCardPhone,
+                        maxDigits = LOYALTY_PHONE_NUMBER_LENGTH
+                    )
+                    if (phone.length != LOYALTY_PHONE_NUMBER_LENGTH) {
                         reduce { state -> state.copy(isLoyaltyAddCardPhoneErrorVisible = true) }
                     } else {
                         val job = launch {
-                            runCatching { linkLoyaltyCardByPhoneUseCase(phone).getOrThrow() }
-                                .onSuccess { isNeedVerification ->
-                                    when {
-                                        isNeedVerification -> {
-                                            val startedAt = System.currentTimeMillis()
-                                            stateFlow.value.loyaltyCodeResendTimerJob?.cancel()
-                                            reduce {
-                                                it.copy(
-                                                    isLoyaltyAddCardSheetVisible = false,
-                                                    isLoyaltyCodeSheetVisible = true,
-                                                    loyaltyCodeMode = ProfileLoyaltyAddCardMode.Phone,
-                                                    loyaltyCodePhone = phone,
-                                                    loyaltyCodeCardNumber = "",
-                                                    loyaltyCode = "",
-                                                    isLoyaltyCodeLoading = false,
-                                                    isLoyaltyCodeResendLoading = false,
-                                                    isLoyaltyCodeErrorVisible = false,
-                                                    loyaltyCodeResendTimerStartedAt = startedAt,
-                                                    loyaltyCodeResendSecondsLeft = codeResendSecondsLeft(startedAt)
-                                                )
-                                            }
-                                            dispatch(ProfileIntent.StartLoyaltyCodeResendTimerTicker)
-                                        }
-                                        else -> {
-                                            currentUserUseCase(Unit).getOrThrow()
-                                            stateFlow.value.loyaltyCodeResendTimerJob?.cancel()
-                                            reduce { it.copy(isLoyaltyAddCardSheetVisible = false, isLoyaltyCodeSheetVisible = false) }
-                                            dispatch(ProfileIntent.LoadLoyaltyCardInfo)
-                                        }
+                            val isNeedVerification = linkLoyaltyCardByPhoneUseCase(phone).getOrThrow()
+                            when {
+                                isNeedVerification -> {
+                                    val startedAt = System.currentTimeMillis()
+                                    stateFlow.value.loyaltyCodeResendTimerJob?.cancel()
+                                    reduce {
+                                        it.copy(
+                                            isLoyaltyAddCardSheetVisible = false,
+                                            isLoyaltyCodeSheetVisible = true,
+                                            loyaltyCodeMode = ProfileLoyaltyAddCardMode.Phone,
+                                            loyaltyCodePhone = phone,
+                                            loyaltyCodeCardNumber = "",
+                                            loyaltyCode = "",
+                                            isLoyaltyCodeLoading = false,
+                                            isLoyaltyCodeResendLoading = false,
+                                            isLoyaltyCodeErrorVisible = false,
+                                            loyaltyCodeResendTimerStartedAt = startedAt,
+                                            loyaltyCodeResendSecondsLeft = codeResendSecondsLeft(startedAt)
+                                        )
                                     }
+                                    dispatch(ProfileIntent.StartLoyaltyCodeResendTimerTicker)
                                 }
-                                .onFailure { throwable ->
-                                    reduce { state -> state.copy(isLoyaltyAddCardPhoneErrorVisible = false) }
-                                    throwable.message
-                                        ?.takeIf(String::isNotBlank)
-                                        ?.let { message -> launch { send(ProfileEvent.SnackbarErrorMessage(message)) } }
+                                else -> {
+                                    currentUserUseCase(Unit).getOrThrow()
+                                    stateFlow.value.loyaltyCodeResendTimerJob?.cancel()
+                                    reduce {
+                                        it.copy(
+                                            isLoyaltyAddCardSheetVisible = false,
+                                            isLoyaltyCodeSheetVisible = false
+                                        )
+                                    }
+                                    dispatch(ProfileIntent.LoadLoyaltyCardInfo)
                                 }
+                            }
                         }.also { launchedJob ->
                             launchedJob.invokeOnCompletion { reduce { it.copy(loyaltyAddCardJob = null) } }
                         }
@@ -513,6 +528,15 @@ class ProfileViewModel @Inject constructor(
         when (throwable) {
             is CatalogViewHistoryException -> reduce { it.copy(viewHistoryJob = null) }
             is LoyaltyCardInfoException -> reduce { it.copy(loyaltyCardInfoJob = null) }
+            is LinkLoyaltyCardByPhoneException -> {
+                reduce {
+                    it.copy(
+                        loyaltyAddCardJob = null,
+                        isLoyaltyAddCardPhoneErrorVisible = false
+                    )
+                }
+                launch { send(ProfileEvent.SnackbarTopErrorMessage(throwable.message)) }
+            }
             is LoyaltyLinkException -> {
                 reduce { it.copy(loyaltyAddCardJob = null) }
                 launch { send(ProfileEvent.SnackbarTopErrorMessage(throwable.message)) }
