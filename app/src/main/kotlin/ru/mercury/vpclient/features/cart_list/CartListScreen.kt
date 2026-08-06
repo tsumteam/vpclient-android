@@ -61,6 +61,8 @@ import ru.mercury.vpclient.shared.data.entity.CartPayMode
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductGroup
 import ru.mercury.vpclient.shared.domain.mapper.moveProductAfterDrag
+import ru.mercury.vpclient.shared.ui.components.EmptyBox
+import ru.mercury.vpclient.shared.ui.components.EmptyBoxState
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedPullToRefreshBox
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
@@ -71,6 +73,7 @@ import ru.mercury.vpclient.shared.ui.components.cart.CartLookCard
 import ru.mercury.vpclient.shared.ui.components.cart.CartProductCard
 import ru.mercury.vpclient.shared.ui.components.cart.CartProductCardState
 import ru.mercury.vpclient.shared.ui.components.cart.CartSummary
+import ru.mercury.vpclient.shared.ui.icons.VipPlatinumBagEmptyVersion2
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.divider
@@ -458,21 +461,15 @@ private fun CartListScreenContent(
                 )
             }
             state.products.isEmpty() -> {
-                Box(
+                EmptyBox(
+                    state = EmptyBoxState(
+                        imageVector = VipPlatinumBagEmptyVersion2,
+                        text = stringResource(ClientStrings.CartEmptyMessage)
+                    ),
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding)
-                        .padding(start = 32.dp, end = 32.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = stringResource(ClientStrings.CartEmptyMessage),
-                        style = MaterialTheme.typography.regular14.copy(
-                            color = MaterialTheme.colorScheme.outline,
-                            textAlign = TextAlign.Center
-                        )
-                    )
-                }
+                )
             }
             else -> {
                 Box(
@@ -611,6 +608,10 @@ private class CartListScreenModelProvider: PreviewParameterProvider<CartModel> {
 
     override val values: Sequence<CartModel> = sequenceOf(
         CartModel(),
-        CartModel(products = products)
+        CartModel(products = products),
+        CartModel(
+            products = products,
+            payMode = CartPayMode.Payment
+        )
     )
 }

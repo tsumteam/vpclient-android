@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.material3.Icon
@@ -17,7 +18,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,11 +32,15 @@ import ru.mercury.vpclient.shared.ui.theme.medium14
 import ru.mercury.vpclient.shared.ui.theme.regular15
 import kotlin.math.min
 
+data class CartChatDockState(
+    val name: String,
+    val brand: String,
+    val onClick: () -> Unit
+)
+
 @Composable
 fun CartChatDock(
-    name: String,
-    brand: String,
-    onClick: () -> Unit,
+    state: CartChatDockState,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -46,7 +54,7 @@ fun CartChatDock(
             )
             .clip(CartChatDockShape)
             .background(MaterialTheme.colorScheme.background)
-            .clickable(onClick = onClick),
+            .clickable(onClick = state.onClick),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
@@ -57,8 +65,11 @@ fun CartChatDock(
         )
 
         Row(
-            modifier = Modifier.height(24.dp),
-            horizontalArrangement = Arrangement.spacedBy(9.dp),
+            modifier = Modifier
+                .fillMaxWidth(.44F)
+                .padding(horizontal = 4.dp)
+                .height(24.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
@@ -69,17 +80,19 @@ fun CartChatDock(
             )
 
             Text(
-                text = name,
+                text = state.name,
                 maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.medium14.copy(
                     color = MaterialTheme.colorScheme.onBackground,
                     lineHeight = 16.sp
-                )
+                ),
+                modifier = Modifier.weight(1F, fill = false)
             )
         }
 
         Text(
-            text = brand,
+            text = state.brand,
             maxLines = 1,
             style = MaterialTheme.typography.regular15.copy(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -112,10 +125,31 @@ private val CartChatDockShape = GenericShape { size, _ ->
 @PreviewWrapper(ThemeWrapper::class)
 @Preview(showBackground = true)
 @Composable
-private fun CartChatDockPreview() {
+private fun CartChatDockPreview(
+    @PreviewParameter(CartChatDockPreviewProvider::class) state: CartChatDockState
+) {
     CartChatDock(
-        name = "Екатерина",
-        brand = "Brioni",
-        onClick = {}
+        state = state
+    )
+}
+
+private class CartChatDockPreviewProvider: PreviewParameterProvider<CartChatDockState> {
+
+    override val values: Sequence<CartChatDockState> = sequenceOf(
+        CartChatDockState(
+            name = "Катя",
+            brand = "Brioni",
+            onClick = {}
+        ),
+        CartChatDockState(
+            name = "Екатеринищещещещеще",
+            brand = "Brioni",
+            onClick = {}
+        ),
+        CartChatDockState(
+            name = "",
+            brand = "",
+            onClick = {}
+        )
     )
 }

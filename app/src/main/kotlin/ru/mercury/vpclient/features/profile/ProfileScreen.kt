@@ -52,18 +52,18 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
+import ru.mercury.vpclient.features.loyalty_add_card_sheet.LoyaltyAddCardSheet
+import ru.mercury.vpclient.features.loyalty_add_card_sheet.intent.LoyaltyAddCardIntent
+import ru.mercury.vpclient.features.loyalty_add_card_sheet.model.LoyaltyAddCardMode
+import ru.mercury.vpclient.features.loyalty_add_card_sheet.model.LoyaltyAddCardModel
+import ru.mercury.vpclient.features.loyalty_code_sheet.LoyaltyCodeSheet
+import ru.mercury.vpclient.features.loyalty_code_sheet.intent.LoyaltyCodeIntent
+import ru.mercury.vpclient.features.loyalty_code_sheet.model.LoyaltyCodeModel
 import ru.mercury.vpclient.features.profile.event.ProfileEvent
 import ru.mercury.vpclient.features.profile.intent.ProfileIntent
 import ru.mercury.vpclient.features.profile.model.ProfileModel
 import ru.mercury.vpclient.features.profile_logout_dialog.ProfileLogoutDialog
 import ru.mercury.vpclient.features.profile_logout_dialog.intent.ProfileLogoutDialogIntent
-import ru.mercury.vpclient.features.profile_loyalty_add_card_sheet.ProfileLoyaltyAddCardSheet
-import ru.mercury.vpclient.features.profile_loyalty_add_card_sheet.intent.ProfileLoyaltyAddCardIntent
-import ru.mercury.vpclient.features.profile_loyalty_add_card_sheet.model.ProfileLoyaltyAddCardMode
-import ru.mercury.vpclient.features.profile_loyalty_add_card_sheet.model.ProfileLoyaltyAddCardModel
-import ru.mercury.vpclient.features.profile_loyalty_code_sheet.ProfileLoyaltyCodeSheet
-import ru.mercury.vpclient.features.profile_loyalty_code_sheet.intent.ProfileLoyaltyCodeIntent
-import ru.mercury.vpclient.features.profile_loyalty_code_sheet.model.ProfileLoyaltyCodeModel
 import ru.mercury.vpclient.features.profile_privileges_sheet.ProfilePrivilegesSheet
 import ru.mercury.vpclient.features.profile_privileges_sheet.intent.ProfilePrivilegeIntent
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
@@ -139,8 +139,8 @@ fun ProfileScreen(
     }
 
     if (state.isLoyaltyAddCardSheetVisible) {
-        ProfileLoyaltyAddCardSheet(
-            state = ProfileLoyaltyAddCardModel(
+        LoyaltyAddCardSheet(
+            state = LoyaltyAddCardModel(
                 mode = state.loyaltyAddCardMode,
                 phone = state.loyaltyAddCardPhone,
                 cardNumber = state.loyaltyAddCardCardNumber,
@@ -149,24 +149,24 @@ fun ProfileScreen(
             ),
             dispatch = { intent ->
                 when (intent) {
-                    is ProfileLoyaltyAddCardIntent.DismissRequest -> {
+                    is LoyaltyAddCardIntent.DismissRequest -> {
                         viewModel.dispatch(ProfileIntent.DismissLoyaltyAddCardSheet)
                     }
-                    is ProfileLoyaltyAddCardIntent.ModeClick -> {
+                    is LoyaltyAddCardIntent.ModeClick -> {
                         viewModel.dispatch(ProfileIntent.LoyaltyAddCardModeClick(intent.mode))
                     }
-                    is ProfileLoyaltyAddCardIntent.PhoneChange -> {
+                    is LoyaltyAddCardIntent.PhoneChange -> {
                         viewModel.dispatch(ProfileIntent.LoyaltyAddCardPhoneChange(intent.phone))
                     }
-                    is ProfileLoyaltyAddCardIntent.CardNumberChange -> {
+                    is LoyaltyAddCardIntent.CardNumberChange -> {
                         viewModel.dispatch(ProfileIntent.LoyaltyAddCardCardNumberChange(intent.cardNumber))
                     }
-                    is ProfileLoyaltyAddCardIntent.ConfirmClick -> {
+                    is LoyaltyAddCardIntent.ConfirmClick -> {
                         when (state.loyaltyAddCardMode) {
-                            ProfileLoyaltyAddCardMode.Phone -> {
+                            LoyaltyAddCardMode.Phone -> {
                                 viewModel.dispatch(ProfileIntent.LoyaltyAddCardPhoneConfirmClick)
                             }
-                            ProfileLoyaltyAddCardMode.CardNumber -> {
+                            LoyaltyAddCardMode.CardNumber -> {
                                 viewModel.dispatch(ProfileIntent.LoyaltyAddCardCardNumberConfirmClick)
                             }
                         }
@@ -177,8 +177,8 @@ fun ProfileScreen(
     }
 
     if (state.isLoyaltyCodeSheetVisible) {
-        ProfileLoyaltyCodeSheet(
-            state = ProfileLoyaltyCodeModel(
+        LoyaltyCodeSheet(
+            state = LoyaltyCodeModel(
                 mode = state.loyaltyCodeMode,
                 phone = state.loyaltyCodePhone,
                 cardNumber = state.loyaltyCodeCardNumber,
@@ -192,19 +192,19 @@ fun ProfileScreen(
             ),
             dispatch = { intent ->
                 when (intent) {
-                    is ProfileLoyaltyCodeIntent.DismissRequest -> {
+                    is LoyaltyCodeIntent.DismissRequest -> {
                         viewModel.dispatch(ProfileIntent.DismissLoyaltyCodeSheet)
                     }
-                    is ProfileLoyaltyCodeIntent.StartResendTimerTicker -> {
+                    is LoyaltyCodeIntent.StartResendTimerTicker -> {
                         viewModel.dispatch(ProfileIntent.StartLoyaltyCodeResendTimerTicker)
                     }
-                    is ProfileLoyaltyCodeIntent.CodeChange -> {
+                    is LoyaltyCodeIntent.CodeChange -> {
                         viewModel.dispatch(ProfileIntent.LoyaltyCodeChange(intent.code))
                     }
-                    is ProfileLoyaltyCodeIntent.ConfirmClick -> {
+                    is LoyaltyCodeIntent.ConfirmClick -> {
                         viewModel.dispatch(ProfileIntent.LoyaltyCodeConfirmClick)
                     }
-                    is ProfileLoyaltyCodeIntent.ResendCodeClick -> {
+                    is LoyaltyCodeIntent.ResendCodeClick -> {
                         viewModel.dispatch(ProfileIntent.LoyaltyCodeResendCodeClick)
                     }
                 }

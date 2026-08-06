@@ -33,6 +33,7 @@ import ru.mercury.vpclient.shared.data.network.request.BasketAddProductByBarcode
 import ru.mercury.vpclient.shared.data.network.request.BasketAddProductByBarcodeRequest
 import ru.mercury.vpclient.shared.data.network.request.BasketAddProductFromCatalogWithSelectedRussianSizeRequest
 import ru.mercury.vpclient.shared.data.network.request.BasketAddProductFromDetailedStocksRequest
+import ru.mercury.vpclient.shared.data.network.request.BasketForCheckoutRequest
 import ru.mercury.vpclient.shared.data.network.request.BasketGetDeliveryTimesForFittingRequest
 import ru.mercury.vpclient.shared.data.network.request.BasketGetDeliveryTimesForOrderRequest
 import ru.mercury.vpclient.shared.data.network.request.BasketOperationRequest
@@ -86,6 +87,7 @@ import ru.mercury.vpclient.shared.data.network.request.FittingCheckoutTagsReques
 import ru.mercury.vpclient.shared.data.network.request.FittingExternalPushRequest
 import ru.mercury.vpclient.shared.data.network.request.FittingHistoryFiltersRequest
 import ru.mercury.vpclient.shared.data.network.request.FittingHistoryRequest
+import ru.mercury.vpclient.shared.data.network.request.FittingsForCheckoutRequest
 import ru.mercury.vpclient.shared.data.network.request.FittingOperationRequest
 import ru.mercury.vpclient.shared.data.network.request.FittingSyncRequest
 import ru.mercury.vpclient.shared.data.network.request.GetCheckOutFlagsForExistingFittingRequest
@@ -757,9 +759,12 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun basketByPairedUserIdForCheckout(
-        pairedUserId: String
+        pairedUserId: String,
+        request: BasketForCheckoutRequest
     ): BaseResponse<BasketForCheckoutResponse> {
-        return ktorHttpClient.get("basket/$pairedUserId/for-checkout").body()
+        return ktorHttpClient.post("basket/$pairedUserId/for-checkout") {
+            setBody(request)
+        }.body()
     }
 
     suspend fun blvLinkIdByLinkId(
@@ -1814,9 +1819,12 @@ class NetworkService @Inject constructor(
     }
 
     suspend fun fittingsByPairedUserIdForCheckout(
-        pairedUserId: String
+        pairedUserId: String,
+        request: FittingsForCheckoutRequest
     ): BaseResponse<FittingForCheckoutResponse> {
-        return ktorHttpClient.get("fittings/$pairedUserId/for-checkout").body()
+        return ktorHttpClient.post("fittings/$pairedUserId/for-checkout") {
+            setBody(request)
+        }.body()
     }
 
     suspend fun giftCards(

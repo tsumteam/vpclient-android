@@ -32,6 +32,10 @@ import ru.mercury.vpclient.features.auth_welcome.WelcomeScreen
 import ru.mercury.vpclient.features.auth_welcome.navigation.WelcomeRoute
 import ru.mercury.vpclient.features.cart.CartScreen
 import ru.mercury.vpclient.features.cart.navigation.CartRoute
+import ru.mercury.vpclient.features.checkout.CheckoutScreen
+import ru.mercury.vpclient.features.checkout.navigation.CheckoutRoute
+import ru.mercury.vpclient.features.checkout_payment_result.CheckoutPaymentResultScreen
+import ru.mercury.vpclient.features.checkout_payment_result.navigation.CheckoutPaymentResultRoute
 import ru.mercury.vpclient.features.compilation.CompilationScreen
 import ru.mercury.vpclient.features.compilation.navigation.CompilationRoute
 import ru.mercury.vpclient.features.consultant.ConsultantScreen
@@ -114,6 +118,8 @@ fun MainActivityContent(
                 entry<FilterRoute> { FilterScreen(it) }
                 entry<CompilationRoute> { CompilationScreen(it) }
                 entry<FittingConfirmationRoute> { FittingConfirmationScreen(it) }
+                entry<CheckoutRoute> { CheckoutScreen(it) }
+                entry<CheckoutPaymentResultRoute> { CheckoutPaymentResultScreen(it) }
                 entry<FittingInfoRoute> { FittingInfoScreen(it) }
                 entry<FittingAddressesRoute> { FittingAddressesScreen(it) }
                 entry<FittingSuccessRoute> { FittingSuccessScreen(it) }

@@ -13,6 +13,8 @@ import ru.mercury.vpclient.features.cart.intent.CartIntent
 import ru.mercury.vpclient.features.cart.model.CartModel
 import ru.mercury.vpclient.features.cart.navigation.CartPage
 import ru.mercury.vpclient.features.cart.navigation.CartRoute
+import ru.mercury.vpclient.features.checkout.model.CheckoutSource
+import ru.mercury.vpclient.features.checkout.navigation.CheckoutRoute
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.features.fitting_confirmation.navigation.FittingConfirmationRoute
 import ru.mercury.vpclient.features.fitting_info.navigation.FittingInfoRoute
@@ -111,7 +113,7 @@ class CartViewModel @AssistedInject constructor(
     CartModel(
         isCartInitialLoading = true,
         isFittingInitialLoading = true
-    )
+    ) // fixme
 ) {
 
     init {
@@ -694,8 +696,27 @@ class CartViewModel @AssistedInject constructor(
                 }
             }
             is CartIntent.SelectPayMode -> reduce { it.copy(payMode = intent.mode) }
-            is CartIntent.ChatClick,
-            is CartIntent.BuyClick -> return
+            is CartIntent.BuyClick -> {
+                when {
+                    stateFlow.value.paymentItemsCount > 0 -> {
+                        launch { MainEventManager.send(CheckoutRoute(source = CheckoutSource.Cart)) }
+                    }
+                    else -> reduce { it.copy(isEmptyOrderDialogVisible = true) }
+                }
+            }
+            is CartIntent.FittingBuyClick -> {
+                when {
+                    stateFlow.value.apiFittingPaymentProductsCount > 0 -> {
+                        launch { MainEventManager.send(CheckoutRoute(source = CheckoutSource.Fitting)) }
+                    }
+                    else -> reduce { it.copy(isFittingEmptyOrderDialogVisible = true) }
+                }
+            }
+            is CartIntent.DismissEmptyOrderDialog -> reduce { it.copy(isEmptyOrderDialogVisible = false) }
+            is CartIntent.DismissFittingEmptyOrderDialog -> {
+                reduce { it.copy(isFittingEmptyOrderDialogVisible = false) }
+            }
+            is CartIntent.ChatClick -> return
         }
     }
 

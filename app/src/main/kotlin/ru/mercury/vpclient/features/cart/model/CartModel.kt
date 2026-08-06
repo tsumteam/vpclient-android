@@ -50,7 +50,9 @@ data class CartModel(
     val paySwitchJob: Job? = null,
     val sizePickerJob: Job? = null,
     val fittingSheetClientName: String = "",
-    val isFittingSheetClientFeminine: Boolean = false
+    val isFittingSheetClientFeminine: Boolean = false,
+    val isEmptyOrderDialogVisible: Boolean = false,
+    val isFittingEmptyOrderDialogVisible: Boolean = false
 ): Model {
     val isEditProductSheetVisible: Boolean
         get() = editProduct != null

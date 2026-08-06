@@ -22,9 +22,15 @@ class MockBackendInterceptor(
     private val settingsDataStore: Provider<SettingsDataStore>
 ): Interceptor {
 
+    private val mockPaymentBackend = MockPaymentBackend()
+    private val mockCatalogBackend = MockCatalogBackend()
+
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
-        val enabled = BuildConfig.DEBUG && context.isMockBackendMarkerEnabled
+        val enabled = BuildConfig.DEBUG && (
+            context.isMockBackendMarkerEnabled ||
+                settingsDataStore.get().getValueBlocking(PreferenceKey.MockBackendEnabled) == true
+            )
         if (!enabled) return chain.proceed(request)
 
         when (request.mockEndpoint) {
@@ -45,7 +51,14 @@ class MockBackendInterceptor(
             .code(200)
             .message("OK")
             .header("Content-Type", CONTENT_TYPE_JSON)
-            .body(request.mockResponseBody.toResponseBody(CONTENT_TYPE_JSON.toMediaType()))
+            .body(
+                (
+                    mockPaymentBackend.responseBody(
+                        request = request,
+                        loyaltyCardNumber = context.mockLoyaltyCardNumber
+                    ) ?: mockCatalogBackend.responseBody(request) ?: request.mockResponseBody
+                    ).toResponseBody(CONTENT_TYPE_JSON.toMediaType())
+            )
             .build()
     }
 
@@ -273,9 +286,70 @@ class MockBackendInterceptor(
             )
         )
 
-        const val COMPILATIONS_CLIENT_RESPONSE = """{"data":{"items":[{"badge":1,"id":101,"collageUrl":"https://picsum.photos/seed/vp-client-compilation-1/300/450","photoUrl":"https://picsum.photos/seed/vp-client-compilation-1/300/450","name":"Новые поступления","description":"Свежие образы недели","createDate":"2026-07-11T10:00:00Z","looksQty":5,"lookProductsQty":36,"isStatsAvailable":false},{"badge":1,"id":102,"collageUrl":"https://picsum.photos/seed/vp-client-compilation-2/300/450","photoUrl":"https://picsum.photos/seed/vp-client-compilation-2/300/450","name":"Sporty&Riche","description":"Комфортные комплекты для города","createDate":"2026-07-05T10:00:00Z","looksQty":4,"lookProductsQty":28,"isStatsAvailable":false},{"badge":0,"id":103,"collageUrl":"https://picsum.photos/seed/vp-client-compilation-3/300/450","photoUrl":"https://picsum.photos/seed/vp-client-compilation-3/300/450","name":"BLV/Hotel","description":"Капсула для путешествия","createDate":"2026-06-17T10:00:00Z","looksQty":5,"lookProductsQty":36,"isStatsAvailable":false},{"badge":0,"id":104,"collageUrl":"https://picsum.photos/seed/vp-client-compilation-4/300/450","photoUrl":"https://picsum.photos/seed/vp-client-compilation-4/300/450","name":"Летние образы","description":"Легкие комплекты для жарких дней","createDate":"2026-06-07T10:00:00Z","looksQty":8,"lookProductsQty":45,"isStatsAvailable":false},{"badge":1,"id":105,"collageUrl":"https://picsum.photos/seed/vp-client-compilation-5/300/450","photoUrl":"https://picsum.photos/seed/vp-client-compilation-5/300/450","name":"Деловая поездка","description":"Вещи для встреч и ужинов","createDate":"2026-05-28T10:00:00Z","looksQty":6,"lookProductsQty":31,"isStatsAvailable":false},{"badge":0,"id":106,"collageUrl":"https://picsum.photos/seed/vp-client-compilation-6/300/450","photoUrl":"https://picsum.photos/seed/vp-client-compilation-6/300/450","name":"Вечерний выход","description":"Акцентные образы для мероприятий","createDate":"2026-05-18T10:00:00Z","looksQty":3,"lookProductsQty":19,"isStatsAvailable":false}]},"error":null,"errors":null,"type":null,"title":null,"status":200,"traceId":null}"""
+        val COMPILATIONS_CLIENT_RESPONSE: String
+            get() {
+                val items = listOf(
+                    compilationListItem(
+                        compilationId = 101,
+                        badge = 1,
+                        createDate = "2026-07-11T10:00:00Z",
+                        looksQuantity = 5,
+                        productsQuantity = 36
+                    ),
+                    compilationListItem(
+                        compilationId = 102,
+                        badge = 1,
+                        createDate = "2026-07-05T10:00:00Z",
+                        looksQuantity = 4,
+                        productsQuantity = 28
+                    ),
+                    compilationListItem(
+                        compilationId = 103,
+                        badge = 0,
+                        createDate = "2026-06-17T10:00:00Z",
+                        looksQuantity = 5,
+                        productsQuantity = 36
+                    ),
+                    compilationListItem(
+                        compilationId = 104,
+                        badge = 0,
+                        createDate = "2026-06-07T10:00:00Z",
+                        looksQuantity = 8,
+                        productsQuantity = 45
+                    ),
+                    compilationListItem(
+                        compilationId = 105,
+                        badge = 1,
+                        createDate = "2026-05-28T10:00:00Z",
+                        looksQuantity = 6,
+                        productsQuantity = 31
+                    ),
+                    compilationListItem(
+                        compilationId = 106,
+                        badge = 0,
+                        createDate = "2026-05-18T10:00:00Z",
+                        looksQuantity = 3,
+                        productsQuantity = 19
+                    )
+                ).joinToString(",")
+                return """{"data":{"items":[$items]},"error":null,"errors":null,"type":null,"title":null,"status":200,"traceId":null}"""
+            }
 
         val MY_EMPLOYEES_RESPONSE = """{"data":{"items":[${MOCK_EMPLOYEES.joinToString(",")}]},"error":null,"errors":null,"type":null,"title":null,"status":200,"traceId":null}"""
+
+        // Free stock photos from Unsplash, cropped by its image CDN for product cards.
+        private val STOCK_FASHION_IMAGE_URLS = listOf(
+            "https://images.unsplash.com/photo-1562349502-153e491776bc?auto=format&fit=crop&w=800&h=1100&q=85",
+            "https://images.unsplash.com/photo-1542486280-22a6cfb92d23?auto=format&fit=crop&w=800&h=1100&q=85",
+            "https://images.unsplash.com/photo-1548102063-1a9a87212e98?auto=format&fit=crop&w=800&h=1100&q=85",
+            "https://images.unsplash.com/photo-1551524780-69a731c62fc0?auto=format&fit=crop&w=800&h=1100&q=85",
+            "https://images.unsplash.com/photo-1559582800-b7f6bf426431?auto=format&fit=crop&w=800&h=1100&q=85",
+            "https://images.unsplash.com/photo-1552252059-9d77e4059ad1?auto=format&fit=crop&w=800&h=1100&q=85",
+            "https://images.unsplash.com/photo-1581381685617-4dc270458aa6?auto=format&fit=crop&w=800&h=1100&q=85",
+            "https://images.unsplash.com/photo-1557684387-08927d28c72a?auto=format&fit=crop&w=800&h=1100&q=85",
+            "https://images.unsplash.com/photo-1556452577-15f4ca79799b?auto=format&fit=crop&w=800&h=1100&q=85",
+            "https://images.unsplash.com/photo-1574968699009-6426913fce69?auto=format&fit=crop&w=800&h=1100&q=85"
+        )
 
         fun compilationsClientByCompilationIdResponse(compilationId: Int): String {
             val looks = (1..5).joinToString(",") { index ->
@@ -284,6 +358,17 @@ class MockBackendInterceptor(
                 )
             }
             return """{"data":{"compilationInfo":${compilationInfo(compilationId)},"looks":[$looks]},"error":null,"errors":null,"type":null,"title":null,"status":200,"traceId":null}"""
+        }
+
+        private fun compilationListItem(
+            compilationId: Int,
+            badge: Int,
+            createDate: String,
+            looksQuantity: Int,
+            productsQuantity: Int
+        ): String {
+            val imageUrl = stockFashionImageUrl(compilationId)
+            return """{"badge":$badge,"id":$compilationId,"collageUrl":"$imageUrl","photoUrl":"$imageUrl","name":"${compilationName(compilationId)}","description":"${compilationDescription(compilationId)}","createDate":"$createDate","looksQty":$looksQuantity,"lookProductsQty":$productsQuantity,"isStatsAvailable":false}"""
         }
 
         fun compilationsClientLookByLookIdResponse(lookId: Int): String {
@@ -306,17 +391,19 @@ class MockBackendInterceptor(
             }
             val looks = (1..2).joinToString(",") { index ->
                 val lookId = DEFAULT_MOCK_LOOK_ID + index - 1
-                """{"imageUrl":"https://picsum.photos/seed/vp-client-look-$lookId/900/1200","lookId":"$lookId","name":"${lookName(lookId)}"}"""
+                """{"imageUrl":"${stockFashionImageUrl(lookId)}","lookId":"$lookId","name":"${lookName(lookId)}"}"""
             }
             return """{"data":{"editor":"mock","id":"mock-basket","lines":[$lines],"looks":[$looks],"catalogActionDisclaimer":null,"timestamp":"2026-07-07T10:00:00Z","version":1},"error":null,"errors":null,"type":null,"title":null,"status":200,"traceId":null}"""
         }
 
         fun compilationInfo(compilationId: Int): String {
-            return """{"id":$compilationId,"collageUrl":"https://picsum.photos/seed/vp-client-compilation-$compilationId/900/1200","photoUrl":"https://picsum.photos/seed/vp-client-compilation-$compilationId/900/1200","name":"${compilationName(compilationId)}","description":"${compilationDescription(compilationId)}","createDate":"2026-07-07T10:00:00Z","looksQty":5,"lookProductsQty":30,"isStatsAvailable":false}"""
+            val imageUrl = stockFashionImageUrl(compilationId)
+            return """{"id":$compilationId,"collageUrl":"$imageUrl","photoUrl":"$imageUrl","name":"${compilationName(compilationId)}","description":"${compilationDescription(compilationId)}","createDate":"2026-07-07T10:00:00Z","looksQty":5,"lookProductsQty":30,"isStatsAvailable":false}"""
         }
 
         fun lookInfo(lookId: Int): String {
-            return """{"id":$lookId,"collageUrl":"https://picsum.photos/seed/vp-client-look-$lookId/900/1200","photoUrl":"https://picsum.photos/seed/vp-client-look-$lookId/900/1200","meta":null,"name":"${lookName(lookId)}","createDate":"2026-07-07T10:00:00Z","lookProductsQty":6,"isStatsAvailable":false}"""
+            val imageUrl = stockFashionImageUrl(lookId)
+            return """{"id":$lookId,"collageUrl":"$imageUrl","photoUrl":"$imageUrl","meta":null,"name":"${lookName(lookId)}","createDate":"2026-07-07T10:00:00Z","lookProductsQty":6,"isStatsAvailable":false}"""
         }
 
         fun basketLine(lookId: Int, index: Int): String {
@@ -324,8 +411,12 @@ class MockBackendInterceptor(
         }
 
         fun product(lookId: Int, index: Int): String {
-            val imageUrl = "https://picsum.photos/seed/vp-client-product-$lookId-$index/800/1100"
+            val imageUrl = stockFashionImageUrl(index)
             return """{"oneSize":true,"article":"MOCK-$lookId-$index","brand":"${productBrand(index)}","urlBrandLogo":null,"colorId":"${productColorId(index)}","colorName":"${productColorName(index)}","eKttId":"mock-ektt-$lookId-$index","id":"mock-product-$lookId-$index","imageUrl":"$imageUrl","imageUrls":["$imageUrl"],"isCharity":false,"isSeasonDisplay":true,"itemId":"mock-item-$lookId-$index","lookId":"$lookId","name":"${productName(index)}","order":$index,"paySwitch":true,"price":${productPrice(index)},"priceWithoutDiscount":${productPriceWithoutDiscount(index)},"currentRetailPrice":${productPrice(index)},"quantity":1,"season":"FW26","sizes":[{"availableStockQuantity":2.0,"id":"NS","inOrder":false,"inStock":true,"inStockShops":["BLV"],"isFavorite":false,"isLastInStock":false,"name":"One Size","sizeForFilter":"NS","onlyInVipSite":false,"onlyInTransit":false}],"actions":[],"onlyInTransit":false,"onlyInVipSite":false,"breadcrumbs":["Женское","Подборка"],"compilationLookProductId":$lookId$index,"isGiftCard":false,"discountPercentage":0,"additionalColors":[]}"""
+        }
+
+        private fun stockFashionImageUrl(seed: Int): String {
+            return STOCK_FASHION_IMAGE_URLS[(seed - 1) % STOCK_FASHION_IMAGE_URLS.size]
         }
 
         fun compilationName(compilationId: Int): String {

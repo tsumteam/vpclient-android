@@ -1,6 +1,6 @@
 package ru.mercury.vpclient.features.profile.intent
 
-import ru.mercury.vpclient.features.profile_loyalty_add_card_sheet.model.ProfileLoyaltyAddCardMode
+import ru.mercury.vpclient.features.loyalty_add_card_sheet.model.LoyaltyAddCardMode
 import ru.mercury.vpclient.shared.mvi.Intent
 
 sealed interface ProfileIntent: Intent {
@@ -42,7 +42,7 @@ sealed interface ProfileIntent: Intent {
     data object LoyaltyCodeConfirmClick: ProfileIntent
     data object LoyaltyCodeResendCodeClick: ProfileIntent
     data class ViewHistoryProductClick(val productId: String): ProfileIntent
-    data class LoyaltyAddCardModeClick(val mode: ProfileLoyaltyAddCardMode): ProfileIntent
+    data class LoyaltyAddCardModeClick(val mode: LoyaltyAddCardMode): ProfileIntent
     data class LoyaltyAddCardPhoneChange(val phone: String): ProfileIntent
     data class LoyaltyAddCardCardNumberChange(val cardNumber: String): ProfileIntent
     data class LoyaltyCodeChange(val code: String): ProfileIntent

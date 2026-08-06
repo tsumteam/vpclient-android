@@ -8,5 +8,6 @@ data class FittingForCheckoutResponse(
     @SerialName("fittingResponseDto") val fittingResponseDto: FittingResponse? = null,
     @SerialName("availableBonusSum") val availableBonusSum: Double? = null,
     @SerialName("loyaltyCardNumber") val loyaltyCardNumber: String? = null,
-    @SerialName("totalAvailableBonuses") val totalAvailableBonuses: Double? = null
+    @SerialName("totalAvailableBonuses") val totalAvailableBonuses: Double? = null,
+    @SerialName("isGiftCertificateUsageAllowed") val isGiftCertificateUsageAllowed: Boolean = false
 )

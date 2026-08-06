@@ -149,7 +149,7 @@ private fun CartFittingScreenContent(
         },
         floatingActionButton = {
             Button(
-                onClick = { dispatch(CartIntent.BuyClick) },
+                onClick = { dispatch(CartIntent.FittingBuyClick) },
                 enabled = state.apiFittingProducts.isNotEmpty(),
                 modifier = Modifier
                     .fillMaxWidth()

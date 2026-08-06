@@ -10,13 +10,13 @@ import ru.mercury.vpclient.features.auth_welcome.navigation.WelcomeRoute
 import ru.mercury.vpclient.features.cart.navigation.CartPage
 import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
+import ru.mercury.vpclient.features.loyalty_add_card_sheet.model.LoyaltyAddCardMode
 import ru.mercury.vpclient.features.notifications.navigation.NotificationsRoute
 import ru.mercury.vpclient.features.profile.event.ProfileEvent
 import ru.mercury.vpclient.features.profile.intent.ProfileIntent
 import ru.mercury.vpclient.features.profile.model.ProfileModel
 import ru.mercury.vpclient.features.profile_brands.navigation.ProfileBrandsRoute
 import ru.mercury.vpclient.features.profile_info.navigation.ProfileInfoRoute
-import ru.mercury.vpclient.features.profile_loyalty_add_card_sheet.model.ProfileLoyaltyAddCardMode
 import ru.mercury.vpclient.features.profile_loyalty_info.navigation.ProfileLoyaltyInfoRoute
 import ru.mercury.vpclient.features.profile_loyalty_qr.navigation.ProfileLoyaltyQrRoute
 import ru.mercury.vpclient.features.profile_my_data.navigation.ProfileMyDataRoute
@@ -224,7 +224,7 @@ class ProfileViewModel @Inject constructor(
                 reduce {
                     it.copy(
                         isLoyaltyAddCardSheetVisible = true,
-                        loyaltyAddCardMode = ProfileLoyaltyAddCardMode.Phone,
+                        loyaltyAddCardMode = LoyaltyAddCardMode.Phone,
                         loyaltyAddCardPhone = formatPhoneForDisplay(
                             normalizePhoneInput(
                                 raw = it.clientEntity.phone,
@@ -338,7 +338,7 @@ class ProfileViewModel @Inject constructor(
                                         it.copy(
                                             isLoyaltyAddCardSheetVisible = false,
                                             isLoyaltyCodeSheetVisible = true,
-                                            loyaltyCodeMode = ProfileLoyaltyAddCardMode.Phone,
+                                            loyaltyCodeMode = LoyaltyAddCardMode.Phone,
                                             loyaltyCodePhone = phone,
                                             loyaltyCodeCardNumber = "",
                                             loyaltyCode = "",
@@ -382,7 +382,7 @@ class ProfileViewModel @Inject constructor(
                             it.copy(
                                 isLoyaltyAddCardSheetVisible = false,
                                 isLoyaltyCodeSheetVisible = true,
-                                loyaltyCodeMode = ProfileLoyaltyAddCardMode.CardNumber,
+                                loyaltyCodeMode = LoyaltyAddCardMode.CardNumber,
                                 loyaltyCodePhone = "",
                                 loyaltyCodeCardNumber = cardNumber,
                                 loyaltyCode = "",
@@ -439,7 +439,7 @@ class ProfileViewModel @Inject constructor(
                         }
                         runCatching {
                             when (sheet.loyaltyCodeMode) {
-                                ProfileLoyaltyAddCardMode.Phone -> {
+                                LoyaltyAddCardMode.Phone -> {
                                     verifyLoyaltyCardByPhoneUseCase(
                                         VerifyLoyaltyCardByPhoneUseCase.Params(
                                             phone = sheet.loyaltyCodePhone,
@@ -447,7 +447,7 @@ class ProfileViewModel @Inject constructor(
                                         )
                                     ).getOrThrow()
                                 }
-                                ProfileLoyaltyAddCardMode.CardNumber -> {
+                                LoyaltyAddCardMode.CardNumber -> {
                                     verifyLoyaltyCardUseCase(
                                         VerifyLoyaltyCardUseCase.Params(
                                             cardNumber = sheet.loyaltyCodeCardNumber,
@@ -479,8 +479,8 @@ class ProfileViewModel @Inject constructor(
                         reduce { state -> state.copy(isLoyaltyCodeResendLoading = true) }
                         runCatching {
                             when (sheet.loyaltyCodeMode) {
-                                ProfileLoyaltyAddCardMode.Phone -> linkLoyaltyCardByPhoneUseCase(sheet.loyaltyCodePhone).getOrThrow()
-                                ProfileLoyaltyAddCardMode.CardNumber -> {
+                                LoyaltyAddCardMode.Phone -> linkLoyaltyCardByPhoneUseCase(sheet.loyaltyCodePhone).getOrThrow()
+                                LoyaltyAddCardMode.CardNumber -> {
                                     loyaltyLinkUseCase(sheet.loyaltyCodeCardNumber).getOrThrow()
                                     true
                                 }
@@ -506,7 +506,7 @@ class ProfileViewModel @Inject constructor(
                                 }
                             }
                         }.onFailure { throwable ->
-                            if (sheet.loyaltyCodeMode == ProfileLoyaltyAddCardMode.Phone) {
+                            if (sheet.loyaltyCodeMode == LoyaltyAddCardMode.Phone) {
                                 throwable.message
                                     ?.takeIf(String::isNotBlank)
                                     ?.let { message -> launch { send(ProfileEvent.SnackbarErrorMessage(message)) } }
@@ -514,7 +514,7 @@ class ProfileViewModel @Inject constructor(
                             reduce { state ->
                                 state.copy(
                                     isLoyaltyCodeResendLoading = false,
-                                    isLoyaltyCodeErrorVisible = sheet.loyaltyCodeMode != ProfileLoyaltyAddCardMode.Phone
+                                    isLoyaltyCodeErrorVisible = sheet.loyaltyCodeMode != LoyaltyAddCardMode.Phone
                                 )
                             }
                         }

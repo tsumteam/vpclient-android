@@ -22,6 +22,9 @@ sealed interface CartIntent: Intent {
     data object FittingClick: CartIntent
     data object FittingTabClick: CartIntent
     data object BuyClick: CartIntent
+    data object FittingBuyClick: CartIntent
+    data object DismissEmptyOrderDialog: CartIntent
+    data object DismissFittingEmptyOrderDialog: CartIntent
     data object HideFittingSheet: CartIntent
     data object ShowFittingProductsSheet: CartIntent
     data object HideFittingProductsSheet: CartIntent

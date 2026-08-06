@@ -23,17 +23,22 @@ import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.medium15
 
+data class CartBottomBarState(
+    val chatName: String,
+    val chatBrand: String,
+    val onFittingClick: () -> Unit,
+    val onBuyClick: () -> Unit,
+    val onChatClick: () -> Unit,
+    val isActionsEnabled: Boolean = true
+)
+
 @Composable
 fun CartBottomBar(
-    chatName: String,
-    chatBrand: String,
-    onFittingClick: () -> Unit,
-    onBuyClick: () -> Unit,
-    onChatClick: () -> Unit,
-    isActionsEnabled: Boolean = true
+    state: CartBottomBarState,
+    modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(top = 4.dp),
     ) {
@@ -44,8 +49,8 @@ fun CartBottomBar(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Button(
-                onClick = onFittingClick,
-                enabled = isActionsEnabled,
+                onClick = state.onFittingClick,
+                enabled = state.isActionsEnabled,
                 modifier = Modifier
                     .weight(2F)
                     .height(46.dp),
@@ -65,8 +70,8 @@ fun CartBottomBar(
             }
 
             Button(
-                onClick = onBuyClick,
-                enabled = isActionsEnabled,
+                onClick = state.onBuyClick,
+                enabled = state.isActionsEnabled,
                 modifier = Modifier
                     .weight(1F)
                     .height(46.dp),
@@ -87,9 +92,11 @@ fun CartBottomBar(
         }
 
         CartChatDock(
-            name = chatName,
-            brand = chatBrand,
-            onClick = onChatClick
+            state = CartChatDockState(
+                name = state.chatName,
+                brand = state.chatBrand,
+                onClick = state.onChatClick
+            )
         )
     }
 }
@@ -99,10 +106,12 @@ fun CartBottomBar(
 @Composable
 private fun CartBottomBarPreview() {
     CartBottomBar(
-        chatName = "Екатерина",
-        chatBrand = "Brioni",
-        onFittingClick = {},
-        onBuyClick = {},
-        onChatClick = {}
+        state = CartBottomBarState(
+            chatName = "Екатерина",
+            chatBrand = "Brioni",
+            onFittingClick = {},
+            onBuyClick = {},
+            onChatClick = {}
+        )
     )
 }

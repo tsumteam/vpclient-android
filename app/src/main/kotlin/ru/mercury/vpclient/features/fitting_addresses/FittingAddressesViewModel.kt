@@ -11,6 +11,7 @@ import ru.mercury.vpclient.features.fitting_address_sheet.model.FittingAddressMo
 import ru.mercury.vpclient.features.fitting_addresses.event.FittingAddressesEvent
 import ru.mercury.vpclient.features.fitting_addresses.event.FittingAddressesEventManager
 import ru.mercury.vpclient.features.fitting_addresses.intent.FittingAddressesIntent
+import ru.mercury.vpclient.features.fitting_addresses.navigation.FittingAddressesOrigin
 import ru.mercury.vpclient.features.fitting_addresses.navigation.FittingAddressesRoute
 import ru.mercury.vpclient.features.fitting_confirmation.event.FittingConfirmationEvent
 import ru.mercury.vpclient.features.fitting_confirmation.model.FittingConfirmationModel
@@ -48,11 +49,12 @@ class FittingAddressesViewModel @AssistedInject constructor(
     override fun dispatch(intent: FittingAddressesIntent) {
         when (intent) {
             is FittingAddressesIntent.CollectRoute -> {
+                val fittingOrigin = route.origin as? FittingAddressesOrigin.Fitting
                 reduce {
                     it.copy(
-                        productIds = route.confirmationRoute.productIds,
-                        deliveryId = route.confirmationRoute.deliveryId,
-                        fittingType = route.confirmationRoute.fittingType,
+                        productIds = fittingOrigin?.confirmationRoute?.productIds.orEmpty(),
+                        deliveryId = fittingOrigin?.confirmationRoute?.deliveryId,
+                        fittingType = fittingOrigin?.confirmationRoute?.fittingType,
                         selectedClientAddressId = route.selectedClientAddressId,
                         pendingClientAddressId = route.selectedClientAddressId,
                         clientAddress = route.clientAddress
@@ -103,7 +105,7 @@ class FittingAddressesViewModel @AssistedInject constructor(
                     if (selectedAddressId != null) {
                         FittingAddressesEventManager.send(
                             FittingAddressesEvent.SelectAddress(
-                                confirmationRoute = route.confirmationRoute,
+                                origin = route.origin,
                                 selectedClientAddressId = selectedAddressId,
                                 clientAddresses = state.clientAddresses
                             )
@@ -184,7 +186,7 @@ class FittingAddressesViewModel @AssistedInject constructor(
                             if (!form.isEdit) {
                                 FittingAddressesEventManager.send(
                                     FittingAddressesEvent.SelectAddress(
-                                        confirmationRoute = route.confirmationRoute,
+                                        origin = route.origin,
                                         selectedClientAddressId = stateFlow.value.pendingClientAddressId,
                                         clientAddresses = stateFlow.value.clientAddresses
                                     )

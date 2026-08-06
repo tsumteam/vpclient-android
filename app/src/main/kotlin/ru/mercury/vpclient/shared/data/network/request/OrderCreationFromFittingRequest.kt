@@ -8,5 +8,6 @@ import ru.mercury.vpclient.shared.data.network.type.PaymentType
 data class OrderCreationFromFittingRequest(
     @SerialName("pairedUserId") val pairedUserId: String? = null,
     @SerialName("deliveryIds") val deliveryIds: List<String> = emptyList(),
-    @SerialName("paymentType") val paymentType: PaymentType? = null
+    @SerialName("paymentType") val paymentType: PaymentType? = null,
+    @SerialName("ignoreCashDeskActions") val ignoreCashDeskActions: Boolean? = null
 )

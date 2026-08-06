@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.features.fitting_address_sheet.model.FittingAddressModel
 import ru.mercury.vpclient.features.fitting_addresses.event.FittingAddressesEvent
+import ru.mercury.vpclient.features.fitting_addresses.navigation.FittingAddressesOrigin
 import ru.mercury.vpclient.features.fitting_addresses.navigation.FittingAddressesRoute
 import ru.mercury.vpclient.features.fitting_confirmation.event.FittingConfirmationEvent
 import ru.mercury.vpclient.features.fitting_confirmation.intent.FittingConfirmationIntent
@@ -107,11 +108,12 @@ class FittingConfirmationViewModel @AssistedInject constructor(
             is FittingConfirmationIntent.ReceiveFittingAddressesEvent -> {
                 when (val event = intent.event) {
                     is FittingAddressesEvent.SelectAddress -> {
+                        val confirmationRoute = (event.origin as? FittingAddressesOrigin.Fitting)?.confirmationRoute
                         val state = stateFlow.value
                         if (
-                            event.confirmationRoute.productIds == state.productIds &&
-                            event.confirmationRoute.deliveryId == state.deliveryId &&
-                            event.confirmationRoute.fittingType == state.fittingType
+                            confirmationRoute?.productIds == state.productIds &&
+                            confirmationRoute.deliveryId == state.deliveryId &&
+                            confirmationRoute.fittingType == state.fittingType
                         ) {
                             reduce {
                                 it.copy(
@@ -275,10 +277,12 @@ class FittingConfirmationViewModel @AssistedInject constructor(
                     val state = stateFlow.value
                     MainEventManager.send(
                         FittingAddressesRoute(
-                            confirmationRoute = FittingConfirmationRoute(
-                                productIds = state.productIds,
-                                deliveryId = state.deliveryId,
-                                fittingType = state.fittingType
+                            origin = FittingAddressesOrigin.Fitting(
+                                confirmationRoute = FittingConfirmationRoute(
+                                    productIds = state.productIds,
+                                    deliveryId = state.deliveryId,
+                                    fittingType = state.fittingType
+                                )
                             ),
                             selectedClientAddressId = state.selectedClientAddressId,
                             clientAddress = state.clientAddress
