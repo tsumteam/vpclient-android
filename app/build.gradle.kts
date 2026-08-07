@@ -1,4 +1,5 @@
 import com.android.build.api.variant.impl.VariantOutputImpl
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -14,6 +15,11 @@ private val gitCommitsCount: Int by lazy {
     ProcessBuilder("git", "rev-list", "--count", "HEAD")
         .redirectErrorStream(true)
         .start().inputStream.bufferedReader().readLine().trim().toInt()
+}
+private val appmetricaApiKey: String by lazy {
+    val key = gradleLocalProperties(rootDir, providers).getProperty("APPMETRICA_API_KEY").orEmpty().ifEmpty { System.getenv("APPMETRICA_API_KEY") }
+    if (key.isEmpty()) throw GradleException("APPMETRICA_API_KEY is empty")
+    key
 }
 
 kotlin {
@@ -32,6 +38,7 @@ android {
         targetSdk = libs.versions.target.sdk.get().toInt()
         versionName = "1.0.0"
         versionCode = gitCommitsCount
+        buildConfigField("String", "APPMETRICA_API_KEY", "\"$appmetricaApiKey\"")
     }
 
     productFlavors {
