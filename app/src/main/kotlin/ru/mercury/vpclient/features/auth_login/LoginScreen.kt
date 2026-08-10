@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.auth_login.event.LoginEvents
 import ru.mercury.vpclient.features.auth_login.intent.LoginIntent
@@ -149,12 +150,24 @@ private fun LoginScreenContent(
                     .height(52.dp),
                 enabled = state.isLoginEnabled && !state.isLoading,
                 shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (state.isLoginEnabled || state.isLoading) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.disabled,
-                    contentColor = if (state.isLoginEnabled || state.isLoading) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onDisabled,
-                    disabledContainerColor = if (state.isLoginEnabled || state.isLoading) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.disabled,
-                    disabledContentColor = if (state.isLoginEnabled || state.isLoading) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onDisabled
-                )
+                colors = when {
+                    state.isLoginEnabled || state.isLoading -> {
+                        ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary,
+                            disabledContainerColor = MaterialTheme.colorScheme.primary,
+                            disabledContentColor = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                    else -> {
+                        ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.disabled,
+                            contentColor = MaterialTheme.colorScheme.onDisabled,
+                            disabledContainerColor = MaterialTheme.colorScheme.disabled,
+                            disabledContentColor = MaterialTheme.colorScheme.onDisabled
+                        )
+                    }
+                }
             ) {
                 when {
                     state.isLoading -> {
@@ -256,6 +269,6 @@ private class LoginModelProvider: PreviewParameterProvider<LoginModel> {
         LoginModel(phoneValidationError = PhoneValidationError.Empty),
         LoginModel(phoneValidationError = PhoneValidationError.Invalid),
         LoginModel(phone = "79991234567", phoneValidationError = PhoneValidationError.Empty),
-        LoginModel(phone = "79991234567", isLoading = true)
+        LoginModel(phone = "79991234567", loginJob = Job()),
     )
 }

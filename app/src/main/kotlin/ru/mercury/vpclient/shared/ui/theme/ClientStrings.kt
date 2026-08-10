@@ -204,6 +204,8 @@ object ClientStrings {
     val CheckoutBankCardSheetSave get() = R.string.checkout_bank_card_sheet_save
     val CheckoutBankCardSheetPay get() = R.string.checkout_bank_card_sheet_pay
     val CheckoutBankCardSheetError get() = R.string.checkout_bank_card_sheet_error
+    val CheckoutSbpBankSheetTitle get() = R.string.checkout_sbp_bank_sheet_title
+    val CheckoutSbpBankSheetSubtitle get() = R.string.checkout_sbp_bank_sheet_subtitle
     val CheckoutPaymentResultSuccessTitle get() = R.string.checkout_payment_result_success_title
     val CheckoutPaymentResultOrderedTitle get() = R.string.checkout_payment_result_ordered_title
     val CheckoutPaymentResultSuccessDeliveryPrefix get() = R.string.checkout_payment_result_success_delivery_prefix
@@ -437,6 +439,7 @@ object ClientStrings {
     val ProfileOrderPaymentMethod get() = R.string.profile_order_payment_method
     val ProfileOrderPaymentOnReceipt get() = R.string.profile_order_payment_on_receipt
     val ProfileOrderPaymentAlert get() = R.string.profile_order_payment_alert
+    val ProfileOrderPay get() = R.string.profile_order_pay
     val ProfileOrderPaymentAlertHours get() = R.plurals.profile_order_payment_alert_hours
     val ProfileOrderPaymentAlertMinutes get() = R.plurals.profile_order_payment_alert_minutes
     val ProfileOrderInfoTitle get() = R.string.profile_order_info_title

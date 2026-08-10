@@ -229,6 +229,12 @@ fun MainActivityContent(
                         }
                         navBackStack.add(event)
                     }
+                    is CheckoutPaymentResultRoute -> {
+                        while (navBackStack.lastOrNull() is CheckoutRoute) {
+                            navBackStack.removeLastOrNull()
+                        }
+                        navBackStack.add(event)
+                    }
                     else -> navBackStack.add(event)
                 }
                 if (event is BackRoute) {

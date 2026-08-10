@@ -257,7 +257,7 @@ fun LoyaltyCodeSheet(
             Button(
                 onClick = { sheetDispatch(LoyaltyCodeIntent.ConfirmClick) },
                 modifier = Modifier
-                    .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
+                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
                     .fillMaxWidth()
                     .height(52.dp),
                 enabled = state.isConfirmEnabled && !state.isLoading,

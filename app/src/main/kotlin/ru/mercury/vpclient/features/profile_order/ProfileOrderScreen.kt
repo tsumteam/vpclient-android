@@ -19,6 +19,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -143,6 +145,30 @@ private fun ProfileOrderScreenContent(
                     navigationIconContentColor = MaterialTheme.colorScheme.onBackground
                 )
             )
+        },
+        floatingActionButton = {
+            if (state.isPaymentAlertVisible) {
+                Button(
+                    onClick = { dispatch(ProfileOrderIntent.PayClick) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    )
+                ) {
+                    Text(
+                        text = stringResource(ClientStrings.ProfileOrderPay),
+                        style = MaterialTheme.typography.medium15.copy(
+                            lineHeight = 15.sp,
+                            letterSpacing = .3.sp,
+                            textAlign = TextAlign.Center
+                        )
+                    )
+                }
+            }
         }
     ) { innerPadding ->
         SharedLazyColumn(

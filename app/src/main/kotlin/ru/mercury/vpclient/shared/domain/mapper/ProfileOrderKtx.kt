@@ -1,12 +1,14 @@
 package ru.mercury.vpclient.shared.domain.mapper
 
 import ru.mercury.vpclient.shared.data.FORMAT_RUB
+import ru.mercury.vpclient.shared.data.entity.FittingCheckoutData
 import ru.mercury.vpclient.shared.data.entity.ProfileOrder
 import ru.mercury.vpclient.shared.data.entity.ProfileOrderDelivery
 import ru.mercury.vpclient.shared.data.entity.ProfileOrderDetails
 import ru.mercury.vpclient.shared.data.entity.ProfileOrderDetailsProduct
 import ru.mercury.vpclient.shared.data.network.response.DeliveryTimeResponse
 import ru.mercury.vpclient.shared.data.network.response.OrderDeliveryResponse
+import ru.mercury.vpclient.shared.data.network.type.CheckoutBonusType
 import ru.mercury.vpclient.shared.data.network.type.OrderPaymentStatus
 import ru.mercury.vpclient.shared.data.network.response.OrderProductResponse
 import ru.mercury.vpclient.shared.data.network.response.OrderResponse
@@ -22,6 +24,7 @@ import java.time.format.DateTimeFormatter
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
+import kotlin.math.roundToInt
 
 fun ProfileOrdersSaleItemResponse.toProfileOrder(): ProfileOrder? {
     val sale = sale ?: return null
@@ -60,9 +63,33 @@ fun ProfileOrdersSaleItemResponse.toProfileOrder(): ProfileOrder? {
             .filter { it.isNotEmpty() }
             .joinToString(separator = ", "),
         imageUrls = sale.imageUrls.orEmpty().filter { it.isNotBlank() },
-        productsCount = sale.productsQty ?: sale.imageUrls.orEmpty().size,
         showPaymentBadge = sale.isOnlinePayAvailable == true,
         isReceipt = sale.salesType == "crm"
+    )
+}
+
+fun OrderResponse.toCheckoutData(bonusType: CheckoutBonusType): FittingCheckoutData {
+    val products = deliveries.orEmpty().flatMap { delivery -> delivery.products.orEmpty() }
+    val itemCount = products.sumOf { product -> product.product?.quantity ?: 1 }
+    val promotionDiscount = products.sumOf { product ->
+        val quantity = product.product?.quantity ?: 1
+        val paidPrice = product.price ?: product.product?.price ?: 0.0
+        val originalPrice = product.product?.currentRetailPrice ?: paidPrice
+        ((originalPrice - paidPrice) * quantity).coerceAtLeast(0.0)
+    }
+    val reservedBonusAmount = (reservedBonusAmount ?: bonusAmount ?: 0.0).roundToInt()
+
+    return FittingCheckoutData(
+        deliveryIds = deliveries.orEmpty().mapNotNull { delivery -> delivery.deliveryId },
+        itemCount = itemCount,
+        orderAmount = (totalPrice ?: 0.0).roundToInt(),
+        promotionDiscount = promotionDiscount.roundToInt(),
+        availableBonusAmount = when (bonusType) {
+            CheckoutBonusType.LOYALTY_CARD -> reservedBonusAmount
+            else -> 0
+        },
+        totalAvailableBonusAmount = reservedBonusAmount,
+        loyaltyCardNumber = orderNumber.takeIf { reservedBonusAmount > 0 }
     )
 }
 

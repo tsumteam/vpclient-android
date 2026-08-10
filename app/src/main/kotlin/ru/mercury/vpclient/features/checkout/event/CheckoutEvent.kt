@@ -6,4 +6,5 @@ sealed interface CheckoutEvent: Event {
     data class SnackbarErrorMessage(val message: String): CheckoutEvent
     data class SnackbarTopErrorMessage(val message: String): CheckoutEvent
     data class OpenPaymentUrl(val url: String): CheckoutEvent
+    data class OpenSbpBankApp(val packageName: String, val paymentUrl: String): CheckoutEvent
 }

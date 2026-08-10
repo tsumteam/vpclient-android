@@ -8,7 +8,6 @@ data class ProfileOrder(
     val statusPrefix: String,
     val statusDescription: String,
     val imageUrls: List<String>,
-    val productsCount: Int,
     val showPaymentBadge: Boolean,
     val isReceipt: Boolean
 )

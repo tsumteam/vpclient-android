@@ -38,6 +38,7 @@ import ru.mercury.vpclient.features.checkout_payment_result.intent.CheckoutPayme
 import ru.mercury.vpclient.features.checkout_payment_result.model.CheckoutPaymentResultModel
 import ru.mercury.vpclient.features.checkout_payment_result.model.CheckoutPaymentResultStatus
 import ru.mercury.vpclient.features.checkout_payment_result.navigation.CheckoutPaymentResultRoute
+import ru.mercury.vpclient.shared.data.PREFIX_SPACE
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.icons.Logo117
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
@@ -188,6 +189,7 @@ private fun CheckoutPaymentResultScreenContent(
                     Text(
                         text = buildAnnotatedString {
                             append(stringResource(ClientStrings.CheckoutPaymentResultUnpaidPrefix))
+                            append(PREFIX_SPACE)
                             withStyle(SpanStyle(color = MaterialTheme.colorScheme.error)) {
                                 append(stringResource(ClientStrings.CheckoutPaymentResultUnpaidAccent))
                             }

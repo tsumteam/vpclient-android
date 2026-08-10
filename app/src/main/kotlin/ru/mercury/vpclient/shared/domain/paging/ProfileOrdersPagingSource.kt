@@ -66,7 +66,7 @@ class ProfileOrdersPagingSource(
                             imageUrl = imageUrl
                         )
                     },
-                    hiddenProductsCount = (order.productsCount - visibleImages.size).coerceAtLeast(0)
+                    hiddenProductsCount = (order.imageUrls.size - visibleImages.size).coerceAtLeast(0)
                 )
             }
 

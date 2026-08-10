@@ -2,6 +2,8 @@
 
 package ru.mercury.vpclient.features.checkout
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -47,6 +50,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -56,6 +60,7 @@ import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.checkout.event.CheckoutEvent
 import ru.mercury.vpclient.features.checkout.intent.CheckoutIntent
 import ru.mercury.vpclient.features.checkout.model.CheckoutModel
+import ru.mercury.vpclient.features.checkout.model.CheckoutSource
 import ru.mercury.vpclient.features.checkout.navigation.CheckoutRoute
 import ru.mercury.vpclient.features.checkout_amount_changed_dialog.CheckoutAmountChangedDialog
 import ru.mercury.vpclient.features.checkout_amount_changed_dialog.intent.CheckoutAmountChangedDialogIntent
@@ -68,6 +73,9 @@ import ru.mercury.vpclient.features.checkout_bonus_sheet.model.CheckoutBonusMode
 import ru.mercury.vpclient.features.checkout_payment_method_sheet.CheckoutPaymentMethodSheet
 import ru.mercury.vpclient.features.checkout_payment_method_sheet.intent.CheckoutPaymentMethodIntent
 import ru.mercury.vpclient.features.checkout_payment_method_sheet.model.CheckoutPaymentMethodModel
+import ru.mercury.vpclient.features.checkout_sbp_bank_sheet.CheckoutSbpBankSheet
+import ru.mercury.vpclient.features.checkout_sbp_bank_sheet.intent.CheckoutSbpBankSheetIntent
+import ru.mercury.vpclient.features.checkout_sbp_bank_sheet.model.CheckoutSbpBankSheetModel
 import ru.mercury.vpclient.features.fitting_addresses.event.FittingAddressesEventManager
 import ru.mercury.vpclient.features.loyalty_add_card_sheet.LoyaltyAddCardSheet
 import ru.mercury.vpclient.features.loyalty_add_card_sheet.intent.LoyaltyAddCardIntent
@@ -117,6 +125,7 @@ fun CheckoutScreen(
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
     val uriHandler = LocalUriHandler.current
     val snackbarHostStateError = remember { SnackbarHostState() }
     val snackbarHostStateTopError = remember { SnackbarHostState() }
@@ -262,6 +271,22 @@ fun CheckoutScreen(
         )
     }
 
+    if (state.isSbpBankSheetVisible) {
+        CheckoutSbpBankSheet(
+            state = CheckoutSbpBankSheetModel(banks = state.sbpBanks),
+            dispatch = { intent ->
+                when (intent) {
+                    is CheckoutSbpBankSheetIntent.DismissRequest -> {
+                        viewModel.dispatch(CheckoutIntent.DismissSbpBankSheet)
+                    }
+                    is CheckoutSbpBankSheetIntent.BankClick -> {
+                        viewModel.dispatch(CheckoutIntent.SbpBankClick(intent.bank))
+                    }
+                }
+            }
+        )
+    }
+
     if (state.isBankCardSheetVisible) {
         CheckoutBankCardSheet(
             state = CheckoutBankCardSheetModel(
@@ -317,6 +342,13 @@ fun CheckoutScreen(
                 scope.launch { snackbarHostStateTopError.showSnackbar(event.message) }
             }
             is CheckoutEvent.OpenPaymentUrl -> uriHandler.openUri(event.url)
+            is CheckoutEvent.OpenSbpBankApp -> {
+                try {
+                    context.startActivity(Intent(Intent.ACTION_VIEW, event.paymentUrl.toUri()).setPackage(event.packageName))
+                } catch (_: ActivityNotFoundException) {
+                    uriHandler.openUri(event.paymentUrl)
+                }
+            }
         }
     }
 
@@ -478,31 +510,29 @@ private fun CheckoutScreenContent(
                         Column(
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            if (state.isOrderAmountVisible) {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(24.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(
-                                        text = stringResource(ClientStrings.CheckoutOrder),
-                                        style = MaterialTheme.typography.regular14.copy(
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                            lineHeight = 18.sp,
-                                            letterSpacing = .2.sp
-                                        )
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(24.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = stringResource(ClientStrings.CheckoutOrder),
+                                    style = MaterialTheme.typography.regular14.copy(
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        lineHeight = 18.sp,
+                                        letterSpacing = .2.sp
                                     )
+                                )
 
-                                    Text(
-                                        text = state.orderAmountText,
-                                        style = MaterialTheme.typography.medium15.copy(
-                                            lineHeight = 15.sp,
-                                            letterSpacing = .3.sp
-                                        )
+                                Text(
+                                    text = state.orderAmountText,
+                                    style = MaterialTheme.typography.medium15.copy(
+                                        lineHeight = 15.sp,
+                                        letterSpacing = .3.sp
                                     )
-                                }
+                                )
                             }
 
                             Row(
@@ -851,20 +881,28 @@ private fun CheckoutScreenContent(
                             }
                         }
                         item {
+                            val isPaymentTypeChangeEnabled = state.source != CheckoutSource.ExistingOrder
+
                             SharedTabRow(
                                 state = SharedTabRowState(
                                     selectedIndex = state.selectedPaymentTypeIndex,
                                     firstTabText = stringResource(ClientStrings.CheckoutPayOnlineCaps),
                                     secondTabText = stringResource(ClientStrings.CheckoutPayAtCashDeskCaps),
-                                    onFirstTabClick = { dispatch(CheckoutIntent.PayOnlineClick) },
-                                    onSecondTabClick = { dispatch(CheckoutIntent.PayAtCashDeskClick) },
+                                    onFirstTabClick = {
+                                        if (isPaymentTypeChangeEnabled) dispatch(CheckoutIntent.PayOnlineClick)
+                                    },
+                                    onSecondTabClick = {
+                                        if (isPaymentTypeChangeEnabled) dispatch(CheckoutIntent.PayAtCashDeskClick)
+                                    },
                                     isLoading = false
                                 ),
                                 textStyle = MaterialTheme.typography.medium13.copy(
                                     lineHeight = 16.sp,
                                     letterSpacing = .3.sp
                                 ),
-                                modifier = Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp)
+                                modifier = Modifier
+                                    .padding(start = 16.dp, top = 8.dp, end = 16.dp)
+                                    .alpha(if (isPaymentTypeChangeEnabled) 1F else .4F)
                             )
                         }
                         if (state.isAddLoyaltyCardVisible) {

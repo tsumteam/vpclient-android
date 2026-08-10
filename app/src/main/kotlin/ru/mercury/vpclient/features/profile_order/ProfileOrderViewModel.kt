@@ -6,6 +6,8 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.activity.event.MainEventManager
+import ru.mercury.vpclient.features.checkout.model.CheckoutSource
+import ru.mercury.vpclient.features.checkout.navigation.CheckoutRoute
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.features.fitting_confirmation.navigation.FittingConfirmationRoute
 import ru.mercury.vpclient.features.profile_order.intent.ProfileOrderIntent
@@ -77,6 +79,18 @@ class ProfileOrderViewModel @AssistedInject constructor(
                 }
             }
             is ProfileOrderIntent.BackClick -> launch { ProfileRootEventManager.send(BackRoute) }
+            is ProfileOrderIntent.PayClick -> {
+                val state = stateFlow.value
+                if (state.orderNumber.isBlank()) return
+                launch {
+                    MainEventManager.send(
+                        CheckoutRoute(
+                            source = CheckoutSource.ExistingOrder,
+                            orderNumber = state.orderNumber
+                        )
+                    )
+                }
+            }
             is ProfileOrderIntent.DeliveryClick -> {
                 launch {
                     MainEventManager.send(

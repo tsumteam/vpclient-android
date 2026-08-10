@@ -2,6 +2,7 @@ package ru.mercury.vpclient.features.checkout.model
 
 import kotlinx.coroutines.Job
 import ru.mercury.vpclient.features.loyalty_add_card_sheet.model.LoyaltyAddCardMode
+import ru.mercury.vpclient.shared.data.entity.CheckoutSbpBank
 import ru.mercury.vpclient.shared.data.entity.FittingCheckoutData
 import ru.mercury.vpclient.shared.data.entity.FittingCheckoutOnlinePaymentMethod
 import ru.mercury.vpclient.shared.data.entity.FittingCheckoutPaymentCardModel
@@ -69,7 +70,10 @@ data class CheckoutModel(
     val isBankCardNumberErrorVisible: Boolean = false,
     val isBankCardExpirationDateErrorVisible: Boolean = false,
     val paymentResultCheckJob: Job? = null,
-    val isPaymentExternalFlowStarted: Boolean = false
+    val isPaymentExternalFlowStarted: Boolean = false,
+    val isSbpBankSheetVisible: Boolean = false,
+    val sbpPaymentUrl: String = "",
+    val sbpBanks: List<CheckoutSbpBank> = emptyList()
 ): Model {
 
     val isCartCheckout: Boolean
@@ -109,10 +113,7 @@ data class CheckoutModel(
         get() = fittingCheckoutData.availableBonusAmount > 0
 
     val isAddLoyaltyCardVisible: Boolean
-        get() = !isLoyaltyCardLinked
-
-    val isOrderAmountVisible: Boolean
-        get() = isLoyaltyCardLinked
+        get() = !isLoyaltyCardLinked && source != CheckoutSource.ExistingOrder
 
     val isPromotionDiscountVisible: Boolean
         get() = fittingCheckoutData.promotionDiscount > 0
@@ -149,9 +150,10 @@ data class CheckoutModel(
             )
 
     val hasPayableItems: Boolean
-        get() = when {
-            isCartCheckout -> fittingCheckoutData.itemCount > 0
-            else -> fittingCheckoutData.deliveryIds.isNotEmpty()
+        get() = when (source) {
+            CheckoutSource.Cart -> fittingCheckoutData.itemCount > 0
+            CheckoutSource.Fitting -> fittingCheckoutData.deliveryIds.isNotEmpty()
+            CheckoutSource.ExistingOrder -> fittingCheckoutData.itemCount > 0
         }
 
     val isPaymentEnabled: Boolean
@@ -161,7 +163,8 @@ data class CheckoutModel(
         get() = hasPayableItems && !isLoading && isDeliverySelectionValid
 
     val isPaySbpEnabled: Boolean
-        get() = isPaymentEnabled && (!isCartCheckout || totalAmountValue <= SBP_PAYMENT_LIMIT)
+        get() = hasPayableItems && !isLoading && isDeliverySelectionValid &&
+            (!isCartCheckout || totalAmountValue <= SBP_PAYMENT_LIMIT)
 
     val totalAvailableBonusAmountText: String
         get() = fittingCheckoutData.totalAvailableBonusAmount.rubles

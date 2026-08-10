@@ -10,6 +10,51 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <queries>
+        <package android:name="com.bifit.mobile.citizen.icbru" />
+        <package android:name="com.bifit.mobile.citizen.kbnk" />
+        <package android:name="com.bifit.mobile.citizen.mbb" />
+        <package android:name="com.bssys.roscapretail" />
+        <package android:name="com.bssys.vbrrretail" />
+        <package android:name="com.energobank.digital" />
+        <package android:name="com.idamob.tinkoff.android" />
+        <package android:name="com.isimplelab.ibank.solidarnost" />
+        <package android:name="logo.com.mbanking" />
+        <package android:name="ru.akbars.mobile" />
+        <package android:name="ru.albank.online.aebit" />
+        <package android:name="ru.alfabank.mobile.android" />
+        <package android:name="ru.artsofte.russiafl" />
+        <package android:name="ru.avangard.sbp_client" />
+        <package android:name="ru.bank_hlynov.xbank" />
+        <package android:name="ru.elplat.elplat2" />
+        <package android:name="ru.ftc.faktura.absolutbank" />
+        <package android:name="ru.ftc.faktura.agropromkredit" />
+        <package android:name="ru.ftc.faktura.akcept" />
+        <package android:name="ru.ftc.faktura.etbank" />
+        <package android:name="ru.ftc.faktura.expobank" />
+        <package android:name="ru.ftc.faktura.kbhmb" />
+        <package android:name="ru.ftc.faktura.multibank" />
+        <package android:name="ru.ftc.faktura.nskbl" />
+        <package android:name="ru.ftc.faktura.orbank" />
+        <package android:name="ru.ftc.faktura.pskb" />
+        <package android:name="ru.ftc.faktura.razvitiestolica" />
+        <package android:name="ru.ftc.faktura.resokreditbank" />
+        <package android:name="ru.ftc.faktura.rostfinance" />
+        <package android:name="ru.ftc.faktura.sdm" />
+        <package android:name="ru.ftc.faktura.vesta" />
+        <package android:name="ru.gazprombank.android.mobilebank.app" />
+        <package android:name="ru.gebank.ib" />
+        <package android:name="ru.mcbankrus.MCBankRus" />
+        <package android:name="ru.mkb.mobile" />
+        <package android:name="ru.mts.money" />
+        <package android:name="ru.raiffeisennews" />
+        <package android:name="ru.rshb.dbo" />
+        <package android:name="ru.sberbankmobile" />
+        <package android:name="ru.skbbank.ib" />
+        <package android:name="ru.sovcomcard.halva.v1" />
+        <package android:name="ru.unicredit.android" />
+    </queries>
+
     <application
         android:name=".App"
         android:allowBackup="true"

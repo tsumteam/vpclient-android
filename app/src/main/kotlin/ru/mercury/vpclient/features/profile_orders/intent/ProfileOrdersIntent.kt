@@ -1,6 +1,7 @@
 package ru.mercury.vpclient.features.profile_orders.intent
 
 import ru.mercury.vpclient.shared.mvi.Intent
+import ru.mercury.vpclient.shared.ui.components.profile.ProfileOrderItemState
 
 sealed interface ProfileOrdersIntent: Intent {
     data object CollectCartCount: ProfileOrdersIntent
@@ -13,5 +14,5 @@ sealed interface ProfileOrdersIntent: Intent {
     data object CartClick: ProfileOrdersIntent
     data object FittingClick: ProfileOrdersIntent
     data object MessengerClick: ProfileOrdersIntent
-    data class OrderClick(val orderNumber: String, val amount: String): ProfileOrdersIntent
+    data class OrderClick(val state: ProfileOrderItemState): ProfileOrdersIntent
 }

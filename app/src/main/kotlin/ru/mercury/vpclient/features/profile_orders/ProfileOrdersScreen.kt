@@ -204,12 +204,7 @@ private fun ProfileOrdersScreenContent(
                     SharedLazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = innerPadding + PaddingValues(top = 8.dp),
-                        verticalArrangement = Arrangement.spacedBy(
-                            when {
-                                pagingItems.isRefreshLoading -> 8.dp
-                                else -> 0.dp
-                            }
-                        ),
+                        verticalArrangement = Arrangement.spacedBy(if (pagingItems.isRefreshLoading) 8.dp else 0.dp),
                         userScrollEnabled = !pagingItems.isRefreshLoading
                     ) {
                         if (pagingItems.isRefreshLoading) {
@@ -234,18 +229,10 @@ private fun ProfileOrdersScreenContent(
                                 contentType = pagingItems.itemContentType()
                             ) { index ->
                                 val order = pagingItems[index]
-
                                 if (order != null) {
                                     ProfileOrderItem(
                                         state = order,
-                                        onClick = {
-                                            dispatch(
-                                                ProfileOrdersIntent.OrderClick(
-                                                    orderNumber = order.orderNumber,
-                                                    amount = order.amount
-                                                )
-                                            )
-                                        },
+                                        onClick = { dispatch(ProfileOrdersIntent.OrderClick(order)) },
                                         onCopyClick = copyOrderNumber,
                                         onMoreClick = {}
                                     )

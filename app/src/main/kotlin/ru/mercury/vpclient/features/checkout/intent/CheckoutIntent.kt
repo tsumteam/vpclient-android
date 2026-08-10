@@ -2,6 +2,7 @@ package ru.mercury.vpclient.features.checkout.intent
 
 import ru.mercury.vpclient.features.fitting_addresses.event.FittingAddressesEvent
 import ru.mercury.vpclient.features.loyalty_add_card_sheet.model.LoyaltyAddCardMode
+import ru.mercury.vpclient.shared.data.entity.CheckoutSbpBank
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationPlaceType
 import ru.mercury.vpclient.shared.data.network.type.CheckoutBonusType
 import ru.mercury.vpclient.shared.mvi.Intent
@@ -41,6 +42,7 @@ sealed interface CheckoutIntent: Intent {
     data object BankCardNumberFocusLost: CheckoutIntent
     data object BankCardExpirationDateFocusLost: CheckoutIntent
     data object CheckPaymentResult: CheckoutIntent
+    data object DismissSbpBankSheet: CheckoutIntent
     data class LoadData(val bonusType: CheckoutBonusType = CheckoutBonusType.LOYALTY_CARD): CheckoutIntent
     data class LoyaltyAddCardModeClick(val mode: LoyaltyAddCardMode): CheckoutIntent
     data class LoyaltyAddCardPhoneChange(val phone: String): CheckoutIntent
@@ -56,4 +58,5 @@ sealed interface CheckoutIntent: Intent {
     data class SelectDeliveryDay(val dayId: String): CheckoutIntent
     data class SelectDeliveryInterval(val intervalId: String): CheckoutIntent
     data class ReceiveFittingAddressesEvent(val event: FittingAddressesEvent): CheckoutIntent
+    data class SbpBankClick(val bank: CheckoutSbpBank): CheckoutIntent
 }

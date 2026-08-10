@@ -23,19 +23,23 @@ class LoginViewModel @Inject constructor(
     override fun dispatch(intent: LoginIntent) {
         when (intent) {
             is LoginIntent.LoginClick -> {
-                launch {
+                if (stateFlow.value.loginJob?.isActive == true) return
+                val job = launch {
                     val phoneValidationError = authValidatePhoneUseCase(stateFlow.value.phone).getOrThrow()
                     when {
                         phoneValidationError != null -> {
                             reduce { it.copy(phoneValidationError = phoneValidationError) }
                         }
                         else -> {
-                            reduce { it.copy(phoneValidationError = null, isLoading = true) }
+                            reduce { it.copy(phoneValidationError = null) }
                             loginUseCase(stateFlow.value.phone).getOrThrow()
                             MainEventManager.send(CodeRoute)
                         }
                     }
+                }.also { launchedJob ->
+                    launchedJob.invokeOnCompletion { reduce { it.copy(loginJob = null) } }
                 }
+                reduce { it.copy(loginJob = job) }
             }
             is LoginIntent.HideKeyboard -> launch { send(LoginEvents.ClearFocus) }
             is LoginIntent.EnterPhone -> {
@@ -56,10 +60,8 @@ class LoginViewModel @Inject constructor(
     override fun catch(throwable: Throwable) {
         when (throwable) {
             is LoginException -> {
-                launch {
-                    reduce { it.copy(isLoading = false) }
-                    send(LoginEvents.SnackbarMessage(throwable.message))
-                }
+                reduce { it.copy(loginJob = null) }
+                launch { send(LoginEvents.SnackbarMessage(throwable.message)) }
             }
             else -> super.catch(throwable)
         }

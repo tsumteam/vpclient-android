@@ -101,12 +101,7 @@ class ProfileOrdersViewModel @Inject constructor(
             is ProfileOrdersIntent.MessengerClick -> return
             is ProfileOrdersIntent.OrderClick -> {
                 launch {
-                    ProfileRootEventManager.send(
-                        ProfileOrderRoute(
-                            orderNumber = intent.orderNumber,
-                            amount = intent.amount
-                        )
-                    )
+                    ProfileRootEventManager.send(ProfileOrderRoute(intent.state.orderNumber, intent.state.amount))
                 }
             }
         }

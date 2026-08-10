@@ -46,14 +46,13 @@ import ru.mercury.vpclient.shared.domain.usecase.AuthValidateCodeUseCase.Compani
 import ru.mercury.vpclient.shared.domain.usecase.BasketByPairedUserIdForCheckoutUseCase
 import ru.mercury.vpclient.shared.domain.usecase.BasketByPairedUserIdForCheckoutUseCase.BasketByPairedUserIdForCheckoutException
 import ru.mercury.vpclient.shared.domain.usecase.ClientAddressListUseCase
-import ru.mercury.vpclient.shared.domain.usecase.ClientAddressListUseCase.ClientAddressListException
 import ru.mercury.vpclient.shared.domain.usecase.ClientAddressesFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.ClientEntityFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CurrentUserUseCase
-import ru.mercury.vpclient.shared.domain.usecase.FittingsByPairedUserIdForCheckoutUseCase
-import ru.mercury.vpclient.shared.domain.usecase.FittingsByPairedUserIdForCheckoutUseCase.FittingsByPairedUserIdForCheckoutException
 import ru.mercury.vpclient.shared.domain.usecase.FittingCheckoutPaymentResultUseCase
 import ru.mercury.vpclient.shared.domain.usecase.FittingCheckoutPaymentResultUseCase.FittingCheckoutPaymentResultException
+import ru.mercury.vpclient.shared.domain.usecase.FittingsByPairedUserIdForCheckoutUseCase
+import ru.mercury.vpclient.shared.domain.usecase.FittingsByPairedUserIdForCheckoutUseCase.FittingsByPairedUserIdForCheckoutException
 import ru.mercury.vpclient.shared.domain.usecase.LinkLoyaltyCardByPhoneUseCase
 import ru.mercury.vpclient.shared.domain.usecase.LinkLoyaltyCardByPhoneUseCase.LinkLoyaltyCardByPhoneException
 import ru.mercury.vpclient.shared.domain.usecase.LoadCheckoutDeliveryDataUseCase
@@ -70,8 +69,11 @@ import ru.mercury.vpclient.shared.domain.usecase.OrdersByOrderIdReserveBonusesUs
 import ru.mercury.vpclient.shared.domain.usecase.OrdersCreateFromBasketUseCase
 import ru.mercury.vpclient.shared.domain.usecase.OrdersCreateFromBasketUseCase.OrderPriceChangedException
 import ru.mercury.vpclient.shared.domain.usecase.OrdersCreateFromBasketUseCase.OrdersCreateFromBasketException
+import ru.mercury.vpclient.shared.domain.usecase.OrderCheckoutDataUseCase
 import ru.mercury.vpclient.shared.domain.usecase.OrdersCreateFromFittingUseCase
 import ru.mercury.vpclient.shared.domain.usecase.OrdersCreateFromFittingUseCase.OrdersCreateFromFittingException
+import ru.mercury.vpclient.shared.domain.usecase.SbpAvailableBanksUseCase
+import ru.mercury.vpclient.shared.domain.usecase.SbpAvailableBanksUseCase.SbpAvailableBanksException
 import ru.mercury.vpclient.shared.domain.usecase.VerifyLoyaltyCardByPhoneUseCase
 import ru.mercury.vpclient.shared.domain.usecase.VerifyLoyaltyCardByPhoneUseCase.VerifyLoyaltyCardByPhoneException
 import ru.mercury.vpclient.shared.domain.usecase.VerifyLoyaltyCardUseCase
@@ -80,7 +82,6 @@ import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.navigation.BackRoute
 import ru.mercury.vpclient.shared.navigation.MainTab
 import java.util.UUID
-import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel(assistedFactory = CheckoutViewModel.Factory::class)
@@ -103,6 +104,8 @@ class CheckoutViewModel @AssistedInject constructor(
     private val ordersByOrderIdConfirmBonusesUseCase: OrdersByOrderIdConfirmBonusesUseCase,
     private val ordersByOrderIdPaymentLinkUseCase: OrdersByOrderIdPaymentLinkUseCase,
     private val ordersByOrderIdPaymentSbpUseCase: OrdersByOrderIdPaymentSbpUseCase,
+    private val sbpAvailableBanksUseCase: SbpAvailableBanksUseCase,
+    private val orderCheckoutDataUseCase: OrderCheckoutDataUseCase,
     private val fittingCheckoutPaymentResultUseCase: FittingCheckoutPaymentResultUseCase
 ): ClientViewModel<CheckoutIntent, CheckoutModel, CheckoutEvent>(CheckoutModel(source = route.source)) {
 
@@ -122,7 +125,9 @@ class CheckoutViewModel @AssistedInject constructor(
                 launch {
                     clientEntityFlowUseCase(Unit)
                         .distinctUntilChanged()
-                        .collectLatest { clientEntity -> reduce { state -> state.copy(clientEntity = clientEntity) } }
+                        .collectLatest { clientEntity ->
+                            reduce { state -> state.copy(clientEntity = clientEntity) }
+                        }
                 }
             }
             is CheckoutIntent.CollectClientAddresses -> {
@@ -225,17 +230,31 @@ class CheckoutViewModel @AssistedInject constructor(
                     val data = when (route.source) {
                         CheckoutSource.Cart -> basketByPairedUserIdForCheckoutUseCase(intent.bonusType).getOrThrow()
                         CheckoutSource.Fitting -> fittingsByPairedUserIdForCheckoutUseCase(intent.bonusType).getOrThrow()
+                        CheckoutSource.ExistingOrder -> {
+                            val orderNumber = requireNotNull(route.orderNumber)
+                            orderCheckoutDataUseCase(
+                                OrderCheckoutDataUseCase.Params(
+                                    orderNumber = orderNumber,
+                                    bonusType = intent.bonusType
+                                )
+                            ).getOrThrow()
+                        }
                     }
                     reduce {
                         it.copy(
                             fittingCheckoutData = data,
                             isPayWithBonuses = intent.bonusType == CheckoutBonusType.LOYALTY_CARD,
-                            paymentOrderNumber = "",
+                            paymentOrderNumber = when (route.source) {
+                                CheckoutSource.ExistingOrder -> route.orderNumber.orEmpty()
+                                else -> ""
+                            },
                             isPaymentExternalFlowStarted = false
                         )
                     }
                 }.also { launchedJob ->
-                    launchedJob.invokeOnCompletion { reduce { state -> state.copy(loadDataJob = null) } }
+                    launchedJob.invokeOnCompletion {
+                        reduce { state -> state.copy(loadDataJob = null) }
+                    }
                 }
                 reduce { it.copy(loadDataJob = job) }
             }
@@ -438,20 +457,18 @@ class CheckoutViewModel @AssistedInject constructor(
                         val job = launch {
                             when (state.loyaltyCodeMode) {
                                 LoyaltyAddCardMode.Phone -> {
-                                    verifyLoyaltyCardByPhoneUseCase(
-                                        VerifyLoyaltyCardByPhoneUseCase.Params(
-                                            phone = state.loyaltyCodePhone,
-                                            code = state.loyaltyCode
-                                        )
-                                    ).getOrThrow()
+                                    val params = VerifyLoyaltyCardByPhoneUseCase.Params(
+                                        phone = state.loyaltyCodePhone,
+                                        code = state.loyaltyCode
+                                    )
+                                    verifyLoyaltyCardByPhoneUseCase(params).getOrThrow()
                                 }
                                 LoyaltyAddCardMode.CardNumber -> {
-                                    verifyLoyaltyCardUseCase(
-                                        VerifyLoyaltyCardUseCase.Params(
-                                            cardNumber = state.loyaltyCodeCardNumber,
-                                            code = state.loyaltyCode
-                                        )
-                                    ).getOrThrow()
+                                    val params = VerifyLoyaltyCardUseCase.Params(
+                                        cardNumber = state.loyaltyCodeCardNumber,
+                                        code = state.loyaltyCode
+                                    )
+                                    verifyLoyaltyCardUseCase(params).getOrThrow()
                                 }
                             }
                             currentUserUseCase(Unit).getOrThrow()
@@ -533,21 +550,24 @@ class CheckoutViewModel @AssistedInject constructor(
                     withCenterLoading {
                         val orderNumber = state.paymentOrderNumber.takeIf(String::isNotBlank)
                             ?: when (route.source) {
-                                CheckoutSource.Cart -> ordersCreateFromBasketUseCase(
-                                    OrdersCreateFromBasketUseCase.Params(
+                                CheckoutSource.Cart -> {
+                                    val params = OrdersCreateFromBasketUseCase.Params(
                                         paymentType = PaymentType.ONLINE_PAYMENT_CLIENT,
                                         fittingType = state.selectedPlaceType.fittingTypeDto,
                                         interval = state.selectedDeliveryInterval,
                                         clientAddress = state.selectedClientAddress,
                                         boutiqueAddress = state.deliveryData.boutiqueAddress
                                     )
-                                ).getOrThrow()
-                                CheckoutSource.Fitting -> ordersCreateFromFittingUseCase(
-                                    OrdersCreateFromFittingUseCase.Params(
+                                    ordersCreateFromBasketUseCase(params).getOrThrow()
+                                }
+                                CheckoutSource.Fitting -> {
+                                    val params = OrdersCreateFromFittingUseCase.Params(
                                         deliveryIds = state.fittingCheckoutData.deliveryIds,
                                         paymentType = PaymentType.ONLINE_PAYMENT_CLIENT
                                     )
-                                ).getOrThrow()
+                                    ordersCreateFromFittingUseCase(params).getOrThrow()
+                                }
+                                CheckoutSource.ExistingOrder -> requireNotNull(route.orderNumber)
                             }
                         reduce {
                             it.copy(
@@ -557,12 +577,11 @@ class CheckoutViewModel @AssistedInject constructor(
                         }
                         when {
                             state.isBonusAmountVisible -> {
-                                ordersByOrderIdReserveBonusesUseCase(
-                                    OrdersByOrderIdReserveBonusesUseCase.Params(
-                                        orderId = orderNumber,
-                                        bonusAmount = state.fittingCheckoutData.availableBonusAmount.toDouble()
-                                    )
-                                ).getOrThrow()
+                                val params = OrdersByOrderIdReserveBonusesUseCase.Params(
+                                    orderId = orderNumber,
+                                    bonusAmount = state.fittingCheckoutData.availableBonusAmount.toDouble()
+                                )
+                                ordersByOrderIdReserveBonusesUseCase(params).getOrThrow()
                                 val startedAt = System.currentTimeMillis()
                                 reduce {
                                     it.copy(
@@ -580,31 +599,38 @@ class CheckoutViewModel @AssistedInject constructor(
                             }
                             else -> {
                                 val url = ordersByOrderIdPaymentSbpUseCase(orderNumber).getOrThrow()
-                                reduce { it.copy(isPaymentExternalFlowStarted = true) }
-                                send(CheckoutEvent.OpenPaymentUrl(url))
+                                val banks = sbpAvailableBanksUseCase(Unit).getOrThrow()
+                                reduce {
+                                    it.copy(
+                                        sbpPaymentUrl = url,
+                                        sbpBanks = banks,
+                                        isSbpBankSheetVisible = true
+                                    )
+                                }
                             }
                         }
                     }
                 }.also { launchedJob ->
-                    launchedJob.invokeOnCompletion { reduce { model -> model.copy(paymentJob = null) } }
+                    launchedJob.invokeOnCompletion {
+                        reduce { model -> model.copy(paymentJob = null) }
+                    }
                 }
                 reduce { it.copy(paymentJob = job) }
             }
             is CheckoutIntent.ConfirmOrderClick -> {
                 val state = stateFlow.value
-                if (state.isPaymentLoading) return
+                if (state.isPaymentLoading || route.source == CheckoutSource.ExistingOrder) return
                 val job = launch {
                     when (route.source) {
                         CheckoutSource.Cart -> {
-                            ordersCreateFromBasketUseCase(
-                                OrdersCreateFromBasketUseCase.Params(
-                                    paymentType = PaymentType.CASHLESS_COURIER,
-                                    fittingType = state.selectedPlaceType.fittingTypeDto,
-                                    interval = state.selectedDeliveryInterval,
-                                    clientAddress = state.selectedClientAddress,
-                                    boutiqueAddress = state.deliveryData.boutiqueAddress
-                                )
-                            ).getOrThrow()
+                            val params = OrdersCreateFromBasketUseCase.Params(
+                                paymentType = PaymentType.CASHLESS_COURIER,
+                                fittingType = state.selectedPlaceType.fittingTypeDto,
+                                interval = state.selectedDeliveryInterval,
+                                clientAddress = state.selectedClientAddress,
+                                boutiqueAddress = state.deliveryData.boutiqueAddress
+                            )
+                            ordersCreateFromBasketUseCase(params).getOrThrow()
                             val address = when (state.selectedPlaceType) {
                                 FittingConfirmationPlaceType.Home -> state.selectedClientAddress?.title
                                 else -> state.deliveryData.boutiqueAddress
@@ -619,12 +645,11 @@ class CheckoutViewModel @AssistedInject constructor(
                             )
                         }
                         CheckoutSource.Fitting -> {
-                            ordersCreateFromFittingUseCase(
-                                OrdersCreateFromFittingUseCase.Params(
-                                    deliveryIds = state.fittingCheckoutData.deliveryIds,
-                                    paymentType = PaymentType.CASHLESS_COURIER
-                                )
-                            ).getOrThrow()
+                            val params = OrdersCreateFromFittingUseCase.Params(
+                                deliveryIds = state.fittingCheckoutData.deliveryIds,
+                                paymentType = PaymentType.CASHLESS_COURIER
+                            )
+                            ordersCreateFromFittingUseCase(params).getOrThrow()
                             MainEventManager.send(
                                 MainRoute(
                                     popUpToMain = true,
@@ -634,7 +659,9 @@ class CheckoutViewModel @AssistedInject constructor(
                         }
                     }
                 }.also { launchedJob ->
-                    launchedJob.invokeOnCompletion { reduce { model -> model.copy(paymentJob = null) } }
+                    launchedJob.invokeOnCompletion {
+                        reduce { model -> model.copy(paymentJob = null) }
+                    }
                 }
                 reduce { it.copy(paymentJob = job) }
             }
@@ -680,12 +707,11 @@ class CheckoutViewModel @AssistedInject constructor(
                         state.bonusCode.length != CODE_LENGTH -> return
                     else -> {
                         val job = launch {
-                            ordersByOrderIdConfirmBonusesUseCase(
-                                OrdersByOrderIdConfirmBonusesUseCase.Params(
-                                    orderId = state.paymentOrderNumber,
-                                    code = state.bonusCode
-                                )
-                            ).getOrThrow()
+                            val params = OrdersByOrderIdConfirmBonusesUseCase.Params(
+                                orderId = state.paymentOrderNumber,
+                                code = state.bonusCode
+                            )
+                            ordersByOrderIdConfirmBonusesUseCase(params).getOrThrow()
                             stateFlow.value.bonusCodeResendTimerJob?.cancel()
                             reduce {
                                 it.copy(
@@ -699,8 +725,14 @@ class CheckoutViewModel @AssistedInject constructor(
                                 }
                                 FittingCheckoutOnlinePaymentMethod.Sbp -> {
                                     val url = ordersByOrderIdPaymentSbpUseCase(state.paymentOrderNumber).getOrThrow()
-                                    reduce { it.copy(isPaymentExternalFlowStarted = true) }
-                                    send(CheckoutEvent.OpenPaymentUrl(url))
+                                    val banks = sbpAvailableBanksUseCase(Unit).getOrThrow()
+                                    reduce {
+                                        it.copy(
+                                            sbpPaymentUrl = url,
+                                            sbpBanks = banks,
+                                            isSbpBankSheetVisible = true
+                                        )
+                                    }
                                 }
                             }
                         }.also { launchedJob ->
@@ -721,12 +753,11 @@ class CheckoutViewModel @AssistedInject constructor(
                         state.isBonusCodeResendLoading -> return
                     else -> {
                         val job = launch {
-                            ordersByOrderIdReserveBonusesUseCase(
-                                OrdersByOrderIdReserveBonusesUseCase.Params(
-                                    orderId = state.paymentOrderNumber,
-                                    bonusAmount = state.fittingCheckoutData.availableBonusAmount.toDouble()
-                                )
-                            ).getOrThrow()
+                            val params = OrdersByOrderIdReserveBonusesUseCase.Params(
+                                orderId = state.paymentOrderNumber,
+                                bonusAmount = state.fittingCheckoutData.availableBonusAmount.toDouble()
+                            )
+                            ordersByOrderIdReserveBonusesUseCase(params).getOrThrow()
                             val startedAt = System.currentTimeMillis()
                             reduce {
                                 it.copy(
@@ -829,8 +860,7 @@ class CheckoutViewModel @AssistedInject constructor(
                     it.copy(
                         bankCardNumber = formattedNumber,
                         isBankCardNumberErrorVisible = isMaxLength &&
-                            (!formattedNumber.isValidBankCardNumber ||
-                                paymentSystem == CheckoutBankCardPaymentSystem.Unknown)
+                            (!formattedNumber.isValidBankCardNumber || paymentSystem == CheckoutBankCardPaymentSystem.Unknown)
                     )
                 }
             }
@@ -843,8 +873,7 @@ class CheckoutViewModel @AssistedInject constructor(
                 reduce {
                     it.copy(
                         bankCardExpirationDate = formattedDate,
-                        isBankCardExpirationDateErrorVisible = digits.length == 4 &&
-                            !formattedDate.isValidBankCardExpirationDate
+                        isBankCardExpirationDateErrorVisible = digits.length == 4 && !formattedDate.isValidBankCardExpirationDate
                     )
                 }
             }
@@ -858,16 +887,10 @@ class CheckoutViewModel @AssistedInject constructor(
                 }
             }
             is CheckoutIntent.BankCardNumberFocusLost -> {
-                reduce {
-                    it.copy(isBankCardNumberErrorVisible = !it.bankCardNumber.isValidBankCardNumber)
-                }
+                reduce { it.copy(isBankCardNumberErrorVisible = !it.bankCardNumber.isValidBankCardNumber) }
             }
             is CheckoutIntent.BankCardExpirationDateFocusLost -> {
-                reduce {
-                    it.copy(
-                        isBankCardExpirationDateErrorVisible = !it.bankCardExpirationDate.isValidBankCardExpirationDate
-                    )
-                }
+                reduce { it.copy(isBankCardExpirationDateErrorVisible = !it.bankCardExpirationDate.isValidBankCardExpirationDate) }
             }
             is CheckoutIntent.BankCardPayClick -> {
                 val state = stateFlow.value
@@ -956,6 +979,35 @@ class CheckoutViewModel @AssistedInject constructor(
                     }
                 }
             }
+            is CheckoutIntent.DismissSbpBankSheet -> {
+                reduce {
+                    it.copy(
+                        isSbpBankSheetVisible = false,
+                        sbpPaymentUrl = "",
+                        sbpBanks = emptyList()
+                    )
+                }
+            }
+            is CheckoutIntent.SbpBankClick -> {
+                val state = stateFlow.value
+                if (state.sbpPaymentUrl.isBlank()) return
+                reduce {
+                    it.copy(
+                        isSbpBankSheetVisible = false,
+                        sbpPaymentUrl = "",
+                        sbpBanks = emptyList(),
+                        isPaymentExternalFlowStarted = true
+                    )
+                }
+                launch {
+                    send(
+                        CheckoutEvent.OpenSbpBankApp(
+                            packageName = intent.bank.packageName,
+                            paymentUrl = state.sbpPaymentUrl
+                        )
+                    )
+                }
+            }
         }
     }
 
@@ -964,7 +1016,7 @@ class CheckoutViewModel @AssistedInject constructor(
             is FittingsByPairedUserIdForCheckoutException,
             is BasketByPairedUserIdForCheckoutException -> {
                 reduce { it.copy(loadDataJob = null) }
-                launch { send(CheckoutEvent.SnackbarErrorMessage(throwable.message.orEmpty())) }
+                launch { send(CheckoutEvent.SnackbarErrorMessage(throwable.message)) }
             }
             is LinkLoyaltyCardByPhoneException,
             is LoyaltyLinkException -> {
@@ -975,7 +1027,7 @@ class CheckoutViewModel @AssistedInject constructor(
                         isLoyaltyAddCardPhoneErrorVisible = false
                     )
                 }
-                launch { send(CheckoutEvent.SnackbarTopErrorMessage(throwable.message.orEmpty())) }
+                launch { send(CheckoutEvent.SnackbarTopErrorMessage(throwable.message)) }
             }
             is VerifyLoyaltyCardByPhoneException,
             is VerifyLoyaltyCardException -> {
@@ -1015,14 +1067,15 @@ class CheckoutViewModel @AssistedInject constructor(
             is OrdersCreateFromFittingException,
             is OrdersCreateFromBasketException,
             is OrdersByOrderIdPaymentLinkException,
-            is OrdersByOrderIdPaymentSbpException -> {
+            is OrdersByOrderIdPaymentSbpException,
+            is SbpAvailableBanksException -> {
                 reduce { it.copy(paymentJob = null) }
                 launch {
                     val event = when {
                         stateFlow.value.isBankCardSheetVisible -> {
-                            CheckoutEvent.SnackbarTopErrorMessage(throwable.message.orEmpty())
+                            CheckoutEvent.SnackbarTopErrorMessage(throwable.message)
                         }
-                        else -> CheckoutEvent.SnackbarErrorMessage(throwable.message.orEmpty())
+                        else -> CheckoutEvent.SnackbarErrorMessage(throwable.message)
                     }
                     send(event)
                 }

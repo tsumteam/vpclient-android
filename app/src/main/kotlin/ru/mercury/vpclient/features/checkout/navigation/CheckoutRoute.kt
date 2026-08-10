@@ -6,5 +6,6 @@ import ru.mercury.vpclient.features.checkout.model.CheckoutSource
 
 @Serializable
 data class CheckoutRoute(
-    val source: CheckoutSource = CheckoutSource.Fitting
+    val source: CheckoutSource = CheckoutSource.Fitting,
+    val orderNumber: String? = null
 ): NavKey
