@@ -40,6 +40,11 @@ jobs:
           cache-read-only: ${{ github.ref != 'refs/heads/main' }}
           cache-write-only: ${{ github.ref == 'refs/heads/main' }}
 
+      - name: limit gradle heap for CI runner
+        run: |
+          mkdir -p ~/.gradle
+          echo "org.gradle.jvmargs=-Xmx6144m -XX:MaxMetaspaceSize=1024m" >> ~/.gradle/gradle.properties
+
       - name: expose short commit sha
         run: |
           SHORT_SHA=${GITHUB_SHA::7}
