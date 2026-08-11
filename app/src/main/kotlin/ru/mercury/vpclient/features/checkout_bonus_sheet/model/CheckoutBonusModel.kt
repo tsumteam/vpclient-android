@@ -7,10 +7,19 @@ data class CheckoutBonusModel(
     val code: String = "",
     val isLoading: Boolean = false,
     val isResendLoading: Boolean = false,
-    val isCodeErrorVisible: Boolean = false,
+    val isCodeErrorTextVisible: Boolean = false,
     val resendSecondsLeft: Int = 0
 ): Model {
 
     val isConfirmEnabled: Boolean
         get() = code.length == CODE_LENGTH && !isLoading
+
+    val isResendTextVisible: Boolean
+        get() = resendSecondsLeft > 0
+
+    val isResendLoadingIndicatorVisible: Boolean
+        get() = isResendLoading
+
+    val isLoadingIndicatorVisible: Boolean
+        get() = isLoading
 }

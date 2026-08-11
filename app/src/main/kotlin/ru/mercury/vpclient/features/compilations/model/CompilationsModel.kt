@@ -60,7 +60,7 @@ data class CompilationsModel(
     val isRefreshing: Boolean
         get() = isLoading && compilationEntities.isNotEmpty()
 
-    val isEmptyVisible: Boolean
+    val isEmptyBoxVisible: Boolean
         get() = !isLoading && compilationEntities.isEmpty()
 
     val visibleProducts: List<CartProduct>

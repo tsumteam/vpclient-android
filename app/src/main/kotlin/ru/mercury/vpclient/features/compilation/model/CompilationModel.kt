@@ -47,7 +47,7 @@ data class CompilationModel(
     val isCartBadgeVisible: Boolean
         get() = cartBadge > 0
 
-    val isMessageSheetVisible: Boolean
+    val isDetailsChatSheetVisible: Boolean
         get() = messageSheetProductEntity != null
 
     val selectedPageEntity: CompilationPreviewPageEntity?
@@ -66,6 +66,12 @@ data class CompilationModel(
             else -> "${selectedLookIndex + 1}/${compilationPreviewPageEntities.size}"
         }
 
+    val isSelectedLookNumberTextVisible: Boolean
+        get() = selectedLookNumberText.isNotEmpty()
+
+    val isDetailsPagerIndicatorVisible: Boolean
+        get() = compilationPreviewPageEntities.size > 1
+
     val selectedLookProductEntities: List<CatalogFilterProductsEntity>
         get() {
             val lookId = selectedPageEntity?.id ?: return emptyList()
@@ -79,7 +85,7 @@ data class CompilationModel(
                 entity.brand.isNotBlank()
         }
 
-    val isPromotionVisible: Boolean
+    val isPromotionBannerVisible: Boolean
         get() = selectedLookActionProductEntities.isNotEmpty()
 
     val selectedLookPromotionName: String

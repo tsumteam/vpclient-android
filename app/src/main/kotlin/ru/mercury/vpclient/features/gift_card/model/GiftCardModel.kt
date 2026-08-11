@@ -15,7 +15,7 @@ data class GiftCardModel(
     val amountText: String = "",
     val isAmountErrorVisible: Boolean = false,
     val isBuyEnabled: Boolean = false,
-    val isTermsVisible: Boolean = false,
+    val isTermsSheetVisible: Boolean = false,
     val cartBadge: Int = 0,
     val activeEmployee: EmployeeEntity = EmployeeEntity.Empty,
     val loadGiftCardJob: Job? = null

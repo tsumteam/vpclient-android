@@ -134,7 +134,7 @@ fun DetailsScreen(
         snackbarHostStateError = snackbarHostStateError
     )
 
-    if (state.isMessageSheetVisible) {
+    if (state.isDetailsChatSheetVisible) {
         DetailsChatSheet(
             state = DetailsChatModel(
                 productEntity = state.productEntity
@@ -556,7 +556,8 @@ private fun DetailsScreenContent(
                             state = DetailsProductInfoBoxState(
                                 productEntity = state.productEntity,
                                 availabilityText = state.noSizeAvailabilityText,
-                                onMessageClick = { dispatch(DetailsIntent.MessageClick) }
+                                onMessageClick = { dispatch(DetailsIntent.MessageClick) },
+                                onBrandClick = { dispatch(DetailsIntent.BrandClick) }
                             ),
                             modifier = Modifier.fillMaxWidth()
                         )

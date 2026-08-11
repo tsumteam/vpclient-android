@@ -14,5 +14,6 @@ sealed interface CategoryIntent: Intent {
     data object CartClick: CategoryIntent
     data object FittingClick: CategoryIntent
     data object MessengerClick: CategoryIntent
+    data object ViewAllClick: CategoryIntent
     data class FilterClick(val entity: CatalogCategoryEntity): CategoryIntent
 }

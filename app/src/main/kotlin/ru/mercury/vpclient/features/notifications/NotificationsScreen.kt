@@ -250,7 +250,7 @@ private fun NotificationsScreenContent(
                 }
                 if (state.isContentVisible) {
                     items(
-                        items = state.notificationEntities,
+                        items = state.displayedNotificationEntities,
                         key = { entity -> entity.id }
                     ) { entity ->
                         NotificationItem(

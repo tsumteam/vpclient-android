@@ -214,7 +214,7 @@ private fun CompilationsScreenContent(
                         }
                     }
                 }
-                state.isEmptyVisible -> {
+                state.isEmptyBoxVisible -> {
                     EmptyBox(
                         state = EmptyBoxState(
                             imageVector = VipPlatinumEmpty,

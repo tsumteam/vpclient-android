@@ -333,7 +333,7 @@ fun CheckoutBankCardSheet(
                                     }
                                     innerTextField()
                                 }
-                                if (state.isCardNumberErrorVisible) {
+                                if (state.isCardNumberErrorIconVisible) {
                                     Icon(
                                         imageVector = TextFieldError24,
                                         contentDescription = null,
@@ -427,7 +427,7 @@ fun CheckoutBankCardSheet(
                                         }
                                         innerTextField()
                                     }
-                                    if (state.isExpirationDateErrorVisible) {
+                                    if (state.isExpirationDateErrorIconVisible) {
                                         Icon(
                                             imageVector = TextFieldError24,
                                             contentDescription = null,
@@ -547,7 +547,7 @@ fun CheckoutBankCardSheet(
                     )
                 ) {
                     when {
-                        state.isLoading -> {
+                        state.isLoadingIndicatorVisible -> {
                             CircularProgressIndicator(
                                 modifier = Modifier.size(24.dp),
                                 color = MaterialTheme.colorScheme.onPrimary,

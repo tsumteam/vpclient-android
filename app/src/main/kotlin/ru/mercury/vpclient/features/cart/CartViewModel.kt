@@ -680,7 +680,13 @@ class CartViewModel @AssistedInject constructor(
             is CartIntent.ChangeQuantityClick -> {
                 dispatch(CartIntent.ShowQuantityPicker(intent.product))
             }
-            is CartIntent.DetachProductFromLookSwipeClick -> return
+            is CartIntent.DetachProductFromLookSwipeClick -> {
+                launch {
+                    withCenterLoading {
+                        disassembleLookUseCase(listOf(intent.product)).getOrThrow()
+                    }
+                }
+            }
             is CartIntent.MoveProductAfterDrag -> {
                 val movedProducts = stateFlow.value.products.moveProductAfterDrag(
                     productId = intent.productId,

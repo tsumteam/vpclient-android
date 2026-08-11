@@ -151,7 +151,7 @@ fun CompilationScreen(
         )
     }
 
-    if (state.isMessageSheetVisible) {
+    if (state.isDetailsChatSheetVisible) {
         val messageSheetProductEntity = state.messageSheetProductEntity?.messageSheetProductEntity()
         if (messageSheetProductEntity != null) {
             DetailsChatSheet(
@@ -459,7 +459,7 @@ private fun CompilationScreenContent(
                                 )
                             }
 
-                            if (state.selectedLookNumberText.isNotEmpty()) {
+                            if (state.isSelectedLookNumberTextVisible) {
                                 Text(
                                     text = state.selectedLookNumberText,
                                     maxLines = 1,
@@ -474,7 +474,7 @@ private fun CompilationScreenContent(
                             }
                         }
                     }
-                    if (state.compilationPreviewPageEntities.size > 1) {
+                    if (state.isDetailsPagerIndicatorVisible) {
                         item {
                             DetailsPagerIndicator(
                                 pagerState = pagerState,
@@ -487,7 +487,7 @@ private fun CompilationScreenContent(
                             )
                         }
                     }
-                    if (state.isPromotionVisible) {
+                    if (state.isPromotionBannerVisible) {
                         item {
                             CompilationPromotionBanner(
                                 state = CompilationPromotionBannerState(

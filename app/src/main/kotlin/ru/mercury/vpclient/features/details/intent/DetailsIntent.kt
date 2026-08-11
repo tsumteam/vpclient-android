@@ -20,6 +20,7 @@ sealed interface DetailsIntent: Intent {
     data object SizeTableClick: DetailsIntent
     data object AddToBasketClick: DetailsIntent
     data object OpenVideo: DetailsIntent
+    data object BrandClick: DetailsIntent
     data object HideSizePicker: DetailsIntent
     data object ShowWearWithSheet: DetailsIntent
     data object HideWearWithSheet: DetailsIntent

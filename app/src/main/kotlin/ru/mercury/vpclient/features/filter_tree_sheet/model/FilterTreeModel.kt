@@ -12,4 +12,11 @@ data class FilterTreeModel(
     val quantityEntity: FilterValuesQuantityEntity,
     val isProductsQuantityLoading: Boolean,
     val isLoading: Boolean = false
-)
+) {
+
+    val isResetButtonVisible: Boolean
+        get() = selectedIds.isNotEmpty()
+
+    val isBackRowVisible: Boolean
+        get() = currentParentId != null
+}

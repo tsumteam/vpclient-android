@@ -39,6 +39,7 @@ fun FilterResetChip(
             .wrapContentSize(Alignment.Center),
         style = MaterialTheme.typography.medium15.copy(
             color = MaterialTheme.colorScheme.error,
+            lineHeight = 15.sp,
             letterSpacing = .3.sp,
             textAlign = TextAlign.Center
         )

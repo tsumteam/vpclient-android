@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -42,7 +43,7 @@ import ru.mercury.vpclient.features.profile_my_data.intent.ProfileMyDataIntent
 import ru.mercury.vpclient.features.profile_my_data.model.ProfileMyDataModel
 import ru.mercury.vpclient.shared.ui.components.InfoItem
 import ru.mercury.vpclient.shared.ui.components.InfoItemState
-import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
+import ru.mercury.vpclient.shared.ui.components.SharedColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.cart.CartIconButton
 import ru.mercury.vpclient.shared.ui.components.cart.FittingIconButton
@@ -179,43 +180,39 @@ private fun ProfileMyDataScreenContent(
             }
         }
     ) { innerPadding ->
-        SharedLazyColumn(
+        SharedColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = innerPadding + PaddingValues(bottom = 8.dp),
+            horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            item {
-                InfoItem(
-                    state = InfoItemState(
-                        label = stringResource(ClientStrings.MyDataSurname),
-                        value = state.surname.ifEmpty { stringResource(ClientStrings.MyDataNotSpecified) }
-                    )
+            InfoItem(
+                state = InfoItemState(
+                    label = stringResource(ClientStrings.MyDataSurname),
+                    value = state.surname.ifEmpty { stringResource(ClientStrings.MyDataNotSpecified) }
                 )
-            }
-            item {
-                InfoItem(
-                    state = InfoItemState(
-                        label = stringResource(ClientStrings.MyDataName),
-                        value = state.name.ifEmpty { stringResource(ClientStrings.MyDataNotSpecified) }
-                    )
+            )
+
+            InfoItem(
+                state = InfoItemState(
+                    label = stringResource(ClientStrings.MyDataName),
+                    value = state.name.ifEmpty { stringResource(ClientStrings.MyDataNotSpecified) }
                 )
-            }
-            item {
-                InfoItem(
-                    state = InfoItemState(
-                        label = stringResource(ClientStrings.MyDataPhone),
-                        value = state.phone.ifEmpty { stringResource(ClientStrings.MyDataNotSpecified) }
-                    )
+            )
+
+            InfoItem(
+                state = InfoItemState(
+                    label = stringResource(ClientStrings.MyDataPhone),
+                    value = state.phone.ifEmpty { stringResource(ClientStrings.MyDataNotSpecified) }
                 )
-            }
-            item {
-                InfoItem(
-                    state = InfoItemState(
-                        label = stringResource(ClientStrings.MyDataEmail),
-                        value = state.email.ifEmpty { stringResource(ClientStrings.MyDataNotSpecified) }
-                    )
+            )
+
+            InfoItem(
+                state = InfoItemState(
+                    label = stringResource(ClientStrings.MyDataEmail),
+                    value = state.email.ifEmpty { stringResource(ClientStrings.MyDataNotSpecified) }
                 )
-            }
+            )
         }
     }
 }

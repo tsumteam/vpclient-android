@@ -2,11 +2,13 @@
 
 package ru.mercury.vpclient.shared.domain.usecase
 
+import androidx.room.withTransaction
 import ru.mercury.vpclient.shared.coroutines.SharedDispatchers
 import ru.mercury.vpclient.shared.data.FORMAT_PHONE_NUMBER
 import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.network.NetworkService
 import ru.mercury.vpclient.shared.data.network.request.AuthenticationLoginRequest
+import ru.mercury.vpclient.shared.data.persistence.database.AppDatabase
 import ru.mercury.vpclient.shared.data.persistence.database.dao.ClientDao
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ClientEntity
 import ru.mercury.vpclient.shared.domain.mapper.handleResponse
@@ -14,6 +16,7 @@ import java.util.Locale
 import javax.inject.Inject
 
 class LoginUseCase @Inject constructor(
+    private val appDatabase: AppDatabase,
     private val networkService: NetworkService,
     private val clientDao: ClientDao,
     dispatchers: SharedDispatchers
@@ -32,7 +35,10 @@ class LoginUseCase @Inject constructor(
                     phone = phone,
                     codeResendTimer = System.currentTimeMillis()
                 )
-                clientDao.upsert(clientEntity)
+                appDatabase.withTransaction {
+                    clientDao.remove()
+                    clientDao.upsert(clientEntity)
+                }
             },
             onFailure = { error -> throw LoginException(error.message) }
         )

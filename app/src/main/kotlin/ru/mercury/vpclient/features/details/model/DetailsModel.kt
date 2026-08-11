@@ -19,7 +19,7 @@ data class DetailsModel(
     val selectedOtherColorIndex: Int? = null,
     val isSizePickerSheetVisible: Boolean = false,
     val isWearWithSheetVisible: Boolean = false,
-    val isMessageSheetVisible: Boolean = false,
+    val isDetailsChatSheetVisible: Boolean = false,
     val isCartAddedSheetVisible: Boolean = false,
     val basketProductIds: Set<String> = emptySet(),
     val basketProductKeys: Set<String> = emptySet(),

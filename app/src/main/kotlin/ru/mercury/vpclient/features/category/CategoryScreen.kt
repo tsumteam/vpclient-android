@@ -3,6 +3,7 @@
 package ru.mercury.vpclient.features.category
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -102,6 +103,10 @@ private fun CategoryScreenContent(
                 title = {
                     Text(
                         text = state.catalogCategoryEntity.name,
+                        modifier = Modifier.clickable(
+                            enabled = state.isViewAllButtonVisible,
+                            onClick = { dispatch(CategoryIntent.ViewAllClick) }
+                        ),
                         style = MaterialTheme.typography.medium18,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -208,7 +213,7 @@ private fun CategoryScreenContent(
                     if (state.isViewAllButtonVisible) {
                         item {
                             OutlinedButton(
-                                onClick = { dispatch(CategoryIntent.FilterClick(state.catalogCategoryEntity)) },
+                                onClick = { dispatch(CategoryIntent.ViewAllClick) },
                                 modifier = Modifier
                                     .padding(horizontal = 16.dp)
                                     .fillMaxWidth()

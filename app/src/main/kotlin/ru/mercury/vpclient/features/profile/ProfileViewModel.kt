@@ -53,6 +53,7 @@ import ru.mercury.vpclient.shared.domain.usecase.LinkLoyaltyCardByPhoneUseCase.L
 import ru.mercury.vpclient.shared.domain.usecase.LoadBasketUseCase
 import ru.mercury.vpclient.shared.domain.usecase.LoadFittingUseCase
 import ru.mercury.vpclient.shared.domain.usecase.LogoutUseCase
+import ru.mercury.vpclient.shared.domain.usecase.LogoutUseCase.LogoutException
 import ru.mercury.vpclient.shared.domain.usecase.LoyaltyCardInfoFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.LoyaltyCardInfoFlowUseCase.Companion.ALPHA_BANK_DISCLAIMER_HIDE_DURATION_MILLIS
 import ru.mercury.vpclient.shared.domain.usecase.LoyaltyCardInfoUseCase
@@ -540,6 +541,9 @@ class ProfileViewModel @Inject constructor(
             is LoyaltyLinkException -> {
                 reduce { it.copy(loyaltyAddCardJob = null) }
                 launch { send(ProfileEvent.SnackbarTopErrorMessage(throwable.message)) }
+            }
+            is LogoutException -> {
+                launch { send(ProfileEvent.SnackbarErrorMessage(throwable.message)) }
             }
             is RoomException, is RoomSQLiteException -> {
                 launch { send(ProfileEvent.SnackbarErrorMessage(throwable.message.orEmpty())) }

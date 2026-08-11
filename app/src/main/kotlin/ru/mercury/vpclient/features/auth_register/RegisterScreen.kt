@@ -30,7 +30,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.autofill.ContentType
 import androidx.compose.ui.focus.FocusDirection
@@ -59,7 +58,7 @@ import ru.mercury.vpclient.features.auth_register.model.RegisterModel
 import ru.mercury.vpclient.shared.domain.usecase.AuthValidateNameUseCase.NameValidationError
 import ru.mercury.vpclient.shared.domain.usecase.AuthValidatePhoneUseCase.PhoneValidationError
 import ru.mercury.vpclient.shared.ui.components.AgreementText
-import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
+import ru.mercury.vpclient.shared.ui.components.SharedColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.system.ClientTextField
@@ -156,15 +155,27 @@ private fun RegisterScreenContent(
                     .height(52.dp),
                 enabled = state.isRegisterEnabled && !state.isLoading,
                 shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (state.isRegisterEnabled || state.isLoading) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.disabled,
-                    contentColor = if (state.isRegisterEnabled || state.isLoading) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onDisabled,
-                    disabledContainerColor = if (state.isRegisterEnabled || state.isLoading) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.disabled,
-                    disabledContentColor = if (state.isRegisterEnabled || state.isLoading) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onDisabled
-                )
+                colors = when {
+                    state.isRegisterEnabled || state.isLoading -> {
+                        ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary,
+                            disabledContainerColor = MaterialTheme.colorScheme.primary,
+                            disabledContentColor = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                    else -> {
+                        ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.disabled,
+                            contentColor = MaterialTheme.colorScheme.onDisabled,
+                            disabledContainerColor = MaterialTheme.colorScheme.disabled,
+                            disabledContentColor = MaterialTheme.colorScheme.onDisabled
+                        )
+                    }
+                }
             ) {
                 when {
-                    state.isLoading -> {
+                    state.isLoadingIndicatorVisible -> {
                         CircularProgressIndicator(
                             modifier = Modifier.size(24.dp),
                             color = MaterialTheme.colorScheme.onPrimary,
@@ -190,73 +201,67 @@ private fun RegisterScreenContent(
             )
         },
     ) { innerPadding ->
-        SharedLazyColumn(
+        SharedColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = innerPadding + PaddingValues(horizontal = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            contentPadding = innerPadding + PaddingValues(horizontal = 16.dp)
         ) {
-            item {
-                Text(
-                    text = stringResource(ClientStrings.RegisterTitle),
-                    modifier = Modifier
-                        .padding(top = 36.dp)
-                        .fillMaxWidth(),
-                    style = MaterialTheme.typography.livretMedium21.copy(
-                        color = MaterialTheme.colorScheme.onBackground,
-                        textAlign = TextAlign.Center
-                    )
+            Text(
+                text = stringResource(ClientStrings.RegisterTitle),
+                modifier = Modifier
+                    .padding(top = 36.dp)
+                    .fillMaxWidth(),
+                style = MaterialTheme.typography.livretMedium21.copy(
+                    color = MaterialTheme.colorScheme.onBackground,
+                    textAlign = TextAlign.Center
                 )
-            }
-            item {
-                ClientTextField(
-                    value = state.name,
-                    onValueChange = { dispatch(RegisterIntent.EnterName(it)) },
-                    label = stringResource(ClientStrings.RegisterNameLabel),
-                    isErrorVisible = state.nameValidationError != null,
-                    error = nameError,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 40.dp)
-                        .focusRequester(focusRequester)
-                        .semantics { contentType = ContentType.PersonFullName },
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        imeAction = ImeAction.Next
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onNext = { dispatch(RegisterIntent.MoveFocusDown) }
-                    )
+            )
+
+            ClientTextField(
+                value = state.name,
+                onValueChange = { dispatch(RegisterIntent.EnterName(it)) },
+                label = stringResource(ClientStrings.RegisterNameLabel),
+                isErrorVisible = state.isNameValidationErrorVisible,
+                error = nameError,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 40.dp)
+                    .focusRequester(focusRequester)
+                    .semantics { contentType = ContentType.PersonFullName },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(
+                    onNext = { dispatch(RegisterIntent.MoveFocusDown) }
                 )
-            }
-            item {
-                ClientTextField(
-                    value = state.phone,
-                    onValueChange = { dispatch(RegisterIntent.EnterPhone(it)) },
-                    label = stringResource(ClientStrings.RegisterPhoneLabel),
-                    isErrorVisible = state.phoneValidationError != null,
-                    error = phoneError,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 24.dp)
-                        .semantics { contentType = ContentType.PhoneNumber },
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Phone,
-                        imeAction = ImeAction.Done
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onDone = { dispatch(RegisterIntent.OnKeyboardDone) }
-                    ),
-                    inputTransformation = phoneInputTransformation,
-                    outputTransformation = phoneOutputTransformation
-                )
-            }
-            item {
-                AgreementText(
-                    agreementTextRes = ClientStrings.RegisterAgreementText,
-                    modifier = Modifier
-                        .padding(top = 28.dp)
-                        .fillMaxWidth()
-                )
-            }
+            )
+
+            ClientTextField(
+                value = state.phone,
+                onValueChange = { dispatch(RegisterIntent.EnterPhone(it)) },
+                label = stringResource(ClientStrings.RegisterPhoneLabel),
+                isErrorVisible = state.isPhoneValidationErrorVisible,
+                error = phoneError,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 24.dp)
+                    .semantics { contentType = ContentType.PhoneNumber },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Phone,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = { dispatch(RegisterIntent.OnKeyboardDone) }
+                ),
+                inputTransformation = phoneInputTransformation,
+                outputTransformation = phoneOutputTransformation
+            )
+
+            AgreementText(
+                agreementTextRes = ClientStrings.RegisterAgreementText,
+                modifier = Modifier
+                    .padding(top = 28.dp)
+                    .fillMaxWidth()
+            )
         }
     }
 }

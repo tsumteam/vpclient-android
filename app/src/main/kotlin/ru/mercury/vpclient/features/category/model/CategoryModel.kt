@@ -39,7 +39,7 @@ data class CategoryModel(
         get() = activeEmployee.hasMessengerBadge
 
     val isViewAllButtonVisible: Boolean
-        get() = "подар" !in catalogCategoryEntity.name.lowercase()
+        get() = catalogCategoryEntity != CatalogCategoryEntity.Empty && "подар" !in catalogCategoryEntity.name.lowercase()
 
     val viewAllButtonTitleRes: Int
         get() = when (catalogCategoryEntity.id) {

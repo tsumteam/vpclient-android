@@ -16,9 +16,6 @@ interface ClientDao {
     @Query("SELECT * FROM client LIMIT 1")
     suspend fun select(): ClientEntity?
 
-    @Query("SELECT * FROM client LIMIT 1")
-    suspend fun selectNotNull(): ClientEntity
-
     @Upsert
     suspend fun upsert(entity: ClientEntity)
 

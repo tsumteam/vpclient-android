@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
+import ru.mercury.vpclient.shared.ui.ktx.clickableWithoutRipple
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.livretMedium21
 
@@ -29,7 +30,8 @@ import ru.mercury.vpclient.shared.ui.theme.livretMedium21
 fun BrandBox(
     entity: BrandEntity,
     modifier: Modifier = Modifier,
-    style: TextStyle = MaterialTheme.typography.livretMedium21
+    style: TextStyle = MaterialTheme.typography.livretMedium21,
+    onClick: (() -> Unit)? = null
 ) {
     val context = LocalContext.current
     var isLogoFailed by remember(entity.urlBrandLogo) { mutableStateOf(false) }
@@ -39,7 +41,10 @@ fun BrandBox(
     }
 
     Box(
-        modifier = modifier,
+        modifier = when {
+            onClick != null -> modifier.clickableWithoutRipple(onClick = onClick)
+            else -> modifier
+        },
         contentAlignment = Alignment.Center
     ) {
         if (entity.urlBrandLogo.isNullOrEmpty() || isLogoFailed) {

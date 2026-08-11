@@ -9,4 +9,8 @@ data class FilterValuesModel(
     val quantityEntity: FilterValuesQuantityEntity,
     val isProductsQuantityLoading: Boolean,
     val isLoading: Boolean = false
-)
+) {
+
+    val isResetButtonVisible: Boolean
+        get() = selectedIds.isNotEmpty()
+}

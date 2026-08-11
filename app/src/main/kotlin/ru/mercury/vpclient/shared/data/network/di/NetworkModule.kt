@@ -156,15 +156,15 @@ object NetworkModule {
                     execute(request)
                 }
             }
-            install(Logging) {
-                logger = Logger.SIMPLE
-                level = LogLevel.ALL
+            if (BuildConfig.DEBUG) {
+                install(Logging) {
+                    logger = Logger.SIMPLE
+                    level = LogLevel.ALL
+                    sanitizeHeader { header -> header == "Authorization" || header.startsWith("X-", ignoreCase = true) }
+                }
             }
             install(HttpCallValidator) {
-                handleResponseExceptionWithRequest { cause, request ->
-                    val url = request.url.toString().substringBefore("?")
-                    Unit
-                }
+                handleResponseExceptionWithRequest { _, _ -> }
             }
             engine {
                 clientCacheSize = HTTP_CACHE_SIZE_BYTES
@@ -209,6 +209,7 @@ object NetworkModule {
     }
 
     private fun resolveEnvironment(value: String?): ClientEnvironment {
+        if (BuildConfig.FLAVOR == "prod") return ClientEnvironment.PROD
         return parseEnvironment(value) ?: parseEnvironment(BuildConfig.VPCLIENT_ENV) ?: ClientEnvironment.TEST
     }
 

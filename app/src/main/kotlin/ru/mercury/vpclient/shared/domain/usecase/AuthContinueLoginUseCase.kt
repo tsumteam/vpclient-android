@@ -20,7 +20,7 @@ class AuthContinueLoginUseCase @Inject constructor(
 ): UseCase<String, Unit>(dispatchers.io) {
 
     override suspend fun execute(params: String) {
-        val clientEntity = clientDao.selectNotNull()
+        val clientEntity = clientDao.select() ?: throw AuthContinueLoginException("Сессия входа не найдена, попробуйте войти заново")
         val formattedPhone = String.format(Locale.getDefault(), FORMAT_PHONE_NUMBER, clientEntity.phone)
 
         handleResponse(
@@ -33,18 +33,18 @@ class AuthContinueLoginUseCase @Inject constructor(
             },
             onSuccess = { tokenResponse ->
                 settingsDataStore.setValue(PreferenceKey.UserToken, tokenResponse.token.orEmpty())
+                runCatching {
+                    val currentUser = networkService.userCurrentUser()
+                    val userId = currentUser.data?.code.orEmpty()
+                    settingsDataStore.setValue(PreferenceKey.UserId, userId)
 
-                val currentUser = networkService.userCurrentUser()
+                    val useDiginetica = currentUser.data?.useDiginetica == true
+                    settingsDataStore.setValue(PreferenceKey.UseDiginetica, useDiginetica)
 
-                val userId = currentUser.data?.code.orEmpty()
-                settingsDataStore.setValue(PreferenceKey.UserId, userId)
-
-                val useDiginetica = currentUser.data?.useDiginetica == true
-                settingsDataStore.setValue(PreferenceKey.UseDiginetica, useDiginetica)
-
-                val activeEmployee = networkService.clientActiveEmployee()
-                val activeEmployeeId = activeEmployee.data?.employeeId.orEmpty()
-                settingsDataStore.setValue(PreferenceKey.PairedUser, activeEmployeeId)
+                    val activeEmployee = networkService.clientActiveEmployee()
+                    val activeEmployeeId = activeEmployee.data?.employeeId.orEmpty()
+                    settingsDataStore.setValue(PreferenceKey.PairedUser, activeEmployeeId)
+                }
             },
             onFailure = { error -> throw AuthContinueLoginException(error.message) }
         )

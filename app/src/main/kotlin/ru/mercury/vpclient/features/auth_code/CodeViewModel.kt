@@ -65,7 +65,8 @@ class CodeViewModel @Inject constructor(
                 reduce { it.copy(resendTimerJob = job) }
             }
             is CodeIntent.ConfirmClick -> {
-                launch {
+                if (stateFlow.value.confirmJob?.isActive == true) return
+                val job = launch {
                     val codeValidationError = authValidateCodeUseCase(stateFlow.value.code).getOrThrow()
                     when {
                         codeValidationError == CodeValidationError.Empty -> {
@@ -81,7 +82,10 @@ class CodeViewModel @Inject constructor(
                             }
                         }
                     }
+                }.also { launchedJob ->
+                    launchedJob.invokeOnCompletion { reduce { it.copy(confirmJob = null) } }
                 }
+                reduce { it.copy(confirmJob = job) }
             }
             is CodeIntent.HideKeyboard -> launch { send(CodeEvents.ClearFocus) }
             is CodeIntent.ResendCodeClick -> {
@@ -118,7 +122,7 @@ class CodeViewModel @Inject constructor(
         when (throwable) {
             is AuthContinueLoginException -> {
                 launch {
-                    reduce { it.copy(isLoading = false) }
+                    reduce { it.copy(isLoading = false, confirmJob = null) }
                     send(CodeEvents.SnackbarMessage(throwable.message))
                 }
             }

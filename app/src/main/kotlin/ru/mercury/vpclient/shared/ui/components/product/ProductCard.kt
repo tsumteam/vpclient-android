@@ -173,17 +173,20 @@ fun ProductCard(
                 animationSpec = tween(durationMillis = ADDED_TO_BASKET_BADGE_FADE_OUT_DURATION.toInt())
             ),
             modifier = Modifier.constrainAs(addedToBasketBadge) {
+                width = Dimension.fillToConstraints
+                start.linkTo(parent.start, 4.dp)
                 top.linkTo(basketButton.top)
-                end.linkTo(basketButton.start)
+                end.linkTo(basketButton.start, 4.dp)
                 bottom.linkTo(basketButton.bottom)
             }
         ) {
             Box(
                 modifier = Modifier
+                    .fillMaxWidth()
                     .height(28.dp)
                     .clip(RoundedCornerShape(4.dp))
                     .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                    .padding(start = 8.dp, end = 8.dp),
+                    .padding(horizontal = 4.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text(

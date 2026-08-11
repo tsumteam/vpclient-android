@@ -132,7 +132,7 @@ fun CheckoutBonusSheet(
             SmsCodeInput(
                 state = SmsCodeInputState(
                     value = state.code,
-                    isErrorVisible = state.isCodeErrorVisible
+                    isErrorVisible = state.isCodeErrorTextVisible
                 ),
                 onValueChange = { sheetDispatch(CheckoutBonusIntent.CodeChange(it)) },
                 focusRequester = focusRequester,
@@ -145,7 +145,7 @@ fun CheckoutBonusSheet(
                 )
             )
 
-            if (state.isCodeErrorVisible) {
+            if (state.isCodeErrorTextVisible) {
                 Text(
                     text = stringResource(ClientStrings.CodeInvalidError),
                     modifier = Modifier
@@ -172,7 +172,7 @@ fun CheckoutBonusSheet(
             )
 
             when {
-                state.resendSecondsLeft > 0 -> {
+                state.isResendTextVisible -> {
                     Text(
                         text = buildAnnotatedString {
                             append(stringResource(ClientStrings.LoyaltyCodeResendCountdown, ""))
@@ -226,7 +226,7 @@ fun CheckoutBonusSheet(
                             )
 
                             when {
-                                state.isResendLoading -> {
+                                state.isResendLoadingIndicatorVisible -> {
                                     LinearProgressIndicator(
                                         modifier = Modifier.width(120.dp),
                                         color = MaterialTheme.colorScheme.onBackground,
@@ -264,7 +264,7 @@ fun CheckoutBonusSheet(
                 )
             ) {
                 when {
-                    state.isLoading -> {
+                    state.isLoadingIndicatorVisible -> {
                         CircularProgressIndicator(
                             modifier = Modifier.size(24.dp),
                             color = MaterialTheme.colorScheme.onPrimary,
@@ -282,9 +282,7 @@ fun CheckoutBonusSheet(
         }
     }
 
-    LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
-    }
+    LaunchedEffect(Unit) { focusRequester.requestFocus() }
 }
 
 @PreviewWrapper(ThemeWrapper::class)
@@ -316,7 +314,7 @@ private class CheckoutBonusSheetModelProvider: PreviewParameterProvider<Checkout
         ),
         CheckoutBonusModel(
             code = "152901",
-            isCodeErrorVisible = true,
+            isCodeErrorTextVisible = true,
             resendSecondsLeft = 30
         ),
         CheckoutBonusModel(

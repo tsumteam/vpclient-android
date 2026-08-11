@@ -6,6 +6,7 @@ import kotlinx.coroutines.launch
 import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.features.cart.navigation.CartPage
 import ru.mercury.vpclient.features.cart.navigation.CartRoute
+import ru.mercury.vpclient.features.compilation.navigation.CompilationRoute
 import ru.mercury.vpclient.features.notifications.event.NotificationsEvent
 import ru.mercury.vpclient.features.notifications.intent.NotificationsIntent
 import ru.mercury.vpclient.features.notifications.model.NotificationsModel
@@ -18,7 +19,11 @@ import ru.mercury.vpclient.shared.domain.usecase.ActivityCountersByPairedUserIdR
 import ru.mercury.vpclient.shared.domain.usecase.ClientNotificationEntitiesFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.ClientNotificationsUseCase
 import ru.mercury.vpclient.shared.domain.usecase.ClientNotificationsUseCase.ClientNotificationsException
+import ru.mercury.vpclient.shared.domain.usecase.CompilationEntitiesFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.CompilationsClientUseCase
+import ru.mercury.vpclient.shared.domain.usecase.CompilationsClientUseCase.CompilationsClientException
 import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
+import ru.mercury.vpclient.shared.domain.mapper.clientNotificationCompilationId
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.navigation.BackRoute
 import javax.inject.Inject
@@ -27,14 +32,18 @@ import javax.inject.Inject
 class NotificationsViewModel @Inject constructor(
     private val clientNotificationEntitiesFlowUseCase: ClientNotificationEntitiesFlowUseCase,
     private val clientNotificationsUseCase: ClientNotificationsUseCase,
+    private val compilationEntitiesFlowUseCase: CompilationEntitiesFlowUseCase,
+    private val compilationsClientUseCase: CompilationsClientUseCase,
     private val activityCountersByPairedUserIdResetUseCase: ActivityCountersByPairedUserIdResetUseCase,
     private val employeeActiveFlowUseCase: EmployeeActiveFlowUseCase
 ): ClientViewModel<NotificationsIntent, NotificationsModel, NotificationsEvent>(NotificationsModel()) {
 
     init {
         dispatch(NotificationsIntent.CollectNotifications)
+        dispatch(NotificationsIntent.CollectCompilations)
         dispatch(NotificationsIntent.CollectActiveEmployee)
         dispatch(NotificationsIntent.LoadNotifications)
+        dispatch(NotificationsIntent.LoadCompilations)
         dispatch(NotificationsIntent.ResetNotificationCounter)
     }
 
@@ -48,6 +57,13 @@ class NotificationsViewModel @Inject constructor(
                     }
                 }
                 reduce { state -> state.copy(collectNotificationsJob = job) }
+            }
+            is NotificationsIntent.CollectCompilations -> {
+                launch {
+                    compilationEntitiesFlowUseCase(Unit).collectLatest { entities ->
+                        reduce { state -> state.copy(compilationEntities = entities) }
+                    }
+                }
             }
             is NotificationsIntent.CollectActiveEmployee -> {
                 launch {
@@ -77,6 +93,9 @@ class NotificationsViewModel @Inject constructor(
                 }
                 reduce { currentState -> currentState.copy(clientNotificationsJob = job) }
             }
+            is NotificationsIntent.LoadCompilations -> {
+                launch { compilationsClientUseCase(Unit).getOrThrow() }
+            }
             is NotificationsIntent.ResetNotificationCounter -> {
                 launch {
                     activityCountersByPairedUserIdResetUseCase(ActivityCounterType.CLIENT_NOTIFICATION).getOrThrow()
@@ -87,6 +106,7 @@ class NotificationsViewModel @Inject constructor(
                 if (state.clientNotificationsJob?.isActive == true || state.refreshNotificationsJob?.isActive == true) {
                     return
                 }
+                dispatch(NotificationsIntent.LoadCompilations)
                 val job = launch {
                     clientNotificationsUseCase(state.selectedCategory).getOrThrow()
                 }.also { launchedJob ->
@@ -128,8 +148,15 @@ class NotificationsViewModel @Inject constructor(
                 dispatch(NotificationsIntent.LoadNotifications)
             }
             is NotificationsIntent.NotificationClick -> {
-                if (intent.deepLinkUrl.isNotBlank()) {
-                    launch { send(NotificationsEvent.OpenDeepLink(intent.deepLinkUrl)) }
+                val compilationId = intent.deepLinkUrl.clientNotificationCompilationId
+                when {
+                    compilationId != null -> {
+                        launch { MainEventManager.send(CompilationRoute(id = compilationId)) }
+                    }
+                    intent.deepLinkUrl.isNotBlank() -> {
+                        launch { send(NotificationsEvent.OpenDeepLink(intent.deepLinkUrl)) }
+                    }
+                    else -> return
                 }
             }
         }
@@ -147,6 +174,9 @@ class NotificationsViewModel @Inject constructor(
                 launch { send(NotificationsEvent.SnackbarErrorMessage(throwable.message)) }
             }
             is ActivityCountersByPairedUserIdResetException -> {
+                launch { send(NotificationsEvent.SnackbarErrorMessage(throwable.message)) }
+            }
+            is CompilationsClientException -> {
                 launch { send(NotificationsEvent.SnackbarErrorMessage(throwable.message)) }
             }
             is ClientException -> {

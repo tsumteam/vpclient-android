@@ -221,13 +221,13 @@ class HomeViewModel @Inject constructor(
                 }
             }
             is HomeIntent.SectionItemClick -> {
-                when (intent.item.linkType) {
-                    MainScreenLinkType.BANNER -> {
+                val catalogLink = intent.item.catalogLink
+                when {
+                    intent.item.linkType == MainScreenLinkType.BANNER -> {
                         val url = intent.item.bannerLinkUrl ?: return
                         launch { HomeRootEventManager.send(BannerRoute(url)) }
                     }
-                    MainScreenLinkType.CATALOG -> {
-                        val catalogLink = intent.item.catalogLink ?: return
+                    catalogLink != null -> {
                         launch {
                             val catalogLinkData = catalogLink.toCatalogLinkData() ?: return@launch
                             val categoryId = catalogLinkData.categoryId
@@ -249,7 +249,7 @@ class HomeViewModel @Inject constructor(
                             HomeRootEventManager.send(route)
                         }
                     }
-                    MainScreenLinkType.FASHION_IMAGE, null -> return
+                    else -> return
                 }
             }
             is HomeIntent.SectionViewMoreClick -> {

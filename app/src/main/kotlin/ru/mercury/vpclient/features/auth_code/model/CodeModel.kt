@@ -12,6 +12,7 @@ data class CodeModel(
     val resendSecondsLeft: Int = 0,
     val resendTimerJob: Job? = null,
     val resendCodeJob: Job? = null,
+    val confirmJob: Job? = null,
     val isLoading: Boolean = false
 ): Model {
 
@@ -21,6 +22,15 @@ data class CodeModel(
     val isConfirmEnabled: Boolean
         get() = !isLoading
 
-    val isCodeValidationErrorVisible: Boolean
+    val isCodeValidationErrorTextVisible: Boolean
         get() = codeValidationError != null
+
+    val isResendTextVisible: Boolean
+        get() = resendSecondsLeft > 0
+
+    val isResendLoadingIndicatorVisible: Boolean
+        get() = isResendLoading
+
+    val isLoadingIndicatorVisible: Boolean
+        get() = isLoading
 }

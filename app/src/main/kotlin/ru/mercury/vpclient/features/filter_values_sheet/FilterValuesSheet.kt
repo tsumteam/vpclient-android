@@ -91,7 +91,7 @@ fun FilterValuesSheet(
                 },
                 actions = {
                     SharedAnimatedVisibility(
-                        visible = state.selectedIds.isNotEmpty()
+                        visible = state.isResetButtonVisible
                     ) {
                         TextButton(
                             onClick = { dispatch(FilterValuesIntent.ResetFilterValues) },

@@ -14,4 +14,13 @@ data class RegisterModel(
 
     val isRegisterEnabled: Boolean
         get() = !isLoading
+
+    val isNameValidationErrorVisible: Boolean
+        get() = nameValidationError != null
+
+    val isPhoneValidationErrorVisible: Boolean
+        get() = phoneValidationError != null
+
+    val isLoadingIndicatorVisible: Boolean
+        get() = isLoading
 }

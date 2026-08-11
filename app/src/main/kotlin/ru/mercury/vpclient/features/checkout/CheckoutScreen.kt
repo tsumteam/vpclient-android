@@ -221,7 +221,7 @@ fun CheckoutScreen(
                 code = state.bonusCode,
                 isLoading = state.isBonusCodeLoading,
                 isResendLoading = state.isBonusCodeResendLoading,
-                isCodeErrorVisible = state.isBonusCodeErrorVisible,
+                isCodeErrorTextVisible = state.isBonusCodeErrorVisible,
                 resendSecondsLeft = state.bonusCodeResendSecondsLeft
             ),
             dispatch = { intent ->
@@ -560,7 +560,7 @@ private fun CheckoutScreenContent(
                                 )
                             }
 
-                            if (state.isPromotionDiscountVisible) {
+                            if (state.isPromotionDiscountRowVisible) {
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -588,7 +588,7 @@ private fun CheckoutScreenContent(
                                 }
                             }
 
-                            if (state.isBonusAmountVisible) {
+                            if (state.isBonusAmountRowVisible) {
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -799,7 +799,7 @@ private fun CheckoutScreenContent(
                         }
                     }
                     else -> {
-                        if (state.isCartCheckout) {
+                        if (state.isDeliveryPlaceSectionVisible) {
                             item {
                                 FittingConfirmationSectionTitle(
                                     text = stringResource(ClientStrings.CheckoutDeliveryPlaceTitle)

@@ -69,7 +69,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.ClientEntity
 import ru.mercury.vpclient.shared.domain.mapper.formatCodeResendTime
 import ru.mercury.vpclient.shared.domain.mapper.formatPhoneForDisplay
 import ru.mercury.vpclient.shared.domain.usecase.AuthValidateCodeUseCase.CodeValidationError
-import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
+import ru.mercury.vpclient.shared.ui.components.SharedColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.SmsCodeInput
@@ -154,15 +154,27 @@ private fun CodeScreenContent(
                     .height(52.dp),
                 enabled = state.isConfirmEnabled && !state.isLoading,
                 shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (state.isConfirmEnabled || state.isLoading) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.disabled,
-                    contentColor = if (state.isConfirmEnabled || state.isLoading) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onDisabled,
-                    disabledContainerColor = if (state.isConfirmEnabled || state.isLoading) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.disabled,
-                    disabledContentColor = if (state.isConfirmEnabled || state.isLoading) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onDisabled
-                )
+                colors = when {
+                    state.isConfirmEnabled || state.isLoading -> {
+                        ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary,
+                            disabledContainerColor = MaterialTheme.colorScheme.primary,
+                            disabledContentColor = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                    else -> {
+                        ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.disabled,
+                            contentColor = MaterialTheme.colorScheme.onDisabled,
+                            disabledContainerColor = MaterialTheme.colorScheme.disabled,
+                            disabledContentColor = MaterialTheme.colorScheme.onDisabled
+                        )
+                    }
+                }
             ) {
                 when {
-                    state.isLoading -> {
+                    state.isLoadingIndicatorVisible -> {
                         CircularProgressIndicator(
                             modifier = Modifier.size(24.dp),
                             color = MaterialTheme.colorScheme.onPrimary,
@@ -189,96 +201,112 @@ private fun CodeScreenContent(
             )
         }
     ) { innerPadding ->
-        SharedLazyColumn(
+        SharedColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = innerPadding + PaddingValues(start = 16.dp, top = 36.dp, end = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            contentPadding = innerPadding + PaddingValues(start = 16.dp, top = 36.dp, end = 16.dp)
         ) {
-            item {
-                Text(
-                    text = stringResource(ClientStrings.CodeTitle),
-                    modifier = Modifier.fillMaxWidth(),
-                    style = MaterialTheme.typography.livretMedium21.copy(
-                        color = MaterialTheme.colorScheme.onBackground,
-                        textAlign = TextAlign.Center
-                    )
+            Text(
+                text = stringResource(ClientStrings.CodeTitle),
+                modifier = Modifier.fillMaxWidth(),
+                style = MaterialTheme.typography.livretMedium21.copy(
+                    color = MaterialTheme.colorScheme.onBackground,
+                    textAlign = TextAlign.Center
                 )
-            }
-            item {
-                Box(
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 46.dp)
+                    .height(84.dp)
+            ) {
+                SmsCodeInput(
+                    state = SmsCodeInputState(
+                        value = state.code,
+                        isErrorVisible = state.isCodeValidationErrorTextVisible
+                    ),
+                    onValueChange = { dispatch(CodeIntent.EnterCode(it)) },
+                    focusRequester = focusRequester,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 46.dp)
-                        .height(84.dp)
-                ) {
-                    SmsCodeInput(
-                        state = SmsCodeInputState(
-                            value = state.code,
-                            isErrorVisible = state.codeValidationError != null
-                        ),
-                        onValueChange = { dispatch(CodeIntent.EnterCode(it)) },
-                        focusRequester = focusRequester,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.TopCenter)
-                            .semantics { contentType = ContentType.SmsOtpCode },
-                        keyboardActions = KeyboardActions(
-                            onDone = { dispatch(CodeIntent.OnKeyboardDone) }
-                        )
-                    )
-
-                    if (state.isCodeValidationErrorVisible) {
-                        Text(
-                            text = when (requireNotNull(state.codeValidationError)) {
-                                CodeValidationError.Empty -> stringResource(ClientStrings.CodeEmptyError)
-                                CodeValidationError.Invalid -> stringResource(ClientStrings.CodeInvalidError)
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .align(Alignment.BottomCenter),
-                            style = MaterialTheme.typography.regular12.copy(
-                                color = MaterialTheme.colorScheme.error,
-                                letterSpacing = .2.sp,
-                                textAlign = TextAlign.Center
-                            )
-                        )
-                    }
-                }
-            }
-            item {
-                Text(
-                    text = buildAnnotatedString {
-                        val formattedPhone = formatPhoneForDisplay(state.clientEntity.phone)
-                        val codeSentDescription = stringResource(ClientStrings.CodeSentDescription, formattedPhone)
-                        val phoneStart = codeSentDescription.indexOf(formattedPhone)
-                        append(codeSentDescription.take(phoneStart))
-                        withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append(formattedPhone) }
-                        append(codeSentDescription.substring(phoneStart + formattedPhone.length))
-                    },
-                    modifier = Modifier
-                        .padding(top = 14.dp)
-                        .fillMaxWidth(),
-                    style = MaterialTheme.typography.regular15.copy(
-                        lineHeight = 19.sp,
-                        letterSpacing = .2.sp,
-                        textAlign = TextAlign.Center
+                        .align(Alignment.TopCenter)
+                        .semantics { contentType = ContentType.SmsOtpCode },
+                    keyboardActions = KeyboardActions(
+                        onDone = { dispatch(CodeIntent.OnKeyboardDone) }
                     )
                 )
+
+                if (state.isCodeValidationErrorTextVisible) {
+                    Text(
+                        text = when (requireNotNull(state.codeValidationError)) {
+                            CodeValidationError.Empty -> stringResource(ClientStrings.CodeEmptyError)
+                            CodeValidationError.Invalid -> stringResource(ClientStrings.CodeInvalidError)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.BottomCenter),
+                        style = MaterialTheme.typography.regular12.copy(
+                            color = MaterialTheme.colorScheme.error,
+                            letterSpacing = .2.sp,
+                            textAlign = TextAlign.Center
+                        )
+                    )
+                }
             }
-            item {
-                when {
-                    state.resendSecondsLeft > 0 -> {
+
+            Text(
+                text = buildAnnotatedString {
+                    val formattedPhone = formatPhoneForDisplay(state.clientEntity.phone)
+                    val codeSentDescription = stringResource(ClientStrings.CodeSentDescription, formattedPhone)
+                    val phoneStart = codeSentDescription.indexOf(formattedPhone)
+                    append(codeSentDescription.take(phoneStart))
+                    withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append(formattedPhone) }
+                    append(codeSentDescription.substring(phoneStart + formattedPhone.length))
+                },
+                modifier = Modifier
+                    .padding(top = 14.dp)
+                    .fillMaxWidth(),
+                style = MaterialTheme.typography.regular15.copy(
+                    lineHeight = 19.sp,
+                    letterSpacing = .2.sp,
+                    textAlign = TextAlign.Center
+                )
+            )
+
+            when {
+                state.isResendTextVisible -> {
+                    Text(
+                        text = buildAnnotatedString {
+                            append(stringResource(ClientStrings.CodeResendCountdown))
+                            append(PREFIX_SPACE)
+                            withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                                append(formatCodeResendTime(state.resendSecondsLeft))
+                            }
+                        },
+                        modifier = Modifier
+                            .padding(top = 4.dp)
+                            .fillMaxWidth(),
+                        style = MaterialTheme.typography.regular15.copy(
+                            color = MaterialTheme.colorScheme.onBackground,
+                            lineHeight = 19.sp,
+                            letterSpacing = .2.sp,
+                            textAlign = TextAlign.Center
+                        )
+                    )
+                }
+                else -> {
+                    Row(
+                        modifier = Modifier
+                            .padding(top = 2.dp)
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(
+                            space = 2.dp,
+                            alignment = Alignment.CenterHorizontally
+                        ),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Text(
-                            text = buildAnnotatedString {
-                                append(stringResource(ClientStrings.CodeResendCountdown))
-                                append(PREFIX_SPACE)
-                                withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-                                    append(formatCodeResendTime(state.resendSecondsLeft))
-                                }
-                            },
-                            modifier = Modifier
-                                .padding(top = 4.dp)
-                                .fillMaxWidth(),
+                            text = stringResource(ClientStrings.CodeResendQuestion),
                             style = MaterialTheme.typography.regular15.copy(
                                 color = MaterialTheme.colorScheme.onBackground,
                                 lineHeight = 19.sp,
@@ -286,56 +314,34 @@ private fun CodeScreenContent(
                                 textAlign = TextAlign.Center
                             )
                         )
-                    }
-                    else -> {
-                        Row(
+
+                        Box(
                             modifier = Modifier
-                                .padding(top = 2.dp)
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(
-                                space = 2.dp,
-                                alignment = Alignment.CenterHorizontally
-                            ),
-                            verticalAlignment = Alignment.CenterVertically
+                                .clip(RoundedCornerShape(4.dp))
+                                .clickable(
+                                    enabled = !state.isResendLoading,
+                                    onClick = { dispatch(CodeIntent.ResendCodeClick) }
+                                )
+                                .padding(2.dp),
+                            contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = stringResource(ClientStrings.CodeResendQuestion),
-                                style = MaterialTheme.typography.regular15.copy(
-                                    color = MaterialTheme.colorScheme.onBackground,
-                                    lineHeight = 19.sp,
-                                    letterSpacing = .2.sp,
-                                    textAlign = TextAlign.Center
+                                text = stringResource(ClientStrings.CodeResendButton),
+                                modifier = Modifier.alpha(if (state.isResendLoading) 0F else 1F),
+                                style = MaterialTheme.typography.medium15.copy(
+                                    textAlign = TextAlign.Center,
+                                    letterSpacing = .3.sp
                                 )
                             )
 
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(4.dp))
-                                    .clickable(
-                                        enabled = !state.isResendLoading,
-                                        onClick = { dispatch(CodeIntent.ResendCodeClick) }
-                                    )
-                                    .padding(2.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = stringResource(ClientStrings.CodeResendButton),
-                                    modifier = Modifier.alpha(if (state.isResendLoading) 0F else 1F),
-                                    style = MaterialTheme.typography.medium15.copy(
-                                        textAlign = TextAlign.Center,
-                                        letterSpacing = .3.sp
+                            if (state.isResendLoadingIndicatorVisible) {
+                                LinearProgressIndicator(
+                                    modifier = Modifier.width(120.dp),
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    trackColor = MaterialTheme.colorScheme.onBackground.copy(
+                                        alpha = .2F
                                     )
                                 )
-
-                                if (state.isResendLoading) {
-                                    LinearProgressIndicator(
-                                        modifier = Modifier.width(120.dp),
-                                        color = MaterialTheme.colorScheme.onBackground,
-                                        trackColor = MaterialTheme.colorScheme.onBackground.copy(
-                                            alpha = .2F
-                                        )
-                                    )
-                                }
                             }
                         }
                     }

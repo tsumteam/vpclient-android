@@ -5,11 +5,16 @@ package ru.mercury.vpclient.features.cart
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -382,13 +387,22 @@ private fun CartScreenContent(
             }
         },
         bottomBar = {
-            CartChatDock(
-                state = CartChatDockState(
-                    name = state.activeEmployee.employeeName,
-                    brand = state.cartChatBrand,
-                    onClick = { dispatch(CartIntent.ChatClick) }
+            Column {
+                CartChatDock(
+                    state = CartChatDockState(
+                        name = state.activeEmployee.employeeName,
+                        brand = state.cartChatBrand,
+                        onClick = { dispatch(CartIntent.ChatClick) }
+                    )
                 )
-            )
+
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .windowInsetsBottomHeight(WindowInsets.navigationBars)
+                        .background(MaterialTheme.colorScheme.background)
+                )
+            }
         },
         snackbarHost = {
             SharedSnackbarHost(

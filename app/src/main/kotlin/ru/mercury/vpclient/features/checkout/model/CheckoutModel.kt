@@ -79,6 +79,9 @@ data class CheckoutModel(
     val isCartCheckout: Boolean
         get() = source == CheckoutSource.Cart
 
+    val isDeliveryPlaceSectionVisible: Boolean
+        get() = isCartCheckout
+
     val isLoading: Boolean
         get() = loadDataJob?.isActive == true
 
@@ -115,11 +118,14 @@ data class CheckoutModel(
     val isAddLoyaltyCardVisible: Boolean
         get() = !isLoyaltyCardLinked && source != CheckoutSource.ExistingOrder
 
-    val isPromotionDiscountVisible: Boolean
+    val isPromotionDiscountRowVisible: Boolean
         get() = fittingCheckoutData.promotionDiscount > 0
 
     val isBonusAmountVisible: Boolean
         get() = isPayWithBonusesVisible && isPayWithBonusesEnabled && isPayWithBonuses
+
+    val isBonusAmountRowVisible: Boolean
+        get() = isBonusAmountVisible
 
     val isOnlinePaymentSelected: Boolean
         get() = paymentType == PaymentType.ONLINE_PAYMENT_CLIENT

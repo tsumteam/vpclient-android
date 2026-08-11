@@ -82,10 +82,10 @@ class GiftCardViewModel @Inject constructor(
                 launch { MainEventManager.send(CartRoute()) }
             }
             is GiftCardIntent.TermsClick -> {
-                reduce { state -> state.copy(isTermsVisible = true) }
+                reduce { state -> state.copy(isTermsSheetVisible = true) }
             }
             is GiftCardIntent.TermsDismiss -> {
-                reduce { state -> state.copy(isTermsVisible = false) }
+                reduce { state -> state.copy(isTermsSheetVisible = false) }
             }
             is GiftCardIntent.BuyClick -> {
                 val state = stateFlow.value

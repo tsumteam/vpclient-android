@@ -57,7 +57,7 @@ import ru.mercury.vpclient.features.gift_card_checkout.intent.GiftCardCheckoutIn
 import ru.mercury.vpclient.features.gift_card_checkout.model.GiftCardCheckoutModel
 import ru.mercury.vpclient.features.gift_card_checkout.navigation.GiftCardCheckoutRoute
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationDeliveryInterval
-import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
+import ru.mercury.vpclient.shared.ui.components.SharedColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.fitting.FittingConfirmationDaysRow
@@ -282,118 +282,111 @@ private fun GiftCardCheckoutScreenContent(
             }
         }
     ) { innerPadding ->
-        SharedLazyColumn(
+        SharedColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = innerPadding + PaddingValues(bottom = 132.dp)
+            contentPadding = innerPadding + PaddingValues(bottom = 132.dp),
+            horizontalAlignment = Alignment.Start
         ) {
-            item {
-                ClientTextField(
-                    value = state.emailText,
-                    accepted = !state.isEmailErrorVisible,
-                    onValueChange = { value -> dispatch(GiftCardCheckoutIntent.EmailChange(value)) },
-                    placeholder = stringResource(ClientStrings.GiftCardCheckoutEmailPlaceholder),
-                    modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp),
-                    enabled = !state.isLoading,
-                    placeholderTextStyle = MaterialTheme.typography.regular15.copy(
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    ),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Email,
-                        imeAction = ImeAction.Next
-                    )
+            ClientTextField(
+                value = state.emailText,
+                accepted = !state.isEmailErrorVisible,
+                onValueChange = { value -> dispatch(GiftCardCheckoutIntent.EmailChange(value)) },
+                placeholder = stringResource(ClientStrings.GiftCardCheckoutEmailPlaceholder),
+                modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp),
+                enabled = !state.isLoading,
+                placeholderTextStyle = MaterialTheme.typography.regular15.copy(
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                ),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Next
                 )
-            }
-            item {
-                Text(
-                    text = stringResource(
-                        when {
-                            state.isEmailErrorVisible -> ClientStrings.GiftCardCheckoutEmailError
-                            else -> ClientStrings.GiftCardCheckoutEmailHint
-                        }
-                    ),
-                    modifier = Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp),
-                    style = MaterialTheme.typography.regular12.copy(
-                        color = when {
-                            state.isEmailErrorVisible -> MaterialTheme.colorScheme.error
-                            else -> MaterialTheme.colorScheme.onSurfaceVariant
-                        },
-                        lineHeight = 16.sp,
-                        letterSpacing = .2.sp
-                    )
+            )
+
+            Text(
+                text = stringResource(
+                    when {
+                        state.isEmailErrorVisible -> ClientStrings.GiftCardCheckoutEmailError
+                        else -> ClientStrings.GiftCardCheckoutEmailHint
+                    }
+                ),
+                modifier = Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp),
+                style = MaterialTheme.typography.regular12.copy(
+                    color = when {
+                        state.isEmailErrorVisible -> MaterialTheme.colorScheme.error
+                        else -> MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+                    lineHeight = 16.sp,
+                    letterSpacing = .2.sp
                 )
-            }
-            item {
-                ClientTextField(
-                    value = state.phoneText,
-                    accepted = !state.isPhoneErrorVisible,
-                    onValueChange = { value -> dispatch(GiftCardCheckoutIntent.PhoneChange(value)) },
-                    placeholder = stringResource(ClientStrings.GiftCardCheckoutPhonePlaceholder),
-                    modifier = Modifier.padding(start = 16.dp, top = 24.dp, end = 16.dp),
-                    enabled = !state.isLoading,
-                    placeholderTextStyle = MaterialTheme.typography.regular15.copy(
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    ),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Phone,
-                        imeAction = ImeAction.Done
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onDone = { focusManager.clearFocus() }
-                    )
+            )
+
+            ClientTextField(
+                value = state.phoneText,
+                accepted = !state.isPhoneErrorVisible,
+                onValueChange = { value -> dispatch(GiftCardCheckoutIntent.PhoneChange(value)) },
+                placeholder = stringResource(ClientStrings.GiftCardCheckoutPhonePlaceholder),
+                modifier = Modifier.padding(start = 16.dp, top = 24.dp, end = 16.dp),
+                enabled = !state.isLoading,
+                placeholderTextStyle = MaterialTheme.typography.regular15.copy(
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                ),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Phone,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = { focusManager.clearFocus() }
                 )
-            }
-            item {
-                Text(
-                    text = stringResource(
-                        when {
-                            state.isPhoneErrorVisible -> ClientStrings.GiftCardCheckoutPhoneError
-                            else -> ClientStrings.GiftCardCheckoutPhoneHint
-                        }
-                    ),
-                    modifier = Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp),
-                    style = MaterialTheme.typography.regular12.copy(
-                        color = when {
-                            state.isPhoneErrorVisible -> MaterialTheme.colorScheme.error
-                            else -> MaterialTheme.colorScheme.onSurfaceVariant
-                        },
-                        lineHeight = 16.sp,
-                        letterSpacing = .2.sp
-                    )
+            )
+
+            Text(
+                text = stringResource(
+                    when {
+                        state.isPhoneErrorVisible -> ClientStrings.GiftCardCheckoutPhoneError
+                        else -> ClientStrings.GiftCardCheckoutPhoneHint
+                    }
+                ),
+                modifier = Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp),
+                style = MaterialTheme.typography.regular12.copy(
+                    color = when {
+                        state.isPhoneErrorVisible -> MaterialTheme.colorScheme.error
+                        else -> MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+                    lineHeight = 16.sp,
+                    letterSpacing = .2.sp
                 )
-            }
-            item {
-                Text(
-                    text = stringResource(ClientStrings.GiftCardCheckoutDeliveryDate),
-                    modifier = Modifier.padding(start = 16.dp, top = 36.dp, end = 16.dp),
-                    style = MaterialTheme.typography.regular12.copy(
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        lineHeight = 16.sp,
-                        letterSpacing = .2.sp
-                    )
+            )
+
+            Text(
+                text = stringResource(ClientStrings.GiftCardCheckoutDeliveryDate),
+                modifier = Modifier.padding(start = 16.dp, top = 36.dp, end = 16.dp),
+                style = MaterialTheme.typography.regular12.copy(
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    lineHeight = 16.sp,
+                    letterSpacing = .2.sp
                 )
-            }
-            item {
-                FittingConfirmationDaysRow(
-                    state = FittingConfirmationDaysRowState(
-                        intervals = state.deliveryIntervals,
-                        selectedDayId = state.selectedDayId,
-                        onDayClick = { dayId -> dispatch(GiftCardCheckoutIntent.SelectDay(dayId)) }
-                    ),
-                    paddingTop = 12.dp
-                )
-            }
-            item {
-                FittingConfirmationIntervalsRow(
-                    state = FittingConfirmationIntervalsRowState(
-                        intervals = state.selectedDayIntervals,
-                        selectedIntervalId = state.selectedIntervalId,
-                        onIntervalClick = { intervalId ->
-                            dispatch(GiftCardCheckoutIntent.SelectInterval(intervalId))
-                        }
-                    ),
-                    paddingTop = 8.dp
-                )
-            }
+            )
+
+            FittingConfirmationDaysRow(
+                state = FittingConfirmationDaysRowState(
+                    intervals = state.deliveryIntervals,
+                    selectedDayId = state.selectedDayId,
+                    onDayClick = { dayId -> dispatch(GiftCardCheckoutIntent.SelectDay(dayId)) }
+                ),
+                paddingTop = 12.dp
+            )
+
+            FittingConfirmationIntervalsRow(
+                state = FittingConfirmationIntervalsRowState(
+                    intervals = state.selectedDayIntervals,
+                    selectedIntervalId = state.selectedIntervalId,
+                    onIntervalClick = { intervalId ->
+                        dispatch(GiftCardCheckoutIntent.SelectInterval(intervalId))
+                    }
+                ),
+                paddingTop = 8.dp
+            )
         }
     }
 }

@@ -114,7 +114,7 @@ fun GiftCardScreen(
         }
     }
 
-    if (state.isTermsVisible) {
+    if (state.isTermsSheetVisible) {
         GiftCardTermsSheet(
             state = GiftCardTermsModel(
                 text = state.selectedTemplate.termOfUse

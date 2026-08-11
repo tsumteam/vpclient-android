@@ -36,7 +36,8 @@ import ru.mercury.vpclient.shared.ui.theme.regular14
 data class DetailsProductInfoBoxState(
     val productEntity: ProductEntity,
     val availabilityText: Int? = null,
-    val onMessageClick: () -> Unit = {}
+    val onMessageClick: () -> Unit = {},
+    val onBrandClick: () -> Unit = {}
 )
 
 @Composable
@@ -68,7 +69,8 @@ fun DetailsProductInfoBox(
             ),
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .size(width = 180.dp, height = 50.dp)
+                .size(width = 180.dp, height = 50.dp),
+            onClick = state.onBrandClick
         )
 
         Column(

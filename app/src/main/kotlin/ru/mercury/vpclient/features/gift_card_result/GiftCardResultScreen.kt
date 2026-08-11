@@ -18,7 +18,6 @@ import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -36,7 +35,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.mercury.vpclient.features.gift_card_result.intent.GiftCardResultIntent
 import ru.mercury.vpclient.features.gift_card_result.model.GiftCardResultModel
 import ru.mercury.vpclient.features.gift_card_result.navigation.GiftCardResultRoute
-import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
+import ru.mercury.vpclient.shared.ui.components.SharedColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.icons.Logo117
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
@@ -90,123 +89,114 @@ private fun GiftCardResultScreenContent(
         },
         contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Horizontal)
     ) { innerPadding ->
-        SharedLazyColumn(
+        SharedColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = innerPadding + PaddingValues(bottom = 72.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            contentPadding = innerPadding + PaddingValues(bottom = 72.dp)
         ) {
-            item {
-                Icon(
-                    imageVector = Logo117,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(top = 84.dp)
-                        .size(width = 114.dp, height = 79.dp),
-                    tint = MaterialTheme.colorScheme.onBackground
+            Icon(
+                imageVector = Logo117,
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(top = 84.dp)
+                    .size(width = 114.dp, height = 79.dp),
+                tint = MaterialTheme.colorScheme.onBackground
+            )
+
+            Text(
+                text = stringResource(
+                    when {
+                        state.isPaid -> ClientStrings.GiftCardResultSuccessTitle
+                        else -> ClientStrings.GiftCardResultNotPaidTitle
+                    }
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, top = 72.dp, end = 16.dp),
+                style = MaterialTheme.typography.medium18.copy(
+                    color = MaterialTheme.colorScheme.onBackground,
+                    lineHeight = 18.sp,
+                    textAlign = TextAlign.Center
                 )
-            }
-            item {
-                Text(
-                    text = stringResource(
-                        when {
-                            state.isPaid -> ClientStrings.GiftCardResultSuccessTitle
-                            else -> ClientStrings.GiftCardResultNotPaidTitle
-                        }
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 16.dp, top = 72.dp, end = 16.dp),
-                    style = MaterialTheme.typography.medium18.copy(
-                        color = MaterialTheme.colorScheme.onBackground,
-                        lineHeight = 18.sp,
-                        textAlign = TextAlign.Center
-                    )
-                )
-            }
+            )
+
             when {
                 state.isPaid -> {
-                    item {
-                        Text(
-                            text = buildAnnotatedString {
-                                append(stringResource(ClientStrings.GiftCardResultSuccessOrder, state.orderNumber))
-                                withStyle(SpanStyle(color = MaterialTheme.colorScheme.error)) {
-                                    append(stringResource(ClientStrings.GiftCardResultSuccessDate, state.deliveryDate, state.deliveryTime))
-                                }
-                                append(stringResource(ClientStrings.GiftCardResultSuccessEmail))
-                                withStyle(SpanStyle(color = MaterialTheme.colorScheme.error)) {
-                                    append(state.email)
-                                }
-                                append(stringResource(ClientStrings.GiftCardResultSuccessPin))
-                                withStyle(SpanStyle(color = MaterialTheme.colorScheme.error)) {
-                                    append(state.phone)
-                                }
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 16.dp, top = 24.dp, end = 16.dp),
-                            style = MaterialTheme.typography.regular14.copy(
-                                color = MaterialTheme.colorScheme.onBackground,
-                                lineHeight = 18.sp,
-                                letterSpacing = .2.sp,
-                                textAlign = TextAlign.Center
-                            )
-                        )
-                    }
-                    item {
-                        Text(
-                            text = stringResource(ClientStrings.GiftCardResultSuccessInfo),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 16.dp, top = 20.dp, end = 16.dp),
-                            style = MaterialTheme.typography.regular14.copy(
-                                color = MaterialTheme.colorScheme.onBackground,
-                                lineHeight = 18.sp,
-                                letterSpacing = .2.sp,
-                                textAlign = TextAlign.Center
-                            )
-                        )
-                    }
-                }
-                else -> {
-                    item {
-                        Text(
-                            text = stringResource(ClientStrings.GiftCardResultNotPaidInfo),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 16.dp, top = 24.dp, end = 16.dp),
-                            style = MaterialTheme.typography.regular14.copy(
-                                color = MaterialTheme.colorScheme.onBackground,
-                                lineHeight = 18.sp,
-                                letterSpacing = .2.sp,
-                                textAlign = TextAlign.Center
-                            )
-                        )
-                    }
-                }
-            }
-            item {
-                Button(
-                    onClick = { dispatch(GiftCardResultIntent.PurchasesClick) },
-                    modifier = Modifier
-                        .padding(top = 16.dp)
-                        .height(46.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    contentPadding = PaddingValues(horizontal = 24.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
-                ) {
                     Text(
-                        text = stringResource(ClientStrings.GiftCardResultPurchases),
-                        style = MaterialTheme.typography.medium15.copy(
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            lineHeight = 15.sp,
-                            letterSpacing = .3.sp,
+                        text = buildAnnotatedString {
+                            append(stringResource(ClientStrings.GiftCardResultSuccessOrder, state.orderNumber))
+                            withStyle(SpanStyle(color = MaterialTheme.colorScheme.error)) {
+                                append(stringResource(ClientStrings.GiftCardResultSuccessDate, state.deliveryDate, state.deliveryTime))
+                            }
+                            append(stringResource(ClientStrings.GiftCardResultSuccessEmail))
+                            withStyle(SpanStyle(color = MaterialTheme.colorScheme.error)) {
+                                append(state.email)
+                            }
+                            append(stringResource(ClientStrings.GiftCardResultSuccessPin))
+                            withStyle(SpanStyle(color = MaterialTheme.colorScheme.error)) {
+                                append(state.phone)
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 16.dp, top = 24.dp, end = 16.dp),
+                        style = MaterialTheme.typography.regular14.copy(
+                            color = MaterialTheme.colorScheme.onBackground,
+                            lineHeight = 18.sp,
+                            letterSpacing = .2.sp,
+                            textAlign = TextAlign.Center
+                        )
+                    )
+
+                    Text(
+                        text = stringResource(ClientStrings.GiftCardResultSuccessInfo),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 16.dp, top = 20.dp, end = 16.dp),
+                        style = MaterialTheme.typography.regular14.copy(
+                            color = MaterialTheme.colorScheme.onBackground,
+                            lineHeight = 18.sp,
+                            letterSpacing = .2.sp,
                             textAlign = TextAlign.Center
                         )
                     )
                 }
+                else -> {
+                    Text(
+                        text = stringResource(ClientStrings.GiftCardResultNotPaidInfo),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 16.dp, top = 24.dp, end = 16.dp),
+                        style = MaterialTheme.typography.regular14.copy(
+                            color = MaterialTheme.colorScheme.onBackground,
+                            lineHeight = 18.sp,
+                            letterSpacing = .2.sp,
+                            textAlign = TextAlign.Center
+                        )
+                    )
+                }
+            }
+
+            Button(
+                onClick = { dispatch(GiftCardResultIntent.PurchasesClick) },
+                modifier = Modifier
+                    .padding(top = 16.dp)
+                    .height(46.dp),
+                shape = RoundedCornerShape(8.dp),
+                contentPadding = PaddingValues(horizontal = 24.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            ) {
+                Text(
+                    text = stringResource(ClientStrings.GiftCardResultPurchases),
+                    style = MaterialTheme.typography.medium15.copy(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        lineHeight = 15.sp,
+                        letterSpacing = .3.sp,
+                        textAlign = TextAlign.Center
+                    )
+                )
             }
         }
     }

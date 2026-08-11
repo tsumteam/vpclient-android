@@ -30,6 +30,15 @@ data class CheckoutBankCardSheetModel(
             cvv.length == CVV_LENGTH &&
             !isLoading
 
+    val isCardNumberErrorIconVisible: Boolean
+        get() = isCardNumberErrorVisible
+
+    val isExpirationDateErrorIconVisible: Boolean
+        get() = isExpirationDateErrorVisible
+
+    val isLoadingIndicatorVisible: Boolean
+        get() = isLoading
+
     companion object {
         const val MIN_CARD_NUMBER_LENGTH = 12
         const val MAX_CARD_NUMBER_LENGTH = 19

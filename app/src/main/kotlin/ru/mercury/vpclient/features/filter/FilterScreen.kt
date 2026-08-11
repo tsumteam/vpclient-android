@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -192,7 +193,9 @@ fun FilterScreen(
             dispatch = { intent ->
                 when (intent) {
                     is SortIntent.HideSortDialog -> viewModel.dispatch(FilterIntent.HideSortDialog)
-                    is SortIntent.ConfirmSort -> viewModel.dispatch(FilterIntent.ConfirmSort(intent.sortType))
+                    is SortIntent.ConfirmSort -> {
+                        viewModel.dispatch(FilterIntent.ConfirmSort(intent.sortType))
+                    }
                 }
             }
         )
@@ -202,12 +205,24 @@ fun FilterScreen(
             state = requireNotNull(state.filterPriceSheetState),
             dispatch = { intent ->
                 when (intent) {
-                    is FilterPriceIntent.HideFilterPriceDialog -> viewModel.dispatch(FilterIntent.HideFilterValuesDialog)
-                    is FilterPriceIntent.ResetPrice -> viewModel.dispatch(FilterIntent.ResetPrice)
-                    is FilterPriceIntent.ConfirmPrice -> viewModel.dispatch(FilterIntent.ConfirmPrice)
-                    is FilterPriceIntent.ChangeMinPrice -> viewModel.dispatch(FilterIntent.UpdatePriceFrom(intent.value))
-                    is FilterPriceIntent.ChangeMaxPrice -> viewModel.dispatch(FilterIntent.UpdatePriceTo(intent.value))
-                    is FilterPriceIntent.SelectPricePreset -> viewModel.dispatch(FilterIntent.SelectPricePreset(intent.valueId))
+                    is FilterPriceIntent.HideFilterPriceDialog -> {
+                        viewModel.dispatch(FilterIntent.HideFilterValuesDialog)
+                    }
+                    is FilterPriceIntent.ResetPrice -> {
+                        viewModel.dispatch(FilterIntent.ResetPrice)
+                    }
+                    is FilterPriceIntent.ConfirmPrice -> {
+                        viewModel.dispatch(FilterIntent.ConfirmPrice)
+                    }
+                    is FilterPriceIntent.ChangeMinPrice -> {
+                        viewModel.dispatch(FilterIntent.UpdatePriceFrom(intent.value))
+                    }
+                    is FilterPriceIntent.ChangeMaxPrice -> {
+                        viewModel.dispatch(FilterIntent.UpdatePriceTo(intent.value))
+                    }
+                    is FilterPriceIntent.SelectPricePreset -> {
+                        viewModel.dispatch(FilterIntent.SelectPricePreset(intent.valueId))
+                    }
                 }
             }
         )
@@ -217,10 +232,18 @@ fun FilterScreen(
             state = requireNotNull(state.filterSizeSheetState),
             dispatch = { intent ->
                 when (intent) {
-                    is FilterSizeIntent.HideFilterSizeDialog -> viewModel.dispatch(FilterIntent.HideFilterValuesDialog)
-                    is FilterSizeIntent.ResetFilterSizeValues -> viewModel.dispatch(FilterIntent.UpdateFilterValuesSelection(emptySet()))
-                    is FilterSizeIntent.ConfirmFilterSizeValues -> viewModel.dispatch(FilterIntent.ConfirmFilterValues)
-                    is FilterSizeIntent.ToggleFilterSizeValue -> viewModel.dispatch(FilterIntent.ToggleFilterDialogValue(intent.valueId))
+                    is FilterSizeIntent.HideFilterSizeDialog -> {
+                        viewModel.dispatch(FilterIntent.HideFilterValuesDialog)
+                    }
+                    is FilterSizeIntent.ResetFilterSizeValues -> {
+                        viewModel.dispatch(FilterIntent.UpdateFilterValuesSelection(emptySet()))
+                    }
+                    is FilterSizeIntent.ConfirmFilterSizeValues -> {
+                        viewModel.dispatch(FilterIntent.ConfirmFilterValues)
+                    }
+                    is FilterSizeIntent.ToggleFilterSizeValue -> {
+                        viewModel.dispatch(FilterIntent.ToggleFilterDialogValue(intent.valueId))
+                    }
                 }
             }
         )
@@ -230,12 +253,24 @@ fun FilterScreen(
             state = requireNotNull(state.filterTreeSheetState),
             dispatch = { intent ->
                 when (intent) {
-                    is FilterTreeIntent.HideFilterTreeDialog -> viewModel.dispatch(FilterIntent.HideFilterValuesDialog)
-                    is FilterTreeIntent.ResetFilterValues -> viewModel.dispatch(FilterIntent.UpdateFilterValuesSelection(emptySet()))
-                    is FilterTreeIntent.ConfirmFilterValues -> viewModel.dispatch(FilterIntent.ConfirmFilterValues)
-                    is FilterTreeIntent.NavigateBackInFilterTree -> viewModel.dispatch(FilterIntent.NavigateBackInFilterTree)
-                    is FilterTreeIntent.NavigateInFilterTree -> viewModel.dispatch(FilterIntent.NavigateInFilterTree(intent.valueId))
-                    is FilterTreeIntent.ToggleFilterValue -> viewModel.dispatch(FilterIntent.ToggleFilterDialogValue(intent.valueId))
+                    is FilterTreeIntent.HideFilterTreeDialog -> {
+                        viewModel.dispatch(FilterIntent.HideFilterValuesDialog)
+                    }
+                    is FilterTreeIntent.ResetFilterValues -> {
+                        viewModel.dispatch(FilterIntent.UpdateFilterValuesSelection(emptySet()))
+                    }
+                    is FilterTreeIntent.ConfirmFilterValues -> {
+                        viewModel.dispatch(FilterIntent.ConfirmFilterValues)
+                    }
+                    is FilterTreeIntent.NavigateBackInFilterTree -> {
+                        viewModel.dispatch(FilterIntent.NavigateBackInFilterTree)
+                    }
+                    is FilterTreeIntent.NavigateInFilterTree -> {
+                        viewModel.dispatch(FilterIntent.NavigateInFilterTree(intent.valueId))
+                    }
+                    is FilterTreeIntent.ToggleFilterValue -> {
+                        viewModel.dispatch(FilterIntent.ToggleFilterDialogValue(intent.valueId))
+                    }
                 }
             }
         )
@@ -245,10 +280,18 @@ fun FilterScreen(
             state = requireNotNull(state.filterColorSheetState),
             dispatch = { intent ->
                 when (intent) {
-                    is FilterColorIntent.HideFilterColorDialog -> viewModel.dispatch(FilterIntent.HideFilterValuesDialog)
-                    is FilterColorIntent.ResetFilterColorValues -> viewModel.dispatch(FilterIntent.UpdateFilterValuesSelection(emptySet()))
-                    is FilterColorIntent.ConfirmFilterColorValues -> viewModel.dispatch(FilterIntent.ConfirmFilterValues)
-                    is FilterColorIntent.ToggleFilterColorValue -> viewModel.dispatch(FilterIntent.ToggleFilterDialogValue(intent.valueId))
+                    is FilterColorIntent.HideFilterColorDialog -> {
+                        viewModel.dispatch(FilterIntent.HideFilterValuesDialog)
+                    }
+                    is FilterColorIntent.ResetFilterColorValues -> {
+                        viewModel.dispatch(FilterIntent.UpdateFilterValuesSelection(emptySet()))
+                    }
+                    is FilterColorIntent.ConfirmFilterColorValues -> {
+                        viewModel.dispatch(FilterIntent.ConfirmFilterValues)
+                    }
+                    is FilterColorIntent.ToggleFilterColorValue -> {
+                        viewModel.dispatch(FilterIntent.ToggleFilterDialogValue(intent.valueId))
+                    }
                 }
             }
         )
@@ -258,10 +301,18 @@ fun FilterScreen(
             state = requireNotNull(state.filterValuesSheetState),
             dispatch = { intent ->
                 when (intent) {
-                    is FilterValuesIntent.HideFilterValuesDialog -> viewModel.dispatch(FilterIntent.HideFilterValuesDialog)
-                    is FilterValuesIntent.ResetFilterValues -> viewModel.dispatch(FilterIntent.UpdateFilterValuesSelection(emptySet()))
-                    is FilterValuesIntent.ConfirmFilterValues -> viewModel.dispatch(FilterIntent.ConfirmFilterValues)
-                    is FilterValuesIntent.ToggleFilterValue -> viewModel.dispatch(FilterIntent.ToggleFilterDialogValue(intent.valueId))
+                    is FilterValuesIntent.HideFilterValuesDialog -> {
+                        viewModel.dispatch(FilterIntent.HideFilterValuesDialog)
+                    }
+                    is FilterValuesIntent.ResetFilterValues -> {
+                        viewModel.dispatch(FilterIntent.UpdateFilterValuesSelection(emptySet()))
+                    }
+                    is FilterValuesIntent.ConfirmFilterValues -> {
+                        viewModel.dispatch(FilterIntent.ConfirmFilterValues)
+                    }
+                    is FilterValuesIntent.ToggleFilterValue -> {
+                        viewModel.dispatch(FilterIntent.ToggleFilterDialogValue(intent.valueId))
+                    }
                 }
             }
         )
@@ -505,7 +556,10 @@ private fun FilterScreenContent(
                                 bottom = 16.dp
                             )
                         ) {
-                            val isEmptyProductsVisible = state.filterData.quantityEntity.requireProductsQuantity == 0 && pagingItems.itemCount == 0
+                            val isEmptyProductsVisible = !state.isProductsQuantityLoading &&
+                                state.filterData.quantityEntity.requireProductsQuantity == 0 &&
+                                pagingItems.itemCount == 0
+
                             item(
                                 span = { GridItemSpan(maxLineSpan) }
                             ) {
@@ -513,22 +567,31 @@ private fun FilterScreenContent(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
-                                    Text(
-                                        text = pluralStringResource(
-                                            ClientStrings.FilterProductsQuantity,
-                                            state.filterData.quantityEntity.requireProductsQuantity,
-                                            state.filterData.quantityEntity.productsQuantityWithThousandsSeparator
-                                        ),
-                                        modifier = Modifier
-                                            .padding(top = 8.dp)
-                                            .fillMaxWidth(),
-                                        style = MaterialTheme.typography.regular15.copy(
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                            lineHeight = 19.sp,
-                                            letterSpacing = .2.sp,
-                                            textAlign = TextAlign.Center
+                                    if (state.isProductsQuantityLoading) {
+                                        Spacer(
+                                            modifier = Modifier
+                                                .padding(top = 8.dp)
+                                                .size(width = 120.dp, height = 19.dp)
+                                                .placeholder(shape = RoundedCornerShape(4.dp))
                                         )
-                                    )
+                                    } else {
+                                        Text(
+                                            text = pluralStringResource(
+                                                ClientStrings.FilterProductsQuantity,
+                                                state.filterData.quantityEntity.requireProductsQuantity,
+                                                state.filterData.quantityEntity.productsQuantityWithThousandsSeparator
+                                            ),
+                                            modifier = Modifier
+                                                .padding(top = 8.dp)
+                                                .fillMaxWidth(),
+                                            style = MaterialTheme.typography.regular15.copy(
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                lineHeight = 19.sp,
+                                                letterSpacing = .2.sp,
+                                                textAlign = TextAlign.Center
+                                            )
+                                        )
+                                    }
 
                                     if (isEmptyProductsVisible) {
                                         EmptyBox(
@@ -606,7 +669,7 @@ private fun FilterScreenContent(
                 Column(
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    if (state.brandEntity != null) {
+                    if (state.isBrandIconButtonVisible) {
                         IconButton(
                             onClick = { dispatch(FilterIntent.ToggleBrandFavorited) },
                             modifier = Modifier

@@ -215,9 +215,7 @@ private fun HomeScreenContent(
                 TabRow(
                     tabs = tabs,
                     selectedTabIndex = pagerState.currentPage,
-                    onTabClick = { index ->
-                        scope.launch { pagerState.animateScrollToPage(index) }
-                    }
+                    onTabClick = { index -> scope.launch { pagerState.animateScrollToPage(index) } }
                 )
             }
         },

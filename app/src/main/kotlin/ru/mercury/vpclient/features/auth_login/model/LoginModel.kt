@@ -15,4 +15,10 @@ data class LoginModel(
 
     val isLoginEnabled: Boolean
         get() = !isLoading
+
+    val isPhoneValidationErrorVisible: Boolean
+        get() = phoneValidationError != null
+
+    val isLoadingIndicatorVisible: Boolean
+        get() = isLoading
 }

@@ -94,7 +94,7 @@ fun FilterTreeSheet(
                 },
                 actions = {
                     SharedAnimatedVisibility(
-                        visible = state.selectedIds.isNotEmpty()
+                        visible = state.isResetButtonVisible
                     ) {
                         TextButton(
                             onClick = { dispatch(FilterTreeIntent.ResetFilterValues) },
@@ -116,7 +116,7 @@ fun FilterTreeSheet(
             )
 
             SharedAnimatedVisibility(
-                visible = state.currentParentId != null
+                visible = state.isBackRowVisible
             ) {
                 Row(
                     modifier = Modifier

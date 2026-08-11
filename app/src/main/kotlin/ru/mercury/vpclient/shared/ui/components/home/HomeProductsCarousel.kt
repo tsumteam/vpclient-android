@@ -149,6 +149,7 @@ fun HomeProductsCarousel(
                         modifier = Modifier
                             .size(84.dp)
                             .clip(RoundedCornerShape(18.dp))
+                            .clickable(onClick = state.onViewMoreClick)
                             .background(MaterialTheme.colorScheme.background)
                             .border(
                                 width = 1.dp,

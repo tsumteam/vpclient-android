@@ -67,9 +67,9 @@ fun VideoControls(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(60.dp)
             .background(MaterialTheme.colorScheme.primary)
             .navigationBarsPadding()
+            .height(60.dp)
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically

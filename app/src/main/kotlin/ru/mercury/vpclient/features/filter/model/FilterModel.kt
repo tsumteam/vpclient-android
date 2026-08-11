@@ -64,8 +64,14 @@ data class FilterModel(
     val isBrandFavoritesBarVisible: Boolean
         get() = brandEntity != null && isBrandFavorited != null
 
+    val isBrandIconButtonVisible: Boolean
+        get() = brandEntity != null
+
     val isCatalogFiltersLoading: Boolean
         get() = loadCatalogFiltersJob?.isActive == true
+
+    val isProductsQuantityLoading: Boolean
+        get() = filterData.quantityEntity.isEmpty
 
     val cartText: String
         get() = when {
@@ -238,7 +244,9 @@ data class FilterModel(
         get() = filterColorSheetState != null
 
     fun selectedFilterValueIds(chipId: String): Set<String> {
-        return selectedFilterValueChipIds.filter { valueChipId -> valueChipId.startsWith("${chipId}_") }.toSet()
+        return selectedFilterValueChipIds.filter { valueChipId ->
+            valueChipId.startsWith("${chipId}_")
+        }.toSet()
     }
 
     fun isProductInBasket(entity: CatalogFilterProductsEntity): Boolean {

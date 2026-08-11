@@ -2,8 +2,8 @@ package ru.mercury.vpclient.shared.domain.usecase
 
 import ru.mercury.vpclient.shared.coroutines.SharedDispatchers
 import ru.mercury.vpclient.shared.data.FORMAT_PHONE_NUMBER
-import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.network.NetworkService
+import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.network.request.AuthenticationLoginRequest
 import ru.mercury.vpclient.shared.data.network.request.AuthenticationRegisterRequest
 import ru.mercury.vpclient.shared.data.persistence.database.dao.ClientDao
@@ -18,7 +18,7 @@ class AuthResendCodeUseCase @Inject constructor(
 ): UseCase<Unit, Unit>(dispatchers.io) {
 
     override suspend fun execute(params: Unit) {
-        val clientEntity = clientDao.selectNotNull()
+        val clientEntity = clientDao.select() ?: throw AuthResendCodeException("Сессия входа не найдена, попробуйте войти заново")
         val formattedPhone = String.format(Locale.getDefault(), FORMAT_PHONE_NUMBER, clientEntity.phone)
 
         when {
