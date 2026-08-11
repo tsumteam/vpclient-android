@@ -17,7 +17,7 @@ private val gitCommitsCount: Int by lazy {
         .start().inputStream.bufferedReader().readLine().trim().toInt()
 }
 private val appmetricaApiKey: String by lazy {
-    val key = gradleLocalProperties(rootDir, providers).getProperty("APPMETRICA_API_KEY").orEmpty().ifEmpty { System.getenv("APPMETRICA_API_KEY") }
+    val key = gradleLocalProperties(rootDir, providers).getProperty("APPMETRICA_API_KEY").orEmpty().ifEmpty { System.getenv("APPMETRICA_API_KEY").orEmpty() }
     if (key.isEmpty()) throw GradleException("APPMETRICA_API_KEY is empty")
     key
 }
