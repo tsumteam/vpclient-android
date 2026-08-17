@@ -9,6 +9,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import dagger.hilt.android.AndroidEntryPoint
+import ru.mercury.vpclient.activity.intent.MainActivityIntent
 import ru.mercury.vpclient.shared.ui.ktx.installShortcuts
 import ru.mercury.vpclient.shared.ui.theme.ClientTheme
 
@@ -32,5 +33,15 @@ class MainActivity: ComponentActivity() {
         super.onCreate(savedInstanceState)
         installShortcuts()
         setContent { ClientTheme { MainActivityContent() } }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        viewModel.dispatch(MainActivityIntent.StartRealtime)
+    }
+
+    override fun onStop() {
+        viewModel.dispatch(MainActivityIntent.StopRealtime)
+        super.onStop()
     }
 }

@@ -40,6 +40,7 @@ okhttp = "5.3.2"
 ktor = "3.5.0"
 chucker = "4.3.1"
 timber = "5.0.1"
+signalr = "10.0.11"
 
 [libraries]
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
@@ -96,6 +97,7 @@ ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx
 chucker-library = { module = "com.github.chuckerteam.chucker:library", version.ref = "chucker" }
 chucker-library-no-op = { module = "com.github.chuckerteam.chucker:library-no-op", version.ref = "chucker" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
+signalr = { module = "com.microsoft.signalr:signalr", version.ref = "signalr" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

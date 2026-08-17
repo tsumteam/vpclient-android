@@ -203,6 +203,7 @@ dependencies {
     implementation(libs.ktor.client.logging)
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.serialization.kotlinx.json)
+    implementation(libs.signalr)
     debugImplementation(libs.okhttp.logging.interceptor)
     debugImplementation(libs.chucker.library)
     releaseImplementation(libs.chucker.library.no.op)
