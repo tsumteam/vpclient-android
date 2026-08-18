@@ -29,8 +29,8 @@ import ru.mercury.vpclient.shared.data.entity.HomeSectionType
 import ru.mercury.vpclient.shared.ui.components.SharedHorizontalPagerIndicator
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.theme.livretMedium15
-import ru.mercury.vpclient.shared.ui.theme.livretMedium18
+import ru.mercury.vpclient.shared.ui.theme.livretMedium17
+import ru.mercury.vpclient.shared.ui.theme.livretRegular15
 
 data class HomeBannerCarouselState(
     val section: HomeSectionEntity,
@@ -73,7 +73,7 @@ fun HomeBannerCarousel(
                     .fillMaxWidth()
                     .height(56.dp)
                     .wrapContentHeight(Alignment.CenterVertically),
-                style = MaterialTheme.typography.livretMedium18.copy(
+                style = MaterialTheme.typography.livretMedium17.copy(
                     color = MaterialTheme.colorScheme.error,
                     lineHeight = 26.sp,
                     letterSpacing = .2.sp,
@@ -106,7 +106,7 @@ fun HomeBannerCarousel(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp),
-                        style = MaterialTheme.typography.livretMedium15.copy(
+                        style = MaterialTheme.typography.livretRegular15.copy(
                             color = MaterialTheme.colorScheme.onBackground,
                             lineHeight = 15.sp,
                             textAlign = TextAlign.Center

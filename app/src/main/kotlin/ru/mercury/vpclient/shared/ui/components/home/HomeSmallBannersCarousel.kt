@@ -39,8 +39,7 @@ import ru.mercury.vpclient.shared.data.entity.HomeSectionType
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.livretMedium15
-import ru.mercury.vpclient.shared.ui.theme.livretMedium18
+import ru.mercury.vpclient.shared.ui.theme.livretMedium17
 import ru.mercury.vpclient.shared.ui.theme.livretRegular15
 
 data class HomeSmallBannersCarouselState(
@@ -69,7 +68,7 @@ fun HomeSmallBannersCarousel(
                     .fillMaxWidth()
                     .height(56.dp)
                     .wrapContentHeight(Alignment.CenterVertically),
-                style = MaterialTheme.typography.livretMedium18.copy(
+                style = MaterialTheme.typography.livretMedium17.copy(
                     color = MaterialTheme.colorScheme.error,
                     lineHeight = 26.sp,
                     letterSpacing = .2.sp,
@@ -81,7 +80,7 @@ fun HomeSmallBannersCarousel(
         LazyRow(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(266.dp),
+                .height(282.dp),
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -90,10 +89,10 @@ fun HomeSmallBannersCarousel(
             ) { item ->
                 Column(
                     modifier = Modifier
-                        .size(width = 148.dp, height = 266.dp)
+                        .size(width = 148.dp, height = 282.dp)
                         .clip(RoundedCornerShape(4.dp))
                         .clickable { state.onItemClick(item) },
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
                     ClientAsyncImage(
                         imageUrl = item.imageUrl,
@@ -108,7 +107,7 @@ fun HomeSmallBannersCarousel(
                             .fillMaxWidth(),
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
-                        style = MaterialTheme.typography.livretMedium15.copy(
+                        style = MaterialTheme.typography.livretRegular15.copy(
                             color = MaterialTheme.colorScheme.onBackground,
                             lineHeight = 15.sp,
                             textAlign = TextAlign.Center

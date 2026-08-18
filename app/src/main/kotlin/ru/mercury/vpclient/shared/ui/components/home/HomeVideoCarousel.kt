@@ -27,7 +27,7 @@ import ru.mercury.vpclient.shared.data.entity.HomeSectionType
 import ru.mercury.vpclient.shared.ui.components.SharedHorizontalPagerIndicator
 import ru.mercury.vpclient.shared.ui.components.video.VideoPlayer
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.theme.livretMedium18
+import ru.mercury.vpclient.shared.ui.theme.livretMedium17
 
 data class HomeVideoCarouselState(
     val section: HomeSectionEntity
@@ -67,7 +67,7 @@ fun HomeVideoCarousel(
                     .fillMaxWidth()
                     .height(56.dp)
                     .wrapContentHeight(Alignment.CenterVertically),
-                style = MaterialTheme.typography.livretMedium18.copy(
+                style = MaterialTheme.typography.livretMedium17.copy(
                     color = MaterialTheme.colorScheme.error,
                     lineHeight = 26.sp,
                     letterSpacing = .2.sp,

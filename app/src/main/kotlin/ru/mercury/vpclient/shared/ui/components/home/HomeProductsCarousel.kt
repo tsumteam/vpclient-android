@@ -41,7 +41,7 @@ import ru.mercury.vpclient.shared.ui.components.brands.BrandBox
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.livretMedium18
+import ru.mercury.vpclient.shared.ui.theme.livretMedium17
 import ru.mercury.vpclient.shared.ui.theme.livretRegular15
 import ru.mercury.vpclient.shared.ui.theme.regular14
 
@@ -82,7 +82,7 @@ fun HomeProductsCarousel(
                     .fillMaxWidth()
                     .height(56.dp)
                     .wrapContentHeight(Alignment.CenterVertically),
-                style = MaterialTheme.typography.livretMedium18.copy(
+                style = MaterialTheme.typography.livretMedium17.copy(
                     color = MaterialTheme.colorScheme.error,
                     lineHeight = 26.sp,
                     letterSpacing = .2.sp,
@@ -94,7 +94,7 @@ fun HomeProductsCarousel(
         LazyRow(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(493.dp),
+                .height(405.dp),
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -103,7 +103,7 @@ fun HomeProductsCarousel(
             ) { item ->
                 Column(
                     modifier = Modifier
-                        .size(width = 262.dp, height = 493.dp)
+                        .size(width = 208.dp, height = 405.dp)
                         .clip(RoundedCornerShape(4.dp))
                         .clickable(
                             enabled = state.isProductClickEnabled(item),
@@ -115,7 +115,7 @@ fun HomeProductsCarousel(
                     ClientAsyncImage(
                         imageUrl = item.imageUrl,
                         contentScale = ContentScale.Fit,
-                        modifier = Modifier.size(width = 262.dp, height = 393.dp)
+                        modifier = Modifier.size(width = 208.dp, height = 313.dp)
                     )
 
                     BrandBox(
