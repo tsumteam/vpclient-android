@@ -52,7 +52,7 @@ fun BrandFavoriteIconButton(
 
                 Text(
                     text = state.text,
-                    modifier = Modifier.padding(end = .5.dp, bottom = 1.dp),
+                    modifier = Modifier.padding(end = .5.dp),
                     maxLines = 1,
                     style = MaterialTheme.typography.medium11.copy(
                         color = MaterialTheme.colorScheme.onBackground,
