@@ -21,8 +21,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogBrandEntity
-import ru.mercury.vpclient.shared.ui.icons.Favorited40
-import ru.mercury.vpclient.shared.ui.icons.Unfavorited40
+import ru.mercury.vpclient.shared.ui.icons.Favorited24
+import ru.mercury.vpclient.shared.ui.icons.Unfavorited24
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.regular15
 
@@ -62,8 +62,8 @@ fun BrandFavoriteRow(
         ) {
             Icon(
                 imageVector = when {
-                    state.entity.isFavorite -> Favorited40
-                    else -> Unfavorited40
+                    state.entity.isFavorite -> Favorited24
+                    else -> Unfavorited24
                 },
                 contentDescription = null,
                 modifier = Modifier.size(24.dp),

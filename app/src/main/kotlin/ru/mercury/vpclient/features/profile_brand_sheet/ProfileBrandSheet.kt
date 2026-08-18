@@ -70,8 +70,8 @@ import ru.mercury.vpclient.shared.ui.components.brands.BrandAlphabetScrubberStat
 import ru.mercury.vpclient.shared.ui.components.brands.BrandSearchField
 import ru.mercury.vpclient.shared.ui.components.brands.BrandSearchFieldState
 import ru.mercury.vpclient.shared.ui.icons.Close24
-import ru.mercury.vpclient.shared.ui.icons.Favorited40
-import ru.mercury.vpclient.shared.ui.icons.Unfavorited40
+import ru.mercury.vpclient.shared.ui.icons.Favorited24
+import ru.mercury.vpclient.shared.ui.icons.Unfavorited24
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
@@ -365,8 +365,8 @@ private fun ProfileBrandSheetContent(
 
                                         Icon(
                                             imageVector = when (brand.brandId) {
-                                                in state.selectedBrandIds -> Favorited40
-                                                else -> Unfavorited40
+                                                in state.selectedBrandIds -> Favorited24
+                                                else -> Unfavorited24
                                             },
                                             contentDescription = null,
                                             modifier = Modifier.size(24.dp),
