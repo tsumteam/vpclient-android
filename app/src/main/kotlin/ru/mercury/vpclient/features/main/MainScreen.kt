@@ -1,5 +1,6 @@
 package ru.mercury.vpclient.features.main
 
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
@@ -166,7 +167,8 @@ private fun MainScreenContent(
                             topLeft = Offset.Zero
                         )
                     },
-                containerColor = Color.White
+                containerColor = Color.White,
+                windowInsets = WindowInsets(0, 0, 0, 0)
             ) {
                 NavigationBarItem(
                     selected = state.selectedRoute == HomeRootRoute,
