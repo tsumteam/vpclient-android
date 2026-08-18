@@ -227,7 +227,8 @@ class BrandsViewModel @Inject constructor(
                         subtitleCategoryId = intent.entity.categoryId,
                         brandEntity = brandEntity,
                         hiddenFilterValueChipIds = listOf(
-                            "${CatalogFilterRequest.BRAND}_${intent.entity.brandId}"
+                            "${CatalogFilterRequest.BRAND}_${intent.entity.brandId}",
+                            "${CatalogFilterRequest.CATEGORY}_${intent.entity.categoryId}"
                         ),
                         viewTypeOverride = CatalogViewType.BRAND,
                         isBrandRoot = true
