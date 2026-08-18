@@ -8,6 +8,7 @@ import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.features.banner.navigation.BannerRoute
 import ru.mercury.vpclient.features.cart.navigation.CartPage
 import ru.mercury.vpclient.features.cart.navigation.CartRoute
+import ru.mercury.vpclient.features.compilation.navigation.CompilationRoute
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.features.filter.navigation.FilterRoute
 import ru.mercury.vpclient.features.gift_card.navigation.GiftCardRoute
@@ -226,6 +227,18 @@ class HomeViewModel @Inject constructor(
                     intent.item.linkType == MainScreenLinkType.BANNER -> {
                         val url = intent.item.bannerLinkUrl ?: return
                         launch { HomeRootEventManager.send(BannerRoute(url)) }
+                    }
+                    intent.item.linkType == MainScreenLinkType.FASHION_IMAGE -> {
+                        val fashionImageId = intent.item.fashionImageId ?: return
+                        launch {
+                            MainEventManager.send(
+                                CompilationRoute(
+                                    id = fashionImageId,
+                                    title = intent.item.fashionImageTitle.orEmpty(),
+                                    isFashionImage = true
+                                )
+                            )
+                        }
                     }
                     catalogLink != null -> {
                         launch {

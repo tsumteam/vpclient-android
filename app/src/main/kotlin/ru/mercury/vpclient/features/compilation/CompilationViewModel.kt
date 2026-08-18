@@ -19,6 +19,8 @@ import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.domain.usecase.CartBadgeUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CartCountFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CartProductsFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.CatalogFashionImageByIdUseCase
+import ru.mercury.vpclient.shared.domain.usecase.CatalogFashionImageByIdUseCase.CatalogFashionImageByIdException
 import ru.mercury.vpclient.shared.domain.usecase.CatalogAvailableForMultipleSizesUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CatalogAvailableForMultipleSizesUseCase.CatalogAvailableForMultipleSizesException
 import ru.mercury.vpclient.shared.domain.usecase.CatalogFilterProductsEntitiesFlowUseCase
@@ -37,17 +39,22 @@ class CompilationViewModel @AssistedInject constructor(
     private val compilationPreviewPageEntitiesFlowUseCase: CompilationPreviewPageEntitiesFlowUseCase,
     private val catalogFilterProductsEntitiesFlowUseCase: CatalogFilterProductsEntitiesFlowUseCase,
     private val compilationsClientByIdUseCase: CompilationsClientByIdUseCase,
+    private val catalogFashionImageByIdUseCase: CatalogFashionImageByIdUseCase,
     private val compilationsClientLookByIdToBasketUseCase: CompilationsClientLookByIdToBasketUseCase,
     private val catalogAvailableForMultipleSizesUseCase: CatalogAvailableForMultipleSizesUseCase,
     private val toggleBasketProductUseCase: ToggleBasketProductUseCase,
     private val cartBadgeUseCase: CartBadgeUseCase,
     private val cartProductsFlowUseCase: CartProductsFlowUseCase,
     private val cartCountFlowUseCase: CartCountFlowUseCase
-): ClientViewModel<CompilationIntent, CompilationModel, CompilationEvent>(CompilationModel()) {
+): ClientViewModel<CompilationIntent, CompilationModel, CompilationEvent>(
+    CompilationModel(isFashionImage = route.isFashionImage)
+) {
 
     init {
-        dispatch(CompilationIntent.CollectCompilation)
-        dispatch(CompilationIntent.CollectCompilationProducts)
+        if (!route.isFashionImage) {
+            dispatch(CompilationIntent.CollectCompilation)
+            dispatch(CompilationIntent.CollectCompilationProducts)
+        }
         dispatch(CompilationIntent.CollectCartProducts)
         dispatch(CompilationIntent.CollectCartCount)
         dispatch(CompilationIntent.LoadCompilation)
@@ -102,7 +109,23 @@ class CompilationViewModel @AssistedInject constructor(
             }
             is CompilationIntent.LoadCompilation -> {
                 val job = launch {
-                    compilationsClientByIdUseCase(route.id).getOrThrow()
+                    when {
+                        route.isFashionImage -> {
+                            val result = catalogFashionImageByIdUseCase(
+                                CatalogFashionImageByIdUseCase.Params(
+                                    id = route.id,
+                                    title = route.title
+                                )
+                            ).getOrThrow()
+                            reduce {
+                                it.copy(
+                                    compilationPreviewPageEntities = result.pageEntities,
+                                    compilationPreviewProductEntities = result.productEntities
+                                )
+                            }
+                        }
+                        else -> compilationsClientByIdUseCase(route.id).getOrThrow()
+                    }
                 }.also { launchedJob ->
                     launchedJob.invokeOnCompletion {
                         reduce { it.copy(compilationPreviewJob = null) }
@@ -124,6 +147,7 @@ class CompilationViewModel @AssistedInject constructor(
             }
             is CompilationIntent.HideCompilationChatSheet -> reduce { it.copy(isCompilationChatSheetVisible = false) }
             is CompilationIntent.ShowAddToBasketDialog -> {
+                if (route.isFashionImage) return
                 stateFlow.value.addToBasketAvailableSizesJob?.cancel()
                 val productEntities = stateFlow.value.selectedLookAddToBasketProductEntities
                 val selectedProductIds = productEntities.map { entity -> entity.id }.toSet()
@@ -235,6 +259,10 @@ class CompilationViewModel @AssistedInject constructor(
 
     override fun catch(throwable: Throwable) {
         when (throwable) {
+            is CatalogFashionImageByIdException -> {
+                reduce { it.copy(compilationPreviewJob = null) }
+                launch { send(CompilationEvent.SnackbarErrorMessage(throwable.message)) }
+            }
             is CompilationsClientByIdException -> {
                 reduce { it.copy(compilationPreviewJob = null) }
                 launch { send(CompilationEvent.SnackbarErrorMessage(throwable.message)) }

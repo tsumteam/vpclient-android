@@ -11,6 +11,7 @@ import ru.mercury.vpclient.shared.mvi.Model
 import kotlin.math.roundToInt
 
 data class CompilationModel(
+    val isFashionImage: Boolean = false,
     val compilationPreviewPageEntities: List<CompilationPreviewPageEntity> = emptyList(),
     val compilationPreviewProductEntities: List<CatalogFilterProductsEntity> = emptyList(),
     val selectedLookIndex: Int = 0,

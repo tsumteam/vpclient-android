@@ -300,15 +300,17 @@ private fun CompilationScreenContent(
                     }
                 },
                 actions = {
-                    IconButton(
-                        onClick = { dispatch(CompilationIntent.MenuClick) },
-                        modifier = Modifier.size(42.dp)
-                    ) {
-                        Icon(
-                            imageVector = DotsMenu24,
-                            contentDescription = null,
-                            modifier = Modifier.size(24.dp)
-                        )
+                    if (!state.isFashionImage) {
+                        IconButton(
+                            onClick = { dispatch(CompilationIntent.MenuClick) },
+                            modifier = Modifier.size(42.dp)
+                        ) {
+                            Icon(
+                                imageVector = DotsMenu24,
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -320,32 +322,34 @@ private fun CompilationScreenContent(
             )
         },
         bottomBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.background)
-                    .navigationBarsPadding()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
-            ) {
-                Button(
-                    onClick = { dispatch(CompilationIntent.ShowAddToBasketDialog) },
+            if (!state.isFashionImage) {
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(52.dp),
-                    enabled = !state.isAddToBasketLoading,
-                    shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
+                        .background(MaterialTheme.colorScheme.background)
+                        .navigationBarsPadding()
+                        .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
                 ) {
-                    Text(
-                        text = stringResource(ClientStrings.DetailsAddToBasket),
-                        style = MaterialTheme.typography.medium15.copy(
-                            textAlign = TextAlign.Center,
-                            letterSpacing = .3.sp
+                    Button(
+                        onClick = { dispatch(CompilationIntent.ShowAddToBasketDialog) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp),
+                        enabled = !state.isAddToBasketLoading,
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
                         )
-                    )
+                    ) {
+                        Text(
+                            text = stringResource(ClientStrings.DetailsAddToBasket),
+                            style = MaterialTheme.typography.medium15.copy(
+                                textAlign = TextAlign.Center,
+                                letterSpacing = .3.sp
+                            )
+                        )
+                    }
                 }
             }
         },

@@ -5,5 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CompilationRoute(
-    val id: Int
+    val id: Int,
+    val title: String = "",
+    val isFashionImage: Boolean = false
 ): NavKey
