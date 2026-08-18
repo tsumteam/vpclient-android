@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
@@ -40,12 +39,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
@@ -246,13 +248,13 @@ private fun DetailsScreenContent(
 ) {
     val lazyListState = rememberLazyListState()
     val scope = rememberCoroutineScope()
-    val toolbarBrandOffsetPx = with(LocalDensity.current) { 52.dp.roundToPx() }
-    val isToolbarBrandVisible by remember(lazyListState, toolbarBrandOffsetPx) {
+    val toolbarBrandInfoOffsetPx = with(LocalDensity.current) { 100.dp.roundToPx() }
+    var pagerHeightPx by remember { mutableIntStateOf(0) }
+    val isToolbarBrandVisible by remember(lazyListState, toolbarBrandInfoOffsetPx, pagerHeightPx) {
         derivedStateOf {
             when {
-                lazyListState.firstVisibleItemIndex > 4 -> true
-                lazyListState.firstVisibleItemIndex < 4 -> false
-                else -> lazyListState.firstVisibleItemScrollOffset >= toolbarBrandOffsetPx
+                lazyListState.firstVisibleItemIndex > 0 -> true
+                else -> lazyListState.firstVisibleItemScrollOffset >= pagerHeightPx + toolbarBrandInfoOffsetPx
             }
         }
     }
@@ -474,93 +476,94 @@ private fun DetailsScreenContent(
                 SharedLazyColumn(
                     state = lazyListState,
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = innerPadding + PaddingValues(bottom = 40.dp)
+                    contentPadding = innerPadding
                 ) {
                     item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .aspectRatio(3F / 4F)
+                        Column(
+                            modifier = Modifier.fillParentMaxHeight()
                         ) {
-                            HorizontalPager(
-                                state = pagerState,
-                                modifier = Modifier.fillMaxSize(),
-                                userScrollEnabled = pagerItems.size > 1
-                            ) { page ->
-                                when (val item = pagerItems[page % pagerItems.size]) {
-                                    is DetailsMediaItem.Image -> {
-                                        ClientAsyncImage(
-                                            imageUrl = item.url,
-                                            modifier = Modifier
-                                                .fillMaxSize()
-                                                .clickable { dispatch(DetailsIntent.OpenMedia(page % pagerItems.size)) },
-                                            contentScale = ContentScale.Fit
-                                        )
-                                    }
-                                    is DetailsMediaItem.Video -> {
-                                        Box(
-                                            modifier = Modifier
-                                                .padding(horizontal = 16.dp)
-                                                .fillMaxSize()
-                                        ) {
-                                            VideoPlayer(
-                                                videoUrl = item.url,
-                                                isVisible = pagerState.currentPage == page,
-                                                modifier = Modifier.fillMaxSize()
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1F)
+                                    .onSizeChanged { pagerHeightPx = it.height }
+                            ) {
+                                HorizontalPager(
+                                    state = pagerState,
+                                    modifier = Modifier.fillMaxSize(),
+                                    userScrollEnabled = pagerItems.size > 1
+                                ) { page ->
+                                    when (val item = pagerItems[page % pagerItems.size]) {
+                                        is DetailsMediaItem.Image -> {
+                                            ClientAsyncImage(
+                                                imageUrl = item.url,
+                                                modifier = Modifier
+                                                    .fillMaxSize()
+                                                    .clickable { dispatch(DetailsIntent.OpenMedia(page % pagerItems.size)) },
+                                                contentScale = ContentScale.Fit
                                             )
-
+                                        }
+                                        is DetailsMediaItem.Video -> {
                                             Box(
                                                 modifier = Modifier
-                                                    .matchParentSize()
-                                                    .clickable { dispatch(DetailsIntent.OpenMedia(page % pagerItems.size)) }
-                                            )
+                                                    .padding(horizontal = 16.dp)
+                                                    .fillMaxSize()
+                                            ) {
+                                                VideoPlayer(
+                                                    videoUrl = item.url,
+                                                    isVisible = pagerState.currentPage == page,
+                                                    modifier = Modifier.fillMaxSize()
+                                                )
+
+                                                Box(
+                                                    modifier = Modifier
+                                                        .matchParentSize()
+                                                        .clickable { dispatch(DetailsIntent.OpenMedia(page % pagerItems.size)) }
+                                                )
+                                            }
                                         }
                                     }
                                 }
+
+                                if (state.isWearWithButtonVisible) {
+                                    DetailsOutfitButton(
+                                        onClick = { dispatch(DetailsIntent.ShowWearWithSheet) },
+                                        modifier = Modifier
+                                            .align(Alignment.BottomEnd)
+                                            .padding(end = 16.dp, bottom = 39.dp)
+                                    )
+                                }
                             }
 
-                            if (state.isWearWithButtonVisible) {
-                                DetailsOutfitButton(
-                                    onClick = { dispatch(DetailsIntent.ShowWearWithSheet) },
-                                    modifier = Modifier
-                                        .align(Alignment.BottomEnd)
-                                        .padding(end = 16.dp, bottom = 39.dp)
-                                )
-                            }
+                            Spacer(
+                                modifier = Modifier.height(2.dp)
+                            )
+
+                            DetailsPagerIndicator(
+                                pagerState = pagerState,
+                                pageCount = pagerItems.size,
+                                showVideoIcon = state.hasVideo,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(44.dp),
+                                pageIndexMapping = { it % pagerItems.size },
+                                onVideoClick = { dispatch(DetailsIntent.OpenVideo) }
+                            )
+
+                            Spacer(
+                                modifier = Modifier.height(2.dp)
+                            )
+
+                            DetailsProductInfoBox(
+                                state = DetailsProductInfoBoxState(
+                                    productEntity = state.productEntity,
+                                    availabilityText = state.noSizeAvailabilityText,
+                                    onMessageClick = { dispatch(DetailsIntent.MessageClick) },
+                                    onBrandClick = { dispatch(DetailsIntent.BrandClick) }
+                                ),
+                                modifier = Modifier.fillMaxWidth()
+                            )
                         }
-                    }
-                    item {
-                        Spacer(
-                            modifier = Modifier.height(2.dp)
-                        )
-                    }
-                    item {
-                        DetailsPagerIndicator(
-                            pagerState = pagerState,
-                            pageCount = pagerItems.size,
-                            showVideoIcon = state.hasVideo,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(44.dp),
-                            pageIndexMapping = { it % pagerItems.size },
-                            onVideoClick = { dispatch(DetailsIntent.OpenVideo) }
-                        )
-                    }
-                    item {
-                        Spacer(
-                            modifier = Modifier.height(2.dp)
-                        )
-                    }
-                    item {
-                        DetailsProductInfoBox(
-                            state = DetailsProductInfoBoxState(
-                                productEntity = state.productEntity,
-                                availabilityText = state.noSizeAvailabilityText,
-                                onMessageClick = { dispatch(DetailsIntent.MessageClick) },
-                                onBrandClick = { dispatch(DetailsIntent.BrandClick) }
-                            ),
-                            modifier = Modifier.fillMaxWidth()
-                        )
                     }
                     if (state.isSizePickerVisible) {
                         item {
@@ -672,6 +675,11 @@ private fun DetailsScreenContent(
                                 )
                             }
                         }
+                    }
+                    item {
+                        Spacer(
+                            modifier = Modifier.height(40.dp)
+                        )
                     }
                 }
             }
