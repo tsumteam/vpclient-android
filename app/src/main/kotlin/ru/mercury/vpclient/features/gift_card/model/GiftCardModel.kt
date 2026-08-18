@@ -31,10 +31,10 @@ data class GiftCardModel(
         get() = templates.getOrElse(selectedTemplateIndex) { GiftCardTemplateEntity.Empty }
 
     val minAmountText: String
-        get() = giftCardEntity?.minAmount?.rubles.orEmpty()
+        get() = giftCardEntity?.minAmount?.rubles?.replace(' ', '\u00A0').orEmpty()
 
     val maxAmountText: String
-        get() = giftCardEntity?.maxAmount?.rubles.orEmpty()
+        get() = giftCardEntity?.maxAmount?.rubles?.replace(' ', '\u00A0').orEmpty()
 
     val presetAmounts: List<GiftCardAmountModel>
         get() = giftCardEntity?.presetAmounts.orEmpty().map { amount ->
