@@ -75,7 +75,7 @@ import ru.mercury.vpclient.shared.ui.components.home.HomeSmallBannersCarouselSta
 import ru.mercury.vpclient.shared.ui.components.home.HomeVideoCarousel
 import ru.mercury.vpclient.shared.ui.components.home.HomeVideoCarouselState
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
-import ru.mercury.vpclient.shared.ui.icons.Logo82
+import ru.mercury.vpclient.shared.ui.icons.Logo58
 import ru.mercury.vpclient.shared.ui.icons.Search24
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.placeholder
@@ -160,9 +160,9 @@ private fun HomeScreenContent(
                 CenterAlignedTopAppBar(
                     title = {
                         Icon(
-                            imageVector = Logo82,
+                            imageVector = Logo58,
                             contentDescription = null,
-                            modifier = Modifier.size(82.dp, 57.dp)
+                            modifier = Modifier.size(width = 58.dp, height = 40.dp)
                         )
                     },
                     navigationIcon = {
