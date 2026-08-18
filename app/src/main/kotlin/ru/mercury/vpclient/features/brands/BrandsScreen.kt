@@ -348,8 +348,7 @@ private fun BrandsScreenContent(
                                         state = BrandGridState(
                                             headerState = BrandSectionHeaderState(
                                                 title = stringResource(ClientStrings.BrandsFavoritesHeader),
-                                                showSelectAll = false,
-                                                onSelectAll = {}
+                                                onClick = { dispatch(BrandsIntent.FavoriteBrandsClick) }
                                             ),
                                             catalogBrandEntities = brandsPage.favoriteBrandEntities,
                                             onBrandClick = { entity -> dispatch(BrandsIntent.BrandClick(entity)) }
@@ -367,9 +366,7 @@ private fun BrandsScreenContent(
                                     BrandGrid(
                                         state = BrandGridState(
                                             headerState = BrandSectionHeaderState(
-                                                title = stringResource(ClientStrings.FilterBrandTopHeader),
-                                                showSelectAll = false,
-                                                onSelectAll = {}
+                                                title = stringResource(ClientStrings.FilterBrandTopHeader)
                                             ),
                                             catalogBrandEntities = brandsPage.topBrandEntities,
                                             onBrandClick = { entity -> dispatch(BrandsIntent.BrandClick(entity)) }
@@ -383,9 +380,7 @@ private fun BrandsScreenContent(
                             item {
                                 BrandSectionHeader(
                                     state = BrandSectionHeaderState(
-                                        title = stringResource(ClientStrings.FilterBrandAllHeader),
-                                        showSelectAll = false,
-                                        onSelectAll = {}
+                                        title = stringResource(ClientStrings.FilterBrandAllHeader)
                                     )
                                 )
                             }

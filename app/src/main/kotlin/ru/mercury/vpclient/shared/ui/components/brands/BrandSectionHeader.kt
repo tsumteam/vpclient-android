@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.ui.components.SharedAnimatedVisibility
+import ru.mercury.vpclient.shared.ui.ktx.clickableWithoutRipple
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.livretMedium18
@@ -26,8 +27,9 @@ import ru.mercury.vpclient.shared.ui.theme.medium15
 
 data class BrandSectionHeaderState(
     val title: String,
-    val showSelectAll: Boolean,
-    val onSelectAll: () -> Unit
+    val showSelectAll: Boolean = false,
+    val onSelectAll: () -> Unit = {},
+    val onClick: () -> Unit = {}
 )
 
 @Composable
@@ -39,6 +41,7 @@ fun BrandSectionHeader(
         modifier = modifier
             .fillMaxWidth()
             .height(44.dp)
+            .clickableWithoutRipple(onClick = state.onClick)
             .padding(start = 16.dp, end = 8.dp),
         contentAlignment = Alignment.Center
     ) {
