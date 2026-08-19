@@ -85,8 +85,11 @@ import ru.mercury.vpclient.features.loyalty_code_sheet.LoyaltyCodeSheet
 import ru.mercury.vpclient.features.loyalty_code_sheet.intent.LoyaltyCodeIntent
 import ru.mercury.vpclient.features.loyalty_code_sheet.model.LoyaltyCodeModel
 import ru.mercury.vpclient.shared.data.entity.FittingCheckoutData
+import ru.mercury.vpclient.shared.data.entity.FittingConfirmationData
+import ru.mercury.vpclient.shared.data.entity.FittingConfirmationDeliveryInterval
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationPlaceType
 import ru.mercury.vpclient.shared.data.network.type.PaymentType
+import ru.mercury.vpclient.shared.data.persistence.database.entity.ClientDeliveryAddressEntity
 import ru.mercury.vpclient.shared.domain.mapper.title
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
@@ -854,11 +857,13 @@ private fun CheckoutScreenContent(
                                         selectedDayId = state.selectedDayId,
                                         selectedIntervalId = state.selectedIntervalId,
                                         onDayClick = { dayId -> dispatch(CheckoutIntent.SelectDeliveryDay(dayId)) },
-                                        onIntervalClick = { intervalId ->
-                                            dispatch(CheckoutIntent.SelectDeliveryInterval(intervalId))
-                                        }
-                                    ),
-                                    modifier = Modifier.padding(top = 24.dp)
+                                        onIntervalClick = { intervalId -> dispatch(CheckoutIntent.SelectDeliveryInterval(intervalId)) }
+                                    )
+                                )
+                            }
+                            item {
+                                Spacer(
+                                    modifier = Modifier.height(32.dp)
                                 )
                             }
                         }
@@ -1000,49 +1005,125 @@ private fun CheckoutScreenContentPreview(
 }
 
 private class CheckoutModelPreviewParameterProvider: PreviewParameterProvider<CheckoutModel> {
+    private val payableCheckoutData = FittingCheckoutData.Empty.copy(
+        deliveryIds = listOf("delivery"),
+        itemCount = 2,
+        orderAmount = 259_950
+    )
+    private val loyaltyCheckoutData = payableCheckoutData.copy(
+        availableBonusAmount = 12_000,
+        totalAvailableBonusAmount = 12_000,
+        loyaltyCardNumber = "G40135"
+    )
+    private val deliveryIntervals = listOf(
+        FittingConfirmationDeliveryInterval(
+            id = "2026-08-20T10:00_2026-08-20T12:00",
+            dayId = "2026-08-20",
+            dayTitle = "20 августа",
+            timeTitle = "10:00-12:00",
+            summary = "20 августа с 10:00 до 12:00"
+        ),
+        FittingConfirmationDeliveryInterval(
+            id = "2026-08-20T12:00_2026-08-20T14:00",
+            dayId = "2026-08-20",
+            dayTitle = "20 августа",
+            timeTitle = "12:00-14:00",
+            summary = "20 августа с 12:00 до 14:00"
+        ),
+        FittingConfirmationDeliveryInterval(
+            id = "2026-08-21T10:00_2026-08-21T12:00",
+            dayId = "2026-08-21",
+            dayTitle = "21 августа",
+            timeTitle = "10:00-12:00",
+            summary = "21 августа с 10:00 до 12:00"
+        )
+    )
+    private val deliveryData = FittingConfirmationData(
+        boutiqueAddress = "Барвиха Luxury Village",
+        isClientAddressAvailable = true,
+        singleIntervals = deliveryIntervals
+    )
+    private val clientAddress = ClientDeliveryAddressEntity(
+        id = 1,
+        address = "Москва, улица Петровка, 2",
+        flat = "42"
+    )
+
     override val values: Sequence<CheckoutModel> = sequenceOf(
         CheckoutModel(
             loadDataJob = Job()
         ),
         CheckoutModel(
-            fittingCheckoutData = FittingCheckoutData.Empty.copy(
-                deliveryIds = listOf("delivery"),
-                itemCount = 2,
-                orderAmount = 259_950,
-                availableBonusAmount = 12_000,
-                totalAvailableBonusAmount = 12_000,
-                loyaltyCardNumber = "G40135"
-            ),
+            fittingCheckoutData = FittingCheckoutData.Empty
+        ),
+        CheckoutModel(
+            fittingCheckoutData = payableCheckoutData
+        ),
+        CheckoutModel(
+            fittingCheckoutData = loyaltyCheckoutData,
             isPayWithBonuses = false
         ),
         CheckoutModel(
-            fittingCheckoutData = FittingCheckoutData.Empty.copy(
-                deliveryIds = listOf("delivery"),
-                itemCount = 2,
-                orderAmount = 259_950,
-                availableBonusAmount = 12_000,
-                totalAvailableBonusAmount = 12_000,
-                loyaltyCardNumber = "G40135"
+            fittingCheckoutData = loyaltyCheckoutData
+        ),
+        CheckoutModel(
+            fittingCheckoutData = loyaltyCheckoutData.copy(
+                promotionDiscount = 12_000
             )
         ),
         CheckoutModel(
-            fittingCheckoutData = FittingCheckoutData.Empty.copy(
-                deliveryIds = listOf("delivery"),
-                itemCount = 2,
-                orderAmount = 259_950,
-                availableBonusAmount = 12_000,
-                totalAvailableBonusAmount = 12_000,
-                loyaltyCardNumber = "G40135"
-            ),
+            fittingCheckoutData = loyaltyCheckoutData,
             paymentType = PaymentType.CASHLESS_COURIER
         ),
         CheckoutModel(
-            fittingCheckoutData = FittingCheckoutData.Empty.copy(
-                deliveryIds = listOf("delivery"),
-                itemCount = 2,
-                orderAmount = 247_950,
-                loyaltyCardNumber = null
+            fittingCheckoutData = payableCheckoutData,
+            paymentJob = Job()
+        ),
+        CheckoutModel(
+            fittingCheckoutData = payableCheckoutData.copy(
+                orderAmount = 1_200_000
             )
+        ),
+        CheckoutModel(
+            source = CheckoutSource.Cart,
+            fittingCheckoutData = payableCheckoutData,
+            deliveryData = deliveryData.copy(singleIntervals = emptyList())
+        ),
+        CheckoutModel(
+            source = CheckoutSource.Cart,
+            fittingCheckoutData = payableCheckoutData,
+            deliveryData = deliveryData
+        ),
+        CheckoutModel(
+            source = CheckoutSource.Cart,
+            fittingCheckoutData = payableCheckoutData,
+            deliveryData = deliveryData,
+            selectedDayId = deliveryIntervals.first().dayId,
+            selectedIntervalId = deliveryIntervals.first().id
+        ),
+        CheckoutModel(
+            source = CheckoutSource.Cart,
+            fittingCheckoutData = payableCheckoutData,
+            deliveryData = deliveryData,
+            selectedPlaceType = FittingConfirmationPlaceType.Home,
+            clientAddresses = listOf(clientAddress),
+            selectedClientAddressId = clientAddress.id,
+            selectedDayId = deliveryIntervals.last().dayId,
+            selectedIntervalId = deliveryIntervals.last().id
+        ),
+        CheckoutModel(
+            source = CheckoutSource.Cart,
+            fittingCheckoutData = payableCheckoutData.copy(
+                totalAvailableBonusAmount = 12_000,
+                loyaltyCardNumber = "G40135"
+            ),
+            deliveryData = deliveryData,
+            selectedDayId = deliveryIntervals.first().dayId,
+            selectedIntervalId = deliveryIntervals.first().id
+        ),
+        CheckoutModel(
+            source = CheckoutSource.ExistingOrder,
+            fittingCheckoutData = payableCheckoutData
         )
     )
 }
