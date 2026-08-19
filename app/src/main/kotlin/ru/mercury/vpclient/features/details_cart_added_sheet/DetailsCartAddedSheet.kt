@@ -6,6 +6,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -68,9 +69,7 @@ fun DetailsCartAddedSheet(
                 .clip(RoundedCornerShape(16.dp))
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.background), 
-            contentPadding = PaddingValues(
-                bottom = 16.dp
-            )
+            contentPadding = PaddingValues(bottom = 16.dp)
         ) {
             item {
                 CenterAlignedTopAppBar(
@@ -92,10 +91,15 @@ fun DetailsCartAddedSheet(
                 )
             }
             item {
+                Spacer(
+                    modifier = Modifier.height(8.dp)
+                )
+            }
+            item {
                 OutlinedButton(
                     onClick = { sheetDispatch(DetailsCartAddedSheetIntent.ContinueShoppingClick) },
                     modifier = Modifier
-                        .padding(start = 16.dp, top = 8.dp, end = 16.dp)
+                        .padding(horizontal = 16.dp)
                         .fillMaxWidth()
                         .height(52.dp),
                     shape = RoundedCornerShape(8.dp),
@@ -118,10 +122,15 @@ fun DetailsCartAddedSheet(
                 }
             }
             item {
+                Spacer(
+                    modifier = Modifier.height(16.dp)
+                )
+            }
+            item {
                 Button(
                     onClick = { sheetDispatch(DetailsCartAddedSheetIntent.CartClick) },
                     modifier = Modifier
-                        .padding(start = 16.dp, top = 16.dp, end = 16.dp)
+                        .padding(horizontal = 16.dp)
                         .fillMaxWidth()
                         .height(52.dp),
                     shape = RoundedCornerShape(8.dp),
