@@ -41,6 +41,7 @@ sealed interface CheckoutIntent: Intent {
     data object BankCardPayClick: CheckoutIntent
     data object BankCardNumberFocusLost: CheckoutIntent
     data object BankCardExpirationDateFocusLost: CheckoutIntent
+    data object BankCardCvvFocusLost: CheckoutIntent
     data object CheckPaymentResult: CheckoutIntent
     data object DismissSbpBankSheet: CheckoutIntent
     data class LoadData(val bonusType: CheckoutBonusType = CheckoutBonusType.LOYALTY_CARD): CheckoutIntent

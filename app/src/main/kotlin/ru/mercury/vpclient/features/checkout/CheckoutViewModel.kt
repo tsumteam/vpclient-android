@@ -828,7 +828,8 @@ class CheckoutViewModel @AssistedInject constructor(
                         bankCardCvv = "",
                         isBankCardSaveChecked = false,
                         isBankCardNumberErrorVisible = false,
-                        isBankCardExpirationDateErrorVisible = false
+                        isBankCardExpirationDateErrorVisible = false,
+                        isBankCardCvvErrorVisible = false
                     )
                 }
             }
@@ -840,7 +841,8 @@ class CheckoutViewModel @AssistedInject constructor(
                         bankCardExpirationDate = "",
                         bankCardCvv = "",
                         isBankCardNumberErrorVisible = false,
-                        isBankCardExpirationDateErrorVisible = false
+                        isBankCardExpirationDateErrorVisible = false,
+                        isBankCardCvvErrorVisible = false
                     )
                 }
             }
@@ -882,7 +884,8 @@ class CheckoutViewModel @AssistedInject constructor(
                     it.copy(
                         bankCardCvv = intent.value
                             .filter(Char::isDigit)
-                            .take(CheckoutBankCardSheetModel.CVV_LENGTH)
+                            .take(CheckoutBankCardSheetModel.CVV_LENGTH),
+                        isBankCardCvvErrorVisible = false
                     )
                 }
             }
@@ -891,6 +894,14 @@ class CheckoutViewModel @AssistedInject constructor(
             }
             is CheckoutIntent.BankCardExpirationDateFocusLost -> {
                 reduce { it.copy(isBankCardExpirationDateErrorVisible = !it.bankCardExpirationDate.isValidBankCardExpirationDate) }
+            }
+            is CheckoutIntent.BankCardCvvFocusLost -> {
+                reduce {
+                    it.copy(
+                        isBankCardCvvErrorVisible = it.bankCardCvv.isNotEmpty() &&
+                            it.bankCardCvv.length != CheckoutBankCardSheetModel.CVV_LENGTH
+                    )
+                }
             }
             is CheckoutIntent.BankCardPayClick -> {
                 val state = stateFlow.value
@@ -935,6 +946,7 @@ class CheckoutViewModel @AssistedInject constructor(
                                     isBankCardSaveChecked = false,
                                     isBankCardNumberErrorVisible = false,
                                     isBankCardExpirationDateErrorVisible = false,
+                                    isBankCardCvvErrorVisible = false,
                                     isPaymentExternalFlowStarted = true
                                 )
                             }

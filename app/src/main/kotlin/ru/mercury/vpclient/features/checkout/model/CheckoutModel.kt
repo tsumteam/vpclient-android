@@ -69,6 +69,7 @@ data class CheckoutModel(
     val isBankCardSaveChecked: Boolean = false,
     val isBankCardNumberErrorVisible: Boolean = false,
     val isBankCardExpirationDateErrorVisible: Boolean = false,
+    val isBankCardCvvErrorVisible: Boolean = false,
     val paymentResultCheckJob: Job? = null,
     val isPaymentExternalFlowStarted: Boolean = false,
     val isSbpBankSheetVisible: Boolean = false,

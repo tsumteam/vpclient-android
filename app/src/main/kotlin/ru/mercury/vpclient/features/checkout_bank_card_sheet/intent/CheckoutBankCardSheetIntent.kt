@@ -8,6 +8,7 @@ sealed interface CheckoutBankCardSheetIntent: Intent {
     data object PayClick: CheckoutBankCardSheetIntent
     data object CardNumberFocusLost: CheckoutBankCardSheetIntent
     data object ExpirationDateFocusLost: CheckoutBankCardSheetIntent
+    data object CvvFocusLost: CheckoutBankCardSheetIntent
     data class CardNumberChange(val value: String): CheckoutBankCardSheetIntent
     data class ExpirationDateChange(val value: String): CheckoutBankCardSheetIntent
     data class CvvChange(val value: String): CheckoutBankCardSheetIntent

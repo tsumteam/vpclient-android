@@ -10,6 +10,7 @@ data class CheckoutBankCardSheetModel(
     val isSaveCardChecked: Boolean = false,
     val isCardNumberErrorVisible: Boolean = false,
     val isExpirationDateErrorVisible: Boolean = false,
+    val isCvvErrorVisible: Boolean = false,
     val isLoading: Boolean = false
 ): Model {
 
@@ -35,6 +36,9 @@ data class CheckoutBankCardSheetModel(
 
     val isExpirationDateErrorIconVisible: Boolean
         get() = isExpirationDateErrorVisible
+
+    val isCvvErrorIconVisible: Boolean
+        get() = isCvvErrorVisible
 
     val isLoadingIndicatorVisible: Boolean
         get() = isLoading

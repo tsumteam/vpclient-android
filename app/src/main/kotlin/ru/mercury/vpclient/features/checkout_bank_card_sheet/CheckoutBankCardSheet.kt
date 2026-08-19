@@ -112,6 +112,7 @@ fun CheckoutBankCardSheet(
     }
     var isCardNumberEverFocused by remember { mutableStateOf(false) }
     var isExpirationDateEverFocused by remember { mutableStateOf(false) }
+    var isCvvEverFocused by remember { mutableStateOf(false) }
     val sheetDispatch: (CheckoutBankCardSheetIntent) -> Unit = { intent ->
         when (intent) {
             is CheckoutBankCardSheetIntent.DismissRequest -> {
@@ -452,7 +453,23 @@ fun CheckoutBankCardSheet(
                                 .background(
                                     color = MaterialTheme.colorScheme.surfaceContainerHigh,
                                     shape = RoundedCornerShape(8.dp)
-                                ),
+                                )
+                                .then(
+                                    when {
+                                        state.isCvvErrorVisible -> Modifier.border(
+                                            width = 1.dp,
+                                            color = MaterialTheme.colorScheme.error,
+                                            shape = RoundedCornerShape(8.dp)
+                                        )
+                                        else -> Modifier
+                                    }
+                                )
+                                .onFocusChanged { focusState ->
+                                    when {
+                                        focusState.isFocused -> isCvvEverFocused = true
+                                        isCvvEverFocused -> sheetDispatch(CheckoutBankCardSheetIntent.CvvFocusLost)
+                                    }
+                                },
                             textStyle = MaterialTheme.typography.regular15.copy(
                                 color = MaterialTheme.colorScheme.onBackground,
                                 lineHeight = 19.sp,
@@ -469,27 +486,42 @@ fun CheckoutBankCardSheet(
                             visualTransformation = PasswordVisualTransformation(),
                             cursorBrush = SolidColor(MaterialTheme.colorScheme.error),
                             decorationBox = { innerTextField ->
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(horizontal = 16.dp),
-                                    contentAlignment = Alignment.CenterStart
+                                Row(
+                                    modifier = Modifier.fillMaxSize(),
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    when {
-                                        state.cvv.isEmpty() -> {
-                                            Text(
-                                                text = stringResource(
-                                                    ClientStrings.CheckoutBankCardSheetCvvPlaceholder
-                                                ),
-                                                style = MaterialTheme.typography.regular15.copy(
-                                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                    lineHeight = 19.sp,
-                                                    letterSpacing = .2.sp
+                                    Box(
+                                        modifier = Modifier
+                                            .weight(1F)
+                                            .padding(horizontal = 16.dp),
+                                        contentAlignment = Alignment.CenterStart
+                                    ) {
+                                        when {
+                                            state.cvv.isEmpty() -> {
+                                                Text(
+                                                    text = stringResource(
+                                                        ClientStrings.CheckoutBankCardSheetCvvPlaceholder
+                                                    ),
+                                                    style = MaterialTheme.typography.regular15.copy(
+                                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                        lineHeight = 19.sp,
+                                                        letterSpacing = .2.sp
+                                                    )
                                                 )
-                                            )
+                                            }
                                         }
+                                        innerTextField()
                                     }
-                                    innerTextField()
+                                    if (state.isCvvErrorIconVisible) {
+                                        Icon(
+                                            imageVector = TextFieldError24,
+                                            contentDescription = null,
+                                            modifier = Modifier
+                                                .padding(end = 16.dp)
+                                                .size(24.dp),
+                                            tint = Color.Unspecified
+                                        )
+                                    }
                                 }
                             }
                         )
@@ -609,6 +641,12 @@ private class CheckoutBankCardSheetModelProvider: PreviewParameterProvider<Check
             expirationDate = "13/20",
             cvv = "123",
             isExpirationDateErrorVisible = true
+        ),
+        CheckoutBankCardSheetModel(
+            cardNumber = "2204 7262 8765 0025",
+            expirationDate = "12/28",
+            cvv = "12",
+            isCvvErrorVisible = true
         )
     )
 }

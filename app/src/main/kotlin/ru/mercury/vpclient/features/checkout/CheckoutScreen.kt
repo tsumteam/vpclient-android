@@ -299,6 +299,7 @@ fun CheckoutScreen(
                 isSaveCardChecked = state.isBankCardSaveChecked,
                 isCardNumberErrorVisible = state.isBankCardNumberErrorVisible,
                 isExpirationDateErrorVisible = state.isBankCardExpirationDateErrorVisible,
+                isCvvErrorVisible = state.isBankCardCvvErrorVisible,
                 isLoading = state.isPaymentLoading
             ),
             dispatch = { intent ->
@@ -317,6 +318,9 @@ fun CheckoutScreen(
                     }
                     is CheckoutBankCardSheetIntent.ExpirationDateFocusLost -> {
                         viewModel.dispatch(CheckoutIntent.BankCardExpirationDateFocusLost)
+                    }
+                    is CheckoutBankCardSheetIntent.CvvFocusLost -> {
+                        viewModel.dispatch(CheckoutIntent.BankCardCvvFocusLost)
                     }
                     is CheckoutBankCardSheetIntent.CardNumberChange -> {
                         viewModel.dispatch(CheckoutIntent.BankCardNumberChange(intent.value))
