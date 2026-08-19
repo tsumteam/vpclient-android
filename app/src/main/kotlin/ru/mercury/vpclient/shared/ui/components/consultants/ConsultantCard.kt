@@ -49,7 +49,10 @@ fun ConsultantCard(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .then(if (employeePojo == EmployeePojo.Empty) Modifier else Modifier.clickable(onClick = onClick))
+            .clickable(
+                enabled = employeePojo != EmployeePojo.Empty,
+                onClick = onClick
+            )
     ) {
         Column(
             modifier = Modifier

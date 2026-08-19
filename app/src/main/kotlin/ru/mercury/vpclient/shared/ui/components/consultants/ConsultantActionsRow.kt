@@ -44,7 +44,7 @@ fun ConsultantActionsRow(
                 .weight(1F)
                 .placeholder(
                     visible = employeePojo == EmployeePojo.Empty,
-                    shape = RoundedCornerShape(4.dp)
+                    shape = RoundedCornerShape(8.dp)
                 )
         )
 
@@ -59,7 +59,7 @@ fun ConsultantActionsRow(
                 .weight(1F)
                 .placeholder(
                     visible = employeePojo == EmployeePojo.Empty,
-                    shape = RoundedCornerShape(4.dp)
+                    shape = RoundedCornerShape(8.dp)
                 )
         )
 
@@ -74,7 +74,7 @@ fun ConsultantActionsRow(
                 .weight(1F)
                 .placeholder(
                     visible = employeePojo == EmployeePojo.Empty,
-                    shape = RoundedCornerShape(4.dp)
+                    shape = RoundedCornerShape(8.dp)
                 )
         )
 
@@ -87,7 +87,7 @@ fun ConsultantActionsRow(
                 .weight(1F)
                 .placeholder(
                     visible = employeePojo == EmployeePojo.Empty,
-                    shape = RoundedCornerShape(4.dp)
+                    shape = RoundedCornerShape(8.dp)
                 )
         )
 
@@ -100,7 +100,7 @@ fun ConsultantActionsRow(
                 .weight(1F)
                 .placeholder(
                     visible = employeePojo == EmployeePojo.Empty,
-                    shape = RoundedCornerShape(4.dp)
+                    shape = RoundedCornerShape(8.dp)
                 )
         )
     }

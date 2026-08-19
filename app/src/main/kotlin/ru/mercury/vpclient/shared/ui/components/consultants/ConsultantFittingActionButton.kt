@@ -43,7 +43,7 @@ fun ConsultantFittingActionButton(
             .fillMaxWidth()
             .height(52.dp)
             .defaultMinSize(minWidth = 1.dp)
-            .clip(RoundedCornerShape(4.dp))
+            .clip(RoundedCornerShape(8.dp))
             .background(MaterialTheme.colorScheme.surfaceContainerHigh)
             .clickable(onClick = state.onClick)
             .padding(start = 4.dp, top = 5.dp, end = 4.dp, bottom = 4.dp),
