@@ -302,7 +302,7 @@ private fun ProfileScreenContent(
                 OutlinedButton(
                     onClick = { dispatch(ProfileIntent.ShowLogoutDialog) },
                     modifier = Modifier
-                        .padding(bottom = 8.dp)
+                        //.padding(bottom = 8.dp)
                         .fillMaxWidth()
                         .height(52.dp),
                     enabled = !state.isLogoutLoading,
@@ -341,7 +341,9 @@ private fun ProfileScreenContent(
 
                                 Text(
                                     text = stringResource(ClientStrings.ProfileLogout),
-                                    style = MaterialTheme.typography.livretRegular15.copy(
+                                    style = MaterialTheme.typography.medium15.copy(
+                                        lineHeight = 15.sp,
+                                        letterSpacing = .3.sp,
                                         textAlign = TextAlign.Center
                                     )
                                 )
