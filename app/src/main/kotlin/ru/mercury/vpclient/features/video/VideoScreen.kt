@@ -53,7 +53,9 @@ import kotlin.time.Duration.Companion.milliseconds
 @Composable
 fun VideoScreen(
     route: VideoRoute,
-    viewModel: VideoViewModel = hiltViewModel<VideoViewModel, VideoViewModel.Factory>(creationCallback = { it.create(route) })
+    viewModel: VideoViewModel = hiltViewModel<VideoViewModel, VideoViewModel.Factory>(
+        creationCallback = { it.create(route) }
+    )
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
 
