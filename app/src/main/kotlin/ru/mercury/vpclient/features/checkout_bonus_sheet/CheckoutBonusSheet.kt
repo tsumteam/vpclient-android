@@ -122,6 +122,11 @@ fun CheckoutBonusSheet(
                         )
                     }
                 },
+                actions = {
+                    Spacer(
+                        modifier = Modifier.size(48.dp)
+                    )
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background,
                     navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
