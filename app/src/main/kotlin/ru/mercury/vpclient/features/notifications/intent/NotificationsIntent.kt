@@ -6,6 +6,8 @@ import ru.mercury.vpclient.shared.mvi.Intent
 sealed interface NotificationsIntent: Intent {
     data object CollectNotifications: NotificationsIntent
     data object CollectCompilations: NotificationsIntent
+    data object CollectCartCount: NotificationsIntent
+    data object CollectFittingCount: NotificationsIntent
     data object CollectActiveEmployee: NotificationsIntent
     data object LoadNotifications: NotificationsIntent
     data object LoadCompilations: NotificationsIntent

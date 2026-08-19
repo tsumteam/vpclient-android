@@ -2,6 +2,7 @@ package ru.mercury.vpclient.features.notifications
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.features.cart.navigation.CartPage
@@ -14,8 +15,10 @@ import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.network.type.ActivityCounterType
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
+import ru.mercury.vpclient.shared.domain.mapper.clientNotificationCompilationId
 import ru.mercury.vpclient.shared.domain.usecase.ActivityCountersByPairedUserIdResetUseCase
 import ru.mercury.vpclient.shared.domain.usecase.ActivityCountersByPairedUserIdResetUseCase.ActivityCountersByPairedUserIdResetException
+import ru.mercury.vpclient.shared.domain.usecase.CartCountFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.ClientNotificationEntitiesFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.ClientNotificationsUseCase
 import ru.mercury.vpclient.shared.domain.usecase.ClientNotificationsUseCase.ClientNotificationsException
@@ -23,7 +26,7 @@ import ru.mercury.vpclient.shared.domain.usecase.CompilationEntitiesFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CompilationsClientUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CompilationsClientUseCase.CompilationsClientException
 import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
-import ru.mercury.vpclient.shared.domain.mapper.clientNotificationCompilationId
+import ru.mercury.vpclient.shared.domain.usecase.FittingCountFlowUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.navigation.BackRoute
 import javax.inject.Inject
@@ -35,12 +38,16 @@ class NotificationsViewModel @Inject constructor(
     private val compilationEntitiesFlowUseCase: CompilationEntitiesFlowUseCase,
     private val compilationsClientUseCase: CompilationsClientUseCase,
     private val activityCountersByPairedUserIdResetUseCase: ActivityCountersByPairedUserIdResetUseCase,
+    private val cartCountFlowUseCase: CartCountFlowUseCase,
+    private val fittingCountFlowUseCase: FittingCountFlowUseCase,
     private val employeeActiveFlowUseCase: EmployeeActiveFlowUseCase
 ): ClientViewModel<NotificationsIntent, NotificationsModel, NotificationsEvent>(NotificationsModel()) {
 
     init {
         dispatch(NotificationsIntent.CollectNotifications)
         dispatch(NotificationsIntent.CollectCompilations)
+        dispatch(NotificationsIntent.CollectCartCount)
+        dispatch(NotificationsIntent.CollectFittingCount)
         dispatch(NotificationsIntent.CollectActiveEmployee)
         dispatch(NotificationsIntent.LoadNotifications)
         dispatch(NotificationsIntent.LoadCompilations)
@@ -65,6 +72,20 @@ class NotificationsViewModel @Inject constructor(
                     }
                 }
             }
+            is NotificationsIntent.CollectCartCount -> {
+                launch {
+                    cartCountFlowUseCase(Unit)
+                        .distinctUntilChanged()
+                        .collectLatest { count -> reduce { it.copy(cartCount = count) } }
+                }
+            }
+            is NotificationsIntent.CollectFittingCount -> {
+                launch {
+                    fittingCountFlowUseCase(Unit)
+                        .distinctUntilChanged()
+                        .collectLatest { count -> reduce { it.copy(fittingCount = count) } }
+                }
+            }
             is NotificationsIntent.CollectActiveEmployee -> {
                 launch {
                     employeeActiveFlowUseCase(Unit).collectLatest { entity ->
@@ -73,22 +94,12 @@ class NotificationsViewModel @Inject constructor(
                 }
             }
             is NotificationsIntent.LoadNotifications -> {
-                val state = stateFlow.value
-                if (state.clientNotificationsJob?.isActive == true || state.refreshNotificationsJob?.isActive == true) {
-                    return
-                }
+                if (stateFlow.value.clientNotificationsJob?.isActive == true || stateFlow.value.refreshNotificationsJob?.isActive == true) return
                 val job = launch {
-                    clientNotificationsUseCase(state.selectedCategory).getOrThrow()
+                    clientNotificationsUseCase(stateFlow.value.selectedCategory).getOrThrow()
                 }.also { launchedJob ->
                     launchedJob.invokeOnCompletion {
-                        reduce { currentState ->
-                            when {
-                                currentState.clientNotificationsJob === launchedJob -> {
-                                    currentState.copy(clientNotificationsJob = null)
-                                }
-                                else -> currentState
-                            }
-                        }
+                        reduce { it.copy(clientNotificationsJob = null) }
                     }
                 }
                 reduce { currentState -> currentState.copy(clientNotificationsJob = job) }
@@ -97,28 +108,16 @@ class NotificationsViewModel @Inject constructor(
                 launch { compilationsClientUseCase(Unit).getOrThrow() }
             }
             is NotificationsIntent.ResetNotificationCounter -> {
-                launch {
-                    activityCountersByPairedUserIdResetUseCase(ActivityCounterType.CLIENT_NOTIFICATION).getOrThrow()
-                }
+                launch { activityCountersByPairedUserIdResetUseCase(ActivityCounterType.CLIENT_NOTIFICATION).getOrThrow() }
             }
             is NotificationsIntent.PullToRefresh -> {
-                val state = stateFlow.value
-                if (state.clientNotificationsJob?.isActive == true || state.refreshNotificationsJob?.isActive == true) {
-                    return
-                }
+                if (stateFlow.value.clientNotificationsJob?.isActive == true || stateFlow.value.refreshNotificationsJob?.isActive == true) return
                 dispatch(NotificationsIntent.LoadCompilations)
                 val job = launch {
-                    clientNotificationsUseCase(state.selectedCategory).getOrThrow()
+                    clientNotificationsUseCase(stateFlow.value.selectedCategory).getOrThrow()
                 }.also { launchedJob ->
                     launchedJob.invokeOnCompletion {
-                        reduce { currentState ->
-                            when {
-                                currentState.refreshNotificationsJob === launchedJob -> {
-                                    currentState.copy(refreshNotificationsJob = null)
-                                }
-                                else -> currentState
-                            }
-                        }
+                        reduce { it.copy(refreshNotificationsJob = null) }
                     }
                 }
                 reduce { currentState -> currentState.copy(refreshNotificationsJob = job) }
@@ -130,11 +129,10 @@ class NotificationsViewModel @Inject constructor(
             }
             is NotificationsIntent.MessengerClick -> return
             is NotificationsIntent.SelectCategory -> {
-                val state = stateFlow.value
-                if (state.selectedCategory == intent.category) return
-                state.collectNotificationsJob?.cancel()
-                state.clientNotificationsJob?.cancel()
-                state.refreshNotificationsJob?.cancel()
+                if (stateFlow.value.selectedCategory == intent.category) return
+                stateFlow.value.collectNotificationsJob?.cancel()
+                stateFlow.value.clientNotificationsJob?.cancel()
+                stateFlow.value.refreshNotificationsJob?.cancel()
                 reduce { currentState ->
                     currentState.copy(
                         notificationEntities = emptyList(),
@@ -165,12 +163,7 @@ class NotificationsViewModel @Inject constructor(
     override fun catch(throwable: Throwable) {
         when (throwable) {
             is ClientNotificationsException -> {
-                reduce { state ->
-                    state.copy(
-                        clientNotificationsJob = null,
-                        refreshNotificationsJob = null
-                    )
-                }
+                reduce { it.copy(clientNotificationsJob = null, refreshNotificationsJob = null) }
                 launch { send(NotificationsEvent.SnackbarErrorMessage(throwable.message)) }
             }
             is ActivityCountersByPairedUserIdResetException -> {
@@ -180,12 +173,7 @@ class NotificationsViewModel @Inject constructor(
                 launch { send(NotificationsEvent.SnackbarErrorMessage(throwable.message)) }
             }
             is ClientException -> {
-                reduce { state ->
-                    state.copy(
-                        clientNotificationsJob = null,
-                        refreshNotificationsJob = null
-                    )
-                }
+                reduce { it.copy(clientNotificationsJob = null, refreshNotificationsJob = null) }
                 launch { send(NotificationsEvent.SnackbarErrorMessage(throwable.message)) }
             }
             is RoomException, is RoomSQLiteException -> {

@@ -5,8 +5,6 @@ import ru.mercury.vpclient.shared.data.entity.ClientNotificationCategory
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ClientNotificationEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CompilationEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
-import ru.mercury.vpclient.shared.domain.mapper.basketText
-import ru.mercury.vpclient.shared.domain.mapper.fittingText
 import ru.mercury.vpclient.shared.domain.mapper.hasBasketBadge
 import ru.mercury.vpclient.shared.domain.mapper.hasFittingBadge
 import ru.mercury.vpclient.shared.domain.mapper.hasMessengerBadge
@@ -18,6 +16,8 @@ data class NotificationsModel(
     val compilationEntities: List<CompilationEntity> = emptyList(),
     val selectedCategory: ClientNotificationCategory = ClientNotificationCategory.ALL,
     val activeEmployee: EmployeeEntity = EmployeeEntity.Empty,
+    val cartCount: Int = 0,
+    val fittingCount: Int = 0,
     val collectNotificationsJob: Job? = null,
     val clientNotificationsJob: Job? = null,
     val refreshNotificationsJob: Job? = null
@@ -44,10 +44,13 @@ data class NotificationsModel(
             refreshNotificationsJob == null
 
     val cartText: String
-        get() = activeEmployee.basketText
+        get() = when {
+            cartCount > 0 -> cartCount.toString()
+            else -> ""
+        }
 
     val fittingText: String
-        get() = activeEmployee.fittingText
+        get() = if (fittingCount > 0) fittingCount.toString() else ""
 
     val isCartBadgeVisible: Boolean
         get() = activeEmployee.hasBasketBadge
