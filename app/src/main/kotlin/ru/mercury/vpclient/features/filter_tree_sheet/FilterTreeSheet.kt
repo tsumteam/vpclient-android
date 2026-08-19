@@ -52,7 +52,7 @@ import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.filters.FilterSelectableRow
 import ru.mercury.vpclient.shared.ui.icons.Check24
-import ru.mercury.vpclient.shared.ui.icons.ChevronEnd24
+import ru.mercury.vpclient.shared.ui.icons.ChevronRight24
 import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
@@ -187,10 +187,10 @@ fun FilterTreeSheet(
                                     )
 
                                     Icon(
-                                        imageVector = ChevronEnd24,
+                                        imageVector = ChevronRight24,
                                         contentDescription = null,
                                         modifier = Modifier.size(24.dp),
-                                        tint = MaterialTheme.colorScheme.onBackground
+                                        tint = MaterialTheme.colorScheme.outline
                                     )
                                 }
                             }

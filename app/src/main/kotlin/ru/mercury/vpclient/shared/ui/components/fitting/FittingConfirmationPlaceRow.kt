@@ -21,7 +21,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.mercury.vpclient.shared.ui.icons.ChevronEnd24
+import ru.mercury.vpclient.shared.ui.icons.ChevronRight24
 import ru.mercury.vpclient.shared.ui.icons.Selected24
 import ru.mercury.vpclient.shared.ui.icons.Unselected24
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
@@ -80,13 +80,10 @@ fun FittingConfirmationPlaceRow(
                 enabled = state.enabled
             ) {
                 Icon(
-                    imageVector = ChevronEnd24,
+                    imageVector = ChevronRight24,
                     contentDescription = null,
                     modifier = Modifier.size(24.dp),
-                    tint = when {
-                        state.enabled -> MaterialTheme.colorScheme.onSurfaceVariant
-                        else -> MaterialTheme.colorScheme.outline
-                    }
+                    tint = MaterialTheme.colorScheme.outline
                 )
             }
         }

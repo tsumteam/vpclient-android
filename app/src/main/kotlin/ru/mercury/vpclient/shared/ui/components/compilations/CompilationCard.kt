@@ -44,7 +44,7 @@ import ru.mercury.vpclient.shared.ui.components.SwipeActionBoxState
 import ru.mercury.vpclient.shared.ui.components.product.ProductSwipeableCard
 import ru.mercury.vpclient.shared.ui.components.product.ProductSwipeableCardState
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
-import ru.mercury.vpclient.shared.ui.icons.ChevronEnd24
+import ru.mercury.vpclient.shared.ui.icons.ChevronRight24
 import ru.mercury.vpclient.shared.ui.icons.SendFilled24
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
@@ -189,10 +189,10 @@ fun CompilationCard(
                 }
 
                 Icon(
-                    imageVector = ChevronEnd24,
+                    imageVector = ChevronRight24,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp),
+                    tint = MaterialTheme.colorScheme.outline
                 )
             }
         }

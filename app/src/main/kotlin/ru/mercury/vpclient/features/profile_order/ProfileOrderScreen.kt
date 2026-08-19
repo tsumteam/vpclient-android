@@ -56,7 +56,7 @@ import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.profile.ProfileOrderProductItem
 import ru.mercury.vpclient.shared.ui.components.profile.ProfileOrderProductItemState
-import ru.mercury.vpclient.shared.ui.icons.ChevronEnd24
+import ru.mercury.vpclient.shared.ui.icons.ChevronRight24
 import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
@@ -309,10 +309,10 @@ private fun ProfileOrderScreenContent(
                             }
 
                             Icon(
-                                imageVector = ChevronEnd24,
+                                imageVector = ChevronRight24,
                                 contentDescription = null,
                                 modifier = Modifier.size(24.dp),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                tint = MaterialTheme.colorScheme.outline
                             )
                         }
 
