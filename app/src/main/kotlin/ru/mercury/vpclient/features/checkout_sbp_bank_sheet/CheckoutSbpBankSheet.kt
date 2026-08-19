@@ -46,7 +46,7 @@ import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.medium18
+import ru.mercury.vpclient.shared.ui.theme.livretMedium18
 import ru.mercury.vpclient.shared.ui.theme.regular14
 import ru.mercury.vpclient.shared.ui.theme.regular15
 
@@ -82,7 +82,7 @@ fun CheckoutSbpBankSheet(
                 title = {
                     Text(
                         text = stringResource(ClientStrings.CheckoutSbpBankSheetTitle),
-                        style = MaterialTheme.typography.medium18
+                        style = MaterialTheme.typography.livretMedium18
                     )
                 },
                 navigationIcon = {

@@ -206,7 +206,7 @@
     <string name="checkout_bank_card_sheet_save">Сохранить карту для будущих платежей</string>
     <string name="checkout_bank_card_sheet_pay">Оплатить</string>
     <string name="checkout_bank_card_sheet_error">Данные карты указаны неверно</string>
-    <string name="checkout_sbp_bank_sheet_title">Выберите банк</string>
+    <string name="checkout_sbp_bank_sheet_title">ВЫБЕРИТЕ БАНК</string>
     <string name="checkout_sbp_bank_sheet_subtitle">После выбора Вы перейдете в мобильное приложение банка для подтверждения оплаты</string>
     <string name="checkout_payment_result_success_title">Спасибо за покупку!</string>
     <string name="checkout_payment_result_ordered_title">Спасибо за заказ</string>
