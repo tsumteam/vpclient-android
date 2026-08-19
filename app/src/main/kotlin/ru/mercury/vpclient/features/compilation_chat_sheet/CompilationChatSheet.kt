@@ -137,8 +137,7 @@ private fun CompilationChatSheetPreview(
     }
 }
 
-private class CompilationChatSheetModelProvider:
-    PreviewParameterProvider<CompilationChatModel> {
+private class CompilationChatSheetModelProvider: PreviewParameterProvider<CompilationChatModel> {
 
     override val values: Sequence<CompilationChatModel> = sequenceOf(
         CompilationChatModel(

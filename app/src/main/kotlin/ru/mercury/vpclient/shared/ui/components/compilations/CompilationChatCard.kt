@@ -39,7 +39,7 @@ fun CompilationChatCard(
     ) {
         ClientAsyncImage(
             imageUrl = state.entity.imageUrl,
-            contentScale = ContentScale.Fit,
+            contentScale = ContentScale.Crop,
             modifier = Modifier.size(width = 85.dp, height = 130.dp)
         )
 
