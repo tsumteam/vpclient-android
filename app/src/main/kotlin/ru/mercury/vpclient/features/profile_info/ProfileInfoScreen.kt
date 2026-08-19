@@ -37,7 +37,7 @@ import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.cart.CartIconButton
 import ru.mercury.vpclient.shared.ui.components.cart.FittingIconButton
 import ru.mercury.vpclient.shared.ui.components.cart.MessengerIconButton
-import ru.mercury.vpclient.shared.ui.icons.ChevronEnd24
+import ru.mercury.vpclient.shared.ui.icons.ChevronRight24
 import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
 import ru.mercury.vpclient.shared.ui.icons.Contacts24
 import ru.mercury.vpclient.shared.ui.icons.Delivery24
@@ -147,10 +147,10 @@ private fun ProfileInfoScreenContent(
                     )
 
                     Icon(
-                        imageVector = ChevronEnd24,
+                        imageVector = ChevronRight24,
                         contentDescription = null,
                         modifier = Modifier.size(24.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = MaterialTheme.colorScheme.outline
                     )
                 }
             }
@@ -187,10 +187,10 @@ private fun ProfileInfoScreenContent(
                     )
 
                     Icon(
-                        imageVector = ChevronEnd24,
+                        imageVector = ChevronRight24,
                         contentDescription = null,
                         modifier = Modifier.size(24.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = MaterialTheme.colorScheme.outline
                     )
                 }
             }
@@ -227,10 +227,10 @@ private fun ProfileInfoScreenContent(
                     )
 
                     Icon(
-                        imageVector = ChevronEnd24,
+                        imageVector = ChevronRight24,
                         contentDescription = null,
                         modifier = Modifier.size(24.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = MaterialTheme.colorScheme.outline
                     )
                 }
             }
@@ -267,10 +267,10 @@ private fun ProfileInfoScreenContent(
                     )
 
                     Icon(
-                        imageVector = ChevronEnd24,
+                        imageVector = ChevronRight24,
                         contentDescription = null,
                         modifier = Modifier.size(24.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = MaterialTheme.colorScheme.outline
                     )
                 }
             }
@@ -307,10 +307,10 @@ private fun ProfileInfoScreenContent(
                     )
 
                     Icon(
-                        imageVector = ChevronEnd24,
+                        imageVector = ChevronRight24,
                         contentDescription = null,
                         modifier = Modifier.size(24.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = MaterialTheme.colorScheme.outline
                     )
                 }
             }
@@ -347,10 +347,10 @@ private fun ProfileInfoScreenContent(
                     )
 
                     Icon(
-                        imageVector = ChevronEnd24,
+                        imageVector = ChevronRight24,
                         contentDescription = null,
                         modifier = Modifier.size(24.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = MaterialTheme.colorScheme.outline
                     )
                 }
             }
