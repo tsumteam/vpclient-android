@@ -3,7 +3,6 @@
 package ru.mercury.vpclient.shared.domain.usecase
 
 import ru.mercury.vpclient.shared.coroutines.SharedDispatchers
-import ru.mercury.vpclient.shared.data.PREFIX_SPACE
 import ru.mercury.vpclient.shared.data.network.NetworkService
 import ru.mercury.vpclient.shared.data.network.request.DetailCardRequest
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogFilterProductsDao
@@ -66,9 +65,7 @@ class LoadProductUseCase @Inject constructor(
                     categoryId = response.categoryId,
                     brandId = response.brandId,
                     brand = response.brand,
-                    colorName = listOfNotNull(selectedColor?.colorName, selectedColor?.colorId?.let { "($it)" })
-                        .joinToString(separator = PREFIX_SPACE)
-                        .takeIf { it.isNotEmpty() },
+                    colorName = selectedColor?.colorName,
                     urlBrandLogo = response.urlBrandLogo,
                     article = response.article,
                     longDescription = response.longDescription,
