@@ -167,17 +167,11 @@ fun LoyaltyAddCardSheet(
                     ClientTextField(
                         value = state.cardNumber,
                         onValueChange = { sheetDispatch(LoyaltyAddCardIntent.CardNumberChange(it)) },
-                        placeholder = stringResource(ClientStrings.LoyaltyAddCardCardPlaceholder),
-                        accepted = true,
+                        label = stringResource(ClientStrings.LoyaltyAddCardCardPlaceholder),
                         modifier = Modifier
                             .padding(horizontal = 16.dp)
                             .height(52.dp)
-                            .focusRequester(focusRequester)
-                            .then(
-                                when {
-                                    else -> Modifier
-                                }
-                            ),
+                            .focusRequester(focusRequester),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
                 }
