@@ -51,7 +51,7 @@ import ru.mercury.vpclient.shared.ui.components.cart.MessengerIconButton
 import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.livretRegular15
+import ru.mercury.vpclient.shared.ui.theme.medium15
 import ru.mercury.vpclient.shared.ui.theme.medium18
 
 @Composable
@@ -170,7 +170,7 @@ private fun ProfileMyDataScreenContent(
                         else -> {
                             Text(
                                 text = stringResource(ClientStrings.MyDataDeleteProfile),
-                                style = MaterialTheme.typography.livretRegular15.copy(
+                                style = MaterialTheme.typography.medium15.copy(
                                     textAlign = TextAlign.Center
                                 )
                             )
