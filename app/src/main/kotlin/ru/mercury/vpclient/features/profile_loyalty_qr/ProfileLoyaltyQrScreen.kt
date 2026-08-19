@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -90,7 +91,7 @@ private fun ProfileLoyaltyQrScreenContent(
     ) { innerPadding ->
         SharedLazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = innerPadding + PaddingValues(start = 58.dp, top = 24.dp, end = 58.dp),
+            contentPadding = innerPadding + PaddingValues(start = 16.dp, top = 24.dp, end = 16.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -98,6 +99,7 @@ private fun ProfileLoyaltyQrScreenContent(
                 ProfileQrImage(
                     qrCode = state.qrCode,
                     modifier = Modifier
+                        .padding(horizontal = 42.dp)
                         .fillMaxWidth()
                         .aspectRatio(1F)
                 )
