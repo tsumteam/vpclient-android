@@ -174,7 +174,7 @@ private fun ProfileContactsScreenContent(
             }
             item {
                 Spacer(
-                    modifier = Modifier.height(30.dp)
+                    modifier = Modifier.height(24.dp)
                 )
             }
             item {
@@ -186,6 +186,11 @@ private fun ProfileContactsScreenContent(
                         lineHeight = 19.sp,
                         letterSpacing = .2.sp
                     )
+                )
+            }
+            item {
+                Spacer(
+                    modifier = Modifier.height(8.dp)
                 )
             }
             item {
