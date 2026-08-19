@@ -99,7 +99,7 @@ fun SharedTabRow(
                         .width(tabWidth)
                         .height(36.dp)
                         .shadow(
-                            elevation = 8.dp,
+                            elevation = 2.dp,
                             shape = RoundedCornerShape(10.dp),
                             clip = false
                         )
