@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -419,6 +420,84 @@ private fun CompilationScreenContent(
                     contentPadding = innerPadding + PaddingValues(bottom = 16.dp)
                 ) {
                     item {
+                        Column(
+                            modifier = Modifier.fillParentMaxHeight()
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1F)
+                            ) {
+                                HorizontalPager(
+                                    state = pagerState,
+                                    modifier = Modifier.fillMaxSize(),
+                                    userScrollEnabled = state.compilationPreviewPageEntities.size > 1
+                                ) { page ->
+                                    val pageIndex = when {
+                                        state.compilationPreviewPageEntities.size > 1 -> {
+                                            page % state.compilationPreviewPageEntities.size
+                                        }
+                                        else -> page
+                                    }
+                                    val item = state.compilationPreviewPageEntities[pageIndex]
+
+                                    ClientAsyncImage(
+                                        imageUrl = item.imageUrl,
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .clickable { dispatch(CompilationIntent.ImageClick(pageIndex)) },
+                                        contentScale = ContentScale.Fit
+                                    )
+                                }
+
+                                if (state.isSelectedLookNumberTextVisible) {
+                                    Box(
+                                        modifier = Modifier
+                                            .align(Alignment.TopEnd)
+                                            .padding(top = 16.dp, end = 16.dp)
+                                            .height(28.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .matchParentSize()
+                                                .blur(
+                                                    radius = 4.dp,
+                                                    edgeTreatment = BlurredEdgeTreatment.Unbounded
+                                                )
+                                                .background(
+                                                    color = MaterialTheme.colorScheme.boulder.copy(alpha = .09F),
+                                                    shape = RoundedCornerShape(16.dp)
+                                                )
+                                        )
+
+                                        Text(
+                                            text = state.selectedLookNumberText,
+                                            maxLines = 1,
+                                            modifier = Modifier.padding(horizontal = 8.dp),
+                                            style = MaterialTheme.typography.regular13.copy(
+                                                color = MaterialTheme.colorScheme.onBackground,
+                                                textAlign = TextAlign.Center
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+
+                            if (state.isDetailsPagerIndicatorVisible) {
+                                DetailsPagerIndicator(
+                                    pagerState = pagerState,
+                                    pageCount = state.compilationPreviewPageEntities.size,
+                                    showVideoIcon = false,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(44.dp),
+                                    pageIndexMapping = { it % state.compilationPreviewPageEntities.size }
+                                )
+                            }
+                        }
+                    }
+                    item {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -435,81 +514,6 @@ private fun CompilationScreenContent(
                                     lineHeight = 16.sp,
                                     textAlign = TextAlign.Center
                                 )
-                            )
-                        }
-                    }
-                    item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .aspectRatio(3F / 4F)
-                        ) {
-                            HorizontalPager(
-                                state = pagerState,
-                                modifier = Modifier.fillMaxSize(),
-                                userScrollEnabled = state.compilationPreviewPageEntities.size > 1
-                            ) { page ->
-                                val pageIndex = when {
-                                    state.compilationPreviewPageEntities.size > 1 -> {
-                                        page % state.compilationPreviewPageEntities.size
-                                    }
-                                    else -> page
-                                }
-                                val item = state.compilationPreviewPageEntities[pageIndex]
-
-                                ClientAsyncImage(
-                                    imageUrl = item.imageUrl,
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .clickable { dispatch(CompilationIntent.ImageClick(pageIndex)) },
-                                    contentScale = ContentScale.Fit
-                                )
-                            }
-
-                            if (state.isSelectedLookNumberTextVisible) {
-                                Box(
-                                    modifier = Modifier
-                                        .align(Alignment.TopEnd)
-                                        .padding(top = 16.dp, end = 16.dp)
-                                        .height(28.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .matchParentSize()
-                                            .blur(
-                                                radius = 4.dp,
-                                                edgeTreatment = BlurredEdgeTreatment.Unbounded
-                                            )
-                                            .background(
-                                                color = MaterialTheme.colorScheme.boulder.copy(alpha = .09F),
-                                                shape = RoundedCornerShape(16.dp)
-                                            )
-                                    )
-
-                                    Text(
-                                        text = state.selectedLookNumberText,
-                                        maxLines = 1,
-                                        modifier = Modifier.padding(horizontal = 8.dp),
-                                        style = MaterialTheme.typography.regular13.copy(
-                                            color = MaterialTheme.colorScheme.onBackground,
-                                            textAlign = TextAlign.Center
-                                        )
-                                    )
-                                }
-                            }
-                        }
-                    }
-                    if (state.isDetailsPagerIndicatorVisible) {
-                        item {
-                            DetailsPagerIndicator(
-                                pagerState = pagerState,
-                                pageCount = state.compilationPreviewPageEntities.size,
-                                showVideoIcon = false,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(44.dp),
-                                pageIndexMapping = { it % state.compilationPreviewPageEntities.size }
                             )
                         }
                     }
@@ -565,7 +569,7 @@ private fun CompilationScreenContent(
 }
 
 @PreviewWrapper(ThemeWrapper::class)
-@Preview(heightDp = 1300, showBackground = true)
+@Preview(showBackground = true)
 @Composable
 private fun CompilationScreenContentPreview(
     @PreviewParameter(CompilationModelProvider::class) state: CompilationModel
