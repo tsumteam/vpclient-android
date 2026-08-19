@@ -39,6 +39,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.BlurredEdgeTreatment
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -91,6 +93,7 @@ import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
+import ru.mercury.vpclient.shared.ui.theme.boulder
 import ru.mercury.vpclient.shared.ui.theme.livretMedium18
 import ru.mercury.vpclient.shared.ui.theme.livretRegular13
 import ru.mercury.vpclient.shared.ui.theme.medium15
@@ -464,17 +467,36 @@ private fun CompilationScreenContent(
                             }
 
                             if (state.isSelectedLookNumberTextVisible) {
-                                Text(
-                                    text = state.selectedLookNumberText,
-                                    maxLines = 1,
+                                Box(
                                     modifier = Modifier
                                         .align(Alignment.TopEnd)
-                                        .padding(top = 16.dp, end = 16.dp),
-                                    style = MaterialTheme.typography.regular13.copy(
-                                        color = MaterialTheme.colorScheme.onBackground,
-                                        textAlign = TextAlign.Center
+                                        .padding(top = 16.dp, end = 16.dp)
+                                        .height(28.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .matchParentSize()
+                                            .blur(
+                                                radius = 4.dp,
+                                                edgeTreatment = BlurredEdgeTreatment.Unbounded
+                                            )
+                                            .background(
+                                                color = MaterialTheme.colorScheme.boulder.copy(alpha = .09F),
+                                                shape = RoundedCornerShape(16.dp)
+                                            )
                                     )
-                                )
+
+                                    Text(
+                                        text = state.selectedLookNumberText,
+                                        maxLines = 1,
+                                        modifier = Modifier.padding(horizontal = 8.dp),
+                                        style = MaterialTheme.typography.regular13.copy(
+                                            color = MaterialTheme.colorScheme.onBackground,
+                                            textAlign = TextAlign.Center
+                                        )
+                                    )
+                                }
                             }
                         }
                     }

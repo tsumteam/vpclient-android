@@ -75,3 +75,6 @@ val ColorScheme.midnightBlue: Color
 
 val ColorScheme.darkGray: Color
     get() = Color(0xFFAAA6BA)
+
+val ColorScheme.boulder: Color
+    get() = Color(0xFF7A7A7A)
