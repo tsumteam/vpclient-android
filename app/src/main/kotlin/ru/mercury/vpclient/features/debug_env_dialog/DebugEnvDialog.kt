@@ -19,11 +19,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.mercury.vpclient.features.debug_env_dialog.intent.DebugEnvironmentDialogIntent
-import ru.mercury.vpclient.features.debug_env_dialog.model.DebugEnvironmentDialogModel
+import ru.mercury.vpclient.features.debug_env_dialog.intent.DebugEnvIntent
+import ru.mercury.vpclient.features.debug_env_dialog.model.DebugEnvModel
 import ru.mercury.vpclient.shared.data.network.env.ClientEnvironment
 import ru.mercury.vpclient.shared.ui.components.RadioRow
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
@@ -31,11 +33,11 @@ import ru.mercury.vpclient.shared.ui.theme.regular22
 
 @Composable
 fun DebugEnvironmentDialog(
-    state: DebugEnvironmentDialogModel,
-    dispatch: (DebugEnvironmentDialogIntent) -> Unit
+    state: DebugEnvModel,
+    dispatch: (DebugEnvIntent) -> Unit
 ) {
     BasicAlertDialog(
-        onDismissRequest = { dispatch(DebugEnvironmentDialogIntent.DismissRequest) },
+        onDismissRequest = { dispatch(DebugEnvIntent.DismissRequest) },
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
@@ -56,8 +58,8 @@ fun DebugEnvironmentDialog(
                 text = ClientEnvironment.TEST.name,
                 selected = state.selectedEnvironment == ClientEnvironment.TEST,
                 onSelect = {
-                    dispatch(DebugEnvironmentDialogIntent.SelectEnvironment(ClientEnvironment.TEST))
-                    dispatch(DebugEnvironmentDialogIntent.DismissRequest)
+                    dispatch(DebugEnvIntent.SelectEnvironment(ClientEnvironment.TEST))
+                    dispatch(DebugEnvIntent.DismissRequest)
                 },
                 modifier = Modifier.padding(start = 8.dp, top = 24.dp, end = 8.dp)
             )
@@ -71,8 +73,8 @@ fun DebugEnvironmentDialog(
                 text = ClientEnvironment.UAT.name,
                 selected = state.selectedEnvironment == ClientEnvironment.UAT,
                 onSelect = {
-                    dispatch(DebugEnvironmentDialogIntent.SelectEnvironment(ClientEnvironment.UAT))
-                    dispatch(DebugEnvironmentDialogIntent.DismissRequest)
+                    dispatch(DebugEnvIntent.SelectEnvironment(ClientEnvironment.UAT))
+                    dispatch(DebugEnvIntent.DismissRequest)
                 },
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
@@ -86,8 +88,8 @@ fun DebugEnvironmentDialog(
                 text = ClientEnvironment.PROD.name,
                 selected = state.selectedEnvironment == ClientEnvironment.PROD,
                 onSelect = {
-                    dispatch(DebugEnvironmentDialogIntent.SelectEnvironment(ClientEnvironment.PROD))
-                    dispatch(DebugEnvironmentDialogIntent.DismissRequest)
+                    dispatch(DebugEnvIntent.SelectEnvironment(ClientEnvironment.PROD))
+                    dispatch(DebugEnvIntent.DismissRequest)
                 },
                 modifier = Modifier.padding(horizontal = 8.dp).padding(bottom = 16.dp)
             )
@@ -98,15 +100,29 @@ fun DebugEnvironmentDialog(
 @PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Composable
-private fun DebugEnvironmentDialogPreview() {
+private fun DebugEnvironmentDialogPreview(
+    @PreviewParameter(DebugEnvModelProvider::class) state: DebugEnvModel
+) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
         DebugEnvironmentDialog(
-            state = DebugEnvironmentDialogModel(
-                selectedEnvironment = ClientEnvironment.TEST
-            ),
+            state = state,
             dispatch = {}
         )
     }
+}
+
+private class DebugEnvModelProvider: PreviewParameterProvider<DebugEnvModel> {
+    override val values: Sequence<DebugEnvModel> = sequenceOf(
+        DebugEnvModel(
+            selectedEnvironment = ClientEnvironment.TEST
+        ),
+        DebugEnvModel(
+            selectedEnvironment = ClientEnvironment.UAT
+        ),
+        DebugEnvModel(
+            selectedEnvironment = ClientEnvironment.PROD
+        )
+    )
 }

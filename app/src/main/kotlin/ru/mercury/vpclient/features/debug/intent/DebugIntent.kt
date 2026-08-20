@@ -7,7 +7,7 @@ sealed interface DebugIntent: Intent {
     data object BackClick: DebugIntent
     data object FetchSettings: DebugIntent
     data object EnvironmentClick: DebugIntent
-    data object DismissEnvironmentDialog: DebugIntent
+    data object DismissDebugEnvDialog: DebugIntent
     data object DropLocalDbClick: DebugIntent
     data object ToggleMockBackend: DebugIntent
     data class ToggleRequestDelay(val enabled: Boolean): DebugIntent

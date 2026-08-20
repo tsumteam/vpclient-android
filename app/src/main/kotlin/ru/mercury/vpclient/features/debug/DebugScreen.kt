@@ -42,8 +42,7 @@ import ru.mercury.vpclient.features.debug.event.DebugEvent
 import ru.mercury.vpclient.features.debug.intent.DebugIntent
 import ru.mercury.vpclient.features.debug.model.DebugModel
 import ru.mercury.vpclient.features.debug_env_dialog.DebugEnvironmentDialog
-import ru.mercury.vpclient.features.debug_env_dialog.intent.DebugEnvironmentDialogIntent
-import ru.mercury.vpclient.features.debug_env_dialog.model.DebugEnvironmentDialogModel
+import ru.mercury.vpclient.features.debug_env_dialog.intent.DebugEnvIntent
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
@@ -76,15 +75,13 @@ fun DebugScreen(
 
     if (state.isEnvironmentDialogVisible) {
         DebugEnvironmentDialog(
-            state = DebugEnvironmentDialogModel(
-                selectedEnvironment = state.environment
-            ),
+            state = state.debugEnvModel,
             dispatch = { intent ->
                 when (intent) {
-                    is DebugEnvironmentDialogIntent.DismissRequest -> {
-                        viewModel.dispatch(DebugIntent.DismissEnvironmentDialog)
+                    is DebugEnvIntent.DismissRequest -> {
+                        viewModel.dispatch(DebugIntent.DismissDebugEnvDialog)
                     }
-                    is DebugEnvironmentDialogIntent.SelectEnvironment -> {
+                    is DebugEnvIntent.SelectEnvironment -> {
                         viewModel.dispatch(DebugIntent.SelectEnvironment(intent.environment))
                     }
                 }
