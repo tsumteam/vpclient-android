@@ -30,6 +30,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.compilation_chat_sheet.intent.CompilationChatIntent
 import ru.mercury.vpclient.features.compilation_chat_sheet.model.CompilationChatModel
@@ -42,7 +43,7 @@ import ru.mercury.vpclient.shared.ui.components.message.MessageInputState
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.livretMedium18
+import ru.mercury.vpclient.shared.ui.theme.livretMedium17
 
 @Composable
 fun CompilationChatSheet(
@@ -78,7 +79,10 @@ fun CompilationChatSheet(
                 title = {
                     Text(
                         text = stringResource(ClientStrings.CompilationChatSheetTitle),
-                        style = MaterialTheme.typography.livretMedium18
+                        style = MaterialTheme.typography.livretMedium17.copy(
+                            lineHeight = 26.sp,
+                            letterSpacing = .2.sp
+                        )
                     )
                 },
                 navigationIcon = {

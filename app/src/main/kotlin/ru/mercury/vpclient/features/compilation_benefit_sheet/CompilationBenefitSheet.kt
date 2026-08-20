@@ -46,7 +46,7 @@ import ru.mercury.vpclient.shared.ui.components.compilations.CompilationBenefitP
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.livretMedium18
+import ru.mercury.vpclient.shared.ui.theme.livretMedium17
 import ru.mercury.vpclient.shared.ui.theme.medium14
 import ru.mercury.vpclient.shared.ui.theme.regular14
 
@@ -71,7 +71,10 @@ fun CompilationBenefitSheet(
                     title = {
                         Text(
                             text = stringResource(ClientStrings.CompilationBenefitSheetTitle),
-                            style = MaterialTheme.typography.livretMedium18
+                            style = MaterialTheme.typography.livretMedium17.copy(
+                                lineHeight = 26.sp,
+                                letterSpacing = .2.sp
+                            )
                         )
                     },
                     navigationIcon = {

@@ -30,7 +30,7 @@ import ru.mercury.vpclient.shared.domain.mapper.isEmpty
 import ru.mercury.vpclient.shared.domain.mapper.isNotEmpty
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.theme.livretMedium18
+import ru.mercury.vpclient.shared.ui.theme.livretMedium17
 
 @Composable
 fun CatalogCategorySection(
@@ -78,7 +78,7 @@ fun CatalogCategorySection(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 16.dp, top = 9.dp, end = 16.dp),
-                    style = MaterialTheme.typography.livretMedium18.copy(
+                    style = MaterialTheme.typography.livretMedium17.copy(
                         color = MaterialTheme.colorScheme.onBackground,
                         lineHeight = 26.sp,
                         letterSpacing = .2.sp,

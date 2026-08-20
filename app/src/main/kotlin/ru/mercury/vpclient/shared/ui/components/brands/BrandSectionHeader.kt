@@ -22,7 +22,7 @@ import ru.mercury.vpclient.shared.ui.components.SharedAnimatedVisibility
 import ru.mercury.vpclient.shared.ui.ktx.clickableWithoutRipple
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.livretMedium18
+import ru.mercury.vpclient.shared.ui.theme.livretMedium17
 import ru.mercury.vpclient.shared.ui.theme.medium15
 
 data class BrandSectionHeaderState(
@@ -47,7 +47,7 @@ fun BrandSectionHeader(
     ) {
         Text(
             text = state.title,
-            style = MaterialTheme.typography.livretMedium18.copy(
+            style = MaterialTheme.typography.livretMedium17.copy(
                 color = MaterialTheme.colorScheme.error,
                 lineHeight = 26.sp,
                 letterSpacing = .2.sp

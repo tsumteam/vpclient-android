@@ -17,12 +17,13 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.ui.components.product.ProductCard
 import ru.mercury.vpclient.shared.ui.components.product.ProductCardState
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.livretMedium18
+import ru.mercury.vpclient.shared.ui.theme.livretMedium17
 
 @Composable
 fun DetailsCompleteSetSection(
@@ -43,8 +44,10 @@ fun DetailsCompleteSetSection(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 16.dp, top = 8.dp, end = 16.dp),
-            style = MaterialTheme.typography.livretMedium18.copy(
+            style = MaterialTheme.typography.livretMedium17.copy(
                 color = MaterialTheme.colorScheme.onBackground,
+                lineHeight = 26.sp,
+                letterSpacing = .2.sp,
                 textAlign = TextAlign.Center
             )
         )

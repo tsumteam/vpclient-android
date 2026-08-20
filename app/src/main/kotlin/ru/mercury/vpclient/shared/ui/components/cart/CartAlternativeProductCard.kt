@@ -31,7 +31,7 @@ import ru.mercury.vpclient.shared.ui.components.brands.BrandBox
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.icons.Cancel14
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.theme.livretMedium18
+import ru.mercury.vpclient.shared.ui.theme.livretMedium17
 import ru.mercury.vpclient.shared.ui.theme.regular11
 
 @Composable
@@ -122,7 +122,10 @@ fun CartAlternativeProductCard(
                 modifier = Modifier
                     .padding(top = 4.dp)
                     .size(width = 91.dp, height = 20.dp),
-                style = MaterialTheme.typography.livretMedium18
+                style = MaterialTheme.typography.livretMedium17.copy(
+                    lineHeight = 26.sp,
+                    letterSpacing = .2.sp
+                )
             )
 
             Text(

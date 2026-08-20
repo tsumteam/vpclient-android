@@ -99,7 +99,7 @@ import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.shimmer
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.livretMedium18
+import ru.mercury.vpclient.shared.ui.theme.livretMedium17
 import ru.mercury.vpclient.shared.ui.theme.medium15
 import ru.mercury.vpclient.shared.ui.theme.medium16
 import ru.mercury.vpclient.shared.ui.theme.regular15
@@ -147,7 +147,10 @@ fun FilterBrandSheet(
                         title = {
                             Text(
                                 text = stringResource(ClientStrings.FilterBrandTitle),
-                                style = MaterialTheme.typography.livretMedium18
+                                style = MaterialTheme.typography.livretMedium17.copy(
+                                    lineHeight = 26.sp,
+                                    letterSpacing = .2.sp
+                                )
                             )
                         },
                         navigationIcon = {
@@ -548,7 +551,7 @@ fun FilterBrandSheet(
                                                     .background(MaterialTheme.colorScheme.background)
                                                     .padding(start = 16.dp)
                                                     .wrapContentHeight(Alignment.CenterVertically),
-                                                style = MaterialTheme.typography.livretMedium18.copy(
+                                                style = MaterialTheme.typography.livretMedium17.copy(
                                                     color = MaterialTheme.colorScheme.error,
                                                     lineHeight = 26.sp,
                                                     letterSpacing = .2.sp

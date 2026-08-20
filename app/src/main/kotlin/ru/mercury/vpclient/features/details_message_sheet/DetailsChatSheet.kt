@@ -28,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.details_message_sheet.intent.DetailsChatIntent
 import ru.mercury.vpclient.features.details_message_sheet.model.DetailsChatModel
@@ -39,7 +40,7 @@ import ru.mercury.vpclient.shared.ui.components.message.MessageInputState
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.livretMedium18
+import ru.mercury.vpclient.shared.ui.theme.livretMedium17
 
 @Composable
 fun DetailsChatSheet(
@@ -75,7 +76,10 @@ fun DetailsChatSheet(
                 title = {
                     Text(
                         text = stringResource(ClientStrings.DetailsMessageSheetTitle),
-                        style = MaterialTheme.typography.livretMedium18
+                        style = MaterialTheme.typography.livretMedium17.copy(
+                            lineHeight = 26.sp,
+                            letterSpacing = .2.sp
+                        )
                     )
                 },
                 navigationIcon = {
