@@ -63,7 +63,7 @@ import ru.mercury.vpclient.features.profile.event.ProfileEvent
 import ru.mercury.vpclient.features.profile.intent.ProfileIntent
 import ru.mercury.vpclient.features.profile.model.ProfileModel
 import ru.mercury.vpclient.features.profile_logout_dialog.ProfileLogoutDialog
-import ru.mercury.vpclient.features.profile_logout_dialog.intent.ProfileLogoutDialogIntent
+import ru.mercury.vpclient.features.profile_logout_dialog.intent.ProfileLogoutIntent
 import ru.mercury.vpclient.features.profile_privileges_sheet.ProfilePrivilegesSheet
 import ru.mercury.vpclient.features.profile_privileges_sheet.intent.ProfilePrivilegeIntent
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
@@ -123,15 +123,15 @@ fun ProfileScreen(
         snackbarHostStateTopError = snackbarHostStateTopError
     )
 
-    if (state.isLogoutDialogVisible) {
+    if (state.isProfileLogoutDialogVisible) {
         ProfileLogoutDialog(
             dispatch = { intent ->
                 when (intent) {
-                    is ProfileLogoutDialogIntent.ConfirmRequest -> {
+                    is ProfileLogoutIntent.ConfirmRequest -> {
                         viewModel.dispatch(ProfileIntent.Logout)
                     }
-                    is ProfileLogoutDialogIntent.DismissRequest -> {
-                        viewModel.dispatch(ProfileIntent.DismissLogoutDialog)
+                    is ProfileLogoutIntent.DismissRequest -> {
+                        viewModel.dispatch(ProfileIntent.DismissProfileLogoutDialog)
                     }
                 }
             }

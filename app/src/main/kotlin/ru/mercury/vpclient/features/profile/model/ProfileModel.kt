@@ -21,7 +21,7 @@ data class ProfileModel(
     val viewHistoryProducts: List<CatalogFilterProductsEntity> = emptyList(),
     val viewHistoryJob: Job? = null,
     val loyaltyCardInfoJob: Job? = null,
-    val isLogoutDialogVisible: Boolean = false,
+    val isProfileLogoutDialogVisible: Boolean = false,
     val logoutJob: Job? = null,
     val activeEmployee: EmployeeEntity = EmployeeEntity.Empty,
     val clientEntity: ClientEntity = ClientEntity.Empty,

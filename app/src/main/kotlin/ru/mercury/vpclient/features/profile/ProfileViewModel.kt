@@ -275,11 +275,11 @@ class ProfileViewModel @Inject constructor(
             is ProfileIntent.ViewHistoryProductClick -> {
                 launch { MainEventManager.send(DetailsRoute(intent.productId, openedFromCart = true)) }
             }
-            is ProfileIntent.ShowLogoutDialog -> reduce { it.copy(isLogoutDialogVisible = true) }
-            is ProfileIntent.DismissLogoutDialog -> reduce { it.copy(isLogoutDialogVisible = false) }
+            is ProfileIntent.ShowLogoutDialog -> reduce { it.copy(isProfileLogoutDialogVisible = true) }
+            is ProfileIntent.DismissProfileLogoutDialog -> reduce { it.copy(isProfileLogoutDialogVisible = false) }
             is ProfileIntent.Logout -> {
                 val job = launch {
-                    reduce { it.copy(isLogoutDialogVisible = false) }
+                    reduce { it.copy(isProfileLogoutDialogVisible = false) }
                     logoutUseCase(Unit).getOrThrow()
                     MainEventManager.send(WelcomeRoute)
                 }.also { launchedJob ->

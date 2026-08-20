@@ -29,7 +29,7 @@ sealed interface ProfileIntent: Intent {
     data object FavoriteBrandsClick: ProfileIntent
     data object ViewHistoryViewMoreClick: ProfileIntent
     data object ShowLogoutDialog: ProfileIntent
-    data object DismissLogoutDialog: ProfileIntent
+    data object DismissProfileLogoutDialog: ProfileIntent
     data object Logout: ProfileIntent
     data object CartClick: ProfileIntent
     data object FittingClick: ProfileIntent

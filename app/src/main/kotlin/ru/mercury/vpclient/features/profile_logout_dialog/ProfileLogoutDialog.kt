@@ -15,7 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.sp
-import ru.mercury.vpclient.features.profile_logout_dialog.intent.ProfileLogoutDialogIntent
+import ru.mercury.vpclient.features.profile_logout_dialog.intent.ProfileLogoutIntent
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.medium15
@@ -24,13 +24,13 @@ import ru.mercury.vpclient.shared.ui.theme.regular15
 
 @Composable
 fun ProfileLogoutDialog(
-    dispatch: (ProfileLogoutDialogIntent) -> Unit
+    dispatch: (ProfileLogoutIntent) -> Unit
 ) {
     AlertDialog(
-        onDismissRequest = { dispatch(ProfileLogoutDialogIntent.DismissRequest) },
+        onDismissRequest = { dispatch(ProfileLogoutIntent.DismissRequest) },
         confirmButton = {
             TextButton(
-                onClick = { dispatch(ProfileLogoutDialogIntent.ConfirmRequest) }
+                onClick = { dispatch(ProfileLogoutIntent.ConfirmRequest) }
             ) {
                 Text(
                     text = stringResource(ClientStrings.ProfileLogout),
@@ -43,7 +43,7 @@ fun ProfileLogoutDialog(
         },
         dismissButton = {
             TextButton(
-                onClick = { dispatch(ProfileLogoutDialogIntent.DismissRequest) }
+                onClick = { dispatch(ProfileLogoutIntent.DismissRequest) }
             ) {
                 Text(
                     text = stringResource(ClientStrings.ProfileLogoutCancel),
