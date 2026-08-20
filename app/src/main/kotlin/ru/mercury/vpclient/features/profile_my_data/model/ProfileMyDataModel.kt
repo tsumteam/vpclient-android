@@ -15,7 +15,7 @@ data class ProfileMyDataModel(
     val name: String = "",
     val phone: String = "",
     val email: String = "",
-    val isDeleteProfileDialogVisible: Boolean = false,
+    val isProfileDeleteDialogVisible: Boolean = false,
     val activeEmployee: EmployeeEntity = EmployeeEntity.Empty
 ): Model {
 

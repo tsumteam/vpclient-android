@@ -15,7 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.sp
-import ru.mercury.vpclient.features.profile_delete_dialog.intent.ProfileDeleteDialogIntent
+import ru.mercury.vpclient.features.profile_delete_dialog.intent.ProfileDeleteIntent
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.medium15
@@ -24,13 +24,13 @@ import ru.mercury.vpclient.shared.ui.theme.regular15
 
 @Composable
 fun ProfileDeleteDialog(
-    dispatch: (ProfileDeleteDialogIntent) -> Unit
+    dispatch: (ProfileDeleteIntent) -> Unit
 ) {
     AlertDialog(
-        onDismissRequest = { dispatch(ProfileDeleteDialogIntent.DismissRequest) },
+        onDismissRequest = { dispatch(ProfileDeleteIntent.DismissRequest) },
         confirmButton = {
             TextButton(
-                onClick = { dispatch(ProfileDeleteDialogIntent.ConfirmRequest) }
+                onClick = { dispatch(ProfileDeleteIntent.ConfirmRequest) }
             ) {
                 Text(
                     text = stringResource(ClientStrings.MyDataDeleteConfirm),
@@ -43,7 +43,7 @@ fun ProfileDeleteDialog(
         },
         dismissButton = {
             TextButton(
-                onClick = { dispatch(ProfileDeleteDialogIntent.DismissRequest) }
+                onClick = { dispatch(ProfileDeleteIntent.DismissRequest) }
             ) {
                 Text(
                     text = stringResource(ClientStrings.MyDataDeleteCancel),

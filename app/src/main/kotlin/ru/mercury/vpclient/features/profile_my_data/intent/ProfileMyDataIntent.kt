@@ -13,6 +13,6 @@ sealed interface ProfileMyDataIntent: Intent {
     data object FittingClick: ProfileMyDataIntent
     data object MessengerClick: ProfileMyDataIntent
     data object ShowDeleteProfileDialog: ProfileMyDataIntent
-    data object DismissDeleteProfileDialog: ProfileMyDataIntent
+    data object DismissProfileDeleteDialog: ProfileMyDataIntent
     data object DeleteProfile: ProfileMyDataIntent
 }

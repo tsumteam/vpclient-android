@@ -92,14 +92,14 @@ class ProfileMyDataViewModel @Inject constructor(
             }
             is ProfileMyDataIntent.MessengerClick -> return
             is ProfileMyDataIntent.ShowDeleteProfileDialog -> {
-                reduce { it.copy(isDeleteProfileDialogVisible = true) }
+                reduce { it.copy(isProfileDeleteDialogVisible = true) }
             }
-            is ProfileMyDataIntent.DismissDeleteProfileDialog -> {
-                reduce { it.copy(isDeleteProfileDialogVisible = false) }
+            is ProfileMyDataIntent.DismissProfileDeleteDialog -> {
+                reduce { it.copy(isProfileDeleteDialogVisible = false) }
             }
             is ProfileMyDataIntent.DeleteProfile -> {
                 val job = launch {
-                    reduce { it.copy(isDeleteProfileDialogVisible = false) }
+                    reduce { it.copy(isProfileDeleteDialogVisible = false) }
                     deleteProfileUseCase(Unit).getOrThrow()
                     MainEventManager.send(WelcomeRoute)
                 }.also { launchedJob ->

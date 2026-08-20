@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.mercury.vpclient.features.profile_delete_dialog.ProfileDeleteDialog
-import ru.mercury.vpclient.features.profile_delete_dialog.intent.ProfileDeleteDialogIntent
+import ru.mercury.vpclient.features.profile_delete_dialog.intent.ProfileDeleteIntent
 import ru.mercury.vpclient.features.profile_my_data.intent.ProfileMyDataIntent
 import ru.mercury.vpclient.features.profile_my_data.model.ProfileMyDataModel
 import ru.mercury.vpclient.shared.ui.components.InfoItem
@@ -65,15 +65,15 @@ fun ProfileMyDataScreen(
         dispatch = viewModel::dispatch
     )
 
-    if (state.isDeleteProfileDialogVisible) {
+    if (state.isProfileDeleteDialogVisible) {
         ProfileDeleteDialog(
             dispatch = { intent ->
                 when (intent) {
-                    is ProfileDeleteDialogIntent.ConfirmRequest -> {
+                    is ProfileDeleteIntent.ConfirmRequest -> {
                         viewModel.dispatch(ProfileMyDataIntent.DeleteProfile)
                     }
-                    is ProfileDeleteDialogIntent.DismissRequest -> {
-                        viewModel.dispatch(ProfileMyDataIntent.DismissDeleteProfileDialog)
+                    is ProfileDeleteIntent.DismissRequest -> {
+                        viewModel.dispatch(ProfileMyDataIntent.DismissProfileDeleteDialog)
                     }
                 }
             }
