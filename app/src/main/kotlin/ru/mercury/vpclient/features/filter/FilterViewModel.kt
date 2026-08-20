@@ -26,7 +26,7 @@ import ru.mercury.vpclient.features.filter.navigation.FilterRoute
 import ru.mercury.vpclient.features.home_root.event.HomeRootEventManager
 import ru.mercury.vpclient.features.search.navigation.SearchRoute
 import ru.mercury.vpclient.shared.data.entity.CatalogFilterProductsData
-import ru.mercury.vpclient.shared.data.entity.CatalogFilterRequestData2
+import ru.mercury.vpclient.shared.data.entity.CatalogFilterRequestData
 import ru.mercury.vpclient.shared.data.entity.FilterChip
 import ru.mercury.vpclient.shared.data.entity.FilterRequestData
 import ru.mercury.vpclient.shared.data.entity.FilterValuesRequestData
@@ -264,7 +264,7 @@ class FilterViewModel @AssistedInject constructor(
                 stateFlow.value.loadCatalogFiltersJob?.cancel()
                 val job = launch {
                     val hasFilters = catalogFiltersUseCase(
-                        CatalogFilterRequestData2(
+                        CatalogFilterRequestData(
                             categoryId = route.categoryId,
                             titleCategoryId = route.titleCategoryId,
                             selectedFilterValueChipIds = route.requestFilterValueChipIds(stateFlow.value.selectedRequestAffectingFilterValueChipIds),
@@ -283,7 +283,7 @@ class FilterViewModel @AssistedInject constructor(
                 stateFlow.value.loadProductsQuantityJob?.cancel()
                 val job = launch {
                     catalogFilterProductQuantityUseCase(
-                        CatalogFilterRequestData2(
+                        CatalogFilterRequestData(
                             categoryId = route.categoryId,
                             titleCategoryId = route.titleCategoryId,
                             selectedFilterValueChipIds = route.requestFilterValueChipIds(stateFlow.value.selectedRequestAffectingFilterValueChipIds),
@@ -582,7 +582,7 @@ class FilterViewModel @AssistedInject constructor(
                     filterValuesQuantityUseCase(
                         FilterValuesQuantityUseCase.Params(
                             chipId = chipId,
-                            data = CatalogFilterRequestData2(
+                            data = CatalogFilterRequestData(
                                 categoryId = route.categoryId,
                                 titleCategoryId = route.titleCategoryId,
                                 selectedFilterValueChipIds = route.requestFilterValueChipIds(stateFlow.value.currentDialogSelectedFilterValueChipIds()),

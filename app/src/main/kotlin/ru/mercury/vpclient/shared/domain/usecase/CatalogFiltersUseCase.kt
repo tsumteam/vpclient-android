@@ -5,7 +5,7 @@ package ru.mercury.vpclient.shared.domain.usecase
 import androidx.room.withTransaction
 import kotlinx.serialization.json.buildJsonArray
 import ru.mercury.vpclient.shared.coroutines.SharedDispatchers
-import ru.mercury.vpclient.shared.data.entity.CatalogFilterRequestData2
+import ru.mercury.vpclient.shared.data.entity.CatalogFilterRequestData
 import ru.mercury.vpclient.shared.data.network.NetworkService
 import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.network.request.DigineticaFiltersRequest
@@ -25,9 +25,9 @@ class CatalogFiltersUseCase @Inject constructor(
     private val catalogCategoryDao: CatalogCategoryDao,
     private val catalogFilterDao: CatalogFilterDao,
     dispatchers: SharedDispatchers
-): UseCase<CatalogFilterRequestData2, Boolean>(dispatchers.io) {
+): UseCase<CatalogFilterRequestData, Boolean>(dispatchers.io) {
 
-    override suspend fun execute(data: CatalogFilterRequestData2): Boolean {
+    override suspend fun execute(data: CatalogFilterRequestData): Boolean {
         val categoryId = data.categoryId
         val titleCategoryId = data.titleCategoryId
         val searchText = data.searchText

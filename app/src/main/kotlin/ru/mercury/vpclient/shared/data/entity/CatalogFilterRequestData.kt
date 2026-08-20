@@ -2,7 +2,7 @@ package ru.mercury.vpclient.shared.data.entity
 
 import ru.mercury.vpclient.shared.data.network.type.CatalogViewType
 
-data class CatalogFilterRequestData2( // fixme
+data class CatalogFilterRequestData(
     val categoryId: Int,
     val titleCategoryId: Int,
     val selectedFilterValueChipIds: Set<String>,

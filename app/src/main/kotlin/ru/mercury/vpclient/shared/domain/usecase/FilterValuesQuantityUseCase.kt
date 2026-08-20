@@ -1,7 +1,7 @@
 package ru.mercury.vpclient.shared.domain.usecase
 
 import ru.mercury.vpclient.shared.coroutines.SharedDispatchers
-import ru.mercury.vpclient.shared.data.entity.CatalogFilterRequestData2
+import ru.mercury.vpclient.shared.data.entity.CatalogFilterRequestData
 import ru.mercury.vpclient.shared.data.network.NetworkService
 import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.network.request.DigineticaFilteredProductsQuantityRequest
@@ -63,7 +63,7 @@ class FilterValuesQuantityUseCase @Inject constructor(
 
     data class Params(
         val chipId: String,
-        val data: CatalogFilterRequestData2
+        val data: CatalogFilterRequestData
     )
 
     data class FilterValuesQuantityException(
