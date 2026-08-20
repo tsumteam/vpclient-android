@@ -13,8 +13,6 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductButton
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductOtherColorEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductRelatedItemEntity
 
-// fixme
-
 class Converter {
 
     private val json = Json
