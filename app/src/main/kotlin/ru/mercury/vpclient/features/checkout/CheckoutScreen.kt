@@ -63,7 +63,7 @@ import ru.mercury.vpclient.features.checkout.model.CheckoutModel
 import ru.mercury.vpclient.features.checkout.model.CheckoutSource
 import ru.mercury.vpclient.features.checkout.navigation.CheckoutRoute
 import ru.mercury.vpclient.features.checkout_amount_changed_dialog.CheckoutAmountChangedDialog
-import ru.mercury.vpclient.features.checkout_amount_changed_dialog.intent.CheckoutAmountChangedDialogIntent
+import ru.mercury.vpclient.features.checkout_amount_changed_dialog.intent.CheckoutAmountChangedIntent
 import ru.mercury.vpclient.features.checkout_bank_card_sheet.CheckoutBankCardSheet
 import ru.mercury.vpclient.features.checkout_bank_card_sheet.intent.CheckoutBankCardSheetIntent
 import ru.mercury.vpclient.features.checkout_bank_card_sheet.model.CheckoutBankCardSheetModel
@@ -365,12 +365,12 @@ fun CheckoutScreen(
         viewModel.dispatch(CheckoutIntent.ReceiveFittingAddressesEvent(event))
     }
 
-    if (state.isAmountChangedDialogVisible) {
+    if (state.isCheckoutAmountChangedDialogVisible) {
         CheckoutAmountChangedDialog(
-            message = state.amountChangedMessage,
+            state = state.checkoutAmountChangedModel,
             dispatch = { intent ->
                 when (intent) {
-                    is CheckoutAmountChangedDialogIntent.ContinueClick -> {
+                    is CheckoutAmountChangedIntent.ConfirmClick -> {
                         viewModel.dispatch(CheckoutIntent.AmountChangedContinueClick)
                     }
                 }

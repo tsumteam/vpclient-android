@@ -1,6 +1,7 @@
 package ru.mercury.vpclient.features.checkout.model
 
 import kotlinx.coroutines.Job
+import ru.mercury.vpclient.features.checkout_amount_changed_dialog.model.CheckoutAmountChangedModel
 import ru.mercury.vpclient.features.loyalty_add_card_sheet.model.LoyaltyAddCardMode
 import ru.mercury.vpclient.shared.data.entity.CheckoutSbpBank
 import ru.mercury.vpclient.shared.data.entity.FittingCheckoutData
@@ -26,7 +27,7 @@ data class CheckoutModel(
     val selectedIntervalId: String? = null,
     val deliveryLoadJob: Job? = null,
     val addressListJob: Job? = null,
-    val isAmountChangedDialogVisible: Boolean = false,
+    val isCheckoutAmountChangedDialogVisible: Boolean = false,
     val amountChangedMessage: String = "",
     val clientEntity: ClientEntity = ClientEntity.Empty,
     val paymentType: PaymentType = PaymentType.ONLINE_PAYMENT_CLIENT,
@@ -76,6 +77,11 @@ data class CheckoutModel(
     val sbpPaymentUrl: String = "",
     val sbpBanks: List<CheckoutSbpBank> = emptyList()
 ): Model {
+
+    val checkoutAmountChangedModel: CheckoutAmountChangedModel
+        get() = CheckoutAmountChangedModel(
+            message = amountChangedMessage
+        )
 
     val isCartCheckout: Boolean
         get() = source == CheckoutSource.Cart

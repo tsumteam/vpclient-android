@@ -58,6 +58,7 @@ import ru.mercury.vpclient.shared.domain.usecase.LinkLoyaltyCardByPhoneUseCase.L
 import ru.mercury.vpclient.shared.domain.usecase.LoadCheckoutDeliveryDataUseCase
 import ru.mercury.vpclient.shared.domain.usecase.LoyaltyLinkUseCase
 import ru.mercury.vpclient.shared.domain.usecase.LoyaltyLinkUseCase.LoyaltyLinkException
+import ru.mercury.vpclient.shared.domain.usecase.OrderCheckoutDataUseCase
 import ru.mercury.vpclient.shared.domain.usecase.OrdersByOrderIdConfirmBonusesUseCase
 import ru.mercury.vpclient.shared.domain.usecase.OrdersByOrderIdConfirmBonusesUseCase.OrdersByOrderIdConfirmBonusesException
 import ru.mercury.vpclient.shared.domain.usecase.OrdersByOrderIdPaymentLinkUseCase
@@ -69,7 +70,6 @@ import ru.mercury.vpclient.shared.domain.usecase.OrdersByOrderIdReserveBonusesUs
 import ru.mercury.vpclient.shared.domain.usecase.OrdersCreateFromBasketUseCase
 import ru.mercury.vpclient.shared.domain.usecase.OrdersCreateFromBasketUseCase.OrderPriceChangedException
 import ru.mercury.vpclient.shared.domain.usecase.OrdersCreateFromBasketUseCase.OrdersCreateFromBasketException
-import ru.mercury.vpclient.shared.domain.usecase.OrderCheckoutDataUseCase
 import ru.mercury.vpclient.shared.domain.usecase.OrdersCreateFromFittingUseCase
 import ru.mercury.vpclient.shared.domain.usecase.OrdersCreateFromFittingUseCase.OrdersCreateFromFittingException
 import ru.mercury.vpclient.shared.domain.usecase.SbpAvailableBanksUseCase
@@ -219,7 +219,7 @@ class CheckoutViewModel @AssistedInject constructor(
                 }
             }
             is CheckoutIntent.AmountChangedContinueClick -> {
-                reduce { it.copy(isAmountChangedDialogVisible = false, amountChangedMessage = "") }
+                reduce { it.copy(isCheckoutAmountChangedDialogVisible = false, amountChangedMessage = "") }
                 dispatch(CheckoutIntent.LoadData())
                 if (route.source == CheckoutSource.Cart) {
                     dispatch(CheckoutIntent.LoadDeliveryData)
@@ -1071,7 +1071,7 @@ class CheckoutViewModel @AssistedInject constructor(
                 reduce {
                     it.copy(
                         paymentJob = null,
-                        isAmountChangedDialogVisible = true,
+                        isCheckoutAmountChangedDialogVisible = true,
                         amountChangedMessage = throwable.message
                     )
                 }
