@@ -68,8 +68,8 @@ class ProfileLoyaltyInfoViewModel @Inject constructor(
                     launch { MainEventManager.send(ProfileLoyaltyTermsRoute(url = url)) }
                 }
             }
-            is ProfileLoyaltyInfoIntent.UnlinkClick -> reduce { it.copy(isUnlinkDialogVisible = true) }
-            is ProfileLoyaltyInfoIntent.DismissUnlinkDialog -> reduce { it.copy(isUnlinkDialogVisible = false) }
+            is ProfileLoyaltyInfoIntent.UnlinkClick -> reduce { it.copy(isProfileLoyaltyUnlinkDialogVisible = true) }
+            is ProfileLoyaltyInfoIntent.DismissProfileLoyaltyUnlinkDialog -> reduce { it.copy(isProfileLoyaltyUnlinkDialogVisible = false) }
             is ProfileLoyaltyInfoIntent.ConfirmUnlinkClick -> {
                 val cardNumber = stateFlow.value.loyaltyCardInfoEntity.loyaltyCardNumber
                 if (cardNumber.isBlank()) return
@@ -78,7 +78,7 @@ class ProfileLoyaltyInfoViewModel @Inject constructor(
                     reduce {
                         it.copy(
                             isUnlinkLoading = true,
-                            isUnlinkDialogVisible = false
+                            isProfileLoyaltyUnlinkDialogVisible = false
                         )
                     }
                     runCatching {

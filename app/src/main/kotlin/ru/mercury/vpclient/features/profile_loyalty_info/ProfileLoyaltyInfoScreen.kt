@@ -54,7 +54,7 @@ import ru.mercury.vpclient.R
 import ru.mercury.vpclient.features.profile_loyalty_info.intent.ProfileLoyaltyInfoIntent
 import ru.mercury.vpclient.features.profile_loyalty_info.model.ProfileLoyaltyInfoModel
 import ru.mercury.vpclient.features.profile_loyalty_unlink_dialog.ProfileLoyaltyUnlinkDialog
-import ru.mercury.vpclient.features.profile_loyalty_unlink_dialog.intent.ProfileLoyaltyUnlinkDialogIntent
+import ru.mercury.vpclient.features.profile_loyalty_unlink_dialog.intent.ProfileLoyaltyUnlinkIntent
 import ru.mercury.vpclient.shared.data.entity.LoyaltyCardDescription
 import ru.mercury.vpclient.shared.data.entity.LoyaltyCardType
 import ru.mercury.vpclient.shared.data.entity.ProfileLoyaltyInfoRowType
@@ -84,15 +84,15 @@ fun ProfileLoyaltyInfoScreen(
         dispatch = viewModel::dispatch
     )
 
-    if (state.isUnlinkDialogVisible) {
+    if (state.isProfileLoyaltyUnlinkDialogVisible) {
         ProfileLoyaltyUnlinkDialog(
             dispatch = { intent ->
                 when (intent) {
-                    is ProfileLoyaltyUnlinkDialogIntent.ConfirmRequest -> {
+                    is ProfileLoyaltyUnlinkIntent.ConfirmRequest -> {
                         viewModel.dispatch(ProfileLoyaltyInfoIntent.ConfirmUnlinkClick)
                     }
-                    is ProfileLoyaltyUnlinkDialogIntent.DismissRequest -> {
-                        viewModel.dispatch(ProfileLoyaltyInfoIntent.DismissUnlinkDialog)
+                    is ProfileLoyaltyUnlinkIntent.DismissRequest -> {
+                        viewModel.dispatch(ProfileLoyaltyInfoIntent.DismissProfileLoyaltyUnlinkDialog)
                     }
                 }
             }

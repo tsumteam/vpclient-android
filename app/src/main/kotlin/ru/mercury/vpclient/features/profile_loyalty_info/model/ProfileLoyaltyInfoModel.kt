@@ -11,7 +11,7 @@ import ru.mercury.vpclient.shared.mvi.Model
 data class ProfileLoyaltyInfoModel(
     val isLoading: Boolean = true,
     val isUnlinkLoading: Boolean = false,
-    val isUnlinkDialogVisible: Boolean = false,
+    val isProfileLoyaltyUnlinkDialogVisible: Boolean = false,
     val loyaltyCardInfoEntity: LoyaltyCardInfoEntity = LoyaltyCardInfoEntity.Empty,
     val cardTypes: List<LoyaltyCardDescription> = emptyList(),
     val selectedCardType: LoyaltyCardType = LoyaltyCardType.Black
