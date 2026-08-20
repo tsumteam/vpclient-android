@@ -126,7 +126,7 @@ private fun CategoryScreenContent(
                         }
 
                         IconButton(
-                            onClick = {},
+                            onClick = { dispatch(CategoryIntent.SearchClick) },
                             modifier = Modifier.size(42.dp)
                         ) {
                             Icon(

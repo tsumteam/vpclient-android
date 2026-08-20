@@ -16,6 +16,7 @@ import ru.mercury.vpclient.features.category.intent.CategoryIntent
 import ru.mercury.vpclient.features.category.model.CategoryModel
 import ru.mercury.vpclient.features.category.navigation.CategoryRoute
 import ru.mercury.vpclient.features.filter.navigation.FilterRoute
+import ru.mercury.vpclient.features.search.navigation.SearchRoute
 import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
@@ -102,6 +103,7 @@ class CategoryViewModel @AssistedInject constructor(
                 launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
             }
             is CategoryIntent.MessengerClick -> return
+            is CategoryIntent.SearchClick -> launch { MainEventManager.send(SearchRoute()) }
             is CategoryIntent.ViewAllClick -> {
                 val entity = stateFlow.value.catalogCategoryEntity
                 if (entity == CatalogCategoryEntity.Empty) return
