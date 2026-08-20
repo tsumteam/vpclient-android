@@ -218,7 +218,7 @@ class FittingAddressesViewModel @AssistedInject constructor(
             is FittingAddressesIntent.RequestDeleteAddress -> {
                 reduce { it.copy(addressActionAddressId = null, deleteAddressId = intent.addressId) }
             }
-            is FittingAddressesIntent.DismissDeleteAddress -> {
+            is FittingAddressesIntent.DismissFittingAddressDeleteDialog -> {
                 reduce { it.copy(deleteAddressId = null) }
             }
             is FittingAddressesIntent.ConfirmDeleteAddress -> {

@@ -1,6 +1,7 @@
 package ru.mercury.vpclient.features.fitting_confirmation.model
 
 import kotlinx.coroutines.Job
+import ru.mercury.vpclient.features.fitting_address_delete_dialog.model.FittingAddressDeleteModel
 import ru.mercury.vpclient.features.fitting_address_sheet.model.FittingAddressModel
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationDeliveryGroup
@@ -67,8 +68,13 @@ data class FittingConfirmationModel(
     val isAddressActionsSheetVisible: Boolean
         get() = addressActionAddress != null
 
-    val isAddressDeleteDialogVisible: Boolean
+    val isFittingAddressDeleteDialogVisible: Boolean
         get() = deleteAddress != null
+
+    val fittingAddressDeleteModel: FittingAddressDeleteModel
+        get() = FittingAddressDeleteModel(
+            address = deleteAddress?.title.orEmpty()
+        )
 
     val displayedClientAddress: String?
         get() = selectedClientAddress?.title ?: clientAddress

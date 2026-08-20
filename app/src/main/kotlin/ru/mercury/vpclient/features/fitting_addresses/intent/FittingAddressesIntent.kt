@@ -14,7 +14,7 @@ sealed interface FittingAddressesIntent: Intent {
     data object SaveAddressClick: FittingAddressesIntent
     data object HideAddressActions: FittingAddressesIntent
     data object EditAddressClick: FittingAddressesIntent
-    data object DismissDeleteAddress: FittingAddressesIntent
+    data object DismissFittingAddressDeleteDialog: FittingAddressesIntent
     data object ConfirmDeleteAddress: FittingAddressesIntent
     data object CollectRoute: FittingAddressesIntent
     data object CollectClientAddresses: FittingAddressesIntent

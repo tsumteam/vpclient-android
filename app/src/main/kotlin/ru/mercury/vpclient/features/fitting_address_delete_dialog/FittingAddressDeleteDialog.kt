@@ -10,10 +10,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.sp
-import ru.mercury.vpclient.features.fitting_address_delete_dialog.intent.FittingAddressDeleteDialogIntent
-import ru.mercury.vpclient.features.fitting_address_delete_dialog.model.FittingAddressDeleteDialogModel
+import ru.mercury.vpclient.features.fitting_address_delete_dialog.intent.FittingAddressDeleteIntent
+import ru.mercury.vpclient.features.fitting_address_delete_dialog.model.FittingAddressDeleteModel
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.medium14
@@ -22,14 +24,14 @@ import ru.mercury.vpclient.shared.ui.theme.regular15
 
 @Composable
 fun FittingAddressDeleteDialog(
-    state: FittingAddressDeleteDialogModel,
-    dispatch: (FittingAddressDeleteDialogIntent) -> Unit
+    state: FittingAddressDeleteModel,
+    dispatch: (FittingAddressDeleteIntent) -> Unit
 ) {
     AlertDialog(
-        onDismissRequest = { dispatch(FittingAddressDeleteDialogIntent.DismissRequest) },
+        onDismissRequest = { dispatch(FittingAddressDeleteIntent.DismissRequest) },
         confirmButton = {
             TextButton(
-                onClick = { dispatch(FittingAddressDeleteDialogIntent.ConfirmClick) }
+                onClick = { dispatch(FittingAddressDeleteIntent.ConfirmClick) }
             ) {
                 Text(
                     text = stringResource(ClientStrings.FittingAddressDelete),
@@ -41,7 +43,7 @@ fun FittingAddressDeleteDialog(
         },
         dismissButton = {
             TextButton(
-                onClick = { dispatch(FittingAddressDeleteDialogIntent.DismissRequest) }
+                onClick = { dispatch(FittingAddressDeleteIntent.DismissRequest) }
             ) {
                 Text(
                     text = stringResource(ClientStrings.FittingAddressCancel),
@@ -76,15 +78,23 @@ fun FittingAddressDeleteDialog(
 @PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Composable
-private fun FittingAddressDeleteDialogPreview() {
+private fun FittingAddressDeleteDialogPreview(
+    @PreviewParameter(FittingAddressDeleteModelProvider::class) state: FittingAddressDeleteModel
+) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
         FittingAddressDeleteDialog(
-            state = FittingAddressDeleteDialogModel(
-                address = "Москва, Тверская улица, 1"
-            ),
+            state = state,
             dispatch = {}
         )
     }
+}
+
+private class FittingAddressDeleteModelProvider: PreviewParameterProvider<FittingAddressDeleteModel> {
+    override val values: Sequence<FittingAddressDeleteModel> = sequenceOf(
+        FittingAddressDeleteModel(
+            address = "Москва, Тверская улица, 1"
+        )
+    )
 }

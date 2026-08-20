@@ -46,23 +46,21 @@ import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.fitting_address_actions_sheet.FittingAddressActionsSheet
 import ru.mercury.vpclient.features.fitting_address_actions_sheet.intent.FittingAddressActionsSheetIntent
 import ru.mercury.vpclient.features.fitting_address_delete_dialog.FittingAddressDeleteDialog
-import ru.mercury.vpclient.features.fitting_address_delete_dialog.intent.FittingAddressDeleteDialogIntent
-import ru.mercury.vpclient.features.fitting_address_delete_dialog.model.FittingAddressDeleteDialogModel
+import ru.mercury.vpclient.features.fitting_address_delete_dialog.intent.FittingAddressDeleteIntent
 import ru.mercury.vpclient.features.fitting_address_search_sheet.FittingAddressSearchSheet
-import ru.mercury.vpclient.features.fitting_addresses.navigation.FittingAddressesRoute
 import ru.mercury.vpclient.features.fitting_address_sheet.FittingAddressSheet
 import ru.mercury.vpclient.features.fitting_address_sheet.intent.FittingAddressSheetIntent
 import ru.mercury.vpclient.features.fitting_addresses.intent.FittingAddressesIntent
+import ru.mercury.vpclient.features.fitting_addresses.navigation.FittingAddressesRoute
 import ru.mercury.vpclient.features.fitting_confirmation.event.FittingConfirmationEvent
 import ru.mercury.vpclient.features.fitting_confirmation.model.FittingConfirmationModel
-import ru.mercury.vpclient.features.fitting_confirmation.navigation.FittingConfirmationRoute
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
-import ru.mercury.vpclient.shared.data.persistence.database.entity.ClientDeliveryAddressEntity
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationDeliveryGroup
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationDeliveryInterval
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationDeliveryMode
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationPlaceType
+import ru.mercury.vpclient.shared.data.persistence.database.entity.ClientDeliveryAddressEntity
 import ru.mercury.vpclient.shared.domain.mapper.title
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
@@ -162,19 +160,16 @@ fun FittingAddressesScreen(
         )
     }
 
-    if (state.isAddressDeleteDialogVisible) {
-        val address = requireNotNull(state.deleteAddress)
+    if (state.isFittingAddressDeleteDialogVisible) {
         FittingAddressDeleteDialog(
-            state = FittingAddressDeleteDialogModel(
-                address = address.title
-            ),
+            state = state.fittingAddressDeleteModel,
             dispatch = { intent ->
                 when (intent) {
-                    is FittingAddressDeleteDialogIntent.ConfirmClick -> {
+                    is FittingAddressDeleteIntent.ConfirmClick -> {
                         viewModel.dispatch(FittingAddressesIntent.ConfirmDeleteAddress)
                     }
-                    is FittingAddressDeleteDialogIntent.DismissRequest -> {
-                        viewModel.dispatch(FittingAddressesIntent.DismissDeleteAddress)
+                    is FittingAddressDeleteIntent.DismissRequest -> {
+                        viewModel.dispatch(FittingAddressesIntent.DismissFittingAddressDeleteDialog)
                     }
                 }
             }

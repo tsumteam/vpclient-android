@@ -58,8 +58,8 @@ import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.fitting_address_actions_sheet.FittingAddressActionsSheet
 import ru.mercury.vpclient.features.fitting_address_actions_sheet.intent.FittingAddressActionsSheetIntent
 import ru.mercury.vpclient.features.fitting_address_delete_dialog.FittingAddressDeleteDialog
-import ru.mercury.vpclient.features.fitting_address_delete_dialog.intent.FittingAddressDeleteDialogIntent
-import ru.mercury.vpclient.features.fitting_address_delete_dialog.model.FittingAddressDeleteDialogModel
+import ru.mercury.vpclient.features.fitting_address_delete_dialog.intent.FittingAddressDeleteIntent
+import ru.mercury.vpclient.features.fitting_address_delete_dialog.model.FittingAddressDeleteModel
 import ru.mercury.vpclient.features.fitting_address_search_sheet.FittingAddressSearchSheet
 import ru.mercury.vpclient.features.fitting_address_sheet.FittingAddressSheet
 import ru.mercury.vpclient.features.fitting_address_sheet.intent.FittingAddressSheetIntent
@@ -184,18 +184,18 @@ fun FittingConfirmationScreen(
         )
     }
 
-    if (state.isAddressDeleteDialogVisible) {
+    if (state.isFittingAddressDeleteDialogVisible) {
         val address = requireNotNull(state.deleteAddress)
         FittingAddressDeleteDialog(
-            state = FittingAddressDeleteDialogModel(
+            state = FittingAddressDeleteModel(
                 address = address.title
             ),
             dispatch = { intent ->
                 when (intent) {
-                    is FittingAddressDeleteDialogIntent.ConfirmClick -> {
+                    is FittingAddressDeleteIntent.ConfirmClick -> {
                         viewModel.dispatch(FittingConfirmationIntent.ConfirmDeleteAddress)
                     }
-                    is FittingAddressDeleteDialogIntent.DismissRequest -> {
+                    is FittingAddressDeleteIntent.DismissRequest -> {
                         viewModel.dispatch(FittingConfirmationIntent.DismissDeleteAddress)
                     }
                 }
