@@ -12,6 +12,7 @@ sealed interface CatalogIntent: Intent {
     data object FittingClick: CatalogIntent
     data object MessengerClick: CatalogIntent
     data object CartClick: CatalogIntent
+    data object SearchClick: CatalogIntent
     data class SelectTab(val tabIndex: Int): CatalogIntent
     data class CategoryClick(val entity: CatalogCategoryEntity): CatalogIntent
 }

@@ -14,6 +14,7 @@ import ru.mercury.vpclient.features.catalog_root.event.CatalogRootEventManager
 import ru.mercury.vpclient.features.category.navigation.CategoryRoute
 import ru.mercury.vpclient.features.filter.navigation.FilterRoute
 import ru.mercury.vpclient.features.gift_card.navigation.GiftCardRoute
+import ru.mercury.vpclient.features.search.navigation.SearchRoute
 import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.network.type.CatalogCategoryType
 import ru.mercury.vpclient.shared.data.network.type.CatalogViewType
@@ -107,6 +108,7 @@ class CatalogViewModel @Inject constructor(
                 launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
             }
             is CatalogIntent.MessengerClick -> return
+            is CatalogIntent.SearchClick -> launch { MainEventManager.send(SearchRoute()) }
         }
     }
 

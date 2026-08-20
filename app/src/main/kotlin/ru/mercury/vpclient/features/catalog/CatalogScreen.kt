@@ -134,9 +134,7 @@ private fun CatalogScreenContent(
                     },
                     navigationIcon = {
                         IconButton(
-                            onClick = {
-                                // fixme
-                            },
+                            onClick = { dispatch(CatalogIntent.SearchClick) },
                             modifier = Modifier.size(42.dp)
                         ) {
                             Icon(
