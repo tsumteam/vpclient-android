@@ -52,12 +52,12 @@ import ru.mercury.vpclient.features.cart_edit_product_sheet.CartEditProductSheet
 import ru.mercury.vpclient.features.cart_edit_product_sheet.intent.CartEditProductSheetIntent
 import ru.mercury.vpclient.features.cart_edit_product_sheet.model.CartEditProductSheetModel
 import ru.mercury.vpclient.features.cart_empty_order_dialog.CartEmptyOrderDialog
-import ru.mercury.vpclient.features.cart_empty_order_dialog.intent.CartEmptyOrderDialogIntent
+import ru.mercury.vpclient.features.cart_empty_order_dialog.intent.CartEmptyOrderIntent
 import ru.mercury.vpclient.features.cart_fitting.CartFittingScreen
 import ru.mercury.vpclient.features.cart_fitting_edit_product_sheet.CartFittingEditProductSheet
 import ru.mercury.vpclient.features.cart_fitting_edit_product_sheet.intent.CartFittingEditProductSheetIntent
 import ru.mercury.vpclient.features.cart_fitting_empty_order_dialog.CartFittingEmptyOrderDialog
-import ru.mercury.vpclient.features.cart_fitting_empty_order_dialog.intent.CartFittingEmptyOrderDialogIntent
+import ru.mercury.vpclient.features.cart_fitting_empty_order_dialog.intent.CartFittingEmptyOrderIntent
 import ru.mercury.vpclient.features.cart_fitting_sheet.CartFittingSheet
 import ru.mercury.vpclient.features.cart_fitting_sheet.intent.CartFittingSheetIntent
 import ru.mercury.vpclient.features.cart_fitting_sheet.model.CartFittingSheetModel
@@ -271,24 +271,24 @@ fun CartScreen(
         )
     }
 
-    if (state.isEmptyOrderDialogVisible) {
+    if (state.isCartEmptyOrderDialogVisible) {
         CartEmptyOrderDialog(
             dispatch = { intent ->
                 when (intent) {
-                    is CartEmptyOrderDialogIntent.DismissRequest -> {
-                        dispatch(CartIntent.DismissEmptyOrderDialog)
+                    is CartEmptyOrderIntent.DismissRequest -> {
+                        dispatch(CartIntent.DismissCartEmptyOrderDialog)
                     }
                 }
             }
         )
     }
 
-    if (state.isFittingEmptyOrderDialogVisible) {
+    if (state.isCartFittingEmptyOrderDialogVisible) {
         CartFittingEmptyOrderDialog(
             dispatch = { intent ->
                 when (intent) {
-                    is CartFittingEmptyOrderDialogIntent.DismissRequest -> {
-                        dispatch(CartIntent.DismissFittingEmptyOrderDialog)
+                    is CartFittingEmptyOrderIntent.DismissRequest -> {
+                        dispatch(CartIntent.DismissCartFittingEmptyOrderDialog)
                     }
                 }
             }

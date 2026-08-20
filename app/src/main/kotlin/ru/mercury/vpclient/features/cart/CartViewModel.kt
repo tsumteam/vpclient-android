@@ -707,7 +707,7 @@ class CartViewModel @AssistedInject constructor(
                     stateFlow.value.paymentItemsCount > 0 -> {
                         launch { MainEventManager.send(CheckoutRoute(source = CheckoutSource.Cart)) }
                     }
-                    else -> reduce { it.copy(isEmptyOrderDialogVisible = true) }
+                    else -> reduce { it.copy(isCartEmptyOrderDialogVisible = true) }
                 }
             }
             is CartIntent.FittingBuyClick -> {
@@ -715,12 +715,14 @@ class CartViewModel @AssistedInject constructor(
                     stateFlow.value.apiFittingPaymentProductsCount > 0 -> {
                         launch { MainEventManager.send(CheckoutRoute(source = CheckoutSource.Fitting)) }
                     }
-                    else -> reduce { it.copy(isFittingEmptyOrderDialogVisible = true) }
+                    else -> reduce { it.copy(isCartFittingEmptyOrderDialogVisible = true) }
                 }
             }
-            is CartIntent.DismissEmptyOrderDialog -> reduce { it.copy(isEmptyOrderDialogVisible = false) }
-            is CartIntent.DismissFittingEmptyOrderDialog -> {
-                reduce { it.copy(isFittingEmptyOrderDialogVisible = false) }
+            is CartIntent.DismissCartEmptyOrderDialog -> {
+                reduce { it.copy(isCartEmptyOrderDialogVisible = false) }
+            }
+            is CartIntent.DismissCartFittingEmptyOrderDialog -> {
+                reduce { it.copy(isCartFittingEmptyOrderDialogVisible = false) }
             }
             is CartIntent.ChatClick -> return
         }

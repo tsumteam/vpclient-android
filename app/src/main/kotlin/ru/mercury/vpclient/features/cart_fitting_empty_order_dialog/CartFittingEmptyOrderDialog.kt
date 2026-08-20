@@ -12,7 +12,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.sp
-import ru.mercury.vpclient.features.cart_fitting_empty_order_dialog.intent.CartFittingEmptyOrderDialogIntent
+import ru.mercury.vpclient.features.cart_fitting_empty_order_dialog.intent.CartFittingEmptyOrderIntent
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.medium15
@@ -21,13 +21,13 @@ import ru.mercury.vpclient.shared.ui.theme.regular15
 
 @Composable
 fun CartFittingEmptyOrderDialog(
-    dispatch: (CartFittingEmptyOrderDialogIntent) -> Unit
+    dispatch: (CartFittingEmptyOrderIntent) -> Unit
 ) {
     AlertDialog(
-        onDismissRequest = { dispatch(CartFittingEmptyOrderDialogIntent.DismissRequest) },
+        onDismissRequest = { dispatch(CartFittingEmptyOrderIntent.DismissRequest) },
         confirmButton = {
             TextButton(
-                onClick = { dispatch(CartFittingEmptyOrderDialogIntent.DismissRequest) }
+                onClick = { dispatch(CartFittingEmptyOrderIntent.DismissRequest) }
             ) {
                 Text(
                     text = stringResource(ClientStrings.CartFittingEmptyOrderButton),
