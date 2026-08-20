@@ -24,6 +24,7 @@ import ru.mercury.vpclient.features.filter.intent.FilterIntent
 import ru.mercury.vpclient.features.filter.model.FilterModel
 import ru.mercury.vpclient.features.filter.navigation.FilterRoute
 import ru.mercury.vpclient.features.home_root.event.HomeRootEventManager
+import ru.mercury.vpclient.features.search.navigation.SearchRoute
 import ru.mercury.vpclient.shared.data.entity.CatalogFilterProductsData
 import ru.mercury.vpclient.shared.data.entity.CatalogFilterRequestData2
 import ru.mercury.vpclient.shared.data.entity.FilterChip
@@ -317,6 +318,7 @@ class FilterViewModel @AssistedInject constructor(
                 launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
             }
             is FilterIntent.MessengerClick -> return
+            is FilterIntent.SearchClick -> launch { MainEventManager.send(SearchRoute()) }
             is FilterIntent.ProductClick -> {
                 launch {
                     val detailsRoute = DetailsRoute(

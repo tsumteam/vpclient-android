@@ -20,6 +20,7 @@ sealed interface FilterIntent: Intent {
     data object CartClick: FilterIntent
     data object FittingClick: FilterIntent
     data object MessengerClick: FilterIntent
+    data object SearchClick: FilterIntent
     data object ShowSortDialog: FilterIntent
     data object HideSortDialog: FilterIntent
     data object HideFilterValuesDialog: FilterIntent

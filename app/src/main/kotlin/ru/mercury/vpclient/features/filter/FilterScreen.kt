@@ -456,7 +456,7 @@ private fun FilterScreenContent(
                         }
 
                         IconButton(
-                            onClick = {},
+                            onClick = { dispatch(FilterIntent.SearchClick) },
                             modifier = Modifier.size(42.dp)
                         ) {
                             Icon(
