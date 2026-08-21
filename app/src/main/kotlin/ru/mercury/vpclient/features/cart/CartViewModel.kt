@@ -549,7 +549,7 @@ class CartViewModel @AssistedInject constructor(
                     )
                 }
             }
-            is CartIntent.HideQuantityPicker -> {
+            is CartIntent.DismissQuantityPickerSheet -> {
                 reduce {
                     it.copy(
                         quantityPickerProduct = null,
@@ -565,7 +565,7 @@ class CartViewModel @AssistedInject constructor(
                 val product = stateFlow.value.quantityPickerProduct ?: return
                 val quantity = stateFlow.value.quantityPickerValues.firstOrNull { it.selected }?.value ?: return
                 if (quantity == product.quantity) {
-                    dispatch(CartIntent.HideQuantityPicker)
+                    dispatch(CartIntent.DismissQuantityPickerSheet)
                     return
                 }
                 reduce {

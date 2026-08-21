@@ -5,8 +5,8 @@ import ru.mercury.vpclient.features.cart.intent.CartIntent
 import ru.mercury.vpclient.features.cart_edit_product_sheet.model.CartEditProductModel
 import ru.mercury.vpclient.features.cart_fitting_edit_product_sheet.model.CartFittingEditProductModel
 import ru.mercury.vpclient.features.cart_fitting_sheet.model.CartFittingModel
-import ru.mercury.vpclient.features.cart_quantity_sheet.model.CartQuantityItem
 import ru.mercury.vpclient.features.color_picker_sheet.model.ColorPickerModel
+import ru.mercury.vpclient.features.quantity_picker_sheet.model.QuantityPickerModel
 import ru.mercury.vpclient.shared.data.CART_DRAG_AND_DROP_ENABLED
 import ru.mercury.vpclient.shared.data.FORMAT_RUB
 import ru.mercury.vpclient.shared.data.PREFIX_SPACE
@@ -14,6 +14,7 @@ import ru.mercury.vpclient.shared.data.entity.CartFittingDeliveryGroup
 import ru.mercury.vpclient.shared.data.entity.CartPayMode
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductGroup
+import ru.mercury.vpclient.shared.data.entity.CartQuantityItem
 import ru.mercury.vpclient.shared.data.entity.FittingDeliveryData
 import ru.mercury.vpclient.shared.data.entity.ProductAvailableColor
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
@@ -162,6 +163,9 @@ data class CartModel(
                 )
             }
         }
+
+    val quantityPickerModel: QuantityPickerModel
+        get() = QuantityPickerModel(quantities = quantityPickerValues)
 
     val visibleProducts: List<CartProduct>
         get() = when (payMode) {

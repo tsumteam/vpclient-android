@@ -57,9 +57,6 @@ import ru.mercury.vpclient.features.cart_fitting_empty_order_dialog.intent.CartF
 import ru.mercury.vpclient.features.cart_fitting_sheet.CartFittingSheet
 import ru.mercury.vpclient.features.cart_fitting_sheet.intent.CartFittingIntent
 import ru.mercury.vpclient.features.cart_list.CartListScreen
-import ru.mercury.vpclient.features.cart_quantity_sheet.CartQuantitySheet
-import ru.mercury.vpclient.features.cart_quantity_sheet.intent.CartQuantityIntent
-import ru.mercury.vpclient.features.cart_quantity_sheet.model.CartQuantityModel
 import ru.mercury.vpclient.features.cart_size_sheet.CartSizeSheet
 import ru.mercury.vpclient.features.cart_size_sheet.intent.CartSizeSheetIntent
 import ru.mercury.vpclient.features.cart_size_sheet.model.CartSizeSheetModel
@@ -68,6 +65,8 @@ import ru.mercury.vpclient.features.color_picker_sheet.intent.ColorPickerIntent
 import ru.mercury.vpclient.features.fitting_products_sheet.FittingProductsSheet
 import ru.mercury.vpclient.features.fitting_products_sheet.event.FittingProductsSheetEvent
 import ru.mercury.vpclient.features.fitting_products_sheet.event.FittingProductsSheetEventManager
+import ru.mercury.vpclient.features.quantity_picker_sheet.QuantityPickerSheet
+import ru.mercury.vpclient.features.quantity_picker_sheet.intent.QuantityPickerIntent
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
@@ -202,20 +201,18 @@ fun CartScreen(
     }
 
     if (state.isQuantityPickerSheetVisible) {
-        CartQuantitySheet(
-            state = CartQuantityModel(
-                quantities = state.quantityPickerValues
-            ),
+        QuantityPickerSheet(
+            state = state.quantityPickerModel,
             dispatch = { intent ->
                 when (intent) {
-                    is CartQuantityIntent.QuantityClick -> {
+                    is QuantityPickerIntent.QuantityClick -> {
                         viewModel.dispatch(CartIntent.ToggleQuantityPickerItem(intent.index))
                     }
-                    is CartQuantityIntent.ConfirmClick -> {
+                    is QuantityPickerIntent.ConfirmClick -> {
                         viewModel.dispatch(CartIntent.ConfirmQuantityPicker)
                     }
-                    is CartQuantityIntent.DismissRequest -> {
-                        viewModel.dispatch(CartIntent.HideQuantityPicker)
+                    is QuantityPickerIntent.DismissClick -> {
+                        viewModel.dispatch(CartIntent.DismissQuantityPickerSheet)
                     }
                 }
             }

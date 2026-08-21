@@ -1,12 +1,11 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package ru.mercury.vpclient.features.cart_quantity_sheet
+package ru.mercury.vpclient.features.quantity_picker_sheet
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,7 +25,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -46,9 +44,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.features.cart_quantity_sheet.intent.CartQuantityIntent
-import ru.mercury.vpclient.features.cart_quantity_sheet.model.CartQuantityItem
-import ru.mercury.vpclient.features.cart_quantity_sheet.model.CartQuantityModel
+import ru.mercury.vpclient.features.quantity_picker_sheet.intent.QuantityPickerIntent
+import ru.mercury.vpclient.features.quantity_picker_sheet.model.QuantityPickerModel
+import ru.mercury.vpclient.shared.data.entity.CartQuantityItem
+import ru.mercury.vpclient.shared.ui.components.SharedColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
@@ -59,30 +58,14 @@ import ru.mercury.vpclient.shared.ui.theme.regular18
 import kotlin.math.abs
 
 @Composable
-fun CartQuantitySheet(
-    state: CartQuantityModel,
-    dispatch: (CartQuantityIntent) -> Unit
+fun QuantityPickerSheet(
+    state: QuantityPickerModel,
+    dispatch: (QuantityPickerIntent) -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val scope = rememberCoroutineScope()
-    val sheetDispatch: (CartQuantityIntent) -> Unit = { intent ->
-        when (intent) {
-            is CartQuantityIntent.QuantityClick -> dispatch(intent)
-            is CartQuantityIntent.ConfirmClick,
-            is CartQuantityIntent.DismissRequest -> {
-                scope.launch {
-                    sheetState.hide()
-                    dispatch(intent)
-                }
-            }
-        }
-    }
-
     SharedModalBottomSheet(
-        onDismissRequest = { dispatch(CartQuantityIntent.DismissRequest) },
-        sheetState = sheetState
+        onDismissRequest = { dispatch(QuantityPickerIntent.DismissClick) }
     ) {
-        val selectedIndex = state.quantities.indexOfFirst { it.selected }.coerceAtLeast(0)
+        val selectedIndex = state.selectedIndex
         val listState = rememberLazyListState(initialFirstVisibleItemIndex = selectedIndex)
         val scope = rememberCoroutineScope()
         val density = LocalDensity.current
@@ -107,13 +90,13 @@ fun CartQuantitySheet(
                             else -> listState.firstVisibleItemIndex
                         }.coerceIn(0, state.quantities.lastIndex)
 
-                        sheetDispatch(CartQuantityIntent.QuantityClick(centeredIndex))
+                        dispatch(QuantityPickerIntent.QuantityClick(centeredIndex))
                         listState.animateScrollToItem(centeredIndex)
                     }
                 }
         }
 
-        Column {
+        SharedColumn {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
@@ -126,7 +109,7 @@ fun CartQuantitySheet(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { sheetDispatch(CartQuantityIntent.DismissRequest) }
+                        onClick = { dispatch(QuantityPickerIntent.DismissClick) }
                     ) {
                         Icon(
                             imageVector = Close24,
@@ -205,8 +188,8 @@ fun CartQuantitySheet(
                                     this.cameraDistance = cameraDistance
                                 }
                                 .clickable {
+                                    dispatch(QuantityPickerIntent.QuantityClick(index))
                                     scope.launch {
-                                        sheetDispatch(CartQuantityIntent.QuantityClick(index))
                                         listState.animateScrollToItem(index)
                                     }
                                 },
@@ -225,7 +208,7 @@ fun CartQuantitySheet(
             }
 
             Button(
-                onClick = { sheetDispatch(CartQuantityIntent.ConfirmClick) },
+                onClick = { dispatch(QuantityPickerIntent.ConfirmClick) },
                 modifier = Modifier
                     .padding(start = 16.dp, top = 20.dp, end = 16.dp, bottom = 8.dp)
                     .fillMaxWidth()
@@ -252,22 +235,22 @@ fun CartQuantitySheet(
 @PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Composable
-private fun CartQuantitySheetPreview(
-    @PreviewParameter(CartQuantitySheetModelProvider::class) state: CartQuantityModel
+private fun QuantityPickerSheetPreview(
+    @PreviewParameter(QuantityPickerSheetModelProvider::class) state: QuantityPickerModel
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        CartQuantitySheet(
+        QuantityPickerSheet(
             state = state,
             dispatch = {}
         )
     }
 }
 
-private class CartQuantitySheetModelProvider: PreviewParameterProvider<CartQuantityModel> {
-    override val values: Sequence<CartQuantityModel> = sequenceOf(
-        CartQuantityModel(
+private class QuantityPickerSheetModelProvider: PreviewParameterProvider<QuantityPickerModel> {
+    override val values: Sequence<QuantityPickerModel> = sequenceOf(
+        QuantityPickerModel(
             quantities = (1..10).map { value ->
                 CartQuantityItem(
                     value = value,
