@@ -55,8 +55,7 @@ import ru.mercury.vpclient.features.cart_fitting_edit_product_sheet.intent.CartF
 import ru.mercury.vpclient.features.cart_fitting_empty_order_dialog.CartFittingEmptyOrderDialog
 import ru.mercury.vpclient.features.cart_fitting_empty_order_dialog.intent.CartFittingEmptyOrderIntent
 import ru.mercury.vpclient.features.cart_fitting_sheet.CartFittingSheet
-import ru.mercury.vpclient.features.cart_fitting_sheet.intent.CartFittingSheetIntent
-import ru.mercury.vpclient.features.cart_fitting_sheet.model.CartFittingSheetModel
+import ru.mercury.vpclient.features.cart_fitting_sheet.intent.CartFittingIntent
 import ru.mercury.vpclient.features.cart_list.CartListScreen
 import ru.mercury.vpclient.features.cart_quantity_sheet.CartQuantitySheet
 import ru.mercury.vpclient.features.cart_quantity_sheet.intent.CartQuantityIntent
@@ -69,7 +68,6 @@ import ru.mercury.vpclient.features.color_picker_sheet.intent.ColorPickerIntent
 import ru.mercury.vpclient.features.fitting_products_sheet.FittingProductsSheet
 import ru.mercury.vpclient.features.fitting_products_sheet.event.FittingProductsSheetEvent
 import ru.mercury.vpclient.features.fitting_products_sheet.event.FittingProductsSheetEventManager
-import ru.mercury.vpclient.shared.data.entity.CartFittingSheetOption
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
@@ -136,36 +134,16 @@ fun CartScreen(
         )
     }
 
-    if (state.isFittingSheetVisible) {
+    if (state.isCartFittingSheetVisible) {
         CartFittingSheet(
-            state = CartFittingSheetModel(
-                clientName = state.fittingSheetClientName,
-                clientFeminine = state.isFittingSheetClientFeminine,
-                allProductsCount = state.fittingProductsCount,
-                allProductsSummary = state.fittingProductsSummary,
-                paymentProductsCount = state.fittingPaymentProductsCount,
-                paymentProductsSummary = state.fittingPaymentProductsSummary,
-                hasProductsWithoutSize = state.hasProductsWithoutSize
-            ),
+            state = state.cartFittingModel,
             dispatch = { intent ->
                 when (intent) {
-                    is CartFittingSheetIntent.ConfirmClick -> {
-                        when (intent.option) {
-                            CartFittingSheetOption.AllProducts -> {
-                                viewModel.dispatch(CartIntent.ConfirmFittingSheet(state.fittingProducts.map { product -> product.id }))
-                            }
-                            CartFittingSheetOption.PaymentProducts -> {
-                                viewModel.dispatch(
-                                    CartIntent.ConfirmFittingSheet(
-                                        state.fittingPaymentProducts.map { product -> product.id }
-                                    )
-                                )
-                            }
-                            CartFittingSheetOption.Manual -> viewModel.dispatch(CartIntent.ShowFittingProductsSheet)
-                        }
+                    is CartFittingIntent.ConfirmClick -> {
+                        viewModel.dispatch(CartIntent.ConfirmFittingSheet(intent.option))
                     }
-                    is CartFittingSheetIntent.DismissRequest -> {
-                        viewModel.dispatch(CartIntent.HideFittingSheet)
+                    is CartFittingIntent.DismissClick -> {
+                        viewModel.dispatch(CartIntent.DismissCartFittingSheet)
                     }
                 }
             }
@@ -513,7 +491,7 @@ private class CartScreenCartProductProvider: PreviewParameterProvider<CartModel>
         ),
         CartModel(
             products = products,
-            isFittingSheetVisible = true,
+            isCartFittingSheetVisible = true,
             fittingSheetClientName = "Анна Петровна",
             isFittingSheetClientFeminine = true
         )

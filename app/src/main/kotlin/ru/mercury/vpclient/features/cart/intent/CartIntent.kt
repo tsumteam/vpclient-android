@@ -1,5 +1,6 @@
 package ru.mercury.vpclient.features.cart.intent
 
+import ru.mercury.vpclient.shared.data.entity.CartFittingSheetOption
 import ru.mercury.vpclient.shared.data.entity.CartPayMode
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
@@ -25,7 +26,7 @@ sealed interface CartIntent: Intent {
     data object FittingBuyClick: CartIntent
     data object DismissCartEmptyOrderDialog: CartIntent
     data object DismissCartFittingEmptyOrderDialog: CartIntent
-    data object HideFittingSheet: CartIntent
+    data object DismissCartFittingSheet: CartIntent
     data object ShowFittingProductsSheet: CartIntent
     data object HideFittingProductsSheet: CartIntent
     data object HideSizePicker: CartIntent
@@ -81,6 +82,6 @@ sealed interface CartIntent: Intent {
         val targetProductId: String,
         val placeAfterTarget: Boolean
     ): CartIntent
-    data class ConfirmFittingSheet(val productIds: List<String>): CartIntent
+    data class ConfirmFittingSheet(val option: CartFittingSheetOption): CartIntent
     data class ConfirmFittingProductsSheet(val productIds: List<String>): CartIntent
 }

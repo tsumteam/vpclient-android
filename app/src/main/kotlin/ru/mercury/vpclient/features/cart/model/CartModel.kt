@@ -4,6 +4,7 @@ import kotlinx.coroutines.Job
 import ru.mercury.vpclient.features.cart.intent.CartIntent
 import ru.mercury.vpclient.features.cart_edit_product_sheet.model.CartEditProductModel
 import ru.mercury.vpclient.features.cart_fitting_edit_product_sheet.model.CartFittingEditProductModel
+import ru.mercury.vpclient.features.cart_fitting_sheet.model.CartFittingModel
 import ru.mercury.vpclient.features.cart_quantity_sheet.model.CartQuantityItem
 import ru.mercury.vpclient.features.color_picker_sheet.model.ColorPickerModel
 import ru.mercury.vpclient.shared.data.CART_DRAG_AND_DROP_ENABLED
@@ -39,7 +40,7 @@ data class CartModel(
     val apiFittingDeliveries: List<FittingDeliveryData> = emptyList(),
     val editProduct: CartProduct? = null,
     val fittingEditProduct: CartProduct? = null,
-    val isFittingSheetVisible: Boolean = false,
+    val isCartFittingSheetVisible: Boolean = false,
     val isFittingProductsSheetVisible: Boolean = false,
     val sizePickerProduct: CartProduct? = null,
     val sizePickerSizes: ProductAvailableSizesEntity? = null,
@@ -219,6 +220,17 @@ data class CartModel(
 
     val fittingPaymentProductsSummary: String
         get() = summary(fittingPaymentProducts)
+
+    val cartFittingModel: CartFittingModel
+        get() = CartFittingModel(
+            clientName = fittingSheetClientName,
+            clientFeminine = isFittingSheetClientFeminine,
+            allProductsCount = fittingProductsCount,
+            allProductsSummary = fittingProductsSummary,
+            paymentProductsCount = fittingPaymentProductsCount,
+            paymentProductsSummary = fittingPaymentProductsSummary,
+            hasProductsWithoutSize = hasProductsWithoutSize
+        )
 
     val apiFittingProductsCount: Int
         get() = apiFittingProducts.sumOf { it.itemsCount }

@@ -23,6 +23,7 @@ const val FORMAT_QUANTITY = "х %s"
 const val LOYALTY_PHONE_NUMBER_LENGTH = 11
 
 const val PREFIX_SPACE = " "
+const val PREFIX_ASTERISK = "*"
 
 const val CODE_RESEND_MAX_TIME = 30_000L
 const val CODE_RESEND_TIMER_DELAY = 1_000L

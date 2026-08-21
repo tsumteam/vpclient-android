@@ -18,6 +18,7 @@ import ru.mercury.vpclient.features.checkout.navigation.CheckoutRoute
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.features.fitting_confirmation.navigation.FittingConfirmationRoute
 import ru.mercury.vpclient.features.fitting_info.navigation.FittingInfoRoute
+import ru.mercury.vpclient.shared.data.entity.CartFittingSheetOption
 import ru.mercury.vpclient.shared.data.entity.FittingData
 import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
@@ -220,7 +221,7 @@ class CartViewModel @AssistedInject constructor(
             }
             is CartIntent.RefreshCompleted -> reduce { it.copy(isRefreshing = false) }
             is CartIntent.CloseClick -> launch { MainEventManager.send(BackRoute) }
-            is CartIntent.FittingClick -> reduce { it.copy(isFittingSheetVisible = true) }
+            is CartIntent.FittingClick -> reduce { it.copy(isCartFittingSheetVisible = true) }
             is CartIntent.FittingTabClick -> return
             is CartIntent.SizeTableClick -> return
             is CartIntent.FittingDeliveryClick -> {
@@ -246,15 +247,24 @@ class CartViewModel @AssistedInject constructor(
                     }
                 }
             }
-            is CartIntent.HideFittingSheet -> reduce { it.copy(isFittingSheetVisible = false) }
+            is CartIntent.DismissCartFittingSheet -> reduce { it.copy(isCartFittingSheetVisible = false) }
             is CartIntent.ConfirmFittingSheet -> {
-                reduce { it.copy(isFittingSheetVisible = false) }
-                launch { MainEventManager.send(FittingConfirmationRoute(intent.productIds)) }
+                when (intent.option) {
+                    CartFittingSheetOption.Manual -> dispatch(CartIntent.ShowFittingProductsSheet)
+                    CartFittingSheetOption.AllProducts, CartFittingSheetOption.PaymentProducts -> {
+                        val productIds = when (intent.option) {
+                            CartFittingSheetOption.AllProducts -> stateFlow.value.fittingProducts
+                            else -> stateFlow.value.fittingPaymentProducts
+                        }.map { product -> product.id }
+                        reduce { it.copy(isCartFittingSheetVisible = false) }
+                        launch { MainEventManager.send(FittingConfirmationRoute(productIds)) }
+                    }
+                }
             }
             is CartIntent.ShowFittingProductsSheet -> {
                 reduce {
                     it.copy(
-                        isFittingSheetVisible = false,
+                        isCartFittingSheetVisible = false,
                         isFittingProductsSheetVisible = true
                     )
                 }
