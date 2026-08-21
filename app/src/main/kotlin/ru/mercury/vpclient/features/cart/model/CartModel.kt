@@ -1,6 +1,8 @@
 package ru.mercury.vpclient.features.cart.model
 
 import kotlinx.coroutines.Job
+import ru.mercury.vpclient.features.cart.intent.CartIntent
+import ru.mercury.vpclient.features.cart_edit_product_sheet.model.CartEditProductModel
 import ru.mercury.vpclient.features.cart_quantity_sheet.model.CartQuantityItem
 import ru.mercury.vpclient.features.color_picker_sheet.model.ColorPickerModel
 import ru.mercury.vpclient.shared.data.CART_DRAG_AND_DROP_ENABLED
@@ -19,6 +21,7 @@ import ru.mercury.vpclient.shared.domain.mapper.thousandsSeparator
 import ru.mercury.vpclient.shared.mvi.Model
 import ru.mercury.vpclient.shared.ui.components.details.SizeSelectorState
 import ru.mercury.vpclient.shared.ui.components.details.SizeState
+import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import kotlin.math.roundToInt
 
 data class CartModel(
@@ -57,6 +60,28 @@ data class CartModel(
 ): Model {
     val isEditProductSheetVisible: Boolean
         get() = editProduct != null
+
+    val editProductActions: List<Pair<Int, CartIntent>>
+        get() {
+            val product = editProduct ?: return emptyList()
+            return buildList {
+                if (!product.isSold && product.isSizeSelectionAvailable && product.sizeItems.size < 2) {
+                    add(ClientStrings.CartEditAddSize to CartIntent.AddSizeClick(product))
+                }
+                if (product.isSizeSelectionAvailable) {
+                    add(ClientStrings.CartEditSelectSize to CartIntent.ShowSizePicker(product))
+                }
+                if (!product.isSold) {
+                    add(ClientStrings.CartEditChangeQuantity to CartIntent.ShowQuantityPicker(product))
+                }
+                add(ClientStrings.CartEditChangeColor to CartIntent.ShowColorPicker(product))
+            }
+        }
+
+    val editProductModel: CartEditProductModel
+        get() = CartEditProductModel(
+            actions = editProductActions.map { it.first }
+        )
 
     val isFittingEditProductSheetVisible: Boolean
         get() = fittingEditProduct != null

@@ -646,7 +646,7 @@ class CartViewModel @AssistedInject constructor(
                     else -> reduce { it.copy(editProduct = intent.product) }
                 }
             }
-            is CartIntent.HideEditProductSheet -> reduce { it.copy(editProduct = null) }
+            is CartIntent.DismissCartEditProductSheet -> reduce { it.copy(editProduct = null) }
             is CartIntent.EditFittingProductSwipeClick -> {
                 reduce { it.copy(fittingEditProduct = intent.product) }
             }

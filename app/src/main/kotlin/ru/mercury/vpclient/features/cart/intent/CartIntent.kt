@@ -29,7 +29,7 @@ sealed interface CartIntent: Intent {
     data object ShowFittingProductsSheet: CartIntent
     data object HideFittingProductsSheet: CartIntent
     data object HideSizePicker: CartIntent
-    data object HideEditProductSheet: CartIntent
+    data object DismissCartEditProductSheet: CartIntent
     data object HideFittingEditProductSheet: CartIntent
     data object DismissColorPickerSheet: CartIntent
     data object HideQuantityPicker: CartIntent

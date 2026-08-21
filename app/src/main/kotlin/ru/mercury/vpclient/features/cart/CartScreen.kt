@@ -46,8 +46,7 @@ import ru.mercury.vpclient.features.cart.intent.CartIntent
 import ru.mercury.vpclient.features.cart.model.CartModel
 import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.features.cart_edit_product_sheet.CartEditProductSheet
-import ru.mercury.vpclient.features.cart_edit_product_sheet.intent.CartEditProductSheetIntent
-import ru.mercury.vpclient.features.cart_edit_product_sheet.model.CartEditProductSheetModel
+import ru.mercury.vpclient.features.cart_edit_product_sheet.intent.CartEditProductIntent
 import ru.mercury.vpclient.features.cart_empty_order_dialog.CartEmptyOrderDialog
 import ru.mercury.vpclient.features.cart_empty_order_dialog.intent.CartEmptyOrderIntent
 import ru.mercury.vpclient.features.cart_fitting.CartFittingScreen
@@ -92,43 +91,26 @@ fun CartScreen(
     )
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
-    val dispatch = viewModel::dispatch
     val scope = rememberCoroutineScope()
     val snackbarHostStateError = remember { SnackbarHostState() }
 
     CartScreenContent(
         state = state,
-        dispatch = dispatch,
+        dispatch = viewModel::dispatch,
         snackbarHostStateError = snackbarHostStateError
     )
 
     if (state.isEditProductSheetVisible) {
-        val product = requireNotNull(state.editProduct)
-        val editProductActions = buildList {
-            if (!product.isSold && product.isSizeSelectionAvailable && product.sizeItems.size < 2) {
-                add(stringResource(ClientStrings.CartEditAddSize) to CartIntent.AddSizeClick(product))
-            }
-            if (product.isSizeSelectionAvailable) {
-                add(stringResource(ClientStrings.CartEditSelectSize) to CartIntent.ShowSizePicker(product))
-            }
-            if (!product.isSold) {
-                add(stringResource(ClientStrings.CartEditChangeQuantity) to CartIntent.ShowQuantityPicker(product))
-            }
-            add(stringResource(ClientStrings.CartEditChangeColor) to CartIntent.ShowColorPicker(product))
-        }
-
         CartEditProductSheet(
-            state = CartEditProductSheetModel(
-                actions = editProductActions.map { it.first }
-            ),
+            state = state.editProductModel,
             dispatch = { intent ->
                 when (intent) {
-                    is CartEditProductSheetIntent.ActionClick -> {
-                        dispatch(CartIntent.HideEditProductSheet)
-                        editProductActions.getOrNull(intent.index)?.second?.let(dispatch)
+                    is CartEditProductIntent.ActionClick -> {
+                        viewModel.dispatch(CartIntent.DismissCartEditProductSheet)
+                        viewModel.dispatch(state.editProductActions[intent.index].second)
                     }
-                    is CartEditProductSheetIntent.DismissRequest -> {
-                        dispatch(CartIntent.HideEditProductSheet)
+                    is CartEditProductIntent.DismissClick -> {
+                        viewModel.dispatch(CartIntent.DismissCartEditProductSheet)
                     }
                 }
             }
@@ -142,18 +124,18 @@ fun CartScreen(
             dispatch = { intent ->
                 when (intent) {
                     is CartFittingEditProductSheetIntent.ChangeColorClick -> {
-                        dispatch(CartIntent.ShowColorPicker(product, forFitting = true))
+                        viewModel.dispatch(CartIntent.ShowColorPicker(product, forFitting = true))
                     }
                     is CartFittingEditProductSheetIntent.ChangeSizeClick -> {
                         if (product.isSizeSelectionAvailable) {
-                            dispatch(CartIntent.ShowFittingSizePicker(product))
+                            viewModel.dispatch(CartIntent.ShowFittingSizePicker(product))
                         }
                     }
                     is CartFittingEditProductSheetIntent.ConfirmClick -> {
-                        dispatch(CartIntent.HideFittingEditProductSheet)
+                        viewModel.dispatch(CartIntent.HideFittingEditProductSheet)
                     }
                     is CartFittingEditProductSheetIntent.DismissRequest -> {
-                        dispatch(CartIntent.HideFittingEditProductSheet)
+                        viewModel.dispatch(CartIntent.HideFittingEditProductSheet)
                     }
                 }
             }
@@ -176,20 +158,20 @@ fun CartScreen(
                     is CartFittingSheetIntent.ConfirmClick -> {
                         when (intent.option) {
                             CartFittingSheetOption.AllProducts -> {
-                                dispatch(CartIntent.ConfirmFittingSheet(state.fittingProducts.map { product -> product.id }))
+                                viewModel.dispatch(CartIntent.ConfirmFittingSheet(state.fittingProducts.map { product -> product.id }))
                             }
                             CartFittingSheetOption.PaymentProducts -> {
-                                dispatch(
+                                viewModel.dispatch(
                                     CartIntent.ConfirmFittingSheet(
                                         state.fittingPaymentProducts.map { product -> product.id }
                                     )
                                 )
                             }
-                            CartFittingSheetOption.Manual -> dispatch(CartIntent.ShowFittingProductsSheet)
+                            CartFittingSheetOption.Manual -> viewModel.dispatch(CartIntent.ShowFittingProductsSheet)
                         }
                     }
                     is CartFittingSheetIntent.DismissRequest -> {
-                        dispatch(CartIntent.HideFittingSheet)
+                        viewModel.dispatch(CartIntent.HideFittingSheet)
                     }
                 }
             }
@@ -212,16 +194,16 @@ fun CartScreen(
             dispatch = { intent ->
                 when (intent) {
                     is CartSizeSheetIntent.SizeClick -> {
-                        dispatch(CartIntent.ToggleSizePickerItem(intent.index))
+                        viewModel.dispatch(CartIntent.ToggleSizePickerItem(intent.index))
                     }
                     is CartSizeSheetIntent.ConfirmClick -> {
-                        dispatch(CartIntent.ConfirmSizePicker)
+                        viewModel.dispatch(CartIntent.ConfirmSizePicker)
                     }
                     is CartSizeSheetIntent.DismissRequest -> {
-                        dispatch(CartIntent.HideSizePicker)
+                        viewModel.dispatch(CartIntent.HideSizePicker)
                     }
                     is CartSizeSheetIntent.SizeTableClick -> {
-                        dispatch(CartIntent.SizeTableClick)
+                        viewModel.dispatch(CartIntent.SizeTableClick)
                     }
                 }
             }
@@ -234,13 +216,13 @@ fun CartScreen(
             dispatch = { intent ->
                 when (intent) {
                     is ColorPickerIntent.ColorClick -> {
-                        dispatch(CartIntent.ToggleColorPickerItem(intent.index))
+                        viewModel.dispatch(CartIntent.ToggleColorPickerItem(intent.index))
                     }
                     is ColorPickerIntent.ConfirmClick -> {
-                        dispatch(CartIntent.ConfirmColorPicker)
+                        viewModel.dispatch(CartIntent.ConfirmColorPicker)
                     }
                     is ColorPickerIntent.DismissClick -> {
-                        dispatch(CartIntent.DismissColorPickerSheet)
+                        viewModel.dispatch(CartIntent.DismissColorPickerSheet)
                     }
                 }
             }
@@ -255,13 +237,13 @@ fun CartScreen(
             dispatch = { intent ->
                 when (intent) {
                     is CartQuantityIntent.QuantityClick -> {
-                        dispatch(CartIntent.ToggleQuantityPickerItem(intent.index))
+                        viewModel.dispatch(CartIntent.ToggleQuantityPickerItem(intent.index))
                     }
                     is CartQuantityIntent.ConfirmClick -> {
-                        dispatch(CartIntent.ConfirmQuantityPicker)
+                        viewModel.dispatch(CartIntent.ConfirmQuantityPicker)
                     }
                     is CartQuantityIntent.DismissRequest -> {
-                        dispatch(CartIntent.HideQuantityPicker)
+                        viewModel.dispatch(CartIntent.HideQuantityPicker)
                     }
                 }
             }
@@ -273,7 +255,7 @@ fun CartScreen(
             dispatch = { intent ->
                 when (intent) {
                     is CartEmptyOrderIntent.DismissRequest -> {
-                        dispatch(CartIntent.DismissCartEmptyOrderDialog)
+                        viewModel.dispatch(CartIntent.DismissCartEmptyOrderDialog)
                     }
                 }
             }
@@ -285,7 +267,7 @@ fun CartScreen(
             dispatch = { intent ->
                 when (intent) {
                     is CartFittingEmptyOrderIntent.DismissRequest -> {
-                        dispatch(CartIntent.DismissCartFittingEmptyOrderDialog)
+                        viewModel.dispatch(CartIntent.DismissCartFittingEmptyOrderDialog)
                     }
                 }
             }
@@ -308,10 +290,10 @@ fun CartScreen(
     ) { event ->
         when (event) {
             is FittingProductsSheetEvent.ConfirmClick -> {
-                dispatch(CartIntent.ConfirmFittingProductsSheet(event.productIds))
+                viewModel.dispatch(CartIntent.ConfirmFittingProductsSheet(event.productIds))
             }
             is FittingProductsSheetEvent.DismissRequest -> {
-                dispatch(CartIntent.HideFittingProductsSheet)
+                viewModel.dispatch(CartIntent.HideFittingProductsSheet)
             }
         }
     }
