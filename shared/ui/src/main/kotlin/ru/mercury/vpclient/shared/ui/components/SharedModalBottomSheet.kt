@@ -16,7 +16,7 @@ import androidx.compose.ui.graphics.Color
 fun SharedModalBottomSheet(
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
-    sheetState: SheetState = rememberModalBottomSheetState(),
+    sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
     sheetGesturesEnabled: Boolean = false,
     containerColor: Color = MaterialTheme.colorScheme.background,
     content: @Composable ColumnScope.() -> Unit
