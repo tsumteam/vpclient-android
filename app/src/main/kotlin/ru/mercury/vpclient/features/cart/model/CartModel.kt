@@ -3,6 +3,7 @@ package ru.mercury.vpclient.features.cart.model
 import kotlinx.coroutines.Job
 import ru.mercury.vpclient.features.cart.intent.CartIntent
 import ru.mercury.vpclient.features.cart_edit_product_sheet.model.CartEditProductModel
+import ru.mercury.vpclient.features.cart_fitting_edit_product_sheet.model.CartFittingEditProductModel
 import ru.mercury.vpclient.features.cart_quantity_sheet.model.CartQuantityItem
 import ru.mercury.vpclient.features.color_picker_sheet.model.ColorPickerModel
 import ru.mercury.vpclient.shared.data.CART_DRAG_AND_DROP_ENABLED
@@ -17,6 +18,7 @@ import ru.mercury.vpclient.shared.data.entity.ProductAvailableColor
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductAvailableSizeEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductAvailableSizesEntity
+import ru.mercury.vpclient.shared.domain.mapper.orEmpty
 import ru.mercury.vpclient.shared.domain.mapper.thousandsSeparator
 import ru.mercury.vpclient.shared.mvi.Model
 import ru.mercury.vpclient.shared.ui.components.details.SizeSelectorState
@@ -83,8 +85,13 @@ data class CartModel(
             actions = editProductActions.map { it.first }
         )
 
-    val isFittingEditProductSheetVisible: Boolean
+    val isCartFittingEditProductSheetVisible: Boolean
         get() = fittingEditProduct != null
+
+    val fittingEditProductModel: CartFittingEditProductModel
+        get() = CartFittingEditProductModel(
+            isSizeSelectionAvailable = fittingEditProduct?.isSizeSelectionAvailable.orEmpty
+        )
 
     val isSizePickerSheetVisible: Boolean
         get() = sizePickerProduct != null

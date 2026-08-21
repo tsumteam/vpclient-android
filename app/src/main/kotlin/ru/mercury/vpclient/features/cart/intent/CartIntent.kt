@@ -30,7 +30,7 @@ sealed interface CartIntent: Intent {
     data object HideFittingProductsSheet: CartIntent
     data object HideSizePicker: CartIntent
     data object DismissCartEditProductSheet: CartIntent
-    data object HideFittingEditProductSheet: CartIntent
+    data object DismissCartFittingEditProductSheet: CartIntent
     data object DismissColorPickerSheet: CartIntent
     data object HideQuantityPicker: CartIntent
     data object ConfirmSizePicker: CartIntent
@@ -48,8 +48,9 @@ sealed interface CartIntent: Intent {
     data class ChangePaySwitch(val product: CartProduct, val paySwitch: Boolean): CartIntent
     data class ChangeFittingPaySwitch(val product: CartProduct, val paySwitch: Boolean): CartIntent
     data class ShowSizePicker(val product: CartProduct, val addSize: Boolean = false): CartIntent
-    data class ShowFittingSizePicker(val product: CartProduct): CartIntent
+    data object ShowFittingSizePicker: CartIntent
     data class ShowColorPicker(val product: CartProduct, val forFitting: Boolean = false): CartIntent
+    data object ShowFittingColorPicker: CartIntent
     data class ShowQuantityPicker(val product: CartProduct): CartIntent
     data class AlternativeClick(val alternative: CartProductAlternative): CartIntent
     data class RemoveAlternativeClick(val alternative: CartProductAlternative): CartIntent

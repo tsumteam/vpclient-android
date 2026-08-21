@@ -51,7 +51,7 @@ import ru.mercury.vpclient.features.cart_empty_order_dialog.CartEmptyOrderDialog
 import ru.mercury.vpclient.features.cart_empty_order_dialog.intent.CartEmptyOrderIntent
 import ru.mercury.vpclient.features.cart_fitting.CartFittingScreen
 import ru.mercury.vpclient.features.cart_fitting_edit_product_sheet.CartFittingEditProductSheet
-import ru.mercury.vpclient.features.cart_fitting_edit_product_sheet.intent.CartFittingEditProductSheetIntent
+import ru.mercury.vpclient.features.cart_fitting_edit_product_sheet.intent.CartFittingEditProductIntent
 import ru.mercury.vpclient.features.cart_fitting_empty_order_dialog.CartFittingEmptyOrderDialog
 import ru.mercury.vpclient.features.cart_fitting_empty_order_dialog.intent.CartFittingEmptyOrderIntent
 import ru.mercury.vpclient.features.cart_fitting_sheet.CartFittingSheet
@@ -117,25 +117,19 @@ fun CartScreen(
         )
     }
 
-    if (state.isFittingEditProductSheetVisible) {
-        val product = requireNotNull(state.fittingEditProduct)
+    if (state.isCartFittingEditProductSheetVisible) {
         CartFittingEditProductSheet(
-            isSizeSelectionAvailable = product.isSizeSelectionAvailable,
+            state = state.fittingEditProductModel,
             dispatch = { intent ->
                 when (intent) {
-                    is CartFittingEditProductSheetIntent.ChangeColorClick -> {
-                        viewModel.dispatch(CartIntent.ShowColorPicker(product, forFitting = true))
+                    is CartFittingEditProductIntent.ChangeColorClick -> {
+                        viewModel.dispatch(CartIntent.ShowFittingColorPicker)
                     }
-                    is CartFittingEditProductSheetIntent.ChangeSizeClick -> {
-                        if (product.isSizeSelectionAvailable) {
-                            viewModel.dispatch(CartIntent.ShowFittingSizePicker(product))
-                        }
+                    is CartFittingEditProductIntent.ChangeSizeClick -> {
+                        viewModel.dispatch(CartIntent.ShowFittingSizePicker)
                     }
-                    is CartFittingEditProductSheetIntent.ConfirmClick -> {
-                        viewModel.dispatch(CartIntent.HideFittingEditProductSheet)
-                    }
-                    is CartFittingEditProductSheetIntent.DismissRequest -> {
-                        viewModel.dispatch(CartIntent.HideFittingEditProductSheet)
+                    is CartFittingEditProductIntent.DismissClick -> {
+                        viewModel.dispatch(CartIntent.DismissCartFittingEditProductSheet)
                     }
                 }
             }

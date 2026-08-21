@@ -345,14 +345,15 @@ class CartViewModel @AssistedInject constructor(
                 reduce { it.copy(sizePickerJob = sizePickerJob) }
             }
             is CartIntent.ShowFittingSizePicker -> {
-                if (!intent.product.isSizeSelectionAvailable) {
+                val product = requireNotNull(stateFlow.value.fittingEditProduct)
+                if (!product.isSizeSelectionAvailable) {
                     return
                 }
                 stateFlow.value.sizePickerJob?.cancel()
                 reduce {
                     it.copy(
                         fittingEditProduct = null,
-                        sizePickerProduct = intent.product,
+                        sizePickerProduct = product,
                         sizePickerSizes = null,
                         sizePickerSelectedId = null,
                         sizePickerForFitting = true,
@@ -361,10 +362,10 @@ class CartViewModel @AssistedInject constructor(
                     )
                 }
                 val sizePickerJob = launch {
-                    val sizes = loadAvailableSizesUseCase(intent.product).getOrThrow()
+                    val sizes = loadAvailableSizesUseCase(product).getOrThrow()
                     reduce {
                         when (it.sizePickerProduct?.id) {
-                            intent.product.id -> it.copy(sizePickerSizes = sizes)
+                            product.id -> it.copy(sizePickerSizes = sizes)
                             else -> it
                         }
                     }
@@ -443,6 +444,10 @@ class CartViewModel @AssistedInject constructor(
                         }
                     }
                 }
+            }
+            is CartIntent.ShowFittingColorPicker -> {
+                val product = requireNotNull(stateFlow.value.fittingEditProduct)
+                dispatch(CartIntent.ShowColorPicker(product, forFitting = true))
             }
             is CartIntent.ShowColorPicker -> {
                 launch {
@@ -650,7 +655,7 @@ class CartViewModel @AssistedInject constructor(
             is CartIntent.EditFittingProductSwipeClick -> {
                 reduce { it.copy(fittingEditProduct = intent.product) }
             }
-            is CartIntent.HideFittingEditProductSheet -> {
+            is CartIntent.DismissCartFittingEditProductSheet -> {
                 reduce { it.copy(fittingEditProduct = null) }
             }
             is CartIntent.ReturnFittingProductToBasketSwipeClick -> {
