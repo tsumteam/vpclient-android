@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package ru.mercury.vpclient.features.cart_color_sheet
+package ru.mercury.vpclient.features.color_picker_sheet
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
@@ -8,7 +8,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,7 +29,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -52,10 +50,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.features.cart_color_sheet.intent.CartColorIntent
-import ru.mercury.vpclient.features.cart_color_sheet.model.CartColorModel
+import ru.mercury.vpclient.features.color_picker_sheet.intent.ColorPickerIntent
+import ru.mercury.vpclient.features.color_picker_sheet.model.ColorPickerModel
 import ru.mercury.vpclient.shared.data.entity.ProductAvailableColor
 import ru.mercury.vpclient.shared.domain.mapper.colorFromHex
+import ru.mercury.vpclient.shared.ui.components.SharedColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
@@ -66,30 +65,16 @@ import ru.mercury.vpclient.shared.ui.theme.regular18
 import kotlin.math.abs
 
 @Composable
-fun CartColorSheet(
-    state: CartColorModel,
-    dispatch: (CartColorIntent) -> Unit
+fun ColorPickerSheet(
+    state: ColorPickerModel,
+    dispatch: (ColorPickerIntent) -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
-    val sheetDispatch: (CartColorIntent) -> Unit = { intent ->
-        when (intent) {
-            is CartColorIntent.ColorClick -> dispatch(intent)
-            is CartColorIntent.ConfirmClick,
-            is CartColorIntent.DismissRequest -> {
-                scope.launch {
-                    sheetState.hide()
-                    dispatch(intent)
-                }
-            }
-        }
-    }
 
     SharedModalBottomSheet(
-        onDismissRequest = { dispatch(CartColorIntent.DismissRequest) },
-        sheetState = sheetState
+        onDismissRequest = { dispatch(ColorPickerIntent.DismissClick) }
     ) {
-        val selectedIndex = state.colors.indexOfFirst { it.selected }.coerceAtLeast(0)
+        val selectedIndex = state.selectedIndex
         val listState = rememberLazyListState(initialFirstVisibleItemIndex = selectedIndex)
         val density = LocalDensity.current
         val rowHeightPx = with(density) { 52.dp.roundToPx() }
@@ -113,13 +98,13 @@ fun CartColorSheet(
                             else -> listState.firstVisibleItemIndex
                         }.coerceIn(0, state.colors.lastIndex)
 
-                        sheetDispatch(CartColorIntent.ColorClick(centeredIndex))
+                        dispatch(ColorPickerIntent.ColorClick(centeredIndex))
                         listState.animateScrollToItem(centeredIndex)
                     }
                 }
         }
 
-        Column {
+        SharedColumn {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
@@ -132,7 +117,7 @@ fun CartColorSheet(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { sheetDispatch(CartColorIntent.DismissRequest) }
+                        onClick = { dispatch(ColorPickerIntent.DismissClick) }
                     ) {
                         Icon(
                             imageVector = Close24,
@@ -193,31 +178,20 @@ fun CartColorSheet(
                                 .fillMaxWidth()
                                 .height(52.dp)
                                 .graphicsLayer {
-                                    val itemInfo = listState.layoutInfo.visibleItemsInfo.firstOrNull {
-                                        it.index == index
-                                    }
-                                    val viewportCenter = (
-                                        listState.layoutInfo.viewportStartOffset +
-                                            listState.layoutInfo.viewportEndOffset
-                                        ) / 2f
-                                    val itemCenter = itemInfo?.let {
-                                        it.offset + it.size / 2f
-                                    } ?: viewportCenter
-                                    val distanceFromCenter = ((itemCenter - viewportCenter) / rowHeightPx)
-                                        .coerceIn(-1.5f, 1.5f)
+                                    val itemInfo = listState.layoutInfo.visibleItemsInfo.firstOrNull { it.index == index }
+                                    val viewportCenter = (listState.layoutInfo.viewportStartOffset + listState.layoutInfo.viewportEndOffset) / 2F
+                                    val itemCenter = itemInfo?.let { it.offset + it.size / 2F } ?: viewportCenter
+                                    val distanceFromCenter = ((itemCenter - viewportCenter) / rowHeightPx).coerceIn(-1.5F, 1.5F)
                                     val depth = abs(distanceFromCenter)
-
-                                    rotationX = -distanceFromCenter * 28f
-                                    scaleX = 1f - depth * .04f
-                                    scaleY = 1f - depth * .08f
-                                    alpha = 1f - depth * .18f
+                                    rotationX = -distanceFromCenter * 28F
+                                    scaleX = 1F - depth * .04F
+                                    scaleY = 1F - depth * .08F
+                                    alpha = 1F - depth * .18F
                                     this.cameraDistance = cameraDistance
                                 }
                                 .clickable {
-                                    scope.launch {
-                                        sheetDispatch(CartColorIntent.ColorClick(index))
-                                        listState.animateScrollToItem(index)
-                                    }
+                                    dispatch(ColorPickerIntent.ColorClick(index))
+                                    scope.launch { listState.animateScrollToItem(index) }
                                 },
                             horizontalArrangement = Arrangement.Center,
                             verticalAlignment = Alignment.CenterVertically
@@ -229,7 +203,11 @@ fun CartColorSheet(
                                     .background(swatchColor)
                                     .then(
                                         when {
-                                            isWhiteColor -> Modifier.border(1.dp, Color.Black, CircleShape)
+                                            isWhiteColor -> Modifier.border(
+                                                width = 1.dp,
+                                                color = Color.Black,
+                                                shape = CircleShape
+                                            )
                                             else -> Modifier
                                         }
                                     )
@@ -249,7 +227,7 @@ fun CartColorSheet(
             }
 
             Button(
-                onClick = { sheetDispatch(CartColorIntent.ConfirmClick) },
+                onClick = { dispatch(ColorPickerIntent.ConfirmClick) },
                 modifier = Modifier
                     .padding(start = 16.dp, top = 20.dp, end = 16.dp, bottom = 8.dp)
                     .fillMaxWidth()
@@ -276,26 +254,39 @@ fun CartColorSheet(
 @PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Composable
-private fun CartColorSheetPreview(
-    @PreviewParameter(CartColorModelPreviewParameterProvider::class) state: CartColorModel
+private fun ColorPickerSheetPreview(
+    @PreviewParameter(ColorPickerModelPreviewParameterProvider::class) state: ColorPickerModel
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        CartColorSheet(
+        ColorPickerSheet(
             state = state,
             dispatch = {}
         )
     }
 }
 
-private class CartColorModelPreviewParameterProvider: PreviewParameterProvider<CartColorModel> {
-    override val values: Sequence<CartColorModel> = sequenceOf(
-        CartColorModel(
+private class ColorPickerModelPreviewParameterProvider: PreviewParameterProvider<ColorPickerModel> {
+    override val values: Sequence<ColorPickerModel> = sequenceOf(
+        ColorPickerModel(
             colors = listOf(
-                ProductAvailableColor(id = "red", name = "Красный", hex = "#F1C8C8"),
-                ProductAvailableColor(id = "brown", name = "Коричневый", hex = "#783C00", selected = true),
-                ProductAvailableColor(id = "green", name = "Зеленый", hex = "#C2EBD7")
+                ProductAvailableColor(
+                    id = "red",
+                    name = "Красный",
+                    hex = "#F1C8C8"
+                ),
+                ProductAvailableColor(
+                    id = "brown",
+                    name = "Коричневый",
+                    hex = "#783C00",
+                    selected = true
+                ),
+                ProductAvailableColor(
+                    id = "green",
+                    name = "Зеленый",
+                    hex = "#C2EBD7"
+                )
             )
         )
     )

@@ -45,9 +45,6 @@ import ru.mercury.vpclient.features.cart.event.CartEvent
 import ru.mercury.vpclient.features.cart.intent.CartIntent
 import ru.mercury.vpclient.features.cart.model.CartModel
 import ru.mercury.vpclient.features.cart.navigation.CartRoute
-import ru.mercury.vpclient.features.cart_color_sheet.CartColorSheet
-import ru.mercury.vpclient.features.cart_color_sheet.intent.CartColorIntent
-import ru.mercury.vpclient.features.cart_color_sheet.model.CartColorModel
 import ru.mercury.vpclient.features.cart_edit_product_sheet.CartEditProductSheet
 import ru.mercury.vpclient.features.cart_edit_product_sheet.intent.CartEditProductSheetIntent
 import ru.mercury.vpclient.features.cart_edit_product_sheet.model.CartEditProductSheetModel
@@ -68,6 +65,8 @@ import ru.mercury.vpclient.features.cart_quantity_sheet.model.CartQuantityModel
 import ru.mercury.vpclient.features.cart_size_sheet.CartSizeSheet
 import ru.mercury.vpclient.features.cart_size_sheet.intent.CartSizeSheetIntent
 import ru.mercury.vpclient.features.cart_size_sheet.model.CartSizeSheetModel
+import ru.mercury.vpclient.features.color_picker_sheet.ColorPickerSheet
+import ru.mercury.vpclient.features.color_picker_sheet.intent.ColorPickerIntent
 import ru.mercury.vpclient.features.fitting_products_sheet.FittingProductsSheet
 import ru.mercury.vpclient.features.fitting_products_sheet.event.FittingProductsSheetEvent
 import ru.mercury.vpclient.features.fitting_products_sheet.event.FittingProductsSheetEventManager
@@ -230,20 +229,18 @@ fun CartScreen(
     }
 
     if (state.isColorPickerSheetVisible) {
-        CartColorSheet(
-            state = CartColorModel(
-                colors = state.colorPickerColorsState
-            ),
+        ColorPickerSheet(
+            state = state.colorPickerModel,
             dispatch = { intent ->
                 when (intent) {
-                    is CartColorIntent.ColorClick -> {
+                    is ColorPickerIntent.ColorClick -> {
                         dispatch(CartIntent.ToggleColorPickerItem(intent.index))
                     }
-                    is CartColorIntent.ConfirmClick -> {
+                    is ColorPickerIntent.ConfirmClick -> {
                         dispatch(CartIntent.ConfirmColorPicker)
                     }
-                    is CartColorIntent.DismissRequest -> {
-                        dispatch(CartIntent.HideColorPicker)
+                    is ColorPickerIntent.DismissClick -> {
+                        dispatch(CartIntent.DismissColorPickerSheet)
                     }
                 }
             }

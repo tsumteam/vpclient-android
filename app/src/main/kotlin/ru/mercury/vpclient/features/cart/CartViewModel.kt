@@ -462,7 +462,7 @@ class CartViewModel @AssistedInject constructor(
                     }
                 }
             }
-            is CartIntent.HideColorPicker -> {
+            is CartIntent.DismissColorPickerSheet -> {
                 reduce {
                     it.copy(
                         colorPickerProduct = null,
@@ -481,7 +481,7 @@ class CartViewModel @AssistedInject constructor(
                 val colorId = stateFlow.value.colorPickerSelectedId ?: return
                 val forFitting = stateFlow.value.colorPickerForFitting
                 if (colorId == product.colorId) {
-                    dispatch(CartIntent.HideColorPicker)
+                    dispatch(CartIntent.DismissColorPickerSheet)
                     return
                 }
                 reduce {

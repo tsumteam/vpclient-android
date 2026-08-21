@@ -2,6 +2,7 @@ package ru.mercury.vpclient.features.cart.model
 
 import kotlinx.coroutines.Job
 import ru.mercury.vpclient.features.cart_quantity_sheet.model.CartQuantityItem
+import ru.mercury.vpclient.features.color_picker_sheet.model.ColorPickerModel
 import ru.mercury.vpclient.shared.data.CART_DRAG_AND_DROP_ENABLED
 import ru.mercury.vpclient.shared.data.FORMAT_RUB
 import ru.mercury.vpclient.shared.data.PREFIX_SPACE
@@ -108,6 +109,9 @@ data class CartModel(
                 color.copy(selected = color.id == colorPickerSelectedId)
             }
         }
+
+    val colorPickerModel: ColorPickerModel
+        get() = ColorPickerModel(colors = colorPickerColorsState)
 
     val quantityPickerValues: List<CartQuantityItem>
         get() {
