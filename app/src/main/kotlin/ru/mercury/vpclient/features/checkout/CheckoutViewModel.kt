@@ -604,7 +604,7 @@ class CheckoutViewModel @AssistedInject constructor(
                                     it.copy(
                                         sbpPaymentUrl = url,
                                         sbpBanks = banks,
-                                        isSbpBankSheetVisible = true
+                                        isCheckoutSbpBankSheetVisible = true
                                     )
                                 }
                             }
@@ -730,7 +730,7 @@ class CheckoutViewModel @AssistedInject constructor(
                                         it.copy(
                                             sbpPaymentUrl = url,
                                             sbpBanks = banks,
-                                            isSbpBankSheetVisible = true
+                                            isCheckoutSbpBankSheetVisible = true
                                         )
                                     }
                                 }
@@ -991,10 +991,10 @@ class CheckoutViewModel @AssistedInject constructor(
                     }
                 }
             }
-            is CheckoutIntent.DismissSbpBankSheet -> {
+            is CheckoutIntent.DismissCheckoutSbpBankSheet -> {
                 reduce {
                     it.copy(
-                        isSbpBankSheetVisible = false,
+                        isCheckoutSbpBankSheetVisible = false,
                         sbpPaymentUrl = "",
                         sbpBanks = emptyList()
                     )
@@ -1005,7 +1005,7 @@ class CheckoutViewModel @AssistedInject constructor(
                 if (state.sbpPaymentUrl.isBlank()) return
                 reduce {
                     it.copy(
-                        isSbpBankSheetVisible = false,
+                        isCheckoutSbpBankSheetVisible = false,
                         sbpPaymentUrl = "",
                         sbpBanks = emptyList(),
                         isPaymentExternalFlowStarted = true

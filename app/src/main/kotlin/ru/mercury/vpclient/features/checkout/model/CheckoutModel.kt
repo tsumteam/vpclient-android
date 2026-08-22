@@ -5,6 +5,7 @@ import ru.mercury.vpclient.features.checkout_amount_changed_dialog.model.Checkou
 import ru.mercury.vpclient.features.checkout_bank_card_sheet.model.CheckoutBankCardModel
 import ru.mercury.vpclient.features.checkout_bonus_sheet.model.CheckoutBonusModel
 import ru.mercury.vpclient.features.checkout_payment_method_sheet.model.CheckoutPaymentMethodModel
+import ru.mercury.vpclient.features.checkout_sbp_bank_sheet.model.CheckoutSbpBankModel
 import ru.mercury.vpclient.features.loyalty_add_card_sheet.model.LoyaltyAddCardMode
 import ru.mercury.vpclient.shared.data.entity.CheckoutSbpBank
 import ru.mercury.vpclient.shared.data.entity.FittingCheckoutData
@@ -76,7 +77,7 @@ data class CheckoutModel(
     val isBankCardCvvErrorVisible: Boolean = false,
     val paymentResultCheckJob: Job? = null,
     val isPaymentExternalFlowStarted: Boolean = false,
-    val isSbpBankSheetVisible: Boolean = false,
+    val isCheckoutSbpBankSheetVisible: Boolean = false,
     val sbpPaymentUrl: String = "",
     val sbpBanks: List<CheckoutSbpBank> = emptyList()
 ): Model {
@@ -112,6 +113,9 @@ data class CheckoutModel(
             cards = paymentCards,
             isLoading = isPaymentLoading
         )
+
+    val checkoutSbpBankModel: CheckoutSbpBankModel
+        get() = CheckoutSbpBankModel(banks = sbpBanks)
 
     val isCartCheckout: Boolean
         get() = source == CheckoutSource.Cart

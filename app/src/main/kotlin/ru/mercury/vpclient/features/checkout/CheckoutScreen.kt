@@ -71,8 +71,7 @@ import ru.mercury.vpclient.features.checkout_bonus_sheet.intent.CheckoutBonusInt
 import ru.mercury.vpclient.features.checkout_payment_method_sheet.CheckoutPaymentMethodSheet
 import ru.mercury.vpclient.features.checkout_payment_method_sheet.intent.CheckoutPaymentMethodIntent
 import ru.mercury.vpclient.features.checkout_sbp_bank_sheet.CheckoutSbpBankSheet
-import ru.mercury.vpclient.features.checkout_sbp_bank_sheet.intent.CheckoutSbpBankSheetIntent
-import ru.mercury.vpclient.features.checkout_sbp_bank_sheet.model.CheckoutSbpBankSheetModel
+import ru.mercury.vpclient.features.checkout_sbp_bank_sheet.intent.CheckoutSbpBankIntent
 import ru.mercury.vpclient.features.fitting_addresses.event.FittingAddressesEventManager
 import ru.mercury.vpclient.features.loyalty_add_card_sheet.LoyaltyAddCardSheet
 import ru.mercury.vpclient.features.loyalty_add_card_sheet.intent.LoyaltyAddCardIntent
@@ -262,15 +261,15 @@ fun CheckoutScreen(
         )
     }
 
-    if (state.isSbpBankSheetVisible) {
+    if (state.isCheckoutSbpBankSheetVisible) {
         CheckoutSbpBankSheet(
-            state = CheckoutSbpBankSheetModel(banks = state.sbpBanks),
+            state = state.checkoutSbpBankModel,
             dispatch = { intent ->
                 when (intent) {
-                    is CheckoutSbpBankSheetIntent.DismissRequest -> {
-                        viewModel.dispatch(CheckoutIntent.DismissSbpBankSheet)
+                    is CheckoutSbpBankIntent.DismissClick -> {
+                        viewModel.dispatch(CheckoutIntent.DismissCheckoutSbpBankSheet)
                     }
-                    is CheckoutSbpBankSheetIntent.BankClick -> {
+                    is CheckoutSbpBankIntent.BankClick -> {
                         viewModel.dispatch(CheckoutIntent.SbpBankClick(intent.bank))
                     }
                 }
