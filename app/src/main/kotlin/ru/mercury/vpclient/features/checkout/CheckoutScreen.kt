@@ -65,8 +65,7 @@ import ru.mercury.vpclient.features.checkout.navigation.CheckoutRoute
 import ru.mercury.vpclient.features.checkout_amount_changed_dialog.CheckoutAmountChangedDialog
 import ru.mercury.vpclient.features.checkout_amount_changed_dialog.intent.CheckoutAmountChangedIntent
 import ru.mercury.vpclient.features.checkout_bank_card_sheet.CheckoutBankCardSheet
-import ru.mercury.vpclient.features.checkout_bank_card_sheet.intent.CheckoutBankCardSheetIntent
-import ru.mercury.vpclient.features.checkout_bank_card_sheet.model.CheckoutBankCardSheetModel
+import ru.mercury.vpclient.features.checkout_bank_card_sheet.intent.CheckoutBankCardIntent
 import ru.mercury.vpclient.features.checkout_bonus_sheet.CheckoutBonusSheet
 import ru.mercury.vpclient.features.checkout_bonus_sheet.intent.CheckoutBonusIntent
 import ru.mercury.vpclient.features.checkout_bonus_sheet.model.CheckoutBonusModel
@@ -290,45 +289,36 @@ fun CheckoutScreen(
         )
     }
 
-    if (state.isBankCardSheetVisible) {
+    if (state.isCheckoutBankCardSheetVisible) {
         CheckoutBankCardSheet(
-            state = CheckoutBankCardSheetModel(
-                cardNumber = state.bankCardNumber,
-                expirationDate = state.bankCardExpirationDate,
-                cvv = state.bankCardCvv,
-                isSaveCardChecked = state.isBankCardSaveChecked,
-                isCardNumberErrorVisible = state.isBankCardNumberErrorVisible,
-                isExpirationDateErrorVisible = state.isBankCardExpirationDateErrorVisible,
-                isCvvErrorVisible = state.isBankCardCvvErrorVisible,
-                isLoading = state.isPaymentLoading
-            ),
+            state = state.checkoutBankCardModel,
             dispatch = { intent ->
                 when (intent) {
-                    is CheckoutBankCardSheetIntent.DismissRequest -> {
-                        viewModel.dispatch(CheckoutIntent.DismissBankCardSheet)
+                    is CheckoutBankCardIntent.DismissClick -> {
+                        viewModel.dispatch(CheckoutIntent.DismissCheckoutBankCardSheet)
                     }
-                    is CheckoutBankCardSheetIntent.SaveCardClick -> {
+                    is CheckoutBankCardIntent.SaveCardClick -> {
                         viewModel.dispatch(CheckoutIntent.BankCardSaveClick)
                     }
-                    is CheckoutBankCardSheetIntent.PayClick -> {
+                    is CheckoutBankCardIntent.PayClick -> {
                         viewModel.dispatch(CheckoutIntent.BankCardPayClick)
                     }
-                    is CheckoutBankCardSheetIntent.CardNumberFocusLost -> {
+                    is CheckoutBankCardIntent.CardNumberFocusLost -> {
                         viewModel.dispatch(CheckoutIntent.BankCardNumberFocusLost)
                     }
-                    is CheckoutBankCardSheetIntent.ExpirationDateFocusLost -> {
+                    is CheckoutBankCardIntent.ExpirationDateFocusLost -> {
                         viewModel.dispatch(CheckoutIntent.BankCardExpirationDateFocusLost)
                     }
-                    is CheckoutBankCardSheetIntent.CvvFocusLost -> {
+                    is CheckoutBankCardIntent.CvvFocusLost -> {
                         viewModel.dispatch(CheckoutIntent.BankCardCvvFocusLost)
                     }
-                    is CheckoutBankCardSheetIntent.CardNumberChange -> {
+                    is CheckoutBankCardIntent.CardNumberChange -> {
                         viewModel.dispatch(CheckoutIntent.BankCardNumberChange(intent.value))
                     }
-                    is CheckoutBankCardSheetIntent.ExpirationDateChange -> {
+                    is CheckoutBankCardIntent.ExpirationDateChange -> {
                         viewModel.dispatch(CheckoutIntent.BankCardExpirationDateChange(intent.value))
                     }
-                    is CheckoutBankCardSheetIntent.CvvChange -> {
+                    is CheckoutBankCardIntent.CvvChange -> {
                         viewModel.dispatch(CheckoutIntent.BankCardCvvChange(intent.value))
                     }
                 }

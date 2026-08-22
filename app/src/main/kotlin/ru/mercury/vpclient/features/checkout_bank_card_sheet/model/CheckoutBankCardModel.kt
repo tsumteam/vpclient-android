@@ -1,9 +1,10 @@
 package ru.mercury.vpclient.features.checkout_bank_card_sheet.model
 
+import ru.mercury.vpclient.shared.data.entity.CheckoutBankCardPaymentSystem
 import ru.mercury.vpclient.shared.domain.mapper.isValidBankCardExpirationDate
 import ru.mercury.vpclient.shared.mvi.Model
 
-data class CheckoutBankCardSheetModel(
+data class CheckoutBankCardModel(
     val cardNumber: String = "",
     val expirationDate: String = "",
     val cvv: String = "",

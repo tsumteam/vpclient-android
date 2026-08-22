@@ -36,7 +36,7 @@ sealed interface CheckoutIntent: Intent {
     data object DismissPaymentMethodSheet: CheckoutIntent
     data object AddNewPaymentCardClick: CheckoutIntent
     data object PaymentMethodPayClick: CheckoutIntent
-    data object DismissBankCardSheet: CheckoutIntent
+    data object DismissCheckoutBankCardSheet: CheckoutIntent
     data object BankCardSaveClick: CheckoutIntent
     data object BankCardPayClick: CheckoutIntent
     data object BankCardNumberFocusLost: CheckoutIntent

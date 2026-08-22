@@ -1,4 +1,4 @@
-package ru.mercury.vpclient.features.checkout_bank_card_sheet.model
+package ru.mercury.vpclient.shared.data.entity
 
 enum class CheckoutBankCardPaymentSystem {
     Visa,

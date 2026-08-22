@@ -14,8 +14,7 @@ import ru.mercury.vpclient.features.checkout.intent.CheckoutIntent
 import ru.mercury.vpclient.features.checkout.model.CheckoutModel
 import ru.mercury.vpclient.features.checkout.model.CheckoutSource
 import ru.mercury.vpclient.features.checkout.navigation.CheckoutRoute
-import ru.mercury.vpclient.features.checkout_bank_card_sheet.model.CheckoutBankCardPaymentSystem
-import ru.mercury.vpclient.features.checkout_bank_card_sheet.model.CheckoutBankCardSheetModel
+import ru.mercury.vpclient.features.checkout_bank_card_sheet.model.CheckoutBankCardModel
 import ru.mercury.vpclient.features.checkout_payment_result.model.CheckoutPaymentResultStatus
 import ru.mercury.vpclient.features.checkout_payment_result.navigation.CheckoutPaymentResultRoute
 import ru.mercury.vpclient.features.fitting_addresses.event.FittingAddressesEvent
@@ -25,6 +24,7 @@ import ru.mercury.vpclient.features.loyalty_add_card_sheet.model.LoyaltyAddCardM
 import ru.mercury.vpclient.features.main.navigation.MainRoute
 import ru.mercury.vpclient.shared.data.CODE_RESEND_TIMER_DELAY
 import ru.mercury.vpclient.shared.data.LOYALTY_PHONE_NUMBER_LENGTH
+import ru.mercury.vpclient.shared.data.entity.CheckoutBankCardPaymentSystem
 import ru.mercury.vpclient.shared.data.entity.FittingCheckoutOnlinePaymentMethod
 import ru.mercury.vpclient.shared.data.entity.FittingCheckoutPaymentCardModel
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationPlaceType
@@ -822,7 +822,7 @@ class CheckoutViewModel @AssistedInject constructor(
                 reduce {
                     it.copy(
                         isPaymentMethodSheetVisible = false,
-                        isBankCardSheetVisible = true,
+                        isCheckoutBankCardSheetVisible = true,
                         bankCardNumber = "",
                         bankCardExpirationDate = "",
                         bankCardCvv = "",
@@ -833,10 +833,10 @@ class CheckoutViewModel @AssistedInject constructor(
                     )
                 }
             }
-            is CheckoutIntent.DismissBankCardSheet -> {
+            is CheckoutIntent.DismissCheckoutBankCardSheet -> {
                 reduce {
                     it.copy(
-                        isBankCardSheetVisible = false,
+                        isCheckoutBankCardSheetVisible = false,
                         bankCardNumber = "",
                         bankCardExpirationDate = "",
                         bankCardCvv = "",
@@ -852,12 +852,12 @@ class CheckoutViewModel @AssistedInject constructor(
             is CheckoutIntent.BankCardNumberChange -> {
                 val formattedNumber = intent.value
                     .filter(Char::isDigit)
-                    .take(CheckoutBankCardSheetModel.MAX_CARD_NUMBER_LENGTH)
+                    .take(CheckoutBankCardModel.MAX_CARD_NUMBER_LENGTH)
                     .chunked(4)
                     .joinToString(" ")
                 val isMaxLength = formattedNumber.filter(Char::isDigit).length ==
-                    CheckoutBankCardSheetModel.MAX_CARD_NUMBER_LENGTH
-                val paymentSystem = CheckoutBankCardSheetModel(cardNumber = formattedNumber).paymentSystem
+                    CheckoutBankCardModel.MAX_CARD_NUMBER_LENGTH
+                val paymentSystem = CheckoutBankCardModel(cardNumber = formattedNumber).paymentSystem
                 reduce {
                     it.copy(
                         bankCardNumber = formattedNumber,
@@ -884,7 +884,7 @@ class CheckoutViewModel @AssistedInject constructor(
                     it.copy(
                         bankCardCvv = intent.value
                             .filter(Char::isDigit)
-                            .take(CheckoutBankCardSheetModel.CVV_LENGTH),
+                            .take(CheckoutBankCardModel.CVV_LENGTH),
                         isBankCardCvvErrorVisible = false
                     )
                 }
@@ -899,13 +899,13 @@ class CheckoutViewModel @AssistedInject constructor(
                 reduce {
                     it.copy(
                         isBankCardCvvErrorVisible = it.bankCardCvv.isNotEmpty() &&
-                            it.bankCardCvv.length != CheckoutBankCardSheetModel.CVV_LENGTH
+                            it.bankCardCvv.length != CheckoutBankCardModel.CVV_LENGTH
                     )
                 }
             }
             is CheckoutIntent.BankCardPayClick -> {
                 val state = stateFlow.value
-                val sheet = CheckoutBankCardSheetModel(
+                val sheet = CheckoutBankCardModel(
                     cardNumber = state.bankCardNumber,
                     expirationDate = state.bankCardExpirationDate,
                     cvv = state.bankCardCvv,
@@ -939,7 +939,7 @@ class CheckoutViewModel @AssistedInject constructor(
                                         }
                                         else -> it.paymentCards
                                     },
-                                    isBankCardSheetVisible = false,
+                                    isCheckoutBankCardSheetVisible = false,
                                     bankCardNumber = "",
                                     bankCardExpirationDate = "",
                                     bankCardCvv = "",
@@ -1084,7 +1084,7 @@ class CheckoutViewModel @AssistedInject constructor(
                 reduce { it.copy(paymentJob = null) }
                 launch {
                     val event = when {
-                        stateFlow.value.isBankCardSheetVisible -> {
+                        stateFlow.value.isCheckoutBankCardSheetVisible -> {
                             CheckoutEvent.SnackbarTopErrorMessage(throwable.message)
                         }
                         else -> CheckoutEvent.SnackbarErrorMessage(throwable.message)
