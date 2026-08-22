@@ -33,7 +33,7 @@ sealed interface CheckoutIntent: Intent {
     data object StartBonusCodeResendTimerTicker: CheckoutIntent
     data object BonusCodeConfirmClick: CheckoutIntent
     data object BonusCodeResendClick: CheckoutIntent
-    data object DismissPaymentMethodSheet: CheckoutIntent
+    data object DismissCheckoutPaymentMethodSheet: CheckoutIntent
     data object AddNewPaymentCardClick: CheckoutIntent
     data object PaymentMethodPayClick: CheckoutIntent
     data object DismissCheckoutBankCardSheet: CheckoutIntent

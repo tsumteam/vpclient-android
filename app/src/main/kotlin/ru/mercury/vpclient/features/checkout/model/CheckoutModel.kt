@@ -4,6 +4,7 @@ import kotlinx.coroutines.Job
 import ru.mercury.vpclient.features.checkout_amount_changed_dialog.model.CheckoutAmountChangedModel
 import ru.mercury.vpclient.features.checkout_bank_card_sheet.model.CheckoutBankCardModel
 import ru.mercury.vpclient.features.checkout_bonus_sheet.model.CheckoutBonusModel
+import ru.mercury.vpclient.features.checkout_payment_method_sheet.model.CheckoutPaymentMethodModel
 import ru.mercury.vpclient.features.loyalty_add_card_sheet.model.LoyaltyAddCardMode
 import ru.mercury.vpclient.shared.data.entity.CheckoutSbpBank
 import ru.mercury.vpclient.shared.data.entity.FittingCheckoutData
@@ -63,7 +64,7 @@ data class CheckoutModel(
     val bonusCodeResendTimerStartedAt: Long = System.currentTimeMillis(),
     val bonusCodeResendSecondsLeft: Int = 0,
     val bonusCodeResendTimerJob: Job? = null,
-    val isPaymentMethodSheetVisible: Boolean = false,
+    val isCheckoutPaymentMethodSheetVisible: Boolean = false,
     val paymentCards: List<FittingCheckoutPaymentCardModel> = emptyList(),
     val isCheckoutBankCardSheetVisible: Boolean = false,
     val bankCardNumber: String = "",
@@ -104,6 +105,12 @@ data class CheckoutModel(
             isResendLoading = isBonusCodeResendLoading,
             isCodeErrorTextVisible = isBonusCodeErrorVisible,
             resendSecondsLeft = bonusCodeResendSecondsLeft
+        )
+
+    val checkoutPaymentMethodModel: CheckoutPaymentMethodModel
+        get() = CheckoutPaymentMethodModel(
+            cards = paymentCards,
+            isLoading = isPaymentLoading
         )
 
     val isCartCheckout: Boolean

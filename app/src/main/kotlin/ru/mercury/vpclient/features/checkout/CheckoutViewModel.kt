@@ -595,7 +595,7 @@ class CheckoutViewModel @AssistedInject constructor(
                                 dispatch(CheckoutIntent.StartBonusCodeResendTimerTicker)
                             }
                             method == FittingCheckoutOnlinePaymentMethod.Card -> {
-                                reduce { it.copy(isPaymentMethodSheetVisible = true) }
+                                reduce { it.copy(isCheckoutPaymentMethodSheetVisible = true) }
                             }
                             else -> {
                                 val url = ordersByOrderIdPaymentSbpUseCase(orderNumber).getOrThrow()
@@ -721,7 +721,7 @@ class CheckoutViewModel @AssistedInject constructor(
                             }
                             when (state.pendingOnlinePaymentMethod) {
                                 FittingCheckoutOnlinePaymentMethod.Card -> {
-                                    reduce { it.copy(isPaymentMethodSheetVisible = true) }
+                                    reduce { it.copy(isCheckoutPaymentMethodSheetVisible = true) }
                                 }
                                 FittingCheckoutOnlinePaymentMethod.Sbp -> {
                                     val url = ordersByOrderIdPaymentSbpUseCase(state.paymentOrderNumber).getOrThrow()
@@ -775,8 +775,8 @@ class CheckoutViewModel @AssistedInject constructor(
                     }
                 }
             }
-            is CheckoutIntent.DismissPaymentMethodSheet -> {
-                reduce { it.copy(isPaymentMethodSheetVisible = false) }
+            is CheckoutIntent.DismissCheckoutPaymentMethodSheet -> {
+                reduce { it.copy(isCheckoutPaymentMethodSheetVisible = false) }
             }
             is CheckoutIntent.PaymentCardClick -> {
                 reduce {
@@ -804,7 +804,7 @@ class CheckoutViewModel @AssistedInject constructor(
                             val url = ordersByOrderIdPaymentLinkUseCase(state.paymentOrderNumber).getOrThrow()
                             reduce {
                                 it.copy(
-                                    isPaymentMethodSheetVisible = false,
+                                    isCheckoutPaymentMethodSheetVisible = false,
                                     isPaymentExternalFlowStarted = true
                                 )
                             }
@@ -821,7 +821,7 @@ class CheckoutViewModel @AssistedInject constructor(
             is CheckoutIntent.AddNewPaymentCardClick -> {
                 reduce {
                     it.copy(
-                        isPaymentMethodSheetVisible = false,
+                        isCheckoutPaymentMethodSheetVisible = false,
                         isCheckoutBankCardSheetVisible = true,
                         bankCardNumber = "",
                         bankCardExpirationDate = "",

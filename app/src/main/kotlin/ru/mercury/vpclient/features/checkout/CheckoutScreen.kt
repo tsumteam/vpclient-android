@@ -70,7 +70,6 @@ import ru.mercury.vpclient.features.checkout_bonus_sheet.CheckoutBonusSheet
 import ru.mercury.vpclient.features.checkout_bonus_sheet.intent.CheckoutBonusIntent
 import ru.mercury.vpclient.features.checkout_payment_method_sheet.CheckoutPaymentMethodSheet
 import ru.mercury.vpclient.features.checkout_payment_method_sheet.intent.CheckoutPaymentMethodIntent
-import ru.mercury.vpclient.features.checkout_payment_method_sheet.model.CheckoutPaymentMethodModel
 import ru.mercury.vpclient.features.checkout_sbp_bank_sheet.CheckoutSbpBankSheet
 import ru.mercury.vpclient.features.checkout_sbp_bank_sheet.intent.CheckoutSbpBankSheetIntent
 import ru.mercury.vpclient.features.checkout_sbp_bank_sheet.model.CheckoutSbpBankSheetModel
@@ -238,16 +237,13 @@ fun CheckoutScreen(
         )
     }
 
-    if (state.isPaymentMethodSheetVisible) {
+    if (state.isCheckoutPaymentMethodSheetVisible) {
         CheckoutPaymentMethodSheet(
-            state = CheckoutPaymentMethodModel(
-                cards = state.paymentCards,
-                isLoading = state.isPaymentLoading
-            ),
+            state = state.checkoutPaymentMethodModel,
             dispatch = { intent ->
                 when (intent) {
-                    is CheckoutPaymentMethodIntent.DismissRequest -> {
-                        viewModel.dispatch(CheckoutIntent.DismissPaymentMethodSheet)
+                    is CheckoutPaymentMethodIntent.DismissClick -> {
+                        viewModel.dispatch(CheckoutIntent.DismissCheckoutPaymentMethodSheet)
                     }
                     is CheckoutPaymentMethodIntent.CardClick -> {
                         viewModel.dispatch(CheckoutIntent.PaymentCardClick(intent.cardId))

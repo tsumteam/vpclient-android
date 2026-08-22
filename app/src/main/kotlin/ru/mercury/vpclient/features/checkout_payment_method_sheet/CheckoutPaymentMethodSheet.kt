@@ -6,7 +6,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,9 +25,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -39,11 +36,11 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.launch
 import ru.mercury.vpclient.R
 import ru.mercury.vpclient.features.checkout_payment_method_sheet.intent.CheckoutPaymentMethodIntent
 import ru.mercury.vpclient.features.checkout_payment_method_sheet.model.CheckoutPaymentMethodModel
 import ru.mercury.vpclient.shared.data.entity.FittingCheckoutPaymentCardModel
+import ru.mercury.vpclient.shared.ui.components.SharedColumn
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.icons.BankCard24
@@ -65,25 +62,10 @@ fun CheckoutPaymentMethodSheet(
     state: CheckoutPaymentMethodModel,
     dispatch: (CheckoutPaymentMethodIntent) -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val scope = rememberCoroutineScope()
-    val sheetDispatch: (CheckoutPaymentMethodIntent) -> Unit = { intent ->
-        when (intent) {
-            is CheckoutPaymentMethodIntent.DismissRequest -> {
-                scope.launch {
-                    sheetState.hide()
-                    dispatch(intent)
-                }
-            }
-            else -> dispatch(intent)
-        }
-    }
-
     SharedModalBottomSheet(
-        onDismissRequest = { dispatch(CheckoutPaymentMethodIntent.DismissRequest) },
-        sheetState = sheetState
+        onDismissRequest = { dispatch(CheckoutPaymentMethodIntent.DismissClick) }
     ) {
-        Column(
+        SharedColumn(
             modifier = Modifier
                 .fillMaxWidth()
                 .navigationBarsPadding()
@@ -100,7 +82,7 @@ fun CheckoutPaymentMethodSheet(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { sheetDispatch(CheckoutPaymentMethodIntent.DismissRequest) }
+                        onClick = { dispatch(CheckoutPaymentMethodIntent.DismissClick) }
                     ) {
                         Icon(
                             imageVector = Close24,
@@ -143,7 +125,7 @@ fun CheckoutPaymentMethodSheet(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(48.dp)
-                            .clickable { sheetDispatch(CheckoutPaymentMethodIntent.CardClick(card.id)) }
+                            .clickable { dispatch(CheckoutPaymentMethodIntent.CardClick(card.id)) }
                             .padding(start = 16.dp, end = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -195,7 +177,7 @@ fun CheckoutPaymentMethodSheet(
                         )
 
                         IconButton(
-                            onClick = { sheetDispatch(CheckoutPaymentMethodIntent.DeleteCardClick(card.id)) }
+                            onClick = { dispatch(CheckoutPaymentMethodIntent.DeleteCardClick(card.id)) }
                         ) {
                             Icon(
                                 imageVector = PaymentCardDelete24,
@@ -212,7 +194,7 @@ fun CheckoutPaymentMethodSheet(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp)
-                    .clickable { sheetDispatch(CheckoutPaymentMethodIntent.AddNewCardClick) }
+                    .clickable { dispatch(CheckoutPaymentMethodIntent.AddNewCardClick) }
                     .padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -235,7 +217,7 @@ fun CheckoutPaymentMethodSheet(
             }
 
             Button(
-                onClick = { sheetDispatch(CheckoutPaymentMethodIntent.PayClick) },
+                onClick = { dispatch(CheckoutPaymentMethodIntent.PayClick) },
                 modifier = Modifier
                     .padding(start = 16.dp, top = 20.dp, end = 16.dp, bottom = 8.dp)
                     .fillMaxWidth()
@@ -277,7 +259,7 @@ fun CheckoutPaymentMethodSheet(
 @Preview
 @Composable
 private fun CheckoutPaymentMethodSheetPreview(
-    @PreviewParameter(CheckoutPaymentMethodSheetModelProvider::class) state: CheckoutPaymentMethodModel
+    @PreviewParameter(CheckoutPaymentMethodModelPreviewParameterProvider::class) state: CheckoutPaymentMethodModel
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -289,7 +271,7 @@ private fun CheckoutPaymentMethodSheetPreview(
     }
 }
 
-private class CheckoutPaymentMethodSheetModelProvider: PreviewParameterProvider<CheckoutPaymentMethodModel> {
+private class CheckoutPaymentMethodModelPreviewParameterProvider: PreviewParameterProvider<CheckoutPaymentMethodModel> {
 
     override val values: Sequence<CheckoutPaymentMethodModel> = sequenceOf(
         CheckoutPaymentMethodModel(),
