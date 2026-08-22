@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.features.profile_privileges_sheet.intent.ProfilePrivilegeIntent
 import ru.mercury.vpclient.features.profile_privileges_sheet.model.ProfilePrivilegesModel
 import ru.mercury.vpclient.shared.data.entity.LoyaltyCardType
-import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
+import ru.mercury.vpclient.shared.ui.components.SharedColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
@@ -51,169 +51,157 @@ fun ProfilePrivilegesSheet(
     SharedModalBottomSheet(
         onDismissRequest = { dispatch(ProfilePrivilegeIntent.DismissClick) }
     ) {
-        SharedLazyColumn(
+        SharedColumn(
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(bottom = 24.dp)
         ) {
-            item {
-                CenterAlignedTopAppBar(
-                    title = {
-                        Text(
-                            text = stringResource(ClientStrings.ProfileAlphaBankPrivilegesTitleCaps),
-                            style = MaterialTheme.typography.livretMedium17.copy(
-                                lineHeight = 26.sp,
-                                letterSpacing = .2.sp
-                            )
-                        )
-                    },
-                    navigationIcon = {
-                        IconButton(
-                            onClick = { dispatch(ProfilePrivilegeIntent.DismissClick) }
-                        ) {
-                            Icon(
-                                imageVector = Close24,
-                                contentDescription = null,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
-                        titleContentColor = MaterialTheme.colorScheme.onBackground
-                    )
-                )
-            }
-            item {
-                Spacer(
-                    modifier = Modifier.height(4.dp)
-                )
-            }
-            item {
-                Row(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    verticalAlignment = Alignment.Top
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .padding(top = 5.dp)
-                            .size(8.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.onBackground)
-                    )
-
+            CenterAlignedTopAppBar(
+                title = {
                     Text(
-                        text = stringResource(state.bonusTextRes),
-                        modifier = Modifier.weight(1F),
-                        style = MaterialTheme.typography.regular14.copy(
-                            color = MaterialTheme.colorScheme.onBackground,
-                            lineHeight = 18.sp,
+                        text = stringResource(ClientStrings.ProfileAlphaBankPrivilegesTitleCaps),
+                        style = MaterialTheme.typography.livretMedium17.copy(
+                            lineHeight = 26.sp,
                             letterSpacing = .2.sp
                         )
                     )
-                }
-            }
-            item {
-                Spacer(
-                    modifier = Modifier.height(16.dp)
-                )
-            }
-            item {
-                Row(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    verticalAlignment = Alignment.Top
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .padding(top = 5.dp)
-                            .size(8.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.onBackground)
-                    )
-
-                    Text(
-                        text = stringResource(ClientStrings.ProfileAlphaBankPrivilegePurchases),
-                        modifier = Modifier.weight(1F),
-                        style = MaterialTheme.typography.regular14.copy(
-                            color = MaterialTheme.colorScheme.onBackground,
-                            lineHeight = 18.sp,
-                            letterSpacing = .2.sp
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = { dispatch(ProfilePrivilegeIntent.DismissClick) }
+                    ) {
+                        Icon(
+                            imageVector = Close24,
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
                         )
-                    )
-                }
-            }
-            item {
-                Spacer(
-                    modifier = Modifier.height(16.dp)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground
                 )
-            }
-            item {
-                Row(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    verticalAlignment = Alignment.Top
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .padding(top = 5.dp)
-                            .size(8.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.onBackground)
-                    )
+            )
 
-                    Text(
-                        text = stringResource(ClientStrings.ProfileAlphaBankPrivilegePayment),
-                        modifier = Modifier.weight(1F),
-                        style = MaterialTheme.typography.regular14.copy(
-                            color = MaterialTheme.colorScheme.onBackground,
-                            lineHeight = 18.sp,
-                            letterSpacing = .2.sp
-                        )
-                    )
-                }
-            }
-            item {
-                Spacer(
-                    modifier = Modifier.height(16.dp)
-                )
-            }
-            item {
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    color = MaterialTheme.colorScheme.divider
-                )
-            }
-            item {
-                Spacer(
-                    modifier = Modifier.height(16.dp)
-                )
-            }
-            item {
-                Row(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    verticalAlignment = Alignment.Top
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .padding(top = 5.dp)
-                            .size(8.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.onBackground)
-                    )
+            Spacer(
+                modifier = Modifier.height(4.dp)
+            )
 
-                    Text(
-                        text = stringResource(state.serviceTextRes),
-                        modifier = Modifier.weight(1F),
-                        style = MaterialTheme.typography.regular14.copy(
-                            color = MaterialTheme.colorScheme.onBackground,
-                            lineHeight = 18.sp,
-                            letterSpacing = .2.sp
-                        )
+            Row(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.Top
+            ) {
+                Box(
+                    modifier = Modifier
+                        .padding(top = 5.dp)
+                        .size(8.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.onBackground)
+                )
+
+                Text(
+                    text = stringResource(state.bonusTextRes),
+                    modifier = Modifier.weight(1F),
+                    style = MaterialTheme.typography.regular14.copy(
+                        color = MaterialTheme.colorScheme.onBackground,
+                        lineHeight = 18.sp,
+                        letterSpacing = .2.sp
                     )
-                }
+                )
+            }
+
+            Spacer(
+                modifier = Modifier.height(16.dp)
+            )
+
+            Row(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.Top
+            ) {
+                Box(
+                    modifier = Modifier
+                        .padding(top = 5.dp)
+                        .size(8.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.onBackground)
+                )
+
+                Text(
+                    text = stringResource(ClientStrings.ProfileAlphaBankPrivilegePurchases),
+                    modifier = Modifier.weight(1F),
+                    style = MaterialTheme.typography.regular14.copy(
+                        color = MaterialTheme.colorScheme.onBackground,
+                        lineHeight = 18.sp,
+                        letterSpacing = .2.sp
+                    )
+                )
+            }
+
+            Spacer(
+                modifier = Modifier.height(16.dp)
+            )
+
+            Row(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.Top
+            ) {
+                Box(
+                    modifier = Modifier
+                        .padding(top = 5.dp)
+                        .size(8.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.onBackground)
+                )
+
+                Text(
+                    text = stringResource(ClientStrings.ProfileAlphaBankPrivilegePayment),
+                    modifier = Modifier.weight(1F),
+                    style = MaterialTheme.typography.regular14.copy(
+                        color = MaterialTheme.colorScheme.onBackground,
+                        lineHeight = 18.sp,
+                        letterSpacing = .2.sp
+                    )
+                )
+            }
+
+            Spacer(
+                modifier = Modifier.height(16.dp)
+            )
+
+            HorizontalDivider(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                color = MaterialTheme.colorScheme.divider
+            )
+
+            Spacer(
+                modifier = Modifier.height(16.dp)
+            )
+
+            Row(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.Top
+            ) {
+                Box(
+                    modifier = Modifier
+                        .padding(top = 5.dp)
+                        .size(8.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.onBackground)
+                )
+
+                Text(
+                    text = stringResource(state.serviceTextRes),
+                    modifier = Modifier.weight(1F),
+                    style = MaterialTheme.typography.regular14.copy(
+                        color = MaterialTheme.colorScheme.onBackground,
+                        lineHeight = 18.sp,
+                        letterSpacing = .2.sp
+                    )
+                )
             }
         }
     }

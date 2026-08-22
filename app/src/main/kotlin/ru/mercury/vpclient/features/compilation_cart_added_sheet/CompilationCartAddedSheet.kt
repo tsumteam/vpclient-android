@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.features.compilation_cart_added_sheet.intent.CompilationCartAddedIntent
 import ru.mercury.vpclient.features.compilation_cart_added_sheet.model.CompilationCartAddedModel
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CompilationPreviewPageEntity
-import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
+import ru.mercury.vpclient.shared.ui.components.SharedColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.compilations.CompilationCartAddedCard
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
@@ -49,7 +49,7 @@ fun CompilationCartAddedSheet(
         onDismissRequest = { dispatch(CompilationCartAddedIntent.DismissClick) },
         containerColor = Color.Transparent
     ) {
-        SharedLazyColumn(
+        SharedColumn(
             modifier = Modifier
                 .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
                 .clip(RoundedCornerShape(16.dp))
@@ -57,75 +57,70 @@ fun CompilationCartAddedSheet(
                 .background(MaterialTheme.colorScheme.background),
             contentPadding = PaddingValues(bottom = 16.dp)
         ) {
-            item {
-                CenterAlignedTopAppBar(
-                    title = {
-                        Text(
-                            text = stringResource(ClientStrings.CompilationCartAddedSheetTitle),
-                            style = MaterialTheme.typography.livretMedium17.copy(
-                                lineHeight = 26.sp,
-                                letterSpacing = .2.sp
-                            )
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(ClientStrings.CompilationCartAddedSheetTitle),
+                        style = MaterialTheme.typography.livretMedium17.copy(
+                            lineHeight = 26.sp,
+                            letterSpacing = .2.sp
                         )
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        titleContentColor = MaterialTheme.colorScheme.onBackground
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground
+                )
+            )
+
+            CompilationCartAddedCard(
+                entity = state.pageEntity
+            )
+
+            OutlinedButton(
+                onClick = { dispatch(CompilationCartAddedIntent.ReturnToCompilationClick) },
+                modifier = Modifier
+                    .padding(start = 16.dp, top = 8.dp, end = 16.dp)
+                    .fillMaxWidth()
+                    .height(52.dp),
+                shape = RoundedCornerShape(8.dp),
+                border = BorderStroke(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.onBackground
+                ),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.onBackground
+                )
+            ) {
+                Text(
+                    text = stringResource(ClientStrings.CompilationCartAddedSheetReturnToCompilation),
+                    style = MaterialTheme.typography.medium15.copy(
+                        textAlign = TextAlign.Center,
+                        letterSpacing = .3.sp
                     )
                 )
             }
-            item {
-                CompilationCartAddedCard(
-                    entity = state.pageEntity
+
+            Button(
+                onClick = { dispatch(CompilationCartAddedIntent.CartClick) },
+                modifier = Modifier
+                    .padding(start = 16.dp, top = 16.dp, end = 16.dp)
+                    .fillMaxWidth()
+                    .height(52.dp),
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 )
-            }
-            item {
-                OutlinedButton(
-                    onClick = { dispatch(CompilationCartAddedIntent.ReturnToCompilationClick) },
-                    modifier = Modifier
-                        .padding(start = 16.dp, top = 8.dp, end = 16.dp)
-                        .fillMaxWidth()
-                        .height(52.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    border = BorderStroke(
-                        width = 1.dp,
-                        color = MaterialTheme.colorScheme.onBackground
-                    ),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        contentColor = MaterialTheme.colorScheme.onBackground
+            ) {
+                Text(
+                    text = stringResource(ClientStrings.CompilationCartAddedSheetCart),
+                    style = MaterialTheme.typography.medium15.copy(
+                        textAlign = TextAlign.Center,
+                        letterSpacing = .3.sp
                     )
-                ) {
-                    Text(
-                        text = stringResource(ClientStrings.CompilationCartAddedSheetReturnToCompilation),
-                        style = MaterialTheme.typography.medium15.copy(
-                            textAlign = TextAlign.Center,
-                            letterSpacing = .3.sp
-                        )
-                    )
-                }
-            }
-            item {
-                Button(
-                    onClick = { dispatch(CompilationCartAddedIntent.CartClick) },
-                    modifier = Modifier
-                        .padding(start = 16.dp, top = 16.dp, end = 16.dp)
-                        .fillMaxWidth()
-                        .height(52.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
-                ) {
-                    Text(
-                        text = stringResource(ClientStrings.CompilationCartAddedSheetCart),
-                        style = MaterialTheme.typography.medium15.copy(
-                            textAlign = TextAlign.Center,
-                            letterSpacing = .3.sp
-                        )
-                    )
-                }
+                )
             }
         }
     }

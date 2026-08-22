@@ -25,7 +25,7 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.features.fitting_address_actions_sheet.intent.FittingAddressActionsIntent
-import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
+import ru.mercury.vpclient.shared.ui.components.SharedColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
@@ -39,7 +39,7 @@ fun FittingAddressActionsSheet(
         onDismissRequest = { dispatch(FittingAddressActionsIntent.DismissClick) },
         containerColor = Color.Transparent
     ) {
-        SharedLazyColumn(
+        SharedColumn(
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(
                 start = 16.dp,
@@ -47,78 +47,72 @@ fun FittingAddressActionsSheet(
                 bottom = 8.dp
             )
         ) {
-            item {
-                Button(
-                    onClick = { dispatch(FittingAddressActionsIntent.EditClick) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(58.dp),
-                    shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        contentColor = MaterialTheme.colorScheme.onBackground
+            Button(
+                onClick = { dispatch(FittingAddressActionsIntent.EditClick) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(58.dp),
+                shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.onBackground
+                )
+            ) {
+                Text(
+                    text = stringResource(ClientStrings.FittingAddressEdit),
+                    style = MaterialTheme.typography.medium15.copy(
+                        textAlign = TextAlign.Center,
+                        letterSpacing = .3.sp
                     )
-                ) {
-                    Text(
-                        text = stringResource(ClientStrings.FittingAddressEdit),
-                        style = MaterialTheme.typography.medium15.copy(
-                            textAlign = TextAlign.Center,
-                            letterSpacing = .3.sp
-                        )
-                    )
-                }
-            }
-            item {
-                HorizontalDivider(
-                    color = MaterialTheme.colorScheme.outlineVariant
                 )
             }
-            item {
-                Button(
-                    onClick = { dispatch(FittingAddressActionsIntent.DeleteClick) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(58.dp),
-                    shape = RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        contentColor = MaterialTheme.colorScheme.error
+
+            HorizontalDivider(
+                color = MaterialTheme.colorScheme.outlineVariant
+            )
+
+            Button(
+                onClick = { dispatch(FittingAddressActionsIntent.DeleteClick) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(58.dp),
+                shape = RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.error
+                )
+            ) {
+                Text(
+                    text = stringResource(ClientStrings.FittingAddressDelete),
+                    style = MaterialTheme.typography.medium15.copy(
+                        textAlign = TextAlign.Center,
+                        letterSpacing = .3.sp
                     )
-                ) {
-                    Text(
-                        text = stringResource(ClientStrings.FittingAddressDelete),
-                        style = MaterialTheme.typography.medium15.copy(
-                            textAlign = TextAlign.Center,
-                            letterSpacing = .3.sp
-                        )
-                    )
-                }
-            }
-            item {
-                Spacer(
-                    modifier = Modifier.height(18.dp)
                 )
             }
-            item {
-                Button(
-                    onClick = { dispatch(FittingAddressActionsIntent.DismissClick) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(52.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        contentColor = MaterialTheme.colorScheme.onBackground
+
+            Spacer(
+                modifier = Modifier.height(18.dp)
+            )
+
+            Button(
+                onClick = { dispatch(FittingAddressActionsIntent.DismissClick) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp),
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.onBackground
+                )
+            ) {
+                Text(
+                    text = stringResource(ClientStrings.FittingAddressCancel),
+                    style = MaterialTheme.typography.medium15.copy(
+                        textAlign = TextAlign.Center,
+                        letterSpacing = .3.sp
                     )
-                ) {
-                    Text(
-                        text = stringResource(ClientStrings.FittingAddressCancel),
-                        style = MaterialTheme.typography.medium15.copy(
-                            textAlign = TextAlign.Center,
-                            letterSpacing = .3.sp
-                        )
-                    )
-                }
+                )
             }
         }
     }

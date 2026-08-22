@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.features.details_cart_added_sheet.intent.DetailsCartAddedIntent
 import ru.mercury.vpclient.features.details_cart_added_sheet.model.DetailsCartAddedModel
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
-import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
+import ru.mercury.vpclient.shared.ui.components.SharedColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.details.DetailsMessageProductCard
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
@@ -50,7 +50,7 @@ fun DetailsCartAddedSheet(
         onDismissRequest = { dispatch(DetailsCartAddedIntent.DismissClick) },
         containerColor = Color.Transparent
     ) {
-        SharedLazyColumn(
+        SharedColumn(
             modifier = Modifier
                 .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
                 .clip(RoundedCornerShape(16.dp))
@@ -58,85 +58,78 @@ fun DetailsCartAddedSheet(
                 .background(MaterialTheme.colorScheme.background), 
             contentPadding = PaddingValues(bottom = 16.dp)
         ) {
-            item {
-                CenterAlignedTopAppBar(
-                    title = {
-                        Text(
-                            text = stringResource(ClientStrings.DetailsCartAddedSheetTitle),
-                            style = MaterialTheme.typography.livretMedium17.copy(
-                                lineHeight = 26.sp,
-                                letterSpacing = .2.sp
-                            )
-                        )
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        titleContentColor = MaterialTheme.colorScheme.onBackground
-                    )
-                )
-            }
-            item {
-                DetailsMessageProductCard(
-                    entity = state.productEntity
-                )
-            }
-            item {
-                Spacer(
-                    modifier = Modifier.height(8.dp)
-                )
-            }
-            item {
-                OutlinedButton(
-                    onClick = { dispatch(DetailsCartAddedIntent.ContinueShoppingClick) },
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .fillMaxWidth()
-                        .height(52.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    border = BorderStroke(
-                        width = 1.dp,
-                        color = MaterialTheme.colorScheme.onBackground
-                    ),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        contentColor = MaterialTheme.colorScheme.onBackground
-                    )
-                ) {
+            CenterAlignedTopAppBar(
+                title = {
                     Text(
-                        text = stringResource(ClientStrings.DetailsCartAddedSheetContinueShopping),
-                        style = MaterialTheme.typography.medium15.copy(
-                            textAlign = TextAlign.Center,
-                            letterSpacing = .3.sp
+                        text = stringResource(ClientStrings.DetailsCartAddedSheetTitle),
+                        style = MaterialTheme.typography.livretMedium17.copy(
+                            lineHeight = 26.sp,
+                            letterSpacing = .2.sp
                         )
                     )
-                }
-            }
-            item {
-                Spacer(
-                    modifier = Modifier.height(16.dp)
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground
+                )
+            )
+
+            DetailsMessageProductCard(
+                entity = state.productEntity
+            )
+
+            Spacer(
+                modifier = Modifier.height(8.dp)
+            )
+
+            OutlinedButton(
+                onClick = { dispatch(DetailsCartAddedIntent.ContinueShoppingClick) },
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth()
+                    .height(52.dp),
+                shape = RoundedCornerShape(8.dp),
+                border = BorderStroke(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.onBackground
+                ),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.onBackground
+                )
+            ) {
+                Text(
+                    text = stringResource(ClientStrings.DetailsCartAddedSheetContinueShopping),
+                    style = MaterialTheme.typography.medium15.copy(
+                        textAlign = TextAlign.Center,
+                        letterSpacing = .3.sp
+                    )
                 )
             }
-            item {
-                Button(
-                    onClick = { dispatch(DetailsCartAddedIntent.CartClick) },
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .fillMaxWidth()
-                        .height(52.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
+
+            Spacer(
+                modifier = Modifier.height(16.dp)
+            )
+
+            Button(
+                onClick = { dispatch(DetailsCartAddedIntent.CartClick) },
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth()
+                    .height(52.dp),
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            ) {
+                Text(
+                    text = stringResource(ClientStrings.DetailsCartAddedSheetCart),
+                    style = MaterialTheme.typography.medium15.copy(
+                        textAlign = TextAlign.Center,
+                        letterSpacing = .3.sp
                     )
-                ) {
-                    Text(
-                        text = stringResource(ClientStrings.DetailsCartAddedSheetCart),
-                        style = MaterialTheme.typography.medium15.copy(
-                            textAlign = TextAlign.Center,
-                            letterSpacing = .3.sp
-                        )
-                    )
-                }
+                )
             }
         }
     }

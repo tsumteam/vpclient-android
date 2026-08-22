@@ -25,7 +25,7 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.features.compilation_actions_sheet.intent.CompilationActionsIntent
-import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
+import ru.mercury.vpclient.shared.ui.components.SharedColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
@@ -39,82 +39,76 @@ fun CompilationActionsSheet(
         onDismissRequest = { dispatch(CompilationActionsIntent.DismissClick) },
         containerColor = Color.Transparent
     ) {
-        SharedLazyColumn(
+        SharedColumn(
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 8.dp)
         ) {
-            item {
-                Button(
-                    onClick = { dispatch(CompilationActionsIntent.ShowCompilationChatSheet) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(58.dp),
-                    shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        contentColor = MaterialTheme.colorScheme.onBackground
+            Button(
+                onClick = { dispatch(CompilationActionsIntent.ShowCompilationChatSheet) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(58.dp),
+                shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.onBackground
+                )
+            ) {
+                Text(
+                    text = stringResource(ClientStrings.CompilationPreviewDiscussInChat),
+                    style = MaterialTheme.typography.medium15.copy(
+                        textAlign = TextAlign.Center,
+                        letterSpacing = .3.sp
                     )
-                ) {
-                    Text(
-                        text = stringResource(ClientStrings.CompilationPreviewDiscussInChat),
-                        style = MaterialTheme.typography.medium15.copy(
-                            textAlign = TextAlign.Center,
-                            letterSpacing = .3.sp
-                        )
-                    )
-                }
-            }
-            item {
-                HorizontalDivider(
-                    color = MaterialTheme.colorScheme.outlineVariant
                 )
             }
-            item {
-                Button(
-                    onClick = { dispatch(CompilationActionsIntent.ShowAddToBasketDialog) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(58.dp),
-                    shape = RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        contentColor = MaterialTheme.colorScheme.onBackground
+
+            HorizontalDivider(
+                color = MaterialTheme.colorScheme.outlineVariant
+            )
+
+            Button(
+                onClick = { dispatch(CompilationActionsIntent.ShowAddToBasketDialog) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(58.dp),
+                shape = RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.onBackground
+                )
+            ) {
+                Text(
+                    text = stringResource(ClientStrings.DetailsAddToBasket),
+                    style = MaterialTheme.typography.medium15.copy(
+                        textAlign = TextAlign.Center,
+                        letterSpacing = .3.sp
                     )
-                ) {
-                    Text(
-                        text = stringResource(ClientStrings.DetailsAddToBasket),
-                        style = MaterialTheme.typography.medium15.copy(
-                            textAlign = TextAlign.Center,
-                            letterSpacing = .3.sp
-                        )
-                    )
-                }
-            }
-            item {
-                Spacer(
-                    modifier = Modifier.height(18.dp)
                 )
             }
-            item {
-                Button(
-                    onClick = { dispatch(CompilationActionsIntent.DismissClick) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(52.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        contentColor = MaterialTheme.colorScheme.onBackground
+
+            Spacer(
+                modifier = Modifier.height(18.dp)
+            )
+
+            Button(
+                onClick = { dispatch(CompilationActionsIntent.DismissClick) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp),
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.onBackground
+                )
+            ) {
+                Text(
+                    text = stringResource(ClientStrings.CartEditCancel),
+                    style = MaterialTheme.typography.medium15.copy(
+                        textAlign = TextAlign.Center,
+                        letterSpacing = .3.sp
                     )
-                ) {
-                    Text(
-                        text = stringResource(ClientStrings.CartEditCancel),
-                        style = MaterialTheme.typography.medium15.copy(
-                            textAlign = TextAlign.Center,
-                            letterSpacing = .3.sp
-                        )
-                    )
-                }
+                )
             }
         }
     }

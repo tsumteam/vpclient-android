@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.R
 import ru.mercury.vpclient.features.push_notifications_sheet.intent.PushNotificationsIntent
 import ru.mercury.vpclient.features.push_notifications_sheet.model.PushNotificationsModel
-import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
+import ru.mercury.vpclient.shared.ui.components.SharedColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
@@ -50,7 +50,7 @@ fun PushNotificationsSheet(
     SharedModalBottomSheet(
         onDismissRequest = { dispatch(PushNotificationsIntent.DismissClick) }
     ) {
-        SharedLazyColumn(
+        SharedColumn(
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(
                 start = 16.dp,
@@ -62,78 +62,72 @@ fun PushNotificationsSheet(
             horizontalAlignment = Alignment.CenterHorizontally,
             userScrollEnabled = false
         ) {
-            item {
+            Text(
+                text = stringResource(ClientStrings.PushNotificationsSheetTitle),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+                style = MaterialTheme.typography.livretMedium17.copy(
+                    color = MaterialTheme.colorScheme.onBackground,
+                    textAlign = TextAlign.Center
+                )
+            )
+
+            Text(
+                text = stringResource(ClientStrings.PushNotificationsSheetDescription),
+                modifier = Modifier.fillMaxWidth(),
+                style = MaterialTheme.typography.regular14.copy(
+                    color = MaterialTheme.colorScheme.onBackground,
+                    lineHeight = 20.sp,
+                    letterSpacing = .2.sp,
+                    textAlign = TextAlign.Center
+                )
+            )
+
+            Image(
+                painter = painterResource(R.drawable.push_notifications_sheet),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(406F / 336F),
+                contentScale = ContentScale.Fit
+            )
+
+            Button(
+                onClick = { dispatch(PushNotificationsIntent.EnableClick) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp),
+                enabled = state.isEnableButtonEnabled,
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            ) {
                 Text(
-                    text = stringResource(ClientStrings.PushNotificationsSheetTitle),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp),
-                    style = MaterialTheme.typography.livretMedium17.copy(
-                        color = MaterialTheme.colorScheme.onBackground,
+                    text = stringResource(ClientStrings.PushNotificationsSheetEnable),
+                    style = MaterialTheme.typography.medium15.copy(
+                        letterSpacing = .3.sp,
                         textAlign = TextAlign.Center
                     )
                 )
             }
-            item {
+
+            TextButton(
+                onClick = { dispatch(PushNotificationsIntent.DismissClick) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+            ) {
                 Text(
-                    text = stringResource(ClientStrings.PushNotificationsSheetDescription),
-                    modifier = Modifier.fillMaxWidth(),
-                    style = MaterialTheme.typography.regular14.copy(
+                    text = stringResource(ClientStrings.PushNotificationsSheetNotNow),
+                    style = MaterialTheme.typography.medium15.copy(
                         color = MaterialTheme.colorScheme.onBackground,
-                        lineHeight = 20.sp,
-                        letterSpacing = .2.sp,
+                        letterSpacing = .3.sp,
                         textAlign = TextAlign.Center
                     )
                 )
-            }
-            item {
-                Image(
-                    painter = painterResource(R.drawable.push_notifications_sheet),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(406F / 336F),
-                    contentScale = ContentScale.Fit
-                )
-            }
-            item {
-                Button(
-                    onClick = { dispatch(PushNotificationsIntent.EnableClick) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(52.dp),
-                    enabled = state.isEnableButtonEnabled,
-                    shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
-                ) {
-                    Text(
-                        text = stringResource(ClientStrings.PushNotificationsSheetEnable),
-                        style = MaterialTheme.typography.medium15.copy(
-                            letterSpacing = .3.sp,
-                            textAlign = TextAlign.Center
-                        )
-                    )
-                }
-            }
-            item {
-                TextButton(
-                    onClick = { dispatch(PushNotificationsIntent.DismissClick) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp)
-                ) {
-                    Text(
-                        text = stringResource(ClientStrings.PushNotificationsSheetNotNow),
-                        style = MaterialTheme.typography.medium15.copy(
-                            color = MaterialTheme.colorScheme.onBackground,
-                            letterSpacing = .3.sp,
-                            textAlign = TextAlign.Center
-                        )
-                    )
-                }
             }
         }
     }

@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.features.gift_card_terms_sheet.intent.GiftCardTermsIntent
 import ru.mercury.vpclient.features.gift_card_terms_sheet.model.GiftCardTermsModel
-import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
+import ru.mercury.vpclient.shared.ui.components.SharedColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
@@ -42,50 +42,47 @@ fun GiftCardTermsSheet(
     SharedModalBottomSheet(
         onDismissRequest = { dispatch(GiftCardTermsIntent.DismissClick) }
     ) {
-        SharedLazyColumn(
+        SharedColumn(
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(bottom = 16.dp)
         ) {
-            item {
-                CenterAlignedTopAppBar(
-                    title = {
-                        Text(
-                            text = stringResource(ClientStrings.GiftCardTermsTitle),
-                            style = MaterialTheme.typography.livretMedium17.copy(
-                                lineHeight = 26.sp,
-                                letterSpacing = .2.sp
-                            )
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(ClientStrings.GiftCardTermsTitle),
+                        style = MaterialTheme.typography.livretMedium17.copy(
+                            lineHeight = 26.sp,
+                            letterSpacing = .2.sp
                         )
-                    },
-                    navigationIcon = {
-                        IconButton(
-                            onClick = { dispatch(GiftCardTermsIntent.DismissClick) }
-                        ) {
-                            Icon(
-                                imageVector = Close24,
-                                contentDescription = null,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
-                        titleContentColor = MaterialTheme.colorScheme.onBackground
                     )
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = { dispatch(GiftCardTermsIntent.DismissClick) }
+                    ) {
+                        Icon(
+                            imageVector = Close24,
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground
                 )
-            }
-            item {
-                Text(
-                    text = state.text,
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    style = MaterialTheme.typography.regular14.copy(
-                        color = MaterialTheme.colorScheme.onBackground,
-                        lineHeight = 18.sp,
-                        letterSpacing = .2.sp
-                    )
+            )
+
+            Text(
+                text = state.text,
+                modifier = Modifier.padding(horizontal = 16.dp),
+                style = MaterialTheme.typography.regular14.copy(
+                    color = MaterialTheme.colorScheme.onBackground,
+                    lineHeight = 18.sp,
+                    letterSpacing = .2.sp
                 )
-            }
+            )
         }
     }
 }
