@@ -5,7 +5,6 @@ package ru.mercury.vpclient.features.loyalty_code_sheet
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -57,6 +56,7 @@ import ru.mercury.vpclient.features.loyalty_code_sheet.intent.LoyaltyCodeIntent
 import ru.mercury.vpclient.features.loyalty_code_sheet.model.LoyaltyCodeModel
 import ru.mercury.vpclient.shared.data.entity.LoyaltyAddCardMode
 import ru.mercury.vpclient.shared.domain.mapper.formatCodeResendTime
+import ru.mercury.vpclient.shared.ui.components.SharedColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.SmsCodeInput
 import ru.mercury.vpclient.shared.ui.components.SmsCodeInputState
@@ -80,7 +80,7 @@ fun LoyaltyCodeSheet(
     SharedModalBottomSheet(
         onDismissRequest = { dispatch(LoyaltyCodeIntent.DismissClick) }
     ) {
-        Column(
+        SharedColumn(
             modifier = Modifier
                 .fillMaxWidth()
                 .imePadding()
@@ -293,7 +293,7 @@ fun LoyaltyCodeSheet(
 @Preview
 @Composable
 private fun LoyaltyCodeSheetPreview(
-    @PreviewParameter(LoyaltyCodeModelProvider::class) state: LoyaltyCodeModel
+    @PreviewParameter(LoyaltyCodeModelPreviewParameterProvider::class) state: LoyaltyCodeModel
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -305,7 +305,7 @@ private fun LoyaltyCodeSheetPreview(
     }
 }
 
-private class LoyaltyCodeModelProvider: PreviewParameterProvider<LoyaltyCodeModel> {
+private class LoyaltyCodeModelPreviewParameterProvider: PreviewParameterProvider<LoyaltyCodeModel> {
     override val values: Sequence<LoyaltyCodeModel> = sequenceOf(
         LoyaltyCodeModel(
             mode = LoyaltyAddCardMode.CardNumber,

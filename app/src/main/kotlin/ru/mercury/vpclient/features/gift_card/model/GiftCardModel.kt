@@ -1,6 +1,7 @@
 package ru.mercury.vpclient.features.gift_card.model
 
 import kotlinx.coroutines.Job
+import ru.mercury.vpclient.features.gift_card_terms_sheet.model.GiftCardTermsModel
 import ru.mercury.vpclient.shared.data.entity.GiftCardAmountModel
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.GiftCardEntity
@@ -15,7 +16,7 @@ data class GiftCardModel(
     val amountText: String = "",
     val isAmountErrorVisible: Boolean = false,
     val isBuyEnabled: Boolean = false,
-    val isTermsSheetVisible: Boolean = false,
+    val isGiftCardTermsSheetVisible: Boolean = false,
     val cartBadge: Int = 0,
     val activeEmployee: EmployeeEntity = EmployeeEntity.Empty,
     val loadGiftCardJob: Job? = null
@@ -29,6 +30,9 @@ data class GiftCardModel(
 
     val selectedTemplate: GiftCardTemplateEntity
         get() = templates.getOrElse(selectedTemplateIndex) { GiftCardTemplateEntity.Empty }
+
+    val giftCardTermsState: GiftCardTermsModel
+        get() = GiftCardTermsModel(text = selectedTemplate.termOfUse)
 
     val minAmountText: String
         get() = giftCardEntity?.minAmount?.rubles?.replace(' ', '\u00A0').orEmpty()

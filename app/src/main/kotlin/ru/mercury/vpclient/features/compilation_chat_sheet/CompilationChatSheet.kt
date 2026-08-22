@@ -3,7 +3,6 @@
 package ru.mercury.vpclient.features.compilation_chat_sheet
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -32,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.features.compilation_chat_sheet.intent.CompilationChatIntent
 import ru.mercury.vpclient.features.compilation_chat_sheet.model.CompilationChatModel
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CompilationEntity
+import ru.mercury.vpclient.shared.ui.components.SharedColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.compilations.CompilationChatCard
 import ru.mercury.vpclient.shared.ui.components.compilations.CompilationChatCardState
@@ -54,7 +54,7 @@ fun CompilationChatSheet(
     ) {
         val inlinedState = state.copy(commentText = commentText)
 
-        Column(
+        SharedColumn(
             modifier = Modifier.imePadding()
         ) {
             CenterAlignedTopAppBar(
@@ -111,7 +111,7 @@ fun CompilationChatSheet(
 @Preview
 @Composable
 private fun CompilationChatSheetPreview(
-    @PreviewParameter(CompilationChatSheetModelProvider::class) state: CompilationChatModel
+    @PreviewParameter(CompilationChatModelPreviewParameterProvider::class) state: CompilationChatModel
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -123,7 +123,7 @@ private fun CompilationChatSheetPreview(
     }
 }
 
-private class CompilationChatSheetModelProvider: PreviewParameterProvider<CompilationChatModel> {
+private class CompilationChatModelPreviewParameterProvider: PreviewParameterProvider<CompilationChatModel> {
 
     override val values: Sequence<CompilationChatModel> = sequenceOf(
         CompilationChatModel(

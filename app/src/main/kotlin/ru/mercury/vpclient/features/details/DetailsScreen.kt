@@ -66,17 +66,9 @@ import ru.mercury.vpclient.features.details.intent.DetailsIntent
 import ru.mercury.vpclient.features.details.model.DetailsModel
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.features.details_cart_added_sheet.DetailsCartAddedSheet
-import ru.mercury.vpclient.features.details_cart_added_sheet.intent.DetailsCartAddedIntent
-import ru.mercury.vpclient.features.details_cart_added_sheet.model.DetailsCartAddedModel
 import ru.mercury.vpclient.features.details_message_sheet.DetailsMessageSheet
-import ru.mercury.vpclient.features.details_message_sheet.intent.DetailsMessageIntent
-import ru.mercury.vpclient.features.details_message_sheet.model.DetailsMessageModel
 import ru.mercury.vpclient.features.details_wear_with_sheet.DetailsWearWithSheet
-import ru.mercury.vpclient.features.details_wear_with_sheet.intent.DetailsWearWithIntent
-import ru.mercury.vpclient.features.details_wear_with_sheet.model.DetailsWearWithModel
 import ru.mercury.vpclient.features.size_sheet.SizeSheet
-import ru.mercury.vpclient.features.size_sheet.intent.SizeSheetIntent
-import ru.mercury.vpclient.features.size_sheet.model.SizeSheetModel
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.entity.DetailsMediaItem
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductAvailableSizeEntity
@@ -136,90 +128,31 @@ fun DetailsScreen(
         snackbarHostStateError = snackbarHostStateError
     )
 
-    if (state.isDetailsChatSheetVisible) {
+    if (state.isDetailsMessageSheetVisible) {
         DetailsMessageSheet(
-            state = DetailsMessageModel(
-                productEntity = state.productEntity
-            ),
-            dispatch = { intent ->
-                when (intent) {
-                    is DetailsMessageIntent.CommentChange -> Unit
-                    is DetailsMessageIntent.SendClick -> {
-                        viewModel.dispatch(DetailsIntent.HideMessageSheet)
-                    }
-                    is DetailsMessageIntent.DismissClick -> {
-                        viewModel.dispatch(DetailsIntent.HideMessageSheet)
-                    }
-                }
-            }
+            state = state.detailsMessageState,
+            dispatch = { intent -> viewModel.dispatch(DetailsIntent.OnDetailsMessageIntent(intent)) }
         )
     }
 
-    if (state.isCartAddedSheetVisible) {
+    if (state.isDetailsCartAddedSheetVisible) {
         DetailsCartAddedSheet(
-            state = DetailsCartAddedModel(
-                productEntity = state.productEntity
-            ),
-            dispatch = { intent ->
-                when (intent) {
-                    is DetailsCartAddedIntent.ContinueShoppingClick -> {
-                        viewModel.dispatch(DetailsIntent.HideCartAddedSheet)
-                    }
-                    is DetailsCartAddedIntent.CartClick -> {
-                        viewModel.dispatch(DetailsIntent.CartAddedSheetCartClick)
-                    }
-                    is DetailsCartAddedIntent.DismissClick -> {
-                        viewModel.dispatch(DetailsIntent.HideCartAddedSheet)
-                    }
-                }
-            }
+            state = state.detailsCartAddedState,
+            dispatch = { intent -> viewModel.dispatch(DetailsIntent.OnDetailsCartAddedIntent(intent)) }
         )
     }
 
-    if (state.isWearWithSheetVisible) {
+    if (state.isDetailsWearWithSheetVisible) {
         DetailsWearWithSheet(
-            state = DetailsWearWithModel(
-                products = state.wearWithProducts,
-                basketProductIds = state.basketProductIds,
-                basketProductKeys = state.basketProductKeys
-            ),
-            dispatch = { intent ->
-                when (intent) {
-                    is DetailsWearWithIntent.ProductClick -> {
-                        viewModel.dispatch(DetailsIntent.ProductClick(intent.id))
-                    }
-                    is DetailsWearWithIntent.ProductBasketClick -> {
-                        viewModel.dispatch(DetailsIntent.ProductBasketClick(intent.product))
-                    }
-                    is DetailsWearWithIntent.DismissClick -> {
-                        viewModel.dispatch(DetailsIntent.HideWearWithSheet)
-                    }
-                }
-            }
+            state = state.detailsWearWithState,
+            dispatch = { intent -> viewModel.dispatch(DetailsIntent.OnDetailsWearWithIntent(intent)) }
         )
     }
 
-    if (state.isSizePickerSheetVisible) {
+    if (state.isSizeSheetVisible) {
         SizeSheet(
-            state = SizeSheetModel(
-                sizeSelectorState = state.sizePickerState
-            ),
-            dispatch = { intent ->
-                when (intent) {
-                    is SizeSheetIntent.SizeClick -> {
-                        viewModel.dispatch(DetailsIntent.SizeClick(intent.index))
-                    }
-                    is SizeSheetIntent.SizeTableClick -> {
-                        viewModel.dispatch(DetailsIntent.SizeTableClick)
-                    }
-                    is SizeSheetIntent.AddToBasketClick -> {
-                        viewModel.dispatch(DetailsIntent.AddToBasketClick)
-                    }
-                    is SizeSheetIntent.DismissClick -> {
-                        viewModel.dispatch(DetailsIntent.HideSizePicker)
-                    }
-                }
-            }
+            state = state.sizeState,
+            dispatch = { intent -> viewModel.dispatch(DetailsIntent.OnSizeSheetIntent(intent)) }
         )
     }
 
@@ -585,9 +518,7 @@ private fun DetailsScreenContent(
                             DetailsColorImageSelector(
                                 colorImageUrls = state.selectorColorImageUrls,
                                 onColorClick = {
-                                    scope.launch {
-                                        lazyListState.animateScrollToItem(0)
-                                    }
+                                    scope.launch { lazyListState.animateScrollToItem(0) }
                                     dispatch(DetailsIntent.ColorClick(it))
                                 }
                             )

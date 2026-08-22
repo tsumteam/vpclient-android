@@ -10,6 +10,7 @@ import ru.mercury.vpclient.BuildConfig
 import ru.mercury.vpclient.features.debug.event.DebugEvent
 import ru.mercury.vpclient.features.debug.intent.DebugIntent
 import ru.mercury.vpclient.features.debug.model.DebugModel
+import ru.mercury.vpclient.features.debug_env_dialog.intent.DebugEnvIntent
 import ru.mercury.vpclient.shared.data.network.env.ClientEnvironment
 import ru.mercury.vpclient.shared.data.persistence.database.AppDatabase
 import ru.mercury.vpclient.shared.data.persistence.datastore.PreferenceKey
@@ -51,17 +52,21 @@ class DebugViewModel @Inject constructor(
                 }
             }
             is DebugIntent.EnvironmentClick -> reduce { it.copy(isEnvironmentDialogVisible = true) }
-            is DebugIntent.DismissDebugEnvDialog -> reduce { it.copy(isEnvironmentDialogVisible = false) }
             is DebugIntent.ToggleRequestDelay -> {
                 launch { settingsDataStore.get().setValue(PreferenceKey.RequestDelay, if (intent.enabled) 5_000L else 0L) }
             }
             is DebugIntent.ToggleMockBackend -> {
                 launch { settingsDataStore.get().setValue(PreferenceKey.MockBackendEnabled, !stateFlow.value.mockBackendEnabled) }
             }
-            is DebugIntent.SelectEnvironment -> {
-                launch {
-                    settingsDataStore.get().setValue(environmentPreferenceKey(), intent.environment.name)
-                    send(DebugEvent.SnackbarMessage("Окружение изменено на ${intent.environment.name}"))
+            is DebugIntent.OnDebugEnvIntent -> {
+                when (intent.intent) {
+                    is DebugEnvIntent.DismissRequest -> reduce { it.copy(isEnvironmentDialogVisible = false) }
+                    is DebugEnvIntent.SelectEnvironment -> {
+                        launch {
+                            settingsDataStore.get().setValue(environmentPreferenceKey(), intent.intent.environment.name)
+                            send(DebugEvent.SnackbarMessage("Окружение изменено на ${intent.intent.environment.name}"))
+                        }
+                    }
                 }
             }
             is DebugIntent.DropLocalDbClick -> {

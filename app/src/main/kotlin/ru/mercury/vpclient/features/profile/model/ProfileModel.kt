@@ -1,6 +1,8 @@
 package ru.mercury.vpclient.features.profile.model
 
 import kotlinx.coroutines.Job
+import ru.mercury.vpclient.features.loyalty_add_card_sheet.model.LoyaltyAddCardModel
+import ru.mercury.vpclient.features.loyalty_code_sheet.model.LoyaltyCodeModel
 import ru.mercury.vpclient.features.profile_privileges_sheet.model.ProfilePrivilegesModel
 import ru.mercury.vpclient.shared.data.entity.LoyaltyAddCardMode
 import ru.mercury.vpclient.shared.data.entity.LoyaltyCardType
@@ -110,6 +112,29 @@ data class ProfileModel(
     val isPurchasesBadgeVisible: Boolean
         get() = orderCount > 0
 
-    val profilePrivilegesModel: ProfilePrivilegesModel
+    val profilePrivilegesState: ProfilePrivilegesModel
         get() = ProfilePrivilegesModel(cardType = visibleAlphaBankBannerCardType)
+
+    val loyaltyAddCardState: LoyaltyAddCardModel
+        get() = LoyaltyAddCardModel(
+            mode = loyaltyAddCardMode,
+            phone = loyaltyAddCardPhone,
+            cardNumber = loyaltyAddCardCardNumber,
+            isLoading = loyaltyAddCardJob?.isActive == true,
+            isPhoneErrorVisible = isLoyaltyAddCardPhoneErrorVisible
+        )
+
+    val loyaltyCodeState: LoyaltyCodeModel
+        get() = LoyaltyCodeModel(
+            mode = loyaltyCodeMode,
+            phone = loyaltyCodePhone,
+            cardNumber = loyaltyCodeCardNumber,
+            code = loyaltyCode,
+            isLoading = isLoyaltyCodeLoading,
+            isResendLoading = isLoyaltyCodeResendLoading,
+            isCodeErrorVisible = isLoyaltyCodeErrorVisible,
+            resendTimerStartedAt = loyaltyCodeResendTimerStartedAt,
+            resendSecondsLeft = loyaltyCodeResendSecondsLeft,
+            resendTimerJob = loyaltyCodeResendTimerJob
+        )
 }

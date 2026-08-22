@@ -137,7 +137,7 @@ fun PushNotificationsSheet(
 @Preview
 @Composable
 private fun PushNotificationsSheetPreview(
-    @PreviewParameter(PushNotificationsSheetModelPreviewParameterProvider::class) state: PushNotificationsModel
+    @PreviewParameter(PushNotificationsModelPreviewParameterProvider::class) state: PushNotificationsModel
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -149,7 +149,7 @@ private fun PushNotificationsSheetPreview(
     }
 }
 
-private class PushNotificationsSheetModelPreviewParameterProvider:
+private class PushNotificationsModelPreviewParameterProvider:
     PreviewParameterProvider<PushNotificationsModel> {
 
     override val values: Sequence<PushNotificationsModel> = sequenceOf(

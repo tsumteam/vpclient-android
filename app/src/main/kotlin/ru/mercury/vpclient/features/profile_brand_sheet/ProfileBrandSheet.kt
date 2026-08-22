@@ -81,9 +81,9 @@ import ru.mercury.vpclient.shared.ui.theme.regular15
 
 @Composable
 fun ProfileBrandSheet(
-    categoryId: Int,
-    onDismiss: () -> Unit,
-    viewModel: ProfileBrandSheetViewModel = hiltViewModel<ProfileBrandSheetViewModel, ProfileBrandSheetViewModel.Factory>(
+    categoryId: Int,  // fixme
+    onDismiss: () -> Unit,  // fixme
+    viewModel: ProfileBrandViewModel = hiltViewModel<ProfileBrandViewModel, ProfileBrandViewModel.Factory>(
         creationCallback = { it.create(categoryId) }
     )
 ) {
@@ -394,7 +394,7 @@ private fun ProfileBrandSheetContent(
 @Preview
 @Composable
 private fun ProfileBrandSheetPreview(
-    @PreviewParameter(ProfileBrandSheetModelProvider::class) state: ProfileBrandModel
+    @PreviewParameter(ProfileBrandModelPreviewParameterProvider::class) state: ProfileBrandModel
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -407,7 +407,7 @@ private fun ProfileBrandSheetPreview(
     }
 }
 
-private class ProfileBrandSheetModelProvider: PreviewParameterProvider<ProfileBrandModel> {
+private class ProfileBrandModelPreviewParameterProvider: PreviewParameterProvider<ProfileBrandModel> {
     override val values: Sequence<ProfileBrandModel> = sequenceOf(
         ProfileBrandModel(
             catalogBrandEntities = emptyList(),

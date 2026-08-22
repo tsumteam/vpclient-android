@@ -1,6 +1,9 @@
 package ru.mercury.vpclient.features.profile.intent
 
-import ru.mercury.vpclient.shared.data.entity.LoyaltyAddCardMode
+import ru.mercury.vpclient.features.loyalty_add_card_sheet.intent.LoyaltyAddCardIntent
+import ru.mercury.vpclient.features.loyalty_code_sheet.intent.LoyaltyCodeIntent
+import ru.mercury.vpclient.features.profile_logout_dialog.intent.ProfileLogoutIntent
+import ru.mercury.vpclient.features.profile_privileges_sheet.intent.ProfilePrivilegeIntent
 import ru.mercury.vpclient.shared.mvi.Intent
 
 sealed interface ProfileIntent: Intent {
@@ -21,7 +24,6 @@ sealed interface ProfileIntent: Intent {
     data object AddLoyaltyCardClick: ProfileIntent
     data object AlphaBankBannerCloseClick: ProfileIntent
     data object AlphaBankBannerMoreClick: ProfileIntent
-    data object DismissAlphaBankPrivilegesSheet: ProfileIntent
     data object MyDataClick: ProfileIntent
     data object PurchasesClick: ProfileIntent
     data object InformationClick: ProfileIntent
@@ -29,21 +31,15 @@ sealed interface ProfileIntent: Intent {
     data object FavoriteBrandsClick: ProfileIntent
     data object ViewHistoryViewMoreClick: ProfileIntent
     data object ShowLogoutDialog: ProfileIntent
-    data object DismissProfileLogoutDialog: ProfileIntent
-    data object Logout: ProfileIntent
     data object CartClick: ProfileIntent
     data object FittingClick: ProfileIntent
     data object MessengerClick: ProfileIntent
-    data object DismissLoyaltyAddCardSheet: ProfileIntent
     data object LoyaltyAddCardPhoneConfirmClick: ProfileIntent
     data object LoyaltyAddCardCardNumberConfirmClick: ProfileIntent
-    data object DismissLoyaltyCodeSheet: ProfileIntent
     data object StartLoyaltyCodeResendTimerTicker: ProfileIntent
-    data object LoyaltyCodeConfirmClick: ProfileIntent
-    data object LoyaltyCodeResendCodeClick: ProfileIntent
     data class ViewHistoryProductClick(val productId: String): ProfileIntent
-    data class LoyaltyAddCardModeClick(val mode: LoyaltyAddCardMode): ProfileIntent
-    data class LoyaltyAddCardPhoneChange(val phone: String): ProfileIntent
-    data class LoyaltyAddCardCardNumberChange(val cardNumber: String): ProfileIntent
-    data class LoyaltyCodeChange(val code: String): ProfileIntent
+    data class OnProfileLogoutIntent(val intent: ProfileLogoutIntent): ProfileIntent
+    data class OnLoyaltyAddCardIntent(val intent: LoyaltyAddCardIntent): ProfileIntent
+    data class OnLoyaltyCodeIntent(val intent: LoyaltyCodeIntent): ProfileIntent
+    data class OnProfilePrivilegeIntent(val intent: ProfilePrivilegeIntent): ProfileIntent
 }

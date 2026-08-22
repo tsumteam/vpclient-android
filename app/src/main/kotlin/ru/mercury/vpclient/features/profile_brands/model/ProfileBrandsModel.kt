@@ -10,7 +10,7 @@ data class ProfileBrandsModel(
     val selectedTab: TabType = TabType.WOMAN,
     val favoriteBrandEntities: FavoriteBrandEntities = FavoriteBrandEntities(),
     val loadFavoriteBrandsJob: Job? = null,
-    val isBrandSheetVisible: Boolean = false
+    val isProfileBrandSheetVisible: Boolean = false
 ): Model {
 
     val isLoading: Boolean

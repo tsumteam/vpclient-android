@@ -7,6 +7,7 @@ import ru.mercury.vpclient.features.filter_price_sheet.model.FilterPriceModel
 import ru.mercury.vpclient.features.filter_size_sheet.model.FilterSizeModel
 import ru.mercury.vpclient.features.filter_tree_sheet.model.FilterTreeModel
 import ru.mercury.vpclient.features.filter_values_sheet.model.FilterValuesModel
+import ru.mercury.vpclient.features.sort_picker_sheet.model.SortPickerModel
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.entity.FilterChip
 import ru.mercury.vpclient.shared.data.entity.FilterData
@@ -39,7 +40,7 @@ data class FilterModel(
     val showOnlySortFilter: Boolean = false,
     val isBrandFavorited: Boolean? = null,
     val isRefreshing: Boolean = false,
-    val isSortDialogVisible: Boolean = false,
+    val isSortPickerSheetVisible: Boolean = false,
     val isFilterValuesDialogLoading: Boolean = false,
     val filterValuesEntity: FilterValuesEntity = FilterValuesEntity.Empty,
     val filterValuesDialogSelectedValueIds: Set<String> = emptySet(),
@@ -109,53 +110,32 @@ data class FilterModel(
         return filterValuesDialogChips.firstOrNull { chip -> chip.id == chipId }
     }
 
-    val filterBrandSheetState: FilterBrandModel?
-        get() {
-            val picker = filterValuesEntity
-            if (picker.isEmpty || picker.chipId != CatalogFilterRequest.BRAND) {
-                return null
-            }
-            return FilterBrandModel(
-                brands = picker.brandValues,
-                selectedIds = filterValuesDialogSelectedValueIds,
-                quantityEntity = filterValuesDialogProductsQuantity,
-                isProductsQuantityLoading = isFilterValuesDialogProductsQuantityLoading,
-                isLoading = isFilterValuesDialogLoading
-            )
-        }
+    val filterBrandState: FilterBrandModel
+        get() = FilterBrandModel(
+            brands = filterValuesEntity.brandValues,
+            selectedIds = filterValuesDialogSelectedValueIds,
+            quantityEntity = filterValuesDialogProductsQuantity,
+            isProductsQuantityLoading = isFilterValuesDialogProductsQuantityLoading,
+            isLoading = isFilterValuesDialogLoading
+        )
 
-    val filterValuesSheetState: FilterValuesModel?
-        get() {
-            val picker = filterValuesEntity
-            when {
-                picker.isEmpty -> return null
-                picker.chipId == CatalogFilterRequest.BRAND -> return null
-                picker.chipId == CatalogFilterRequest.COLOR -> return null
-                picker.chipId == CatalogFilterRequest.PRICE -> return null
-                picker.chipId == CatalogFilterRequest.SIZE -> return null
-                picker.valueType == CatalogFilterValueType.ID_TREE -> return null
-            }
-            return FilterValuesModel(
-                entity = picker.copy(title = picker.title.uppercase()),
-                selectedIds = filterValuesDialogSelectedValueIds,
-                quantityEntity = filterValuesDialogProductsQuantity,
-                isProductsQuantityLoading = isFilterValuesDialogProductsQuantityLoading,
-                isLoading = isFilterValuesDialogLoading
-            )
-        }
+    val filterValuesState: FilterValuesModel
+        get() = FilterValuesModel(
+            entity = filterValuesEntity.copy(title = filterValuesEntity.title.uppercase()),
+            selectedIds = filterValuesDialogSelectedValueIds,
+            quantityEntity = filterValuesDialogProductsQuantity,
+            isProductsQuantityLoading = isFilterValuesDialogProductsQuantityLoading,
+            isLoading = isFilterValuesDialogLoading
+        )
 
-    val filterPriceSheetState: FilterPriceModel?
+    val filterPriceState: FilterPriceModel
         get() {
-            val picker = filterValuesEntity
-            if (picker.isEmpty || picker.chipId != CatalogFilterRequest.PRICE) {
-                return null
-            }
             val selectedPresetId = filterValuesDialogSelectedValueIds.firstOrNull { valueId ->
-                picker.values.any { chip -> chip.id == valueId }
+                filterValuesEntity.values.any { chip -> chip.id == valueId }
             }
             return FilterPriceModel(
-                title = picker.title,
-                presets = picker.values,
+                title = filterValuesEntity.title,
+                presets = filterValuesEntity.values,
                 selectedPresetId = selectedPresetId,
                 priceFrom = filterPriceFrom,
                 priceTo = filterPriceTo,
@@ -165,30 +145,20 @@ data class FilterModel(
             )
         }
 
-    val filterSizeSheetState: FilterSizeModel?
-        get() {
-            val picker = filterValuesEntity
-            if (picker.isEmpty || picker.chipId != CatalogFilterRequest.SIZE) {
-                return null
-            }
-            return FilterSizeModel(
-                entity = picker.copy(title = picker.title),
-                selectedIds = filterValuesDialogSelectedValueIds,
-                quantityEntity = filterValuesDialogProductsQuantity,
-                isProductsQuantityLoading = isFilterValuesDialogProductsQuantityLoading,
-                isLoading = isFilterValuesDialogLoading
-            )
-        }
+    val filterSizeState: FilterSizeModel
+        get() = FilterSizeModel(
+            entity = filterValuesEntity.copy(title = filterValuesEntity.title),
+            selectedIds = filterValuesDialogSelectedValueIds,
+            quantityEntity = filterValuesDialogProductsQuantity,
+            isProductsQuantityLoading = isFilterValuesDialogProductsQuantityLoading,
+            isLoading = isFilterValuesDialogLoading
+        )
 
-    val filterTreeSheetState: FilterTreeModel?
+    val filterTreeState: FilterTreeModel
         get() {
-            val picker = filterValuesEntity
-            if (picker.isEmpty || picker.valueType != CatalogFilterValueType.ID_TREE) {
-                return null
-            }
             val currentParentId = filterTreePath.lastOrNull()
-            val currentParentLabel = picker.items.firstOrNull { item -> item.id == currentParentId }?.label
-            val values = picker.items
+            val currentParentLabel = filterValuesEntity.items.firstOrNull { item -> item.id == currentParentId }?.label
+            val values = filterValuesEntity.items
                 .filter { item -> item.parentId == currentParentId }
                 .sortedBy { item -> item.order }
                 .map { item ->
@@ -199,7 +169,7 @@ data class FilterModel(
                     )
                 }
             return FilterTreeModel(
-                title = picker.title,
+                title = filterValuesEntity.title,
                 currentParentId = currentParentId,
                 currentParentLabel = currentParentLabel,
                 values = values,
@@ -210,38 +180,40 @@ data class FilterModel(
             )
         }
 
-    val filterColorSheetState: FilterColorModel?
-        get() {
-            val picker = filterValuesEntity
-            if (picker.isEmpty || picker.chipId != CatalogFilterRequest.COLOR) {
-                return null
-            }
-            return FilterColorModel(
-                entity = picker.copy(title = picker.title),
-                selectedIds = filterValuesDialogSelectedValueIds,
-                quantityEntity = filterValuesDialogProductsQuantity,
-                isProductsQuantityLoading = isFilterValuesDialogProductsQuantityLoading,
-                isLoading = isFilterValuesDialogLoading
-            )
-        }
+    val filterColorState: FilterColorModel
+        get() = FilterColorModel(
+            entity = filterValuesEntity.copy(title = filterValuesEntity.title),
+            selectedIds = filterValuesDialogSelectedValueIds,
+            quantityEntity = filterValuesDialogProductsQuantity,
+            isProductsQuantityLoading = isFilterValuesDialogProductsQuantityLoading,
+            isLoading = isFilterValuesDialogLoading
+        )
 
-    val isFilterBrandDialogVisible: Boolean
-        get() = filterBrandSheetState != null
+    val isFilterBrandSheetVisible: Boolean
+        get() = !filterValuesEntity.isEmpty && filterValuesEntity.chipId == CatalogFilterRequest.BRAND
 
-    val isFilterValuesDialogVisible: Boolean
-        get() = filterValuesSheetState != null
+    val isFilterValuesSheetVisible: Boolean
+        get() = !filterValuesEntity.isEmpty &&
+            filterValuesEntity.chipId != CatalogFilterRequest.BRAND &&
+            filterValuesEntity.chipId != CatalogFilterRequest.COLOR &&
+            filterValuesEntity.chipId != CatalogFilterRequest.PRICE &&
+            filterValuesEntity.chipId != CatalogFilterRequest.SIZE &&
+            filterValuesEntity.valueType != CatalogFilterValueType.ID_TREE
 
-    val isFilterPriceDialogVisible: Boolean
-        get() = filterPriceSheetState != null
+    val isFilterPriceSheetVisible: Boolean
+        get() = !filterValuesEntity.isEmpty && filterValuesEntity.chipId == CatalogFilterRequest.PRICE
 
-    val isFilterSizeDialogVisible: Boolean
-        get() = filterSizeSheetState != null
+    val isFilterSizeSheetVisible: Boolean
+        get() = !filterValuesEntity.isEmpty && filterValuesEntity.chipId == CatalogFilterRequest.SIZE
 
-    val isFilterTreeDialogVisible: Boolean
-        get() = filterTreeSheetState != null
+    val isFilterTreeSheetVisible: Boolean
+        get() = !filterValuesEntity.isEmpty && filterValuesEntity.valueType == CatalogFilterValueType.ID_TREE
 
-    val isFilterColorDialogVisible: Boolean
-        get() = filterColorSheetState != null
+    val isFilterColorSheetVisible: Boolean
+        get() = !filterValuesEntity.isEmpty && filterValuesEntity.chipId == CatalogFilterRequest.COLOR
+
+    val sortPickerState: SortPickerModel
+        get() = SortPickerModel(selectedSortType = selectedSortType)
 
     fun selectedFilterValueIds(chipId: String): Set<String> {
         return selectedFilterValueChipIds.filter { valueChipId ->

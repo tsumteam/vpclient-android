@@ -3,7 +3,6 @@
 package ru.mercury.vpclient.features.sort_picker_sheet
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -41,6 +40,7 @@ import ru.mercury.vpclient.features.sort_picker_sheet.model.SortPickerModel
 import ru.mercury.vpclient.shared.data.entity.SortType
 import ru.mercury.vpclient.shared.domain.mapper.isResetButtonVisible
 import ru.mercury.vpclient.shared.ui.components.SharedAnimatedVisibility
+import ru.mercury.vpclient.shared.ui.components.SharedColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.filters.FilterListRow
 import ru.mercury.vpclient.shared.ui.icons.Close24
@@ -60,7 +60,7 @@ fun SortPickerSheet(
     ) {
         var selectedSortType by remember(state.selectedSortType) { mutableStateOf(state.selectedSortType) }
 
-        Column {
+        SharedColumn {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
@@ -172,25 +172,23 @@ fun SortPickerSheet(
 @Preview
 @Composable
 private fun SortPickerSheetPreview(
-    @PreviewParameter(SortTypeProvider::class) selectedSortType: SortType
+    @PreviewParameter(SortPickerModelPreviewParameterProvider::class) state: SortPickerModel
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
         SortPickerSheet(
-            state = SortPickerModel(
-                selectedSortType = selectedSortType
-            ),
+            state = state,
             dispatch = {}
         )
     }
 }
 
-private class SortTypeProvider: PreviewParameterProvider<SortType> {
-    override val values: Sequence<SortType> = sequenceOf(
-        SortType.OurChoice,
-        SortType.PriceAscending,
-        SortType.PriceDescending,
-        SortType.ArrivalDateDescending
+private class SortPickerModelPreviewParameterProvider: PreviewParameterProvider<SortPickerModel> {
+    override val values: Sequence<SortPickerModel> = sequenceOf(
+        SortPickerModel(selectedSortType = SortType.OurChoice),
+        SortPickerModel(selectedSortType = SortType.PriceAscending),
+        SortPickerModel(selectedSortType = SortType.PriceDescending),
+        SortPickerModel(selectedSortType = SortType.ArrivalDateDescending)
     )
 }

@@ -154,7 +154,7 @@ fun CompilationBenefitSheet(
 @Preview(showBackground = true)
 @Composable
 private fun CompilationBenefitSheetPreview(
-    @PreviewParameter(CompilationBenefitSheetModelProvider::class) state: CompilationBenefitModel
+    @PreviewParameter(CompilationBenefitModelPreviewParameterProvider::class) state: CompilationBenefitModel
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -166,7 +166,7 @@ private fun CompilationBenefitSheetPreview(
     }
 }
 
-private class CompilationBenefitSheetModelProvider: PreviewParameterProvider<CompilationBenefitModel> {
+private class CompilationBenefitModelPreviewParameterProvider: PreviewParameterProvider<CompilationBenefitModel> {
     override val values: Sequence<CompilationBenefitModel> = sequenceOf(
         CompilationBenefitModel(
             catalogFilterProductsEntities = listOf(

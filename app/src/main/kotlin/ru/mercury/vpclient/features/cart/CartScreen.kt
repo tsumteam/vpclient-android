@@ -46,26 +46,18 @@ import ru.mercury.vpclient.features.cart.intent.CartIntent
 import ru.mercury.vpclient.features.cart.model.CartModel
 import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.features.cart_edit_product_sheet.CartEditProductSheet
-import ru.mercury.vpclient.features.cart_edit_product_sheet.intent.CartEditProductIntent
 import ru.mercury.vpclient.features.cart_empty_order_dialog.CartEmptyOrderDialog
-import ru.mercury.vpclient.features.cart_empty_order_dialog.intent.CartEmptyOrderIntent
 import ru.mercury.vpclient.features.cart_fitting.CartFittingScreen
 import ru.mercury.vpclient.features.cart_fitting_edit_product_sheet.CartFittingEditProductSheet
-import ru.mercury.vpclient.features.cart_fitting_edit_product_sheet.intent.CartFittingEditProductIntent
 import ru.mercury.vpclient.features.cart_fitting_empty_order_dialog.CartFittingEmptyOrderDialog
-import ru.mercury.vpclient.features.cart_fitting_empty_order_dialog.intent.CartFittingEmptyOrderIntent
 import ru.mercury.vpclient.features.cart_fitting_sheet.CartFittingSheet
-import ru.mercury.vpclient.features.cart_fitting_sheet.intent.CartFittingIntent
 import ru.mercury.vpclient.features.cart_list.CartListScreen
 import ru.mercury.vpclient.features.color_picker_sheet.ColorPickerSheet
-import ru.mercury.vpclient.features.color_picker_sheet.intent.ColorPickerIntent
 import ru.mercury.vpclient.features.fitting_products_sheet.FittingProductsSheet
 import ru.mercury.vpclient.features.fitting_products_sheet.event.FittingProductsEvent
 import ru.mercury.vpclient.features.fitting_products_sheet.event.FittingProductsEventManager
 import ru.mercury.vpclient.features.quantity_picker_sheet.QuantityPickerSheet
-import ru.mercury.vpclient.features.quantity_picker_sheet.intent.QuantityPickerIntent
 import ru.mercury.vpclient.features.size_picker_sheet.SizePickerSheet
-import ru.mercury.vpclient.features.size_picker_sheet.intent.SizePickerIntent
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
@@ -96,55 +88,24 @@ fun CartScreen(
         snackbarHostStateError = snackbarHostStateError
     )
 
-    if (state.isEditProductSheetVisible) {
+    if (state.isCartEditProductSheetVisible) {
         CartEditProductSheet(
-            state = state.editProductModel,
-            dispatch = { intent ->
-                when (intent) {
-                    is CartEditProductIntent.ActionClick -> {
-                        viewModel.dispatch(CartIntent.DismissCartEditProductSheet)
-                        viewModel.dispatch(state.editProductActions[intent.index].second)
-                    }
-                    is CartEditProductIntent.DismissClick -> {
-                        viewModel.dispatch(CartIntent.DismissCartEditProductSheet)
-                    }
-                }
-            }
+            state = state.editProductState,
+            dispatch = { intent -> viewModel.dispatch(CartIntent.OnCartEditProductIntent(intent)) }
         )
     }
 
     if (state.isCartFittingEditProductSheetVisible) {
         CartFittingEditProductSheet(
-            state = state.fittingEditProductModel,
-            dispatch = { intent ->
-                when (intent) {
-                    is CartFittingEditProductIntent.ChangeColorClick -> {
-                        viewModel.dispatch(CartIntent.ShowFittingColorPicker)
-                    }
-                    is CartFittingEditProductIntent.ChangeSizeClick -> {
-                        viewModel.dispatch(CartIntent.ShowFittingSizePicker)
-                    }
-                    is CartFittingEditProductIntent.DismissClick -> {
-                        viewModel.dispatch(CartIntent.DismissCartFittingEditProductSheet)
-                    }
-                }
-            }
+            state = state.fittingEditProductState,
+            dispatch = { intent -> viewModel.dispatch(CartIntent.OnCartFittingEditProductIntent(intent)) }
         )
     }
 
     if (state.isCartFittingSheetVisible) {
         CartFittingSheet(
-            state = state.cartFittingModel,
-            dispatch = { intent ->
-                when (intent) {
-                    is CartFittingIntent.ConfirmClick -> {
-                        viewModel.dispatch(CartIntent.ConfirmFittingSheet(intent.option))
-                    }
-                    is CartFittingIntent.DismissClick -> {
-                        viewModel.dispatch(CartIntent.DismissCartFittingSheet)
-                    }
-                }
-            }
+            state = state.cartFittingState,
+            dispatch = { intent -> viewModel.dispatch(CartIntent.OnCartFittingIntent(intent)) }
         )
     }
 
@@ -154,85 +115,34 @@ fun CartScreen(
 
     if (state.isSizePickerSheetVisible) {
         SizePickerSheet(
-            state = state.sizePickerModel,
-            dispatch = { intent ->
-                when (intent) {
-                    is SizePickerIntent.SizeClick -> {
-                        viewModel.dispatch(CartIntent.ToggleSizePickerItem(intent.index))
-                    }
-                    is SizePickerIntent.ConfirmClick -> {
-                        viewModel.dispatch(CartIntent.ConfirmSizePicker)
-                    }
-                    is SizePickerIntent.DismissClick -> {
-                        viewModel.dispatch(CartIntent.DismissSizePickerSheet)
-                    }
-                    is SizePickerIntent.SizeTableClick -> {
-                        viewModel.dispatch(CartIntent.SizeTableClick)
-                    }
-                }
-            }
+            state = state.sizePickerState,
+            dispatch = { intent -> viewModel.dispatch(CartIntent.OnSizePickerIntent(intent)) }
         )
     }
 
     if (state.isColorPickerSheetVisible) {
         ColorPickerSheet(
-            state = state.colorPickerModel,
-            dispatch = { intent ->
-                when (intent) {
-                    is ColorPickerIntent.ColorClick -> {
-                        viewModel.dispatch(CartIntent.ToggleColorPickerItem(intent.index))
-                    }
-                    is ColorPickerIntent.ConfirmClick -> {
-                        viewModel.dispatch(CartIntent.ConfirmColorPicker)
-                    }
-                    is ColorPickerIntent.DismissClick -> {
-                        viewModel.dispatch(CartIntent.DismissColorPickerSheet)
-                    }
-                }
-            }
+            state = state.colorPickerState,
+            dispatch = { intent -> viewModel.dispatch(CartIntent.OnColorPickerIntent(intent)) }
         )
     }
 
     if (state.isQuantityPickerSheetVisible) {
         QuantityPickerSheet(
-            state = state.quantityPickerModel,
-            dispatch = { intent ->
-                when (intent) {
-                    is QuantityPickerIntent.QuantityClick -> {
-                        viewModel.dispatch(CartIntent.ToggleQuantityPickerItem(intent.index))
-                    }
-                    is QuantityPickerIntent.ConfirmClick -> {
-                        viewModel.dispatch(CartIntent.ConfirmQuantityPicker)
-                    }
-                    is QuantityPickerIntent.DismissClick -> {
-                        viewModel.dispatch(CartIntent.DismissQuantityPickerSheet)
-                    }
-                }
-            }
+            state = state.quantityPickerState,
+            dispatch = { intent -> viewModel.dispatch(CartIntent.OnQuantityPickerIntent(intent)) }
         )
     }
 
     if (state.isCartEmptyOrderDialogVisible) {
         CartEmptyOrderDialog(
-            dispatch = { intent ->
-                when (intent) {
-                    is CartEmptyOrderIntent.DismissRequest -> {
-                        viewModel.dispatch(CartIntent.DismissCartEmptyOrderDialog)
-                    }
-                }
-            }
+            dispatch = { intent -> viewModel.dispatch(CartIntent.OnCartEmptyOrderIntent(intent)) }
         )
     }
 
     if (state.isCartFittingEmptyOrderDialogVisible) {
         CartFittingEmptyOrderDialog(
-            dispatch = { intent ->
-                when (intent) {
-                    is CartFittingEmptyOrderIntent.DismissRequest -> {
-                        viewModel.dispatch(CartIntent.DismissCartFittingEmptyOrderDialog)
-                    }
-                }
-            }
+            dispatch = { intent -> viewModel.dispatch(CartIntent.OnCartFittingEmptyOrderIntent(intent)) }
         )
     }
 
@@ -255,7 +165,7 @@ fun CartScreen(
                 viewModel.dispatch(CartIntent.ConfirmFittingProductsSheet(event.productIds))
             }
             is FittingProductsEvent.DismissRequest -> {
-                viewModel.dispatch(CartIntent.HideFittingProductsSheet)
+                viewModel.dispatch(CartIntent.DismissFittingProductsSheet)
             }
         }
     }

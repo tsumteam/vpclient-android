@@ -53,20 +53,13 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.loyalty_add_card_sheet.LoyaltyAddCardSheet
-import ru.mercury.vpclient.features.loyalty_add_card_sheet.intent.LoyaltyAddCardIntent
-import ru.mercury.vpclient.features.loyalty_add_card_sheet.model.LoyaltyAddCardModel
 import ru.mercury.vpclient.features.loyalty_code_sheet.LoyaltyCodeSheet
-import ru.mercury.vpclient.features.loyalty_code_sheet.intent.LoyaltyCodeIntent
-import ru.mercury.vpclient.features.loyalty_code_sheet.model.LoyaltyCodeModel
 import ru.mercury.vpclient.features.profile.event.ProfileEvent
 import ru.mercury.vpclient.features.profile.intent.ProfileIntent
 import ru.mercury.vpclient.features.profile.model.ProfileModel
 import ru.mercury.vpclient.features.profile_logout_dialog.ProfileLogoutDialog
-import ru.mercury.vpclient.features.profile_logout_dialog.intent.ProfileLogoutIntent
 import ru.mercury.vpclient.features.profile_privileges_sheet.ProfilePrivilegesSheet
-import ru.mercury.vpclient.features.profile_privileges_sheet.intent.ProfilePrivilegeIntent
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
-import ru.mercury.vpclient.shared.data.entity.LoyaltyAddCardMode
 import ru.mercury.vpclient.shared.data.entity.LoyaltyCardType
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.LoyaltyCardInfoEntity
@@ -125,103 +118,28 @@ fun ProfileScreen(
 
     if (state.isProfileLogoutDialogVisible) {
         ProfileLogoutDialog(
-            dispatch = { intent ->
-                when (intent) {
-                    is ProfileLogoutIntent.ConfirmRequest -> {
-                        viewModel.dispatch(ProfileIntent.Logout)
-                    }
-                    is ProfileLogoutIntent.DismissRequest -> {
-                        viewModel.dispatch(ProfileIntent.DismissProfileLogoutDialog)
-                    }
-                }
-            }
+            dispatch = { intent -> viewModel.dispatch(ProfileIntent.OnProfileLogoutIntent(intent)) }
         )
     }
 
     if (state.isLoyaltyAddCardSheetVisible) {
         LoyaltyAddCardSheet(
-            state = LoyaltyAddCardModel(
-                mode = state.loyaltyAddCardMode,
-                phone = state.loyaltyAddCardPhone,
-                cardNumber = state.loyaltyAddCardCardNumber,
-                isLoading = state.loyaltyAddCardJob?.isActive == true,
-                isPhoneErrorVisible = state.isLoyaltyAddCardPhoneErrorVisible
-            ),
-            dispatch = { intent ->
-                when (intent) {
-                    is LoyaltyAddCardIntent.DismissClick -> {
-                        viewModel.dispatch(ProfileIntent.DismissLoyaltyAddCardSheet)
-                    }
-                    is LoyaltyAddCardIntent.ModeClick -> {
-                        viewModel.dispatch(ProfileIntent.LoyaltyAddCardModeClick(intent.mode))
-                    }
-                    is LoyaltyAddCardIntent.PhoneChange -> {
-                        viewModel.dispatch(ProfileIntent.LoyaltyAddCardPhoneChange(intent.phone))
-                    }
-                    is LoyaltyAddCardIntent.CardNumberChange -> {
-                        viewModel.dispatch(ProfileIntent.LoyaltyAddCardCardNumberChange(intent.cardNumber))
-                    }
-                    is LoyaltyAddCardIntent.ConfirmClick -> {
-                        when (state.loyaltyAddCardMode) {
-                            LoyaltyAddCardMode.Phone -> {
-                                viewModel.dispatch(ProfileIntent.LoyaltyAddCardPhoneConfirmClick)
-                            }
-                            LoyaltyAddCardMode.CardNumber -> {
-                                viewModel.dispatch(ProfileIntent.LoyaltyAddCardCardNumberConfirmClick)
-                            }
-                        }
-                    }
-                }
-            }
+            state = state.loyaltyAddCardState,
+            dispatch = { intent -> viewModel.dispatch(ProfileIntent.OnLoyaltyAddCardIntent(intent)) }
         )
     }
 
     if (state.isLoyaltyCodeSheetVisible) {
         LoyaltyCodeSheet(
-            state = LoyaltyCodeModel(
-                mode = state.loyaltyCodeMode,
-                phone = state.loyaltyCodePhone,
-                cardNumber = state.loyaltyCodeCardNumber,
-                code = state.loyaltyCode,
-                isLoading = state.isLoyaltyCodeLoading,
-                isResendLoading = state.isLoyaltyCodeResendLoading,
-                isCodeErrorVisible = state.isLoyaltyCodeErrorVisible,
-                resendTimerStartedAt = state.loyaltyCodeResendTimerStartedAt,
-                resendSecondsLeft = state.loyaltyCodeResendSecondsLeft,
-                resendTimerJob = state.loyaltyCodeResendTimerJob
-            ),
-            dispatch = { intent ->
-                when (intent) {
-                    is LoyaltyCodeIntent.DismissClick -> {
-                        viewModel.dispatch(ProfileIntent.DismissLoyaltyCodeSheet)
-                    }
-                    is LoyaltyCodeIntent.StartResendTimerTicker -> {
-                        viewModel.dispatch(ProfileIntent.StartLoyaltyCodeResendTimerTicker)
-                    }
-                    is LoyaltyCodeIntent.CodeChange -> {
-                        viewModel.dispatch(ProfileIntent.LoyaltyCodeChange(intent.code))
-                    }
-                    is LoyaltyCodeIntent.ConfirmClick -> {
-                        viewModel.dispatch(ProfileIntent.LoyaltyCodeConfirmClick)
-                    }
-                    is LoyaltyCodeIntent.ResendCodeClick -> {
-                        viewModel.dispatch(ProfileIntent.LoyaltyCodeResendCodeClick)
-                    }
-                }
-            }
+            state = state.loyaltyCodeState,
+            dispatch = { intent -> viewModel.dispatch(ProfileIntent.OnLoyaltyCodeIntent(intent)) }
         )
     }
 
     if (state.isProfilePrivilegesSheetVisible) {
         ProfilePrivilegesSheet(
-            state = state.profilePrivilegesModel,
-            dispatch = { intent ->
-                when (intent) {
-                    is ProfilePrivilegeIntent.DismissClick -> {
-                        viewModel.dispatch(ProfileIntent.DismissAlphaBankPrivilegesSheet)
-                    }
-                }
-            }
+            state = state.profilePrivilegesState,
+            dispatch = { intent -> viewModel.dispatch(ProfileIntent.OnProfilePrivilegeIntent(intent)) }
         )
     }
 

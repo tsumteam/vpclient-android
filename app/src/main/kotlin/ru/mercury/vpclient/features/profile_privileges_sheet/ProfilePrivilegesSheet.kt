@@ -28,6 +28,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -210,15 +212,23 @@ fun ProfilePrivilegesSheet(
 @PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Composable
-private fun ProfilePrivilegesSheetPreview() {
+private fun ProfilePrivilegesSheetPreview(
+    @PreviewParameter(ProfilePrivilegesModelPreviewParameterProvider::class) state: ProfilePrivilegesModel
+) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
         ProfilePrivilegesSheet(
-            state = ProfilePrivilegesModel(
-                cardType = LoyaltyCardType.Black
-            ),
+            state = state,
             dispatch = {}
         )
     }
+}
+
+private class ProfilePrivilegesModelPreviewParameterProvider: PreviewParameterProvider<ProfilePrivilegesModel> {
+    override val values: Sequence<ProfilePrivilegesModel> = sequenceOf(
+        ProfilePrivilegesModel(
+            cardType = LoyaltyCardType.Black
+        )
+    )
 }

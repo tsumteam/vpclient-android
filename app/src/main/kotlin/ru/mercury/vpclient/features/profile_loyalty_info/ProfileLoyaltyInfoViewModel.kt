@@ -8,6 +8,7 @@ import ru.mercury.vpclient.features.profile_loyalty_info.intent.ProfileLoyaltyIn
 import ru.mercury.vpclient.features.profile_loyalty_info.model.ProfileLoyaltyInfoModel
 import ru.mercury.vpclient.features.profile_loyalty_qr.navigation.ProfileLoyaltyQrRoute
 import ru.mercury.vpclient.features.profile_loyalty_terms.navigation.ProfileLoyaltyTermsRoute
+import ru.mercury.vpclient.features.profile_loyalty_unlink_dialog.intent.ProfileLoyaltyUnlinkIntent
 import ru.mercury.vpclient.shared.domain.usecase.CurrentUserUseCase
 import ru.mercury.vpclient.shared.domain.usecase.DeleteLoyaltyCardUseCase
 import ru.mercury.vpclient.shared.domain.usecase.LoyaltyCardInfoFlowUseCase
@@ -69,25 +70,31 @@ class ProfileLoyaltyInfoViewModel @Inject constructor(
                 }
             }
             is ProfileLoyaltyInfoIntent.UnlinkClick -> reduce { it.copy(isProfileLoyaltyUnlinkDialogVisible = true) }
-            is ProfileLoyaltyInfoIntent.DismissProfileLoyaltyUnlinkDialog -> reduce { it.copy(isProfileLoyaltyUnlinkDialogVisible = false) }
-            is ProfileLoyaltyInfoIntent.ConfirmUnlinkClick -> {
-                val cardNumber = stateFlow.value.loyaltyCardInfoEntity.loyaltyCardNumber
-                if (cardNumber.isBlank()) return
-
-                launch {
-                    reduce {
-                        it.copy(
-                            isUnlinkLoading = true,
-                            isProfileLoyaltyUnlinkDialogVisible = false
-                        )
+            is ProfileLoyaltyInfoIntent.OnProfileLoyaltyUnlinkIntent -> {
+                when (intent.intent) {
+                    is ProfileLoyaltyUnlinkIntent.DismissRequest -> {
+                        reduce { it.copy(isProfileLoyaltyUnlinkDialogVisible = false) }
                     }
-                    runCatching {
-                        deleteLoyaltyCardUseCase(cardNumber).getOrThrow()
-                        currentUserUseCase(Unit).getOrThrow()
-                    }.onSuccess {
-                        MainEventManager.send(BackRoute)
-                    }.onFailure {
-                        reduce { it.copy(isUnlinkLoading = false) }
+                    is ProfileLoyaltyUnlinkIntent.ConfirmRequest -> {
+                        val cardNumber = stateFlow.value.loyaltyCardInfoEntity.loyaltyCardNumber
+                        if (cardNumber.isBlank()) return
+
+                        launch {
+                            reduce {
+                                it.copy(
+                                    isUnlinkLoading = true,
+                                    isProfileLoyaltyUnlinkDialogVisible = false
+                                )
+                            }
+                            runCatching {
+                                deleteLoyaltyCardUseCase(cardNumber).getOrThrow()
+                                currentUserUseCase(Unit).getOrThrow()
+                            }.onSuccess {
+                                MainEventManager.send(BackRoute)
+                            }.onFailure {
+                                reduce { it.copy(isUnlinkLoading = false) }
+                            }
+                        }
                     }
                 }
             }

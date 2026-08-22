@@ -3,7 +3,6 @@
 package ru.mercury.vpclient.features.details_message_sheet
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -24,12 +23,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.features.details_message_sheet.intent.DetailsMessageIntent
 import ru.mercury.vpclient.features.details_message_sheet.model.DetailsMessageModel
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
+import ru.mercury.vpclient.shared.ui.components.SharedColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.details.DetailsMessageProductCard
 import ru.mercury.vpclient.shared.ui.components.message.MessageInput
@@ -51,7 +53,7 @@ fun DetailsMessageSheet(
     ) {
         val inlinedState = state.copy(commentText = commentText)
 
-        Column(
+        SharedColumn(
             modifier = Modifier.imePadding()
         ) {
             CenterAlignedTopAppBar(
@@ -103,24 +105,32 @@ fun DetailsMessageSheet(
 @PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Composable
-private fun DetailsMessageSheetPreview() {
+private fun DetailsMessageSheetPreview(
+    @PreviewParameter(DetailsMessageModelPreviewParameterProvider::class) state: DetailsMessageModel
+) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
         DetailsMessageSheet(
-            state = DetailsMessageModel(
-                productEntity = ProductEntity.Empty.copy(
-                    id = "preview",
-                    name = "Платье миди с поясом",
-                    itemId = "123456",
-                    brand = "BRUNELLO CUCINELLI",
-                    colorName = "Молочный",
-                    shortDescription = "Платье миди с поясом",
-                    price = 189_900.0,
-                    priceWithoutDiscount = 234_900.0
-                )
-            ),
+            state = state,
             dispatch = {}
         )
     }
+}
+
+private class DetailsMessageModelPreviewParameterProvider: PreviewParameterProvider<DetailsMessageModel> {
+    override val values: Sequence<DetailsMessageModel> = sequenceOf(
+        DetailsMessageModel(
+            productEntity = ProductEntity.Empty.copy(
+                id = "preview",
+                name = "Платье миди с поясом",
+                itemId = "123456",
+                brand = "BRUNELLO CUCINELLI",
+                colorName = "Молочный",
+                shortDescription = "Платье миди с поясом",
+                price = 189_900.0,
+                priceWithoutDiscount = 234_900.0
+            )
+        )
+    )
 }

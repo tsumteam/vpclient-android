@@ -4,7 +4,6 @@ package ru.mercury.vpclient.features.loyalty_add_card_sheet
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -44,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.features.loyalty_add_card_sheet.intent.LoyaltyAddCardIntent
 import ru.mercury.vpclient.features.loyalty_add_card_sheet.model.LoyaltyAddCardModel
 import ru.mercury.vpclient.shared.data.entity.LoyaltyAddCardMode
+import ru.mercury.vpclient.shared.ui.components.SharedColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.SharedTabRow
 import ru.mercury.vpclient.shared.ui.components.SharedTabRowState
@@ -68,7 +68,7 @@ fun LoyaltyAddCardSheet(
     SharedModalBottomSheet(
         onDismissRequest = { dispatch(LoyaltyAddCardIntent.DismissClick) }
     ) {
-        Column(
+        SharedColumn(
             modifier = Modifier
                 .fillMaxWidth()
                 .imePadding()
@@ -236,7 +236,7 @@ fun LoyaltyAddCardSheet(
 @Preview
 @Composable
 private fun LoyaltyAddCardSheetPreview(
-    @PreviewParameter(LoyaltyAddCardModelProvider::class) state: LoyaltyAddCardModel
+    @PreviewParameter(LoyaltyAddCardModelPreviewParameterProvider::class) state: LoyaltyAddCardModel
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -248,7 +248,7 @@ private fun LoyaltyAddCardSheetPreview(
     }
 }
 
-private class LoyaltyAddCardModelProvider: PreviewParameterProvider<LoyaltyAddCardModel> {
+private class LoyaltyAddCardModelPreviewParameterProvider: PreviewParameterProvider<LoyaltyAddCardModel> {
     override val values: Sequence<LoyaltyAddCardModel> = sequenceOf(
         LoyaltyAddCardModel(
             phone = "+7 929 550-62-34"

@@ -14,12 +14,19 @@ import ru.mercury.vpclient.features.checkout.intent.CheckoutIntent
 import ru.mercury.vpclient.features.checkout.model.CheckoutModel
 import ru.mercury.vpclient.features.checkout.model.CheckoutSource
 import ru.mercury.vpclient.features.checkout.navigation.CheckoutRoute
+import ru.mercury.vpclient.features.checkout_amount_changed_dialog.intent.CheckoutAmountChangedIntent
+import ru.mercury.vpclient.features.checkout_bank_card_sheet.intent.CheckoutBankCardIntent
 import ru.mercury.vpclient.features.checkout_bank_card_sheet.model.CheckoutBankCardModel
+import ru.mercury.vpclient.features.checkout_bonus_sheet.intent.CheckoutBonusIntent
+import ru.mercury.vpclient.features.checkout_payment_method_sheet.intent.CheckoutPaymentMethodIntent
 import ru.mercury.vpclient.features.checkout_payment_result.model.CheckoutPaymentResultStatus
 import ru.mercury.vpclient.features.checkout_payment_result.navigation.CheckoutPaymentResultRoute
+import ru.mercury.vpclient.features.checkout_sbp_bank_sheet.intent.CheckoutSbpBankIntent
 import ru.mercury.vpclient.features.fitting_addresses.event.FittingAddressesEvent
 import ru.mercury.vpclient.features.fitting_addresses.navigation.FittingAddressesOrigin
 import ru.mercury.vpclient.features.fitting_addresses.navigation.FittingAddressesRoute
+import ru.mercury.vpclient.features.loyalty_add_card_sheet.intent.LoyaltyAddCardIntent
+import ru.mercury.vpclient.features.loyalty_code_sheet.intent.LoyaltyCodeIntent
 import ru.mercury.vpclient.features.main.navigation.MainRoute
 import ru.mercury.vpclient.shared.data.CODE_RESEND_TIMER_DELAY
 import ru.mercury.vpclient.shared.data.LOYALTY_PHONE_NUMBER_LENGTH
@@ -218,11 +225,15 @@ class CheckoutViewModel @AssistedInject constructor(
                     }
                 }
             }
-            is CheckoutIntent.AmountChangedContinueClick -> {
-                reduce { it.copy(isCheckoutAmountChangedDialogVisible = false, amountChangedMessage = "") }
-                dispatch(CheckoutIntent.LoadData())
-                if (route.source == CheckoutSource.Cart) {
-                    dispatch(CheckoutIntent.LoadDeliveryData)
+            is CheckoutIntent.OnCheckoutAmountChangedIntent -> {
+                when (intent.intent) {
+                    is CheckoutAmountChangedIntent.ConfirmClick -> {
+                        reduce { it.copy(isCheckoutAmountChangedDialogVisible = false, amountChangedMessage = "") }
+                        dispatch(CheckoutIntent.LoadData())
+                        if (route.source == CheckoutSource.Cart) {
+                            dispatch(CheckoutIntent.LoadDeliveryData)
+                        }
+                    }
                 }
             }
             is CheckoutIntent.LoadData -> {
@@ -302,32 +313,42 @@ class CheckoutViewModel @AssistedInject constructor(
                     )
                 }
             }
-            is CheckoutIntent.DismissLoyaltyAddCardSheet -> {
-                reduce { it.copy(isLoyaltyAddCardSheetVisible = false) }
-            }
-            is CheckoutIntent.LoyaltyAddCardModeClick -> {
-                reduce {
-                    it.copy(
-                        loyaltyAddCardMode = intent.mode,
-                        isLoyaltyAddCardPhoneErrorVisible = false
-                    )
-                }
-            }
-            is CheckoutIntent.LoyaltyAddCardPhoneChange -> {
-                reduce {
-                    it.copy(
-                        loyaltyAddCardPhone = formatPhoneForDisplay(
-                            normalizePhoneInput(
-                                raw = intent.phone,
-                                maxDigits = LOYALTY_PHONE_NUMBER_LENGTH
+            is CheckoutIntent.OnLoyaltyAddCardIntent -> {
+                when (intent.intent) {
+                    is LoyaltyAddCardIntent.DismissClick -> {
+                        reduce { it.copy(isLoyaltyAddCardSheetVisible = false) }
+                    }
+                    is LoyaltyAddCardIntent.ModeClick -> {
+                        reduce {
+                            it.copy(
+                                loyaltyAddCardMode = intent.intent.mode,
+                                isLoyaltyAddCardPhoneErrorVisible = false
                             )
-                        ),
-                        isLoyaltyAddCardPhoneErrorVisible = false
-                    )
+                        }
+                    }
+                    is LoyaltyAddCardIntent.PhoneChange -> {
+                        reduce {
+                            it.copy(
+                                loyaltyAddCardPhone = formatPhoneForDisplay(
+                                    normalizePhoneInput(
+                                        raw = intent.intent.phone,
+                                        maxDigits = LOYALTY_PHONE_NUMBER_LENGTH
+                                    )
+                                ),
+                                isLoyaltyAddCardPhoneErrorVisible = false
+                            )
+                        }
+                    }
+                    is LoyaltyAddCardIntent.CardNumberChange -> {
+                        reduce { it.copy(loyaltyAddCardCardNumber = intent.intent.cardNumber.filter(Char::isDigit)) }
+                    }
+                    is LoyaltyAddCardIntent.ConfirmClick -> {
+                        when (stateFlow.value.loyaltyAddCardMode) {
+                            LoyaltyAddCardMode.Phone -> dispatch(CheckoutIntent.LoyaltyAddCardPhoneConfirmClick)
+                            LoyaltyAddCardMode.CardNumber -> dispatch(CheckoutIntent.LoyaltyAddCardCardNumberConfirmClick)
+                        }
+                    }
                 }
-            }
-            is CheckoutIntent.LoyaltyAddCardCardNumberChange -> {
-                reduce { it.copy(loyaltyAddCardCardNumber = intent.cardNumber.filter(Char::isDigit)) }
             }
             is CheckoutIntent.LoyaltyAddCardPhoneConfirmClick -> {
                 val state = stateFlow.value
@@ -415,13 +436,117 @@ class CheckoutViewModel @AssistedInject constructor(
                     }
                 }
             }
-            is CheckoutIntent.DismissLoyaltyCodeSheet -> {
-                stateFlow.value.loyaltyCodeResendTimerJob?.cancel()
-                reduce {
-                    it.copy(
-                        isLoyaltyCodeSheetVisible = false,
-                        loyaltyCodeResendTimerJob = null
-                    )
+            is CheckoutIntent.OnLoyaltyCodeIntent -> {
+                when (intent.intent) {
+                    is LoyaltyCodeIntent.DismissClick -> {
+                        stateFlow.value.loyaltyCodeResendTimerJob?.cancel()
+                        reduce {
+                            it.copy(
+                                isLoyaltyCodeSheetVisible = false,
+                                loyaltyCodeResendTimerJob = null
+                            )
+                        }
+                    }
+                    is LoyaltyCodeIntent.StartResendTimerTicker -> {
+                        dispatch(CheckoutIntent.StartLoyaltyCodeResendTimerTicker)
+                    }
+                    is LoyaltyCodeIntent.CodeChange -> {
+                        reduce {
+                            it.copy(
+                                loyaltyCode = intent.intent.code.filter(Char::isDigit).take(CODE_LENGTH),
+                                isLoyaltyCodeErrorVisible = false
+                            )
+                        }
+                    }
+                    is LoyaltyCodeIntent.ConfirmClick -> {
+                        val state = stateFlow.value
+                        when {
+                            !state.isLoyaltyCodeSheetVisible || state.loyaltyCode.length != CODE_LENGTH -> return
+                            else -> {
+                                val job = launch {
+                                    when (state.loyaltyCodeMode) {
+                                        LoyaltyAddCardMode.Phone -> {
+                                            val params = VerifyLoyaltyCardByPhoneUseCase.Params(
+                                                phone = state.loyaltyCodePhone,
+                                                code = state.loyaltyCode
+                                            )
+                                            verifyLoyaltyCardByPhoneUseCase(params).getOrThrow()
+                                        }
+                                        LoyaltyAddCardMode.CardNumber -> {
+                                            val params = VerifyLoyaltyCardUseCase.Params(
+                                                cardNumber = state.loyaltyCodeCardNumber,
+                                                code = state.loyaltyCode
+                                            )
+                                            verifyLoyaltyCardUseCase(params).getOrThrow()
+                                        }
+                                    }
+                                    currentUserUseCase(Unit).getOrThrow()
+                                    stateFlow.value.loyaltyCodeResendTimerJob?.cancel()
+                                    reduce {
+                                        it.copy(
+                                            isLoyaltyCodeSheetVisible = false,
+                                            loyaltyCodeResendTimerJob = null
+                                        )
+                                    }
+                                    dispatch(CheckoutIntent.LoadData())
+                                }.also { launchedJob ->
+                                    launchedJob.invokeOnCompletion {
+                                        reduce { model -> model.copy(loyaltyCodeConfirmJob = null) }
+                                    }
+                                }
+                                reduce { it.copy(loyaltyCodeConfirmJob = job) }
+                            }
+                        }
+                    }
+                    is LoyaltyCodeIntent.ResendCodeClick -> {
+                        val state = stateFlow.value
+                        when {
+                            !state.isLoyaltyCodeSheetVisible ||
+                                state.loyaltyCodeResendSecondsLeft > 0 ||
+                                state.isLoyaltyCodeResendLoading -> return
+                            else -> {
+                                val job = launch {
+                                    val isNeedVerification = when (state.loyaltyCodeMode) {
+                                        LoyaltyAddCardMode.Phone -> {
+                                            linkLoyaltyCardByPhoneUseCase(state.loyaltyCodePhone).getOrThrow()
+                                        }
+                                        LoyaltyAddCardMode.CardNumber -> {
+                                            loyaltyLinkUseCase(state.loyaltyCodeCardNumber).getOrThrow()
+                                            true
+                                        }
+                                    }
+                                    when {
+                                        isNeedVerification -> {
+                                            val startedAt = System.currentTimeMillis()
+                                            reduce {
+                                                it.copy(
+                                                    loyaltyCodeResendTimerStartedAt = startedAt,
+                                                    loyaltyCodeResendSecondsLeft = codeResendSecondsLeft(startedAt)
+                                                )
+                                            }
+                                            dispatch(CheckoutIntent.StartLoyaltyCodeResendTimerTicker)
+                                        }
+                                        else -> {
+                                            currentUserUseCase(Unit).getOrThrow()
+                                            stateFlow.value.loyaltyCodeResendTimerJob?.cancel()
+                                            reduce {
+                                                it.copy(
+                                                    isLoyaltyCodeSheetVisible = false,
+                                                    loyaltyCodeResendTimerJob = null
+                                                )
+                                            }
+                                            dispatch(CheckoutIntent.LoadData())
+                                        }
+                                    }
+                                }.also { launchedJob ->
+                                    launchedJob.invokeOnCompletion {
+                                        reduce { model -> model.copy(loyaltyCodeResendJob = null) }
+                                    }
+                                }
+                                reduce { it.copy(loyaltyCodeResendJob = job) }
+                            }
+                        }
+                    }
                 }
             }
             is CheckoutIntent.StartLoyaltyCodeResendTimerTicker -> {
@@ -440,103 +565,6 @@ class CheckoutViewModel @AssistedInject constructor(
                     }
                 }
                 reduce { it.copy(loyaltyCodeResendTimerJob = job) }
-            }
-            is CheckoutIntent.LoyaltyCodeChange -> {
-                reduce {
-                    it.copy(
-                        loyaltyCode = intent.code.filter(Char::isDigit).take(CODE_LENGTH),
-                        isLoyaltyCodeErrorVisible = false
-                    )
-                }
-            }
-            is CheckoutIntent.LoyaltyCodeConfirmClick -> {
-                val state = stateFlow.value
-                when {
-                    !state.isLoyaltyCodeSheetVisible || state.loyaltyCode.length != CODE_LENGTH -> return
-                    else -> {
-                        val job = launch {
-                            when (state.loyaltyCodeMode) {
-                                LoyaltyAddCardMode.Phone -> {
-                                    val params = VerifyLoyaltyCardByPhoneUseCase.Params(
-                                        phone = state.loyaltyCodePhone,
-                                        code = state.loyaltyCode
-                                    )
-                                    verifyLoyaltyCardByPhoneUseCase(params).getOrThrow()
-                                }
-                                LoyaltyAddCardMode.CardNumber -> {
-                                    val params = VerifyLoyaltyCardUseCase.Params(
-                                        cardNumber = state.loyaltyCodeCardNumber,
-                                        code = state.loyaltyCode
-                                    )
-                                    verifyLoyaltyCardUseCase(params).getOrThrow()
-                                }
-                            }
-                            currentUserUseCase(Unit).getOrThrow()
-                            stateFlow.value.loyaltyCodeResendTimerJob?.cancel()
-                            reduce {
-                                it.copy(
-                                    isLoyaltyCodeSheetVisible = false,
-                                    loyaltyCodeResendTimerJob = null
-                                )
-                            }
-                            dispatch(CheckoutIntent.LoadData())
-                        }.also { launchedJob ->
-                            launchedJob.invokeOnCompletion {
-                                reduce { model -> model.copy(loyaltyCodeConfirmJob = null) }
-                            }
-                        }
-                        reduce { it.copy(loyaltyCodeConfirmJob = job) }
-                    }
-                }
-            }
-            is CheckoutIntent.LoyaltyCodeResendCodeClick -> {
-                val state = stateFlow.value
-                when {
-                    !state.isLoyaltyCodeSheetVisible ||
-                        state.loyaltyCodeResendSecondsLeft > 0 ||
-                        state.isLoyaltyCodeResendLoading -> return
-                    else -> {
-                        val job = launch {
-                            val isNeedVerification = when (state.loyaltyCodeMode) {
-                                LoyaltyAddCardMode.Phone -> {
-                                    linkLoyaltyCardByPhoneUseCase(state.loyaltyCodePhone).getOrThrow()
-                                }
-                                LoyaltyAddCardMode.CardNumber -> {
-                                    loyaltyLinkUseCase(state.loyaltyCodeCardNumber).getOrThrow()
-                                    true
-                                }
-                            }
-                            when {
-                                isNeedVerification -> {
-                                    val startedAt = System.currentTimeMillis()
-                                    reduce {
-                                        it.copy(
-                                            loyaltyCodeResendTimerStartedAt = startedAt,
-                                            loyaltyCodeResendSecondsLeft = codeResendSecondsLeft(startedAt)
-                                        )
-                                    }
-                                    dispatch(CheckoutIntent.StartLoyaltyCodeResendTimerTicker)
-                                }
-                                else -> {
-                                    currentUserUseCase(Unit).getOrThrow()
-                                    stateFlow.value.loyaltyCodeResendTimerJob?.cancel()
-                                    reduce {
-                                        it.copy(
-                                            isLoyaltyCodeSheetVisible = false,
-                                            loyaltyCodeResendTimerJob = null
-                                        )
-                                    }
-                                    dispatch(CheckoutIntent.LoadData())
-                                }
-                            }
-                        }.also { launchedJob ->
-                            launchedJob.invokeOnCompletion {
-                                reduce { model -> model.copy(loyaltyCodeResendJob = null) }
-                            }
-                        }
-                        reduce { it.copy(loyaltyCodeResendJob = job) }
-                    }
-                }
             }
             is CheckoutIntent.PayByCardClick,
             is CheckoutIntent.PayBySbpClick -> {
@@ -665,13 +693,101 @@ class CheckoutViewModel @AssistedInject constructor(
                 }
                 reduce { it.copy(paymentJob = job) }
             }
-            is CheckoutIntent.DismissCheckoutBonusSheet -> {
-                stateFlow.value.bonusCodeResendTimerJob?.cancel()
-                reduce {
-                    it.copy(
-                        isCheckoutBonusSheetVisible = false,
-                        bonusCodeResendTimerJob = null
-                    )
+            is CheckoutIntent.OnCheckoutBonusIntent -> {
+                when (intent.intent) {
+                    is CheckoutBonusIntent.DismissClick -> {
+                        stateFlow.value.bonusCodeResendTimerJob?.cancel()
+                        reduce {
+                            it.copy(
+                                isCheckoutBonusSheetVisible = false,
+                                bonusCodeResendTimerJob = null
+                            )
+                        }
+                    }
+                    is CheckoutBonusIntent.CodeChange -> {
+                        reduce {
+                            it.copy(
+                                bonusCode = intent.intent.code.filter(Char::isDigit).take(CODE_LENGTH),
+                                isBonusCodeErrorVisible = false
+                            )
+                        }
+                    }
+                    is CheckoutBonusIntent.ConfirmClick -> {
+                        val state = stateFlow.value
+                        when {
+                            !state.isCheckoutBonusSheetVisible ||
+                                state.paymentOrderNumber.isBlank() ||
+                                state.bonusCode.length != CODE_LENGTH -> return
+                            else -> {
+                                val job = launch {
+                                    val params = OrdersByOrderIdConfirmBonusesUseCase.Params(
+                                        orderId = state.paymentOrderNumber,
+                                        code = state.bonusCode
+                                    )
+                                    ordersByOrderIdConfirmBonusesUseCase(params).getOrThrow()
+                                    stateFlow.value.bonusCodeResendTimerJob?.cancel()
+                                    reduce {
+                                        it.copy(
+                                            isCheckoutBonusSheetVisible = false,
+                                            bonusCodeResendTimerJob = null
+                                        )
+                                    }
+                                    when (state.pendingOnlinePaymentMethod) {
+                                        FittingCheckoutOnlinePaymentMethod.Card -> {
+                                            reduce { it.copy(isCheckoutPaymentMethodSheetVisible = true) }
+                                        }
+                                        FittingCheckoutOnlinePaymentMethod.Sbp -> {
+                                            val url = ordersByOrderIdPaymentSbpUseCase(state.paymentOrderNumber).getOrThrow()
+                                            val banks = sbpAvailableBanksUseCase(Unit).getOrThrow()
+                                            reduce {
+                                                it.copy(
+                                                    sbpPaymentUrl = url,
+                                                    sbpBanks = banks,
+                                                    isCheckoutSbpBankSheetVisible = true
+                                                )
+                                            }
+                                        }
+                                    }
+                                }.also { launchedJob ->
+                                    launchedJob.invokeOnCompletion {
+                                        reduce { model -> model.copy(bonusConfirmJob = null) }
+                                    }
+                                }
+                                reduce { it.copy(bonusConfirmJob = job) }
+                            }
+                        }
+                    }
+                    is CheckoutBonusIntent.ResendCodeClick -> {
+                        val state = stateFlow.value
+                        when {
+                            !state.isCheckoutBonusSheetVisible ||
+                                state.paymentOrderNumber.isBlank() ||
+                                state.bonusCodeResendSecondsLeft > 0 ||
+                                state.isBonusCodeResendLoading -> return
+                            else -> {
+                                val job = launch {
+                                    val params = OrdersByOrderIdReserveBonusesUseCase.Params(
+                                        orderId = state.paymentOrderNumber,
+                                        bonusAmount = state.fittingCheckoutData.availableBonusAmount.toDouble()
+                                    )
+                                    ordersByOrderIdReserveBonusesUseCase(params).getOrThrow()
+                                    val startedAt = System.currentTimeMillis()
+                                    reduce {
+                                        it.copy(
+                                            bonusCodeResendTimerStartedAt = startedAt,
+                                            bonusCodeResendSecondsLeft = codeResendSecondsLeft(startedAt)
+                                        )
+                                    }
+                                    dispatch(CheckoutIntent.StartBonusCodeResendTimerTicker)
+                                }.also { launchedJob ->
+                                    launchedJob.invokeOnCompletion {
+                                        reduce { model -> model.copy(bonusResendJob = null) }
+                                    }
+                                }
+                                reduce { it.copy(bonusResendJob = job) }
+                            }
+                        }
+                    }
                 }
             }
             is CheckoutIntent.StartBonusCodeResendTimerTicker -> {
@@ -691,272 +807,196 @@ class CheckoutViewModel @AssistedInject constructor(
                 }
                 reduce { it.copy(bonusCodeResendTimerJob = job) }
             }
-            is CheckoutIntent.BonusCodeChange -> {
-                reduce {
-                    it.copy(
-                        bonusCode = intent.code.filter(Char::isDigit).take(CODE_LENGTH),
-                        isBonusCodeErrorVisible = false
-                    )
-                }
-            }
-            is CheckoutIntent.BonusCodeConfirmClick -> {
-                val state = stateFlow.value
-                when {
-                    !state.isCheckoutBonusSheetVisible ||
-                        state.paymentOrderNumber.isBlank() ||
-                        state.bonusCode.length != CODE_LENGTH -> return
-                    else -> {
-                        val job = launch {
-                            val params = OrdersByOrderIdConfirmBonusesUseCase.Params(
-                                orderId = state.paymentOrderNumber,
-                                code = state.bonusCode
-                            )
-                            ordersByOrderIdConfirmBonusesUseCase(params).getOrThrow()
-                            stateFlow.value.bonusCodeResendTimerJob?.cancel()
-                            reduce {
-                                it.copy(
-                                    isCheckoutBonusSheetVisible = false,
-                                    bonusCodeResendTimerJob = null
-                                )
-                            }
-                            when (state.pendingOnlinePaymentMethod) {
-                                FittingCheckoutOnlinePaymentMethod.Card -> {
-                                    reduce { it.copy(isCheckoutPaymentMethodSheetVisible = true) }
+            is CheckoutIntent.OnCheckoutPaymentMethodIntent -> {
+                when (intent.intent) {
+                    is CheckoutPaymentMethodIntent.DismissClick -> {
+                        reduce { it.copy(isCheckoutPaymentMethodSheetVisible = false) }
+                    }
+                    is CheckoutPaymentMethodIntent.CardClick -> {
+                        reduce {
+                            it.copy(
+                                paymentCards = it.paymentCards.map { card ->
+                                    card.copy(isSelected = card.id == intent.intent.cardId)
                                 }
-                                FittingCheckoutOnlinePaymentMethod.Sbp -> {
-                                    val url = ordersByOrderIdPaymentSbpUseCase(state.paymentOrderNumber).getOrThrow()
-                                    val banks = sbpAvailableBanksUseCase(Unit).getOrThrow()
+                            )
+                        }
+                    }
+                    is CheckoutPaymentMethodIntent.DeleteCardClick -> {
+                        reduce {
+                            it.copy(
+                                paymentCards = it.paymentCards.filterNot { card -> card.id == intent.intent.cardId }
+                            )
+                        }
+                    }
+                    is CheckoutPaymentMethodIntent.PayClick -> {
+                        val state = stateFlow.value
+                        when {
+                            state.paymentOrderNumber.isBlank() || state.isPaymentLoading -> return
+                            state.paymentCards.none { card -> card.isSelected } -> return
+                            else -> {
+                                val job = launch {
+                                    val url = ordersByOrderIdPaymentLinkUseCase(state.paymentOrderNumber).getOrThrow()
                                     reduce {
                                         it.copy(
-                                            sbpPaymentUrl = url,
-                                            sbpBanks = banks,
-                                            isCheckoutSbpBankSheetVisible = true
+                                            isCheckoutPaymentMethodSheetVisible = false,
+                                            isPaymentExternalFlowStarted = true
                                         )
                                     }
+                                    send(CheckoutEvent.OpenPaymentUrl(url))
+                                }.also { launchedJob ->
+                                    launchedJob.invokeOnCompletion {
+                                        reduce { model -> model.copy(paymentJob = null) }
+                                    }
                                 }
-                            }
-                        }.also { launchedJob ->
-                            launchedJob.invokeOnCompletion {
-                                reduce { model -> model.copy(bonusConfirmJob = null) }
+                                reduce { it.copy(paymentJob = job) }
                             }
                         }
-                        reduce { it.copy(bonusConfirmJob = job) }
                     }
-                }
-            }
-            is CheckoutIntent.BonusCodeResendClick -> {
-                val state = stateFlow.value
-                when {
-                    !state.isCheckoutBonusSheetVisible ||
-                        state.paymentOrderNumber.isBlank() ||
-                        state.bonusCodeResendSecondsLeft > 0 ||
-                        state.isBonusCodeResendLoading -> return
-                    else -> {
-                        val job = launch {
-                            val params = OrdersByOrderIdReserveBonusesUseCase.Params(
-                                orderId = state.paymentOrderNumber,
-                                bonusAmount = state.fittingCheckoutData.availableBonusAmount.toDouble()
+                    is CheckoutPaymentMethodIntent.AddNewCardClick -> {
+                        reduce {
+                            it.copy(
+                                isCheckoutPaymentMethodSheetVisible = false,
+                                isCheckoutBankCardSheetVisible = true,
+                                bankCardNumber = "",
+                                bankCardExpirationDate = "",
+                                bankCardCvv = "",
+                                isBankCardSaveChecked = false,
+                                isBankCardNumberErrorVisible = false,
+                                isBankCardExpirationDateErrorVisible = false,
+                                isBankCardCvvErrorVisible = false
                             )
-                            ordersByOrderIdReserveBonusesUseCase(params).getOrThrow()
-                            val startedAt = System.currentTimeMillis()
-                            reduce {
-                                it.copy(
-                                    bonusCodeResendTimerStartedAt = startedAt,
-                                    bonusCodeResendSecondsLeft = codeResendSecondsLeft(startedAt)
-                                )
-                            }
-                            dispatch(CheckoutIntent.StartBonusCodeResendTimerTicker)
-                        }.also { launchedJob ->
-                            launchedJob.invokeOnCompletion {
-                                reduce { model -> model.copy(bonusResendJob = null) }
-                            }
                         }
-                        reduce { it.copy(bonusResendJob = job) }
                     }
                 }
             }
-            is CheckoutIntent.DismissCheckoutPaymentMethodSheet -> {
-                reduce { it.copy(isCheckoutPaymentMethodSheetVisible = false) }
-            }
-            is CheckoutIntent.PaymentCardClick -> {
-                reduce {
-                    it.copy(
-                        paymentCards = it.paymentCards.map { card ->
-                            card.copy(isSelected = card.id == intent.cardId)
+            is CheckoutIntent.OnCheckoutBankCardIntent -> {
+                when (intent.intent) {
+                    is CheckoutBankCardIntent.DismissClick -> {
+                        reduce {
+                            it.copy(
+                                isCheckoutBankCardSheetVisible = false,
+                                bankCardNumber = "",
+                                bankCardExpirationDate = "",
+                                bankCardCvv = "",
+                                isBankCardNumberErrorVisible = false,
+                                isBankCardExpirationDateErrorVisible = false,
+                                isBankCardCvvErrorVisible = false
+                            )
                         }
-                    )
-                }
-            }
-            is CheckoutIntent.DeletePaymentCardClick -> {
-                reduce {
-                    it.copy(
-                        paymentCards = it.paymentCards.filterNot { card -> card.id == intent.cardId }
-                    )
-                }
-            }
-            is CheckoutIntent.PaymentMethodPayClick -> {
-                val state = stateFlow.value
-                when {
-                    state.paymentOrderNumber.isBlank() || state.isPaymentLoading -> return
-                    state.paymentCards.none { card -> card.isSelected } -> return
-                    else -> {
-                        val job = launch {
-                            val url = ordersByOrderIdPaymentLinkUseCase(state.paymentOrderNumber).getOrThrow()
-                            reduce {
-                                it.copy(
-                                    isCheckoutPaymentMethodSheetVisible = false,
-                                    isPaymentExternalFlowStarted = true
-                                )
-                            }
-                            send(CheckoutEvent.OpenPaymentUrl(url))
-                        }.also { launchedJob ->
-                            launchedJob.invokeOnCompletion {
-                                reduce { model -> model.copy(paymentJob = null) }
-                            }
-                        }
-                        reduce { it.copy(paymentJob = job) }
                     }
-                }
-            }
-            is CheckoutIntent.AddNewPaymentCardClick -> {
-                reduce {
-                    it.copy(
-                        isCheckoutPaymentMethodSheetVisible = false,
-                        isCheckoutBankCardSheetVisible = true,
-                        bankCardNumber = "",
-                        bankCardExpirationDate = "",
-                        bankCardCvv = "",
-                        isBankCardSaveChecked = false,
-                        isBankCardNumberErrorVisible = false,
-                        isBankCardExpirationDateErrorVisible = false,
-                        isBankCardCvvErrorVisible = false
-                    )
-                }
-            }
-            is CheckoutIntent.DismissCheckoutBankCardSheet -> {
-                reduce {
-                    it.copy(
-                        isCheckoutBankCardSheetVisible = false,
-                        bankCardNumber = "",
-                        bankCardExpirationDate = "",
-                        bankCardCvv = "",
-                        isBankCardNumberErrorVisible = false,
-                        isBankCardExpirationDateErrorVisible = false,
-                        isBankCardCvvErrorVisible = false
-                    )
-                }
-            }
-            is CheckoutIntent.BankCardSaveClick -> {
-                reduce { it.copy(isBankCardSaveChecked = !it.isBankCardSaveChecked) }
-            }
-            is CheckoutIntent.BankCardNumberChange -> {
-                val formattedNumber = intent.value
-                    .filter(Char::isDigit)
-                    .take(CheckoutBankCardModel.MAX_CARD_NUMBER_LENGTH)
-                    .chunked(4)
-                    .joinToString(" ")
-                val isMaxLength = formattedNumber.filter(Char::isDigit).length ==
-                    CheckoutBankCardModel.MAX_CARD_NUMBER_LENGTH
-                val paymentSystem = CheckoutBankCardModel(cardNumber = formattedNumber).paymentSystem
-                reduce {
-                    it.copy(
-                        bankCardNumber = formattedNumber,
-                        isBankCardNumberErrorVisible = isMaxLength &&
-                            (!formattedNumber.isValidBankCardNumber || paymentSystem == CheckoutBankCardPaymentSystem.Unknown)
-                    )
-                }
-            }
-            is CheckoutIntent.BankCardExpirationDateChange -> {
-                val digits = intent.value.filter(Char::isDigit).take(4)
-                val formattedDate = when {
-                    digits.length > 2 -> "${digits.take(2)}/${digits.drop(2)}"
-                    else -> digits
-                }
-                reduce {
-                    it.copy(
-                        bankCardExpirationDate = formattedDate,
-                        isBankCardExpirationDateErrorVisible = digits.length == 4 && !formattedDate.isValidBankCardExpirationDate
-                    )
-                }
-            }
-            is CheckoutIntent.BankCardCvvChange -> {
-                reduce {
-                    it.copy(
-                        bankCardCvv = intent.value
+                    is CheckoutBankCardIntent.SaveCardClick -> {
+                        reduce { it.copy(isBankCardSaveChecked = !it.isBankCardSaveChecked) }
+                    }
+                    is CheckoutBankCardIntent.CardNumberChange -> {
+                        val formattedNumber = intent.intent.value
                             .filter(Char::isDigit)
-                            .take(CheckoutBankCardModel.CVV_LENGTH),
-                        isBankCardCvvErrorVisible = false
-                    )
-                }
-            }
-            is CheckoutIntent.BankCardNumberFocusLost -> {
-                reduce { it.copy(isBankCardNumberErrorVisible = !it.bankCardNumber.isValidBankCardNumber) }
-            }
-            is CheckoutIntent.BankCardExpirationDateFocusLost -> {
-                reduce { it.copy(isBankCardExpirationDateErrorVisible = !it.bankCardExpirationDate.isValidBankCardExpirationDate) }
-            }
-            is CheckoutIntent.BankCardCvvFocusLost -> {
-                reduce {
-                    it.copy(
-                        isBankCardCvvErrorVisible = it.bankCardCvv.isNotEmpty() &&
-                            it.bankCardCvv.length != CheckoutBankCardModel.CVV_LENGTH
-                    )
-                }
-            }
-            is CheckoutIntent.BankCardPayClick -> {
-                val state = stateFlow.value
-                val sheet = CheckoutBankCardModel(
-                    cardNumber = state.bankCardNumber,
-                    expirationDate = state.bankCardExpirationDate,
-                    cvv = state.bankCardCvv,
-                    isLoading = state.isPaymentLoading
-                )
-                when {
-                    !sheet.isPayEnabled -> return
-                    !state.bankCardNumber.isValidBankCardNumber -> {
-                        reduce { it.copy(isBankCardNumberErrorVisible = true) }
+                            .take(CheckoutBankCardModel.MAX_CARD_NUMBER_LENGTH)
+                            .chunked(4)
+                            .joinToString(" ")
+                        val isMaxLength = formattedNumber.filter(Char::isDigit).length ==
+                            CheckoutBankCardModel.MAX_CARD_NUMBER_LENGTH
+                        val paymentSystem = CheckoutBankCardModel(cardNumber = formattedNumber).paymentSystem
+                        reduce {
+                            it.copy(
+                                bankCardNumber = formattedNumber,
+                                isBankCardNumberErrorVisible = isMaxLength &&
+                                    (!formattedNumber.isValidBankCardNumber || paymentSystem == CheckoutBankCardPaymentSystem.Unknown)
+                            )
+                        }
                     }
-                    state.paymentOrderNumber.isBlank() || state.isPaymentLoading -> return
-                    else -> {
-                        val paymentCard = when {
-                            state.isBankCardSaveChecked -> {
-                                FittingCheckoutPaymentCardModel(
-                                    id = UUID.randomUUID().toString(),
-                                    paymentSystem = sheet.paymentSystem.name,
-                                    lastFourDigits = state.bankCardNumber.filter(Char::isDigit).takeLast(4),
-                                    isSelected = true
-                                )
-                            }
-                            else -> null
+                    is CheckoutBankCardIntent.ExpirationDateChange -> {
+                        val digits = intent.intent.value.filter(Char::isDigit).take(4)
+                        val formattedDate = when {
+                            digits.length > 2 -> "${digits.take(2)}/${digits.drop(2)}"
+                            else -> digits
                         }
-                        val job = launch {
-                            val url = ordersByOrderIdPaymentLinkUseCase(state.paymentOrderNumber).getOrThrow()
-                            reduce {
-                                it.copy(
-                                    paymentCards = when {
-                                        paymentCard != null -> {
-                                            it.paymentCards.map { card -> card.copy(isSelected = false) } + paymentCard
-                                        }
-                                        else -> it.paymentCards
-                                    },
-                                    isCheckoutBankCardSheetVisible = false,
-                                    bankCardNumber = "",
-                                    bankCardExpirationDate = "",
-                                    bankCardCvv = "",
-                                    isBankCardSaveChecked = false,
-                                    isBankCardNumberErrorVisible = false,
-                                    isBankCardExpirationDateErrorVisible = false,
-                                    isBankCardCvvErrorVisible = false,
-                                    isPaymentExternalFlowStarted = true
-                                )
+                        reduce {
+                            it.copy(
+                                bankCardExpirationDate = formattedDate,
+                                isBankCardExpirationDateErrorVisible = digits.length == 4 && !formattedDate.isValidBankCardExpirationDate
+                            )
+                        }
+                    }
+                    is CheckoutBankCardIntent.CvvChange -> {
+                        reduce {
+                            it.copy(
+                                bankCardCvv = intent.intent.value
+                                    .filter(Char::isDigit)
+                                    .take(CheckoutBankCardModel.CVV_LENGTH),
+                                isBankCardCvvErrorVisible = false
+                            )
+                        }
+                    }
+                    is CheckoutBankCardIntent.CardNumberFocusLost -> {
+                        reduce { it.copy(isBankCardNumberErrorVisible = !it.bankCardNumber.isValidBankCardNumber) }
+                    }
+                    is CheckoutBankCardIntent.ExpirationDateFocusLost -> {
+                        reduce { it.copy(isBankCardExpirationDateErrorVisible = !it.bankCardExpirationDate.isValidBankCardExpirationDate) }
+                    }
+                    is CheckoutBankCardIntent.CvvFocusLost -> {
+                        reduce {
+                            it.copy(
+                                isBankCardCvvErrorVisible = it.bankCardCvv.isNotEmpty() &&
+                                    it.bankCardCvv.length != CheckoutBankCardModel.CVV_LENGTH
+                            )
+                        }
+                    }
+                    is CheckoutBankCardIntent.PayClick -> {
+                        val state = stateFlow.value
+                        val sheet = CheckoutBankCardModel(
+                            cardNumber = state.bankCardNumber,
+                            expirationDate = state.bankCardExpirationDate,
+                            cvv = state.bankCardCvv,
+                            isLoading = state.isPaymentLoading
+                        )
+                        when {
+                            !sheet.isPayEnabled -> return
+                            !state.bankCardNumber.isValidBankCardNumber -> {
+                                reduce { it.copy(isBankCardNumberErrorVisible = true) }
                             }
-                            send(CheckoutEvent.OpenPaymentUrl(url))
-                        }.also { launchedJob ->
-                            launchedJob.invokeOnCompletion {
-                                reduce { model -> model.copy(paymentJob = null) }
+                            state.paymentOrderNumber.isBlank() || state.isPaymentLoading -> return
+                            else -> {
+                                val paymentCard = when {
+                                    state.isBankCardSaveChecked -> {
+                                        FittingCheckoutPaymentCardModel(
+                                            id = UUID.randomUUID().toString(),
+                                            paymentSystem = sheet.paymentSystem.name,
+                                            lastFourDigits = state.bankCardNumber.filter(Char::isDigit).takeLast(4),
+                                            isSelected = true
+                                        )
+                                    }
+                                    else -> null
+                                }
+                                val job = launch {
+                                    val url = ordersByOrderIdPaymentLinkUseCase(state.paymentOrderNumber).getOrThrow()
+                                    reduce {
+                                        it.copy(
+                                            paymentCards = when {
+                                                paymentCard != null -> {
+                                                    it.paymentCards.map { card -> card.copy(isSelected = false) } + paymentCard
+                                                }
+                                                else -> it.paymentCards
+                                            },
+                                            isCheckoutBankCardSheetVisible = false,
+                                            bankCardNumber = "",
+                                            bankCardExpirationDate = "",
+                                            bankCardCvv = "",
+                                            isBankCardSaveChecked = false,
+                                            isBankCardNumberErrorVisible = false,
+                                            isBankCardExpirationDateErrorVisible = false,
+                                            isBankCardCvvErrorVisible = false,
+                                            isPaymentExternalFlowStarted = true
+                                        )
+                                    }
+                                    send(CheckoutEvent.OpenPaymentUrl(url))
+                                }.also { launchedJob ->
+                                    launchedJob.invokeOnCompletion {
+                                        reduce { model -> model.copy(paymentJob = null) }
+                                    }
+                                }
+                                reduce { it.copy(paymentJob = job) }
                             }
                         }
-                        reduce { it.copy(paymentJob = job) }
                     }
                 }
             }
@@ -991,33 +1031,37 @@ class CheckoutViewModel @AssistedInject constructor(
                     }
                 }
             }
-            is CheckoutIntent.DismissCheckoutSbpBankSheet -> {
-                reduce {
-                    it.copy(
-                        isCheckoutSbpBankSheetVisible = false,
-                        sbpPaymentUrl = "",
-                        sbpBanks = emptyList()
-                    )
-                }
-            }
-            is CheckoutIntent.SbpBankClick -> {
-                val state = stateFlow.value
-                if (state.sbpPaymentUrl.isBlank()) return
-                reduce {
-                    it.copy(
-                        isCheckoutSbpBankSheetVisible = false,
-                        sbpPaymentUrl = "",
-                        sbpBanks = emptyList(),
-                        isPaymentExternalFlowStarted = true
-                    )
-                }
-                launch {
-                    send(
-                        CheckoutEvent.OpenSbpBankApp(
-                            packageName = intent.bank.packageName,
-                            paymentUrl = state.sbpPaymentUrl
-                        )
-                    )
+            is CheckoutIntent.OnCheckoutSbpBankIntent -> {
+                when (intent.intent) {
+                    is CheckoutSbpBankIntent.DismissClick -> {
+                        reduce {
+                            it.copy(
+                                isCheckoutSbpBankSheetVisible = false,
+                                sbpPaymentUrl = "",
+                                sbpBanks = emptyList()
+                            )
+                        }
+                    }
+                    is CheckoutSbpBankIntent.BankClick -> {
+                        val state = stateFlow.value
+                        if (state.sbpPaymentUrl.isBlank()) return
+                        reduce {
+                            it.copy(
+                                isCheckoutSbpBankSheetVisible = false,
+                                sbpPaymentUrl = "",
+                                sbpBanks = emptyList(),
+                                isPaymentExternalFlowStarted = true
+                            )
+                        }
+                        launch {
+                            send(
+                                CheckoutEvent.OpenSbpBankApp(
+                                    packageName = intent.intent.bank.packageName,
+                                    paymentUrl = state.sbpPaymentUrl
+                                )
+                            )
+                        }
+                    }
                 }
             }
         }

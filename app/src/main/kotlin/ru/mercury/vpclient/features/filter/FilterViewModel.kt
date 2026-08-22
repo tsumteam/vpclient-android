@@ -23,13 +23,21 @@ import ru.mercury.vpclient.features.filter.event.FilterEvent
 import ru.mercury.vpclient.features.filter.intent.FilterIntent
 import ru.mercury.vpclient.features.filter.model.FilterModel
 import ru.mercury.vpclient.features.filter.navigation.FilterRoute
+import ru.mercury.vpclient.features.filter_brand_sheet.intent.FilterBrandIntent
+import ru.mercury.vpclient.features.filter_color_sheet.intent.FilterColorIntent
+import ru.mercury.vpclient.features.filter_price_sheet.intent.FilterPriceIntent
+import ru.mercury.vpclient.features.filter_size_sheet.intent.FilterSizeIntent
+import ru.mercury.vpclient.features.filter_tree_sheet.intent.FilterTreeIntent
+import ru.mercury.vpclient.features.filter_values_sheet.intent.FilterValuesIntent
 import ru.mercury.vpclient.features.home_root.event.HomeRootEventManager
 import ru.mercury.vpclient.features.search.navigation.SearchRoute
+import ru.mercury.vpclient.features.sort_picker_sheet.intent.SortPickerIntent
 import ru.mercury.vpclient.shared.data.entity.CatalogFilterProductsData
 import ru.mercury.vpclient.shared.data.entity.CatalogFilterRequestData
 import ru.mercury.vpclient.shared.data.entity.FilterChip
 import ru.mercury.vpclient.shared.data.entity.FilterRequestData
 import ru.mercury.vpclient.shared.data.entity.FilterValuesRequestData
+import ru.mercury.vpclient.shared.data.entity.SearchSource
 import ru.mercury.vpclient.shared.data.entity.SortType
 import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
@@ -43,10 +51,10 @@ import ru.mercury.vpclient.shared.domain.mapper.onlyDigits
 import ru.mercury.vpclient.shared.domain.mapper.priceFilterChip
 import ru.mercury.vpclient.shared.domain.mapper.priceSelectionIds
 import ru.mercury.vpclient.shared.domain.mapper.requestFilterValueChipIds
+import ru.mercury.vpclient.shared.domain.mapper.toCatalogLinkData
 import ru.mercury.vpclient.shared.domain.mapper.toPriceRangeChipData
 import ru.mercury.vpclient.shared.domain.mapper.topBarBrandChipId
 import ru.mercury.vpclient.shared.domain.mapper.topBarBrandId
-import ru.mercury.vpclient.shared.domain.mapper.toCatalogLinkData
 import ru.mercury.vpclient.shared.domain.mapper.values
 import ru.mercury.vpclient.shared.domain.usecase.BrandFavoriteStatusUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CartCountFlowUseCase
@@ -70,7 +78,6 @@ import ru.mercury.vpclient.shared.domain.usecase.ToggleBrandFavoriteUseCase
 import ru.mercury.vpclient.shared.domain.usecase.ToggleBrandFavoriteUseCase.ToggleBrandFavoriteException
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.navigation.BackRoute
-import ru.mercury.vpclient.shared.data.entity.SearchSource
 
 @HiltViewModel(assistedFactory = FilterViewModel.Factory::class)
 class FilterViewModel @AssistedInject constructor(
@@ -339,8 +346,17 @@ class FilterViewModel @AssistedInject constructor(
             is FilterIntent.ProductBasketClick -> {
                 launch { toggleBasketProductUseCase(intent.product).getOrThrow() }
             }
-            is FilterIntent.ShowSortDialog -> reduce { it.copy(isSortDialogVisible = true) }
-            is FilterIntent.HideSortDialog -> reduce { it.copy(isSortDialogVisible = false) }
+            is FilterIntent.ShowSortDialog -> reduce { it.copy(isSortPickerSheetVisible = true) }
+            is FilterIntent.OnSortPickerIntent -> {
+                when (intent.intent) {
+                    is SortPickerIntent.DismissClick -> {
+                        reduce { it.copy(isSortPickerSheetVisible = false) }
+                    }
+                    is SortPickerIntent.ConfirmSort -> {
+                        reduce { it.copy(selectedSortType = intent.intent.sortType, isSortPickerSheetVisible = false) }
+                    }
+                }
+            }
             is FilterIntent.ShowFilterValuesDialog -> {
                 val currentState = stateFlow.value
                 val chip = currentState.filterValuesDialogChip(intent.chipId) ?: return
@@ -420,7 +436,12 @@ class FilterViewModel @AssistedInject constructor(
                     ).getOrThrow()
                 }
             }
-            is FilterIntent.HideFilterValuesDialog -> {
+            is FilterIntent.DismissFilterBrandSheet,
+            is FilterIntent.DismissFilterPriceSheet,
+            is FilterIntent.DismissFilterSizeSheet,
+            is FilterIntent.DismissFilterTreeSheet,
+            is FilterIntent.DismissFilterColorSheet,
+            is FilterIntent.DismissFilterValuesSheet -> {
                 val currentState = stateFlow.value
                 val chipId = currentState.filterValuesEntity.chipId
                 currentState.filterValuesDialogProductsQuantityJob?.cancel()
@@ -453,7 +474,6 @@ class FilterViewModel @AssistedInject constructor(
                     dispatch(FilterIntent.LoadProductsQuantity)
                 }
             }
-            is FilterIntent.ConfirmSort -> reduce { it.copy(selectedSortType = intent.sortType, isSortDialogVisible = false) }
             is FilterIntent.ConfirmFilterValues -> {
                 val currentState = stateFlow.value
                 val previousRequestAffectingIds = currentState.selectedRequestAffectingFilterValueChipIds
@@ -525,44 +545,65 @@ class FilterViewModel @AssistedInject constructor(
                     dispatch(FilterIntent.LoadProductsQuantity)
                 }
             }
-            is FilterIntent.ConfirmPrice -> {
-                val currentState = stateFlow.value
-                val previousRequestAffectingIds = currentState.selectedRequestAffectingFilterValueChipIds
-                val chipId = currentState.filterValuesEntity.chipId
-                val priceChip = currentState.priceFilterChip()
-                currentState.filterValuesDialogProductsQuantityJob?.cancel()
-                currentState.filterValuesDialogPickerCollectionJob?.cancel()
-                currentState.filterValuesDialogQuantityCollectionJob?.cancel()
-                val updatedState = currentState.copy(
-                    selectedFilterValueChips = currentState.selectedFilterValueChips
-                        .filterNot { chip -> chip.id.startsWith("${chipId}_") }
-                        .let { chips -> if (priceChip != null) chips + priceChip else chips },
-                    filterValuesEntity = FilterValuesEntity.Empty,
-                    filterValuesDialogSelectedValueIds = emptySet(),
-                    filterValuesDialogProductsQuantity = FilterValuesQuantityEntity.Empty,
-                    filterPriceFrom = "",
-                    filterPriceTo = "",
-                    filterTreePath = emptyList(),
-                    isFilterValuesDialogLoading = false,
-                    isFilterValuesDialogProductsQuantityLoading = false,
-                    filterValuesDialogProductsQuantityJob = null,
-                    filterValuesDialogPickerCollectionJob = null,
-                    filterValuesDialogQuantityCollectionJob = null
-                )
-                reduce { updatedState }
-                if (previousRequestAffectingIds != updatedState.selectedRequestAffectingFilterValueChipIds) {
-                    dispatch(FilterIntent.LoadCatalogFilters)
-                    dispatch(FilterIntent.LoadProductsQuantity)
+            is FilterIntent.OnFilterPriceIntent -> {
+                when (intent.intent) {
+                    is FilterPriceIntent.DismissClick -> {
+                        dispatch(FilterIntent.DismissFilterPriceSheet)
+                    }
+                    is FilterPriceIntent.ResetPrice -> {
+                        reduce { it.copy(filterPriceFrom = "", filterPriceTo = "") }
+                        dispatch(FilterIntent.UpdateFilterValuesSelection(emptySet()))
+                    }
+                    is FilterPriceIntent.ConfirmPrice -> {
+                        val currentState = stateFlow.value
+                        val previousRequestAffectingIds = currentState.selectedRequestAffectingFilterValueChipIds
+                        val chipId = currentState.filterValuesEntity.chipId
+                        val priceChip = currentState.priceFilterChip()
+                        currentState.filterValuesDialogProductsQuantityJob?.cancel()
+                        currentState.filterValuesDialogPickerCollectionJob?.cancel()
+                        currentState.filterValuesDialogQuantityCollectionJob?.cancel()
+                        val updatedState = currentState.copy(
+                            selectedFilterValueChips = currentState.selectedFilterValueChips
+                                .filterNot { chip -> chip.id.startsWith("${chipId}_") }
+                                .let { chips -> if (priceChip != null) chips + priceChip else chips },
+                            filterValuesEntity = FilterValuesEntity.Empty,
+                            filterValuesDialogSelectedValueIds = emptySet(),
+                            filterValuesDialogProductsQuantity = FilterValuesQuantityEntity.Empty,
+                            filterPriceFrom = "",
+                            filterPriceTo = "",
+                            filterTreePath = emptyList(),
+                            isFilterValuesDialogLoading = false,
+                            isFilterValuesDialogProductsQuantityLoading = false,
+                            filterValuesDialogProductsQuantityJob = null,
+                            filterValuesDialogPickerCollectionJob = null,
+                            filterValuesDialogQuantityCollectionJob = null
+                        )
+                        reduce { updatedState }
+                        if (previousRequestAffectingIds != updatedState.selectedRequestAffectingFilterValueChipIds) {
+                            dispatch(FilterIntent.LoadCatalogFilters)
+                            dispatch(FilterIntent.LoadProductsQuantity)
+                        }
+                    }
+                    is FilterPriceIntent.ChangeMinPrice -> {
+                        val priceFrom = intent.intent.value.onlyDigits()
+                        val updatedPriceTo = stateFlow.value.filterPriceTo.onlyDigits()
+                        reduce { it.copy(filterPriceFrom = priceFrom, filterPriceTo = updatedPriceTo) }
+                        dispatch(FilterIntent.UpdateFilterValuesSelection(priceSelectionIds(priceFrom, updatedPriceTo)))
+                    }
+                    is FilterPriceIntent.ChangeMaxPrice -> {
+                        val updatedPriceFrom = stateFlow.value.filterPriceFrom.onlyDigits()
+                        val priceTo = intent.intent.value.onlyDigits()
+                        reduce { it.copy(filterPriceFrom = updatedPriceFrom, filterPriceTo = priceTo) }
+                        dispatch(FilterIntent.UpdateFilterValuesSelection(priceSelectionIds(updatedPriceFrom, priceTo)))
+                    }
+                    is FilterPriceIntent.SelectPricePreset -> {
+                        val priceRangeChipData = intent.intent.valueId.toPriceRangeChipData() ?: return
+                        val priceFrom = priceRangeChipData.from?.toString().orEmpty()
+                        val priceTo = priceRangeChipData.to?.toString().orEmpty()
+                        reduce { it.copy(filterPriceFrom = priceFrom, filterPriceTo = priceTo) }
+                        dispatch(FilterIntent.UpdateFilterValuesSelection(setOf(intent.intent.valueId)))
+                    }
                 }
-            }
-            is FilterIntent.ResetPrice -> {
-                reduce {
-                    it.copy(
-                        filterPriceFrom = "",
-                        filterPriceTo = ""
-                    )
-                }
-                dispatch(FilterIntent.UpdateFilterValuesSelection(emptySet()))
             }
             is FilterIntent.UpdateFilterValuesSelection -> {
                 val currentState = stateFlow.value
@@ -597,11 +638,11 @@ class FilterViewModel @AssistedInject constructor(
                         reduce { model ->
                             when {
                                 model.filterValuesDialogProductsQuantityJob != job -> model
-                                model.isFilterValuesDialogVisible ||
-                                    model.isFilterColorDialogVisible ||
-                                    model.isFilterPriceDialogVisible ||
-                                    model.isFilterSizeDialogVisible ||
-                                    model.isFilterTreeDialogVisible -> model.copy(
+                                model.isFilterValuesSheetVisible ||
+                                    model.isFilterColorSheetVisible ||
+                                    model.isFilterPriceSheetVisible ||
+                                    model.isFilterSizeSheetVisible ||
+                                    model.isFilterTreeSheetVisible -> model.copy(
                                     isFilterValuesDialogProductsQuantityLoading = false,
                                     filterValuesDialogProductsQuantityJob = null
                                 )
@@ -611,40 +652,6 @@ class FilterViewModel @AssistedInject constructor(
                     }
                 }
                 reduce { it.copy(filterValuesDialogProductsQuantityJob = productsQuantityJob) }
-            }
-            is FilterIntent.UpdatePriceFrom -> {
-                val priceFrom = intent.value.onlyDigits()
-                val updatedPriceTo = stateFlow.value.filterPriceTo.onlyDigits()
-                reduce {
-                    it.copy(
-                        filterPriceFrom = priceFrom,
-                        filterPriceTo = updatedPriceTo
-                    )
-                }
-                dispatch(FilterIntent.UpdateFilterValuesSelection(priceSelectionIds(priceFrom, updatedPriceTo)))
-            }
-            is FilterIntent.UpdatePriceTo -> {
-                val updatedPriceFrom = stateFlow.value.filterPriceFrom.onlyDigits()
-                val priceTo = intent.value.onlyDigits()
-                reduce {
-                    it.copy(
-                        filterPriceFrom = updatedPriceFrom,
-                        filterPriceTo = priceTo
-                    )
-                }
-                dispatch(FilterIntent.UpdateFilterValuesSelection(priceSelectionIds(updatedPriceFrom, priceTo)))
-            }
-            is FilterIntent.SelectPricePreset -> {
-                val priceRangeChipData = intent.valueId.toPriceRangeChipData() ?: return
-                val priceFrom = priceRangeChipData.from?.toString().orEmpty()
-                val priceTo = priceRangeChipData.to?.toString().orEmpty()
-                reduce {
-                    it.copy(
-                        filterPriceFrom = priceFrom,
-                        filterPriceTo = priceTo
-                    )
-                }
-                dispatch(FilterIntent.UpdateFilterValuesSelection(setOf(intent.valueId)))
             }
             is FilterIntent.ToggleFilterValueChip -> {
                 val currentState = stateFlow.value
@@ -685,18 +692,101 @@ class FilterViewModel @AssistedInject constructor(
                 }
                 dispatch(FilterIntent.UpdateFilterValuesSelection(updatedSelectedValueIds))
             }
-            is FilterIntent.NavigateInFilterTree -> {
-                val selectedItem = stateFlow.value.filterValuesEntity.items.firstOrNull { item -> item.id == intent.valueId } ?: return
-                if (selectedItem.hasChildren) {
-                    reduce { it.copy(filterTreePath = it.filterTreePath + intent.valueId) }
-                } else {
-                    dispatch(FilterIntent.ToggleFilterDialogValue(intent.valueId))
+            is FilterIntent.OnFilterBrandIntent -> {
+                when (intent.intent) {
+                    is FilterBrandIntent.DismissClick -> {
+                        dispatch(FilterIntent.DismissFilterBrandSheet)
+                    }
+                    is FilterBrandIntent.ResetFilterBrandValues -> {
+                        dispatch(FilterIntent.UpdateFilterValuesSelection(emptySet()))
+                    }
+                    is FilterBrandIntent.ConfirmFilterBrandValues -> {
+                        dispatch(FilterIntent.ConfirmFilterValues)
+                    }
+                    is FilterBrandIntent.ToggleFilterBrandValue -> {
+                        dispatch(FilterIntent.ToggleFilterDialogValue(intent.intent.valueId))
+                    }
+                    is FilterBrandIntent.SelectAllBrands -> {
+                        dispatch(FilterIntent.UpdateFilterValuesSelection(stateFlow.value.filterValuesDialogSelectedValueIds + intent.intent.valueIds))
+                    }
                 }
             }
-            is FilterIntent.NavigateBackInFilterTree -> {
-                val currentPath = stateFlow.value.filterTreePath
-                if (currentPath.isNotEmpty()) {
-                    reduce { it.copy(filterTreePath = currentPath.dropLast(1)) }
+            is FilterIntent.OnFilterSizeIntent -> {
+                when (intent.intent) {
+                    is FilterSizeIntent.DismissClick -> {
+                        dispatch(FilterIntent.DismissFilterSizeSheet)
+                    }
+                    is FilterSizeIntent.ResetFilterSizeValues -> {
+                        dispatch(FilterIntent.UpdateFilterValuesSelection(emptySet()))
+                    }
+                    is FilterSizeIntent.ConfirmFilterSizeValues -> {
+                        dispatch(FilterIntent.ConfirmFilterValues)
+                    }
+                    is FilterSizeIntent.ToggleFilterSizeValue -> {
+                        dispatch(FilterIntent.ToggleFilterDialogValue(intent.intent.valueId))
+                    }
+                }
+            }
+            is FilterIntent.OnFilterTreeIntent -> {
+                when (intent.intent) {
+                    is FilterTreeIntent.DismissClick -> {
+                        dispatch(FilterIntent.DismissFilterTreeSheet)
+                    }
+                    is FilterTreeIntent.ResetFilterValues -> {
+                        dispatch(FilterIntent.UpdateFilterValuesSelection(emptySet()))
+                    }
+                    is FilterTreeIntent.ConfirmFilterValues -> {
+                        dispatch(FilterIntent.ConfirmFilterValues)
+                    }
+                    is FilterTreeIntent.NavigateInFilterTree -> {
+                        val selectedItem = stateFlow.value.filterValuesEntity.items.firstOrNull { item -> item.id == intent.intent.valueId } ?: return
+                        if (selectedItem.hasChildren) {
+                            reduce { it.copy(filterTreePath = it.filterTreePath + intent.intent.valueId) }
+                        } else {
+                            dispatch(FilterIntent.ToggleFilterDialogValue(intent.intent.valueId))
+                        }
+                    }
+                    is FilterTreeIntent.ToggleFilterValue -> {
+                        dispatch(FilterIntent.ToggleFilterDialogValue(intent.intent.valueId))
+                    }
+                    is FilterTreeIntent.NavigateBackInFilterTree -> {
+                        val currentPath = stateFlow.value.filterTreePath
+                        if (currentPath.isNotEmpty()) {
+                            reduce { it.copy(filterTreePath = currentPath.dropLast(1)) }
+                        }
+                    }
+                }
+            }
+            is FilterIntent.OnFilterColorIntent -> {
+                when (intent.intent) {
+                    is FilterColorIntent.DismissClick -> {
+                        dispatch(FilterIntent.DismissFilterColorSheet)
+                    }
+                    is FilterColorIntent.ResetFilterColorValues -> {
+                        dispatch(FilterIntent.UpdateFilterValuesSelection(emptySet()))
+                    }
+                    is FilterColorIntent.ConfirmFilterColorValues -> {
+                        dispatch(FilterIntent.ConfirmFilterValues)
+                    }
+                    is FilterColorIntent.ToggleFilterColorValue -> {
+                        dispatch(FilterIntent.ToggleFilterDialogValue(intent.intent.valueId))
+                    }
+                }
+            }
+            is FilterIntent.OnFilterValuesIntent -> {
+                when (intent.intent) {
+                    is FilterValuesIntent.DismissClick -> {
+                        dispatch(FilterIntent.DismissFilterValuesSheet)
+                    }
+                    is FilterValuesIntent.ResetFilterValues -> {
+                        dispatch(FilterIntent.UpdateFilterValuesSelection(emptySet()))
+                    }
+                    is FilterValuesIntent.ConfirmFilterValues -> {
+                        dispatch(FilterIntent.ConfirmFilterValues)
+                    }
+                    is FilterValuesIntent.ToggleFilterValue -> {
+                        dispatch(FilterIntent.ToggleFilterDialogValue(intent.intent.valueId))
+                    }
                 }
             }
             is FilterIntent.LoadBrandFavoriteStatus -> {

@@ -64,9 +64,9 @@ import ru.mercury.vpclient.shared.ui.theme.medium15
 
 @Composable
 fun FittingAddressSearchSheet(
-    initialQuery: String,
-    onDismissRequest: () -> Unit,
-    onSelectAddressSuggestion: (ClientDeliveryAddressSuggestion) -> Unit,
+    initialQuery: String, // fixme
+    onDismissRequest: () -> Unit,  // fixme
+    onSelectAddressSuggestion: (ClientDeliveryAddressSuggestion) -> Unit,  // fixme
     viewModel: FittingAddressSearchSheetViewModel = hiltViewModel<FittingAddressSearchSheetViewModel, FittingAddressSearchSheetViewModel.Factory>(
         creationCallback = { it.create(initialQuery) }
     )
@@ -223,7 +223,7 @@ private fun FittingAddressSearchSheetContent(
 @Preview
 @Composable
 private fun FittingAddressSearchSheetPreview(
-    @PreviewParameter(FittingAddressSearchModelProvider::class) state: FittingAddressSearchModel
+    @PreviewParameter(FittingAddressSearchModelPreviewParameterProvider::class) state: FittingAddressSearchModel
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -235,7 +235,7 @@ private fun FittingAddressSearchSheetPreview(
     }
 }
 
-private class FittingAddressSearchModelProvider: PreviewParameterProvider<FittingAddressSearchModel> {
+private class FittingAddressSearchModelPreviewParameterProvider: PreviewParameterProvider<FittingAddressSearchModel> {
     override val values: Sequence<FittingAddressSearchModel> = sequenceOf(
         FittingAddressSearchModel(
             query = "Москва, Тверская",

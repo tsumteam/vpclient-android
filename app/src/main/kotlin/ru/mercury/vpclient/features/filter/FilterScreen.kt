@@ -77,20 +77,12 @@ import ru.mercury.vpclient.features.filter.intent.FilterIntent
 import ru.mercury.vpclient.features.filter.model.FilterModel
 import ru.mercury.vpclient.features.filter.navigation.FilterRoute
 import ru.mercury.vpclient.features.filter_brand_sheet.FilterBrandSheet
-import ru.mercury.vpclient.features.filter_brand_sheet.intent.FilterBrandIntent
 import ru.mercury.vpclient.features.filter_color_sheet.FilterColorSheet
-import ru.mercury.vpclient.features.filter_color_sheet.intent.FilterColorIntent
 import ru.mercury.vpclient.features.filter_price_sheet.FilterPriceSheet
-import ru.mercury.vpclient.features.filter_price_sheet.intent.FilterPriceIntent
 import ru.mercury.vpclient.features.filter_size_sheet.FilterSizeSheet
-import ru.mercury.vpclient.features.filter_size_sheet.intent.FilterSizeIntent
-import ru.mercury.vpclient.features.sort_picker_sheet.SortPickerSheet
-import ru.mercury.vpclient.features.sort_picker_sheet.intent.SortPickerIntent
-import ru.mercury.vpclient.features.sort_picker_sheet.model.SortPickerModel
 import ru.mercury.vpclient.features.filter_tree_sheet.FilterTreeSheet
-import ru.mercury.vpclient.features.filter_tree_sheet.intent.FilterTreeIntent
 import ru.mercury.vpclient.features.filter_values_sheet.FilterValuesSheet
-import ru.mercury.vpclient.features.filter_values_sheet.intent.FilterValuesIntent
+import ru.mercury.vpclient.features.sort_picker_sheet.SortPickerSheet
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.entity.FilterChip
 import ru.mercury.vpclient.shared.data.entity.FilterData
@@ -161,160 +153,52 @@ fun FilterScreen(
         snackbarHostStateError = snackbarHostStateError
     )
 
-    if (state.isFilterBrandDialogVisible) {
+    if (state.isFilterBrandSheetVisible) {
         FilterBrandSheet(
-            state = requireNotNull(state.filterBrandSheetState),
-            dispatch = { intent ->
-                when (intent) {
-                    is FilterBrandIntent.DismissClick -> {
-                        viewModel.dispatch(FilterIntent.HideFilterValuesDialog)
-                    }
-                    is FilterBrandIntent.ResetFilterBrandValues -> {
-                        viewModel.dispatch(FilterIntent.UpdateFilterValuesSelection(emptySet()))
-                    }
-                    is FilterBrandIntent.ConfirmFilterBrandValues -> {
-                        viewModel.dispatch(FilterIntent.ConfirmFilterValues)
-                    }
-                    is FilterBrandIntent.ToggleFilterBrandValue -> {
-                        viewModel.dispatch(FilterIntent.ToggleFilterDialogValue(intent.valueId))
-                    }
-                    is FilterBrandIntent.SelectAllBrands -> {
-                        viewModel.dispatch(FilterIntent.UpdateFilterValuesSelection(state.filterValuesDialogSelectedValueIds + intent.valueIds))
-                    }
-                }
-            }
+            state = state.filterBrandState,
+            dispatch = { intent -> viewModel.dispatch(FilterIntent.OnFilterBrandIntent(intent)) }
         )
     }
-    if (state.isSortDialogVisible) {
+
+    if (state.isSortPickerSheetVisible) {
         SortPickerSheet(
-            state = SortPickerModel(
-                selectedSortType = state.selectedSortType
-            ),
-            dispatch = { intent ->
-                when (intent) {
-                    is SortPickerIntent.DismissClick -> viewModel.dispatch(FilterIntent.HideSortDialog)
-                    is SortPickerIntent.ConfirmSort -> {
-                        viewModel.dispatch(FilterIntent.ConfirmSort(intent.sortType))
-                    }
-                }
-            }
+            state = state.sortPickerState,
+            dispatch = { intent -> viewModel.dispatch(FilterIntent.OnSortPickerIntent(intent)) }
         )
     }
-    if (state.isFilterPriceDialogVisible) {
+
+    if (state.isFilterPriceSheetVisible) {
         FilterPriceSheet(
-            state = requireNotNull(state.filterPriceSheetState),
-            dispatch = { intent ->
-                when (intent) {
-                    is FilterPriceIntent.DismissClick -> {
-                        viewModel.dispatch(FilterIntent.HideFilterValuesDialog)
-                    }
-                    is FilterPriceIntent.ResetPrice -> {
-                        viewModel.dispatch(FilterIntent.ResetPrice)
-                    }
-                    is FilterPriceIntent.ConfirmPrice -> {
-                        viewModel.dispatch(FilterIntent.ConfirmPrice)
-                    }
-                    is FilterPriceIntent.ChangeMinPrice -> {
-                        viewModel.dispatch(FilterIntent.UpdatePriceFrom(intent.value))
-                    }
-                    is FilterPriceIntent.ChangeMaxPrice -> {
-                        viewModel.dispatch(FilterIntent.UpdatePriceTo(intent.value))
-                    }
-                    is FilterPriceIntent.SelectPricePreset -> {
-                        viewModel.dispatch(FilterIntent.SelectPricePreset(intent.valueId))
-                    }
-                }
-            }
+            state = state.filterPriceState,
+            dispatch = { intent -> viewModel.dispatch(FilterIntent.OnFilterPriceIntent(intent)) }
         )
     }
-    if (state.isFilterSizeDialogVisible) {
+
+    if (state.isFilterSizeSheetVisible) {
         FilterSizeSheet(
-            state = requireNotNull(state.filterSizeSheetState),
-            dispatch = { intent ->
-                when (intent) {
-                    is FilterSizeIntent.DismissClick -> {
-                        viewModel.dispatch(FilterIntent.HideFilterValuesDialog)
-                    }
-                    is FilterSizeIntent.ResetFilterSizeValues -> {
-                        viewModel.dispatch(FilterIntent.UpdateFilterValuesSelection(emptySet()))
-                    }
-                    is FilterSizeIntent.ConfirmFilterSizeValues -> {
-                        viewModel.dispatch(FilterIntent.ConfirmFilterValues)
-                    }
-                    is FilterSizeIntent.ToggleFilterSizeValue -> {
-                        viewModel.dispatch(FilterIntent.ToggleFilterDialogValue(intent.valueId))
-                    }
-                }
-            }
+            state = state.filterSizeState,
+            dispatch = { intent -> viewModel.dispatch(FilterIntent.OnFilterSizeIntent(intent)) }
         )
     }
-    if (state.isFilterTreeDialogVisible) {
+
+    if (state.isFilterTreeSheetVisible) {
         FilterTreeSheet(
-            state = requireNotNull(state.filterTreeSheetState),
-            dispatch = { intent ->
-                when (intent) {
-                    is FilterTreeIntent.DismissClick -> {
-                        viewModel.dispatch(FilterIntent.HideFilterValuesDialog)
-                    }
-                    is FilterTreeIntent.ResetFilterValues -> {
-                        viewModel.dispatch(FilterIntent.UpdateFilterValuesSelection(emptySet()))
-                    }
-                    is FilterTreeIntent.ConfirmFilterValues -> {
-                        viewModel.dispatch(FilterIntent.ConfirmFilterValues)
-                    }
-                    is FilterTreeIntent.NavigateBackInFilterTree -> {
-                        viewModel.dispatch(FilterIntent.NavigateBackInFilterTree)
-                    }
-                    is FilterTreeIntent.NavigateInFilterTree -> {
-                        viewModel.dispatch(FilterIntent.NavigateInFilterTree(intent.valueId))
-                    }
-                    is FilterTreeIntent.ToggleFilterValue -> {
-                        viewModel.dispatch(FilterIntent.ToggleFilterDialogValue(intent.valueId))
-                    }
-                }
-            }
+            state = state.filterTreeState,
+            dispatch = { intent -> viewModel.dispatch(FilterIntent.OnFilterTreeIntent(intent)) }
         )
     }
-    if (state.isFilterColorDialogVisible) {
+
+    if (state.isFilterColorSheetVisible) {
         FilterColorSheet(
-            state = requireNotNull(state.filterColorSheetState),
-            dispatch = { intent ->
-                when (intent) {
-                    is FilterColorIntent.DismissClick -> {
-                        viewModel.dispatch(FilterIntent.HideFilterValuesDialog)
-                    }
-                    is FilterColorIntent.ResetFilterColorValues -> {
-                        viewModel.dispatch(FilterIntent.UpdateFilterValuesSelection(emptySet()))
-                    }
-                    is FilterColorIntent.ConfirmFilterColorValues -> {
-                        viewModel.dispatch(FilterIntent.ConfirmFilterValues)
-                    }
-                    is FilterColorIntent.ToggleFilterColorValue -> {
-                        viewModel.dispatch(FilterIntent.ToggleFilterDialogValue(intent.valueId))
-                    }
-                }
-            }
+            state = state.filterColorState,
+            dispatch = { intent -> viewModel.dispatch(FilterIntent.OnFilterColorIntent(intent)) }
         )
     }
-    if (state.isFilterValuesDialogVisible) {
+
+    if (state.isFilterValuesSheetVisible) {
         FilterValuesSheet(
-            state = requireNotNull(state.filterValuesSheetState),
-            dispatch = { intent ->
-                when (intent) {
-                    is FilterValuesIntent.DismissClick -> {
-                        viewModel.dispatch(FilterIntent.HideFilterValuesDialog)
-                    }
-                    is FilterValuesIntent.ResetFilterValues -> {
-                        viewModel.dispatch(FilterIntent.UpdateFilterValuesSelection(emptySet()))
-                    }
-                    is FilterValuesIntent.ConfirmFilterValues -> {
-                        viewModel.dispatch(FilterIntent.ConfirmFilterValues)
-                    }
-                    is FilterValuesIntent.ToggleFilterValue -> {
-                        viewModel.dispatch(FilterIntent.ToggleFilterDialogValue(intent.valueId))
-                    }
-                }
-            }
+            state = state.filterValuesState,
+            dispatch = { intent -> viewModel.dispatch(FilterIntent.OnFilterValuesIntent(intent)) }
         )
     }
 

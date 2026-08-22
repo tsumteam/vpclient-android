@@ -56,6 +56,7 @@ import ru.mercury.vpclient.shared.domain.mapper.quantityWithThousandsSeparator
 import ru.mercury.vpclient.shared.domain.mapper.requireQuantity
 import ru.mercury.vpclient.shared.domain.mapper.sizeValues
 import ru.mercury.vpclient.shared.ui.components.SharedAnimatedVisibility
+import ru.mercury.vpclient.shared.ui.components.SharedColumn
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.filters.FilterSelectableRow
@@ -78,7 +79,7 @@ fun FilterSizeSheet(
     ) {
         var selectedCountry by remember { mutableStateOf<SizeCountry>(SizeCountry.Russia) }
 
-        Column {
+        SharedColumn {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
@@ -268,7 +269,7 @@ fun FilterSizeSheet(
 @Preview
 @Composable
 private fun FilterSizeSheetPreview(
-    @PreviewParameter(FilterSizeSheetStateProvider::class) state: FilterSizeModel
+    @PreviewParameter(FilterSizeModelPreviewParameterProvider::class) state: FilterSizeModel
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -280,7 +281,7 @@ private fun FilterSizeSheetPreview(
     }
 }
 
-private class FilterSizeSheetStateProvider: PreviewParameterProvider<FilterSizeModel> {
+private class FilterSizeModelPreviewParameterProvider: PreviewParameterProvider<FilterSizeModel> {
     override val values: Sequence<FilterSizeModel> = sequenceOf(
         FilterSizeModel(
             entity = FilterValuesEntity(

@@ -1,5 +1,9 @@
 package ru.mercury.vpclient.features.details.model
 
+import ru.mercury.vpclient.features.details_cart_added_sheet.model.DetailsCartAddedModel
+import ru.mercury.vpclient.features.details_message_sheet.model.DetailsMessageModel
+import ru.mercury.vpclient.features.details_wear_with_sheet.model.DetailsWearWithModel
+import ru.mercury.vpclient.features.size_sheet.model.SizeSheetModel
 import ru.mercury.vpclient.shared.data.entity.DetailsField
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
@@ -17,10 +21,10 @@ data class DetailsModel(
     val productEntity: ProductEntity = ProductEntity.Empty,
     val selectedSizeId: String? = null,
     val selectedOtherColorIndex: Int? = null,
-    val isSizePickerSheetVisible: Boolean = false,
-    val isWearWithSheetVisible: Boolean = false,
-    val isDetailsChatSheetVisible: Boolean = false,
-    val isCartAddedSheetVisible: Boolean = false,
+    val isSizeSheetVisible: Boolean = false,
+    val isDetailsWearWithSheetVisible: Boolean = false,
+    val isDetailsMessageSheetVisible: Boolean = false,
+    val isDetailsCartAddedSheetVisible: Boolean = false,
     val basketProductIds: Set<String> = emptySet(),
     val basketProductKeys: Set<String> = emptySet(),
     val cartCount: Int = 0,
@@ -46,8 +50,8 @@ data class DetailsModel(
             val idx = selectedOtherColorIndex
             val mainImage = productEntity.colorImageUrls.firstOrNull()
             return productEntity.otherColors.mapIndexed { i, color ->
-                if (i == idx) mainImage ?: color.imageUrls.firstOrNull() ?: ""
-                else color.imageUrls.firstOrNull() ?: ""
+                if (i == idx) mainImage ?: color.imageUrls.firstOrNull().orEmpty()
+                else color.imageUrls.firstOrNull().orEmpty()
             }
         }
 
@@ -166,6 +170,26 @@ data class DetailsModel(
                 isSizeTableVisible = !availableSizes.sizeTableTitle.isNullOrEmpty() && !availableSizes.sizeTableUrl.isNullOrEmpty()
             )
         }
+
+    val detailsMessageState: DetailsMessageModel
+        get() = DetailsMessageModel(
+            productEntity = productEntity
+        )
+
+    val detailsCartAddedState: DetailsCartAddedModel
+        get() = DetailsCartAddedModel(
+            productEntity = productEntity
+        )
+
+    val detailsWearWithState: DetailsWearWithModel
+        get() = DetailsWearWithModel(
+            products = wearWithProducts,
+            basketProductIds = basketProductIds,
+            basketProductKeys = basketProductKeys
+        )
+
+    val sizeState: SizeSheetModel
+        get() = SizeSheetModel(sizeSelectorState = sizePickerState)
 }
 
-private const val NO_SIZE_VALUE = "NS"
+private const val NO_SIZE_VALUE = "NS" // fixme

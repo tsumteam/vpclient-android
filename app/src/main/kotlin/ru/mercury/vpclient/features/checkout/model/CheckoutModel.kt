@@ -6,6 +6,8 @@ import ru.mercury.vpclient.features.checkout_bank_card_sheet.model.CheckoutBankC
 import ru.mercury.vpclient.features.checkout_bonus_sheet.model.CheckoutBonusModel
 import ru.mercury.vpclient.features.checkout_payment_method_sheet.model.CheckoutPaymentMethodModel
 import ru.mercury.vpclient.features.checkout_sbp_bank_sheet.model.CheckoutSbpBankModel
+import ru.mercury.vpclient.features.loyalty_add_card_sheet.model.LoyaltyAddCardModel
+import ru.mercury.vpclient.features.loyalty_code_sheet.model.LoyaltyCodeModel
 import ru.mercury.vpclient.shared.data.entity.CheckoutSbpBank
 import ru.mercury.vpclient.shared.data.entity.FittingCheckoutData
 import ru.mercury.vpclient.shared.data.entity.FittingCheckoutOnlinePaymentMethod
@@ -82,12 +84,12 @@ data class CheckoutModel(
     val sbpBanks: List<CheckoutSbpBank> = emptyList()
 ): Model {
 
-    val checkoutAmountChangedModel: CheckoutAmountChangedModel
+    val checkoutAmountChangedState: CheckoutAmountChangedModel
         get() = CheckoutAmountChangedModel(
             message = amountChangedMessage
         )
 
-    val checkoutBankCardModel: CheckoutBankCardModel
+    val checkoutBankCardState: CheckoutBankCardModel
         get() = CheckoutBankCardModel(
             cardNumber = bankCardNumber,
             expirationDate = bankCardExpirationDate,
@@ -99,7 +101,7 @@ data class CheckoutModel(
             isLoading = isPaymentLoading
         )
 
-    val checkoutBonusModel: CheckoutBonusModel
+    val checkoutBonusState: CheckoutBonusModel
         get() = CheckoutBonusModel(
             code = bonusCode,
             isLoading = isBonusCodeLoading,
@@ -108,14 +110,37 @@ data class CheckoutModel(
             resendSecondsLeft = bonusCodeResendSecondsLeft
         )
 
-    val checkoutPaymentMethodModel: CheckoutPaymentMethodModel
+    val checkoutPaymentMethodState: CheckoutPaymentMethodModel
         get() = CheckoutPaymentMethodModel(
             cards = paymentCards,
             isLoading = isPaymentLoading
         )
 
-    val checkoutSbpBankModel: CheckoutSbpBankModel
+    val checkoutSbpBankState: CheckoutSbpBankModel
         get() = CheckoutSbpBankModel(banks = sbpBanks)
+
+    val loyaltyAddCardState: LoyaltyAddCardModel
+        get() = LoyaltyAddCardModel(
+            mode = loyaltyAddCardMode,
+            phone = loyaltyAddCardPhone,
+            cardNumber = loyaltyAddCardCardNumber,
+            isLoading = loyaltyAddCardJob?.isActive == true,
+            isPhoneErrorVisible = isLoyaltyAddCardPhoneErrorVisible
+        )
+
+    val loyaltyCodeState: LoyaltyCodeModel
+        get() = LoyaltyCodeModel(
+            mode = loyaltyCodeMode,
+            phone = loyaltyCodePhone,
+            cardNumber = loyaltyCodeCardNumber,
+            code = loyaltyCode,
+            isLoading = isLoyaltyCodeLoading,
+            isResendLoading = isLoyaltyCodeResendLoading,
+            isCodeErrorVisible = isLoyaltyCodeErrorVisible,
+            resendTimerStartedAt = loyaltyCodeResendTimerStartedAt,
+            resendSecondsLeft = loyaltyCodeResendSecondsLeft,
+            resendTimerJob = loyaltyCodeResendTimerJob
+        )
 
     val isCartCheckout: Boolean
         get() = source == CheckoutSource.Cart

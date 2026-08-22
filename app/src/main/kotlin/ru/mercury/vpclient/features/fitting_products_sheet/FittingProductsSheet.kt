@@ -56,7 +56,7 @@ import ru.mercury.vpclient.shared.ui.theme.onDisabled
 
 @Composable
 fun FittingProductsSheet(
-    viewModel: FittingProductsSheetViewModel = hiltViewModel()
+    viewModel: FittingProductsSheetViewModel = hiltViewModel()  // fixme
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
 
@@ -173,7 +173,7 @@ private fun FittingProductsSheetContent(
 @Preview
 @Composable
 private fun FittingProductsSheetPreview(
-    @PreviewParameter(FittingProductsSheetModelProvider::class) state: FittingProductsModel
+    @PreviewParameter(FittingProductsModelPreviewParameterProvider::class) state: FittingProductsModel
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -185,7 +185,7 @@ private fun FittingProductsSheetPreview(
     }
 }
 
-private class FittingProductsSheetModelProvider: PreviewParameterProvider<FittingProductsModel> {
+private class FittingProductsModelPreviewParameterProvider: PreviewParameterProvider<FittingProductsModel> {
     private val products = listOf(
         CartProductEntity(
             id = "1",

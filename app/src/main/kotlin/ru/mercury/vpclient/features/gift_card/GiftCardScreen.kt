@@ -63,8 +63,6 @@ import ru.mercury.vpclient.features.gift_card.event.GiftCardEvent
 import ru.mercury.vpclient.features.gift_card.intent.GiftCardIntent
 import ru.mercury.vpclient.features.gift_card.model.GiftCardModel
 import ru.mercury.vpclient.features.gift_card_terms_sheet.GiftCardTermsSheet
-import ru.mercury.vpclient.features.gift_card_terms_sheet.intent.GiftCardTermsIntent
-import ru.mercury.vpclient.features.gift_card_terms_sheet.model.GiftCardTermsModel
 import ru.mercury.vpclient.shared.data.network.type.GiftCardType
 import ru.mercury.vpclient.shared.data.persistence.database.entity.GiftCardEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.GiftCardTemplateEntity
@@ -103,6 +101,13 @@ fun GiftCardScreen(
         snackbarHostStateError = snackbarHostStateError
     )
 
+    if (state.isGiftCardTermsSheetVisible) {
+        GiftCardTermsSheet(
+            state = state.giftCardTermsState,
+            dispatch = { intent -> viewModel.dispatch(GiftCardIntent.OnGiftCardTermsIntent(intent)) }
+        )
+    }
+
     ObserveAsEvents(
         flow = viewModel.eventFlow
     ) { event ->
@@ -112,21 +117,6 @@ fun GiftCardScreen(
                 scope.launch { snackbarHostStateError.showSnackbar(event.message) }
             }
         }
-    }
-
-    if (state.isTermsSheetVisible) {
-        GiftCardTermsSheet(
-            state = GiftCardTermsModel(
-                text = state.selectedTemplate.termOfUse
-            ),
-            dispatch = { intent ->
-                when (intent) {
-                    is GiftCardTermsIntent.DismissClick -> {
-                        viewModel.dispatch(GiftCardIntent.TermsDismiss)
-                    }
-                }
-            }
-        )
     }
 }
 

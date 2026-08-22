@@ -42,7 +42,6 @@ import ru.mercury.vpclient.features.debug.event.DebugEvent
 import ru.mercury.vpclient.features.debug.intent.DebugIntent
 import ru.mercury.vpclient.features.debug.model.DebugModel
 import ru.mercury.vpclient.features.debug_env_dialog.DebugEnvironmentDialog
-import ru.mercury.vpclient.features.debug_env_dialog.intent.DebugEnvIntent
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
@@ -62,7 +61,6 @@ fun DebugScreen(
     viewModel: DebugViewModel = hiltViewModel()
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
-
     val activity = LocalActivity.current
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -75,17 +73,8 @@ fun DebugScreen(
 
     if (state.isEnvironmentDialogVisible) {
         DebugEnvironmentDialog(
-            state = state.debugEnvModel,
-            dispatch = { intent ->
-                when (intent) {
-                    is DebugEnvIntent.DismissRequest -> {
-                        viewModel.dispatch(DebugIntent.DismissDebugEnvDialog)
-                    }
-                    is DebugEnvIntent.SelectEnvironment -> {
-                        viewModel.dispatch(DebugIntent.SelectEnvironment(intent.environment))
-                    }
-                }
-            }
+            state = state.debugEnvState,
+            dispatch = { intent -> viewModel.dispatch(DebugIntent.OnDebugEnvIntent(intent)) }
         )
     }
 

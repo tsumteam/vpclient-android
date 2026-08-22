@@ -72,7 +72,7 @@ import ru.mercury.vpclient.shared.ui.theme.regular15
 fun FittingAddressSheet(
     state: FittingAddressModel,
     dispatch: (FittingAddressIntent) -> Unit,
-    snackbarHostStateError: SnackbarHostState
+    snackbarHostStateError: SnackbarHostState // fixme
 ) {
     SharedModalBottomSheet(
         modifier = Modifier
@@ -440,7 +440,7 @@ fun FittingAddressSheet(
 @Preview
 @Composable
 private fun FittingAddressSheetPreview(
-    @PreviewParameter(FittingAddressModelProvider::class) form: FittingAddressModel
+    @PreviewParameter(FittingAddressModelPreviewParameterProvider::class) form: FittingAddressModel
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -453,7 +453,7 @@ private fun FittingAddressSheetPreview(
     }
 }
 
-private class FittingAddressModelProvider: PreviewParameterProvider<FittingAddressModel> {
+private class FittingAddressModelPreviewParameterProvider: PreviewParameterProvider<FittingAddressModel> {
     override val values: Sequence<FittingAddressModel> = sequenceOf(
         FittingAddressModel(),
         FittingAddressModel(

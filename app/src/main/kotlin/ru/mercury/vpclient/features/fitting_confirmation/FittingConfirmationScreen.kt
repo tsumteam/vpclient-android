@@ -56,13 +56,9 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.fitting_address_actions_sheet.FittingAddressActionsSheet
-import ru.mercury.vpclient.features.fitting_address_actions_sheet.intent.FittingAddressActionsIntent
 import ru.mercury.vpclient.features.fitting_address_delete_dialog.FittingAddressDeleteDialog
-import ru.mercury.vpclient.features.fitting_address_delete_dialog.intent.FittingAddressDeleteIntent
-import ru.mercury.vpclient.features.fitting_address_delete_dialog.model.FittingAddressDeleteModel
 import ru.mercury.vpclient.features.fitting_address_search_sheet.FittingAddressSearchSheet
 import ru.mercury.vpclient.features.fitting_address_sheet.FittingAddressSheet
-import ru.mercury.vpclient.features.fitting_address_sheet.intent.FittingAddressIntent
 import ru.mercury.vpclient.features.fitting_addresses.event.FittingAddressesEventManager
 import ru.mercury.vpclient.features.fitting_confirmation.event.FittingConfirmationEvent
 import ru.mercury.vpclient.features.fitting_confirmation.intent.FittingConfirmationIntent
@@ -75,7 +71,6 @@ import ru.mercury.vpclient.shared.data.entity.FittingConfirmationDeliveryInterva
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationDeliveryMode
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationPlaceType
 import ru.mercury.vpclient.shared.domain.mapper.itemsCount
-import ru.mercury.vpclient.shared.domain.mapper.title
 import ru.mercury.vpclient.shared.ui.components.LoadingBox
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
@@ -115,69 +110,30 @@ fun FittingConfirmationScreen(
     val scope = rememberCoroutineScope()
     val snackbarHostStateError = remember { SnackbarHostState() }
 
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        FittingConfirmationScreenContent(
-            state = state,
-            dispatch = viewModel::dispatch,
-            snackbarHostStateError = snackbarHostStateError
-        )
+    FittingConfirmationScreenContent(
+        state = state,
+        dispatch = viewModel::dispatch,
+        snackbarHostStateError = snackbarHostStateError
+    )
 
-        LoadingBox(
-            isVisible = state.isConfirmLoading || state.isAddressSaving || (state.isIntervalsLoading && !state.isInitialIntervalsLoading)
-        )
-    }
-
-    if (state.isAddressActionsSheetVisible) {
+    if (state.isFittingAddressActionsSheetVisible) {
         FittingAddressActionsSheet(
-            dispatch = { intent ->
-                when (intent) {
-                    is FittingAddressActionsIntent.EditClick -> {
-                        viewModel.dispatch(FittingConfirmationIntent.EditAddressClick)
-                    }
-                    is FittingAddressActionsIntent.DeleteClick -> {
-                        state.addressActionAddressId?.let { addressId ->
-                            viewModel.dispatch(FittingConfirmationIntent.RequestDeleteAddress(addressId))
-                        }
-                    }
-                    is FittingAddressActionsIntent.DismissClick -> {
-                        viewModel.dispatch(FittingConfirmationIntent.HideAddressActions)
-                    }
-                }
-            }
+            dispatch = { intent -> viewModel.dispatch(FittingConfirmationIntent.OnFittingAddressActionsIntent(intent)) }
         )
     }
 
-    if (state.isAddressFormVisible) {
+    if (state.isFittingAddressSheetVisible) {
         FittingAddressSheet(
-            state = state.addressForm,
-            dispatch = { intent ->
-                when (intent) {
-                    is FittingAddressIntent.AddressFormValueChange -> {
-                        viewModel.dispatch(
-                            FittingConfirmationIntent.AddressFormValueChange(intent.field, intent.value)
-                        )
-                    }
-                    is FittingAddressIntent.DismissClick -> {
-                        viewModel.dispatch(FittingConfirmationIntent.HideAddressForm)
-                    }
-                    is FittingAddressIntent.OpenAddressSearch -> {
-                        viewModel.dispatch(FittingConfirmationIntent.OpenAddressSearch)
-                    }
-                    is FittingAddressIntent.SaveAddressClick -> {
-                        viewModel.dispatch(FittingConfirmationIntent.SaveAddressClick)
-                    }
-                }
-            },
+            state = state.fittingAddressState,
+            dispatch = { intent -> viewModel.dispatch(FittingConfirmationIntent.OnFittingAddressIntent(intent)) },
             snackbarHostStateError = snackbarHostStateError
         )
     }
 
-    if (state.isAddressSearchVisible) {
+    if (state.isFittingAddressSearchSheetVisible) {
         FittingAddressSearchSheet(
-            initialQuery = state.addressForm.address,
-            onDismissRequest = { viewModel.dispatch(FittingConfirmationIntent.HideAddressSearch) },
+            initialQuery = state.fittingAddressState.address,
+            onDismissRequest = { viewModel.dispatch(FittingConfirmationIntent.DismissFittingAddressSearchSheet) },
             onSelectAddressSuggestion = { suggestion ->
                 viewModel.dispatch(FittingConfirmationIntent.SelectAddressSuggestion(suggestion))
             }
@@ -185,21 +141,9 @@ fun FittingConfirmationScreen(
     }
 
     if (state.isFittingAddressDeleteDialogVisible) {
-        val address = requireNotNull(state.deleteAddress)
         FittingAddressDeleteDialog(
-            state = FittingAddressDeleteModel(
-                address = address.title
-            ),
-            dispatch = { intent ->
-                when (intent) {
-                    is FittingAddressDeleteIntent.ConfirmClick -> {
-                        viewModel.dispatch(FittingConfirmationIntent.ConfirmDeleteAddress)
-                    }
-                    is FittingAddressDeleteIntent.DismissRequest -> {
-                        viewModel.dispatch(FittingConfirmationIntent.DismissDeleteAddress)
-                    }
-                }
-            }
+            state = state.fittingAddressDeleteState,
+            dispatch = { intent -> viewModel.dispatch(FittingConfirmationIntent.OnFittingAddressDeleteIntent(intent)) }
         )
     }
 
@@ -227,371 +171,375 @@ private fun FittingConfirmationScreenContent(
     dispatch: (FittingConfirmationIntent) -> Unit,
     snackbarHostStateError: SnackbarHostState
 ) {
-    SharedScaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {},
-                navigationIcon = {
-                    IconButton(
-                        onClick = { dispatch(FittingConfirmationIntent.BackClick) },
-                        modifier = Modifier.size(42.dp)
-                    ) {
-                        Icon(
-                            imageVector = Close24,
-                            contentDescription = null,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground
-                )
-            )
-        },
-        bottomBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.background)
-                    .navigationBarsPadding()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
-            ) {
-                Button(
-                    onClick = {
-                        when (state.expandedDeliveryId) {
-                            null -> dispatch(FittingConfirmationIntent.ConfirmClick)
-                            else -> dispatch(FittingConfirmationIntent.ChangeDeliveryTimeClick(state.expandedDeliveryId))
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        SharedScaffold(
+            topBar = {
+                CenterAlignedTopAppBar(
+                    title = {},
+                    navigationIcon = {
+                        IconButton(
+                            onClick = { dispatch(FittingConfirmationIntent.BackClick) },
+                            modifier = Modifier.size(42.dp)
+                        ) {
+                            Icon(
+                                imageVector = Close24,
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp)
+                            )
                         }
                     },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                        navigationIconContentColor = MaterialTheme.colorScheme.onBackground
+                    )
+                )
+            },
+            bottomBar = {
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(52.dp)
-                        .placeholder(
-                            visible = state.isInitialIntervalsLoading,
-                            shape = RoundedCornerShape(8.dp)
-                        ),
-                    enabled = state.isConfirmEnabled,
-                    shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                        disabledContainerColor = MaterialTheme.colorScheme.disabled,
-                        disabledContentColor = MaterialTheme.colorScheme.onDisabled
-                    )
+                        .background(MaterialTheme.colorScheme.background)
+                        .navigationBarsPadding()
+                        .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
                 ) {
-                    Text(
-                        text = stringResource(
+                    Button(
+                        onClick = {
                             when (state.expandedDeliveryId) {
-                                null -> ClientStrings.FittingConfirmationConfirm
-                                else -> ClientStrings.FittingConfirmationConfirmTime
+                                null -> dispatch(FittingConfirmationIntent.ConfirmClick)
+                                else -> dispatch(FittingConfirmationIntent.ChangeDeliveryTimeClick(state.expandedDeliveryId))
                             }
-                        ),
-                        style = MaterialTheme.typography.medium15.copy(
-                            textAlign = TextAlign.Center,
-                            letterSpacing = .3.sp
-                        )
-                    )
-                }
-            }
-        },
-        snackbarHost = {
-            SharedSnackbarHost(
-                hostState = snackbarHostStateError,
-                modifier = Modifier.padding(bottom = 8.dp),
-                containerColor = MaterialTheme.colorScheme.error
-            )
-        }
-    ) { innerPadding ->
-        SharedLazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = innerPadding + PaddingValues(bottom = 8.dp)
-        ) {
-            when {
-                state.isInitialIntervalsLoading -> {
-                    item {
-                        FittingConfirmationScreenLoading()
-                    }
-                }
-                else -> {
-                    item {
-                        FittingConfirmationSectionTitle(
-                            text = stringResource(ClientStrings.FittingConfirmationPlaceTitle)
-                        )
-                    }
-                    item {
-                        FittingConfirmationPlaceRow(
-                            state = FittingConfirmationPlaceRowState(
-                                text = state.boutiqueAddress ?: stringResource(ClientStrings.FittingConfirmationPlaceBoutique),
-                                selected = state.selectedPlaceType == FittingConfirmationPlaceType.Boutique,
-                                enabled = true,
-                                showChevron = false
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp)
+                            .placeholder(
+                                visible = state.isInitialIntervalsLoading,
+                                shape = RoundedCornerShape(8.dp)
                             ),
-                            onClick = {
-                                dispatch(FittingConfirmationIntent.SelectPlace(FittingConfirmationPlaceType.Boutique))
-                            },
-                            onChevronClick = { dispatch(FittingConfirmationIntent.OpenAddressSelection) }
+                        enabled = state.isConfirmEnabled,
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary,
+                            disabledContainerColor = MaterialTheme.colorScheme.disabled,
+                            disabledContentColor = MaterialTheme.colorScheme.onDisabled
                         )
-                    }
-                    item {
-                        HorizontalDivider(
-                            modifier = Modifier.padding(start = 48.dp),
-                            color = MaterialTheme.colorScheme.outlineVariant
-                        )
-                    }
-                    item {
-                        FittingConfirmationPlaceRow(
-                            state = FittingConfirmationPlaceRowState(
-                                text = state.displayedClientAddress ?: stringResource(ClientStrings.FittingConfirmationSelectAddress),
-                                selected = state.selectedPlaceType == FittingConfirmationPlaceType.Home,
-                                enabled = state.isClientAddressAvailable,
-                                showChevron = true
-                            ),
-                            onClick = {
-                                dispatch(FittingConfirmationIntent.SelectPlace(FittingConfirmationPlaceType.Home))
-                            },
-                            onChevronClick = { dispatch(FittingConfirmationIntent.OpenAddressSelection) }
-                        )
-                    }
-                    item {
-                        HorizontalDivider(
-                            modifier = Modifier.padding(start = 48.dp),
-                            color = MaterialTheme.colorScheme.outlineVariant
-                        )
-                    }
-                    item {
-                        Column(
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            when {
-                                state.intervalsError != null -> {
-                                    Text(
-                                        text = state.intervalsError,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(start = 16.dp, top = 12.dp, end = 16.dp, bottom = 12.dp),
-                                        style = MaterialTheme.typography.regular14.copy(
-                                            fontSize = 13.sp,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                            lineHeight = 20.sp,
-                                            textAlign = TextAlign.Start
-                                        )
-                                    )
+                    ) {
+                        Text(
+                            text = stringResource(
+                                when (state.expandedDeliveryId) {
+                                    null -> ClientStrings.FittingConfirmationConfirm
+                                    else -> ClientStrings.FittingConfirmationConfirmTime
                                 }
-                                state.isMultipleDeliveryAvailable -> {
-                                    Text(
-                                        text = stringResource(ClientStrings.FittingConfirmationMultipleDeliveryInfo),
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(start = 16.dp, top = 24.dp, end = 16.dp),
-                                        style = MaterialTheme.typography.regular14.copy(
-                                            fontSize = 13.sp,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                            lineHeight = 20.sp,
-                                            textAlign = TextAlign.Start
+                            ),
+                            style = MaterialTheme.typography.medium15.copy(
+                                textAlign = TextAlign.Center,
+                                letterSpacing = .3.sp
+                            )
+                        )
+                    }
+                }
+            },
+            snackbarHost = {
+                SharedSnackbarHost(
+                    hostState = snackbarHostStateError,
+                    modifier = Modifier.padding(bottom = 8.dp),
+                    containerColor = MaterialTheme.colorScheme.error
+                )
+            }
+        ) { innerPadding ->
+            SharedLazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = innerPadding + PaddingValues(bottom = 8.dp)
+            ) {
+                when {
+                    state.isInitialIntervalsLoading -> {
+                        item {
+                            FittingConfirmationScreenLoading()
+                        }
+                    }
+                    else -> {
+                        item {
+                            FittingConfirmationSectionTitle(
+                                text = stringResource(ClientStrings.FittingConfirmationPlaceTitle)
+                            )
+                        }
+                        item {
+                            FittingConfirmationPlaceRow(
+                                state = FittingConfirmationPlaceRowState(
+                                    text = state.boutiqueAddress ?: stringResource(ClientStrings.FittingConfirmationPlaceBoutique),
+                                    selected = state.selectedPlaceType == FittingConfirmationPlaceType.Boutique,
+                                    enabled = true,
+                                    showChevron = false
+                                ),
+                                onClick = {
+                                    dispatch(FittingConfirmationIntent.SelectPlace(FittingConfirmationPlaceType.Boutique))
+                                },
+                                onChevronClick = { dispatch(FittingConfirmationIntent.OpenAddressSelection) }
+                            )
+                        }
+                        item {
+                            HorizontalDivider(
+                                modifier = Modifier.padding(start = 48.dp),
+                                color = MaterialTheme.colorScheme.outlineVariant
+                            )
+                        }
+                        item {
+                            FittingConfirmationPlaceRow(
+                                state = FittingConfirmationPlaceRowState(
+                                    text = state.displayedClientAddress ?: stringResource(ClientStrings.FittingConfirmationSelectAddress),
+                                    selected = state.selectedPlaceType == FittingConfirmationPlaceType.Home,
+                                    enabled = state.isClientAddressAvailable,
+                                    showChevron = true
+                                ),
+                                onClick = {
+                                    dispatch(FittingConfirmationIntent.SelectPlace(FittingConfirmationPlaceType.Home))
+                                },
+                                onChevronClick = { dispatch(FittingConfirmationIntent.OpenAddressSelection) }
+                            )
+                        }
+                        item {
+                            HorizontalDivider(
+                                modifier = Modifier.padding(start = 48.dp),
+                                color = MaterialTheme.colorScheme.outlineVariant
+                            )
+                        }
+                        item {
+                            Column(
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                when {
+                                    state.intervalsError != null -> {
+                                        Text(
+                                            text = state.intervalsError,
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(start = 16.dp, top = 12.dp, end = 16.dp, bottom = 12.dp),
+                                            style = MaterialTheme.typography.regular14.copy(
+                                                fontSize = 13.sp,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                lineHeight = 20.sp,
+                                                textAlign = TextAlign.Start
+                                            )
                                         )
-                                    )
+                                    }
+                                    state.isMultipleDeliveryAvailable -> {
+                                        Text(
+                                            text = stringResource(ClientStrings.FittingConfirmationMultipleDeliveryInfo),
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(start = 16.dp, top = 24.dp, end = 16.dp),
+                                            style = MaterialTheme.typography.regular14.copy(
+                                                fontSize = 13.sp,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                lineHeight = 20.sp,
+                                                textAlign = TextAlign.Start
+                                            )
+                                        )
 
-                                    SharedTabRow(
-                                        state = SharedTabRowState(
-                                            selectedIndex = when (state.deliveryMode) {
-                                                FittingConfirmationDeliveryMode.Multiple -> 0
-                                                FittingConfirmationDeliveryMode.Single -> 1
-                                            },
-                                            firstTabText = stringResource(ClientStrings.FittingConfirmationMultipleDeliveries),
-                                            secondTabText = stringResource(ClientStrings.FittingConfirmationSingleDelivery),
-                                            onFirstTabClick = {
-                                                dispatch(
-                                                    FittingConfirmationIntent.SelectDeliveryMode(
-                                                        FittingConfirmationDeliveryMode.Multiple
+                                        SharedTabRow(
+                                            state = SharedTabRowState(
+                                                selectedIndex = when (state.deliveryMode) {
+                                                    FittingConfirmationDeliveryMode.Multiple -> 0
+                                                    FittingConfirmationDeliveryMode.Single -> 1
+                                                },
+                                                firstTabText = stringResource(ClientStrings.FittingConfirmationMultipleDeliveries),
+                                                secondTabText = stringResource(ClientStrings.FittingConfirmationSingleDelivery),
+                                                onFirstTabClick = {
+                                                    dispatch(
+                                                        FittingConfirmationIntent.SelectDeliveryMode(
+                                                            FittingConfirmationDeliveryMode.Multiple
+                                                        )
                                                     )
-                                                )
-                                            },
-                                            onSecondTabClick = {
-                                                dispatch(
-                                                    FittingConfirmationIntent.SelectDeliveryMode(
-                                                        FittingConfirmationDeliveryMode.Single
+                                                },
+                                                onSecondTabClick = {
+                                                    dispatch(
+                                                        FittingConfirmationIntent.SelectDeliveryMode(
+                                                            FittingConfirmationDeliveryMode.Single
+                                                        )
                                                     )
-                                                )
-                                            },
-                                            isLoading = false
-                                        ),
-                                        textStyle = MaterialTheme.typography.medium13.copy(
-                                            lineHeight = 16.sp,
-                                            textAlign = TextAlign.Center
-                                        ),
-                                        modifier = Modifier.padding(start = 16.dp, top = 18.dp, end = 16.dp)
-                                    )
+                                                },
+                                                isLoading = false
+                                            ),
+                                            textStyle = MaterialTheme.typography.medium13.copy(
+                                                lineHeight = 16.sp,
+                                                textAlign = TextAlign.Center
+                                            ),
+                                            modifier = Modifier.padding(start = 16.dp, top = 18.dp, end = 16.dp)
+                                        )
 
-                                    Spacer(
-                                        modifier = Modifier.height(24.dp)
-                                    )
+                                        Spacer(
+                                            modifier = Modifier.height(24.dp)
+                                        )
 
-                                    when (state.deliveryMode) {
-                                        FittingConfirmationDeliveryMode.Multiple -> {
-                                            state.deliveryGroups.forEach { group ->
-                                                val selectedDayId = state.selectedDeliveryDayIds[group.id]
-                                                val selectedIntervalId = state.selectedDeliveryIntervalIds[group.id]
-                                                val expanded = state.expandedDeliveryId == group.id
-                                                val selectedInterval = group.intervals.firstOrNull { interval ->
-                                                    interval.id == selectedIntervalId
-                                                }
-                                                val productsCount = group.products.itemsCount
+                                        when (state.deliveryMode) {
+                                            FittingConfirmationDeliveryMode.Multiple -> {
+                                                state.deliveryGroups.forEach { group ->
+                                                    val selectedDayId = state.selectedDeliveryDayIds[group.id]
+                                                    val selectedIntervalId = state.selectedDeliveryIntervalIds[group.id]
+                                                    val expanded = state.expandedDeliveryId == group.id
+                                                    val selectedInterval = group.intervals.firstOrNull { interval ->
+                                                        interval.id == selectedIntervalId
+                                                    }
+                                                    val productsCount = group.products.itemsCount
 
-                                                Column(
-                                                    modifier = Modifier.fillMaxWidth()
-                                                ) {
-                                                    Row(
-                                                        modifier = Modifier
-                                                            .fillMaxWidth()
-                                                            .height(48.dp)
-                                                            .padding(start = 16.dp, end = 16.dp),
-                                                        verticalAlignment = Alignment.CenterVertically
+                                                    Column(
+                                                        modifier = Modifier.fillMaxWidth()
                                                     ) {
-                                                        Text(
-                                                            text = buildAnnotatedString {
-                                                                withStyle(
-                                                                    SpanStyle(
-                                                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                                                    )
+                                                        Row(
+                                                            modifier = Modifier
+                                                                .fillMaxWidth()
+                                                                .height(48.dp)
+                                                                .padding(start = 16.dp, end = 16.dp),
+                                                            verticalAlignment = Alignment.CenterVertically
+                                                        ) {
+                                                            Text(
+                                                                text = buildAnnotatedString {
+                                                                    withStyle(
+                                                                        SpanStyle(
+                                                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                                                        )
+                                                                    ) {
+                                                                        append(
+                                                                            pluralStringResource(
+                                                                                ClientStrings.FittingConfirmationDeliveryProductsCount,
+                                                                                productsCount,
+                                                                                productsCount
+                                                                            )
+                                                                        )
+                                                                    }
+                                                                    append(": ")
+                                                                    withStyle(
+                                                                        SpanStyle(
+                                                                            color = MaterialTheme.colorScheme.onBackground
+                                                                        )
+                                                                    ) {
+                                                                        append(selectedInterval?.summary.orEmpty())
+                                                                    }
+                                                                },
+                                                                modifier = Modifier.weight(1F),
+                                                                style = MaterialTheme.typography.regular14.copy(
+                                                                    lineHeight = 20.sp
+                                                                )
+                                                            )
+
+                                                            AnimatedVisibility(
+                                                                visible = !expanded
+                                                            ) {
+                                                                TextButton(
+                                                                    onClick = {
+                                                                        dispatch(
+                                                                            FittingConfirmationIntent.ChangeDeliveryTimeClick(group.id)
+                                                                        )
+                                                                    },
+                                                                    modifier = Modifier.height(40.dp),
+                                                                    contentPadding = PaddingValues()
                                                                 ) {
-                                                                    append(
-                                                                        pluralStringResource(
-                                                                            ClientStrings.FittingConfirmationDeliveryProductsCount,
-                                                                            productsCount,
-                                                                            productsCount
+                                                                    Text(
+                                                                        text = stringResource(ClientStrings.FittingConfirmationChangeTime),
+                                                                        modifier = Modifier.padding(start = 8.dp, end = 8.dp),
+                                                                        maxLines = 1,
+                                                                        style = MaterialTheme.typography.medium13.copy(
+                                                                            color = MaterialTheme.colorScheme.error,
+                                                                            lineHeight = 16.sp,
+                                                                            textAlign = TextAlign.Right
                                                                         )
                                                                     )
                                                                 }
-                                                                append(": ")
-                                                                withStyle(
-                                                                    SpanStyle(
-                                                                        color = MaterialTheme.colorScheme.onBackground
-                                                                    )
-                                                                ) {
-                                                                    append(selectedInterval?.summary.orEmpty())
-                                                                }
-                                                            },
-                                                            modifier = Modifier.weight(1F),
-                                                            style = MaterialTheme.typography.regular14.copy(
-                                                                lineHeight = 20.sp
+                                                            }
+                                                        }
+
+                                                        if (!expanded) {
+                                                            HorizontalDivider(
+                                                                modifier = Modifier.padding(start = 16.dp, end = 16.dp),
+                                                                color = MaterialTheme.colorScheme.outlineVariant
                                                             )
-                                                        )
+                                                        }
 
                                                         AnimatedVisibility(
-                                                            visible = !expanded
+                                                            visible = expanded,
+                                                            enter = fadeIn() + expandVertically(),
+                                                            exit = shrinkVertically() + fadeOut()
                                                         ) {
-                                                            TextButton(
-                                                                onClick = {
-                                                                    dispatch(
-                                                                        FittingConfirmationIntent.ChangeDeliveryTimeClick(group.id)
-                                                                    )
-                                                                },
-                                                                modifier = Modifier.height(40.dp),
-                                                                contentPadding = PaddingValues()
+                                                            Column(
+                                                                modifier = Modifier.fillMaxWidth(),
+                                                                verticalArrangement = Arrangement.spacedBy(8.dp)
                                                             ) {
-                                                                Text(
-                                                                    text = stringResource(ClientStrings.FittingConfirmationChangeTime),
-                                                                    modifier = Modifier.padding(start = 8.dp, end = 8.dp),
-                                                                    maxLines = 1,
-                                                                    style = MaterialTheme.typography.medium13.copy(
-                                                                        color = MaterialTheme.colorScheme.error,
-                                                                        lineHeight = 16.sp,
-                                                                        textAlign = TextAlign.Right
+                                                                FittingConfirmationProductsRow(
+                                                                    products = group.products
+                                                                )
+
+                                                                FittingConfirmationDaysRow(
+                                                                    state = FittingConfirmationDaysRowState(
+                                                                        intervals = group.intervals,
+                                                                        selectedDayId = selectedDayId,
+                                                                        onDayClick = { dayId ->
+                                                                            dispatch(
+                                                                                FittingConfirmationIntent.SelectDeliveryDay(
+                                                                                    group.id,
+                                                                                    dayId
+                                                                                )
+                                                                            )
+                                                                        }
+                                                                    )
+                                                                )
+
+                                                                FittingConfirmationIntervalsRow(
+                                                                    state = FittingConfirmationIntervalsRowState(
+                                                                        intervals = group.intervals.filter { interval ->
+                                                                            interval.dayId == (
+                                                                                    selectedDayId
+                                                                                        ?: group.intervals.firstOrNull()?.dayId
+                                                                                    )
+                                                                        },
+                                                                        selectedIntervalId = selectedIntervalId,
+                                                                        onIntervalClick = { intervalId ->
+                                                                            dispatch(
+                                                                                FittingConfirmationIntent.SelectDeliveryInterval(
+                                                                                    group.id,
+                                                                                    intervalId
+                                                                                )
+                                                                            )
+                                                                        }
                                                                     )
                                                                 )
                                                             }
                                                         }
                                                     }
-
-                                                    if (!expanded) {
-                                                        HorizontalDivider(
-                                                            modifier = Modifier.padding(start = 16.dp, end = 16.dp),
-                                                            color = MaterialTheme.colorScheme.outlineVariant
-                                                        )
-                                                    }
-
-                                                    AnimatedVisibility(
-                                                        visible = expanded,
-                                                        enter = fadeIn() + expandVertically(),
-                                                        exit = shrinkVertically() + fadeOut()
-                                                    ) {
-                                                        Column(
-                                                            modifier = Modifier.fillMaxWidth(),
-                                                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                                                        ) {
-                                                            FittingConfirmationProductsRow(
-                                                                products = group.products
-                                                            )
-
-                                                            FittingConfirmationDaysRow(
-                                                                state = FittingConfirmationDaysRowState(
-                                                                    intervals = group.intervals,
-                                                                    selectedDayId = selectedDayId,
-                                                                    onDayClick = { dayId ->
-                                                                        dispatch(
-                                                                            FittingConfirmationIntent.SelectDeliveryDay(
-                                                                                group.id,
-                                                                                dayId
-                                                                            )
-                                                                        )
-                                                                    }
-                                                                )
-                                                            )
-
-                                                            FittingConfirmationIntervalsRow(
-                                                                state = FittingConfirmationIntervalsRowState(
-                                                                    intervals = group.intervals.filter { interval ->
-                                                                        interval.dayId == (
-                                                                                selectedDayId
-                                                                                    ?: group.intervals.firstOrNull()?.dayId
-                                                                                )
-                                                                    },
-                                                                    selectedIntervalId = selectedIntervalId,
-                                                                    onIntervalClick = { intervalId ->
-                                                                        dispatch(
-                                                                            FittingConfirmationIntent.SelectDeliveryInterval(
-                                                                                group.id,
-                                                                                intervalId
-                                                                            )
-                                                                        )
-                                                                    }
-                                                                )
-                                                            )
-                                                        }
-                                                    }
                                                 }
                                             }
-                                        }
-                                        FittingConfirmationDeliveryMode.Single -> {
-                                            FittingConfirmationSingleDeliveryContent(
-                                                state = FittingConfirmationSingleDeliveryContentState(
-                                                    intervals = state.singleIntervals,
-                                                    selectedDayId = state.selectedSingleDayId,
-                                                    selectedIntervalId = state.selectedSingleIntervalId,
-                                                    onDayClick = { dayId -> dispatch(FittingConfirmationIntent.SelectSingleDay(dayId)) },
-                                                    onIntervalClick = { intervalId ->
-                                                        dispatch(FittingConfirmationIntent.SelectSingleInterval(intervalId))
-                                                    }
+                                            FittingConfirmationDeliveryMode.Single -> {
+                                                FittingConfirmationSingleDeliveryContent(
+                                                    state = FittingConfirmationSingleDeliveryContentState(
+                                                        intervals = state.singleIntervals,
+                                                        selectedDayId = state.selectedSingleDayId,
+                                                        selectedIntervalId = state.selectedSingleIntervalId,
+                                                        onDayClick = { dayId -> dispatch(FittingConfirmationIntent.SelectSingleDay(dayId)) },
+                                                        onIntervalClick = { intervalId ->
+                                                            dispatch(FittingConfirmationIntent.SelectSingleInterval(intervalId))
+                                                        }
+                                                    )
                                                 )
-                                            )
+                                            }
                                         }
                                     }
-                                }
-                                else -> {
-                                    FittingConfirmationSingleDeliveryContent(
-                                        state = FittingConfirmationSingleDeliveryContentState(
-                                            intervals = state.singleIntervals,
-                                            selectedDayId = state.selectedSingleDayId,
-                                            selectedIntervalId = state.selectedSingleIntervalId,
-                                            onDayClick = { dayId ->
-                                                dispatch(FittingConfirmationIntent.SelectSingleDay(dayId))
-                                            },
-                                            onIntervalClick = { intervalId ->
-                                                dispatch(FittingConfirmationIntent.SelectSingleInterval(intervalId))
-                                            }
+                                    else -> {
+                                        FittingConfirmationSingleDeliveryContent(
+                                            state = FittingConfirmationSingleDeliveryContentState(
+                                                intervals = state.singleIntervals,
+                                                selectedDayId = state.selectedSingleDayId,
+                                                selectedIntervalId = state.selectedSingleIntervalId,
+                                                onDayClick = { dayId ->
+                                                    dispatch(FittingConfirmationIntent.SelectSingleDay(dayId))
+                                                },
+                                                onIntervalClick = { intervalId ->
+                                                    dispatch(FittingConfirmationIntent.SelectSingleInterval(intervalId))
+                                                }
+                                            )
                                         )
-                                    )
+                                    }
                                 }
                             }
                         }
@@ -599,6 +547,10 @@ private fun FittingConfirmationScreenContent(
                 }
             }
         }
+
+        LoadingBox(
+            isVisible = state.isLoadingBoxVisible
+        )
     }
 }
 

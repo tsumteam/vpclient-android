@@ -12,7 +12,7 @@ data class DebugModel(
     val isEnvironmentDialogVisible: Boolean = false
 ): Model {
 
-    val debugEnvModel: DebugEnvModel
+    val debugEnvState: DebugEnvModel
         get() = DebugEnvModel(
             selectedEnvironment = environment
         )

@@ -63,27 +63,17 @@ import ru.mercury.vpclient.features.checkout.model.CheckoutModel
 import ru.mercury.vpclient.features.checkout.model.CheckoutSource
 import ru.mercury.vpclient.features.checkout.navigation.CheckoutRoute
 import ru.mercury.vpclient.features.checkout_amount_changed_dialog.CheckoutAmountChangedDialog
-import ru.mercury.vpclient.features.checkout_amount_changed_dialog.intent.CheckoutAmountChangedIntent
 import ru.mercury.vpclient.features.checkout_bank_card_sheet.CheckoutBankCardSheet
-import ru.mercury.vpclient.features.checkout_bank_card_sheet.intent.CheckoutBankCardIntent
 import ru.mercury.vpclient.features.checkout_bonus_sheet.CheckoutBonusSheet
-import ru.mercury.vpclient.features.checkout_bonus_sheet.intent.CheckoutBonusIntent
 import ru.mercury.vpclient.features.checkout_payment_method_sheet.CheckoutPaymentMethodSheet
-import ru.mercury.vpclient.features.checkout_payment_method_sheet.intent.CheckoutPaymentMethodIntent
 import ru.mercury.vpclient.features.checkout_sbp_bank_sheet.CheckoutSbpBankSheet
-import ru.mercury.vpclient.features.checkout_sbp_bank_sheet.intent.CheckoutSbpBankIntent
 import ru.mercury.vpclient.features.fitting_addresses.event.FittingAddressesEventManager
 import ru.mercury.vpclient.features.loyalty_add_card_sheet.LoyaltyAddCardSheet
-import ru.mercury.vpclient.features.loyalty_add_card_sheet.intent.LoyaltyAddCardIntent
-import ru.mercury.vpclient.features.loyalty_add_card_sheet.model.LoyaltyAddCardModel
 import ru.mercury.vpclient.features.loyalty_code_sheet.LoyaltyCodeSheet
-import ru.mercury.vpclient.features.loyalty_code_sheet.intent.LoyaltyCodeIntent
-import ru.mercury.vpclient.features.loyalty_code_sheet.model.LoyaltyCodeModel
 import ru.mercury.vpclient.shared.data.entity.FittingCheckoutData
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationData
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationDeliveryInterval
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationPlaceType
-import ru.mercury.vpclient.shared.data.entity.LoyaltyAddCardMode
 import ru.mercury.vpclient.shared.data.network.type.PaymentType
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ClientDeliveryAddressEntity
 import ru.mercury.vpclient.shared.domain.mapper.title
@@ -129,10 +119,6 @@ fun CheckoutScreen(
     val snackbarHostStateError = remember { SnackbarHostState() }
     val snackbarHostStateTopError = remember { SnackbarHostState() }
 
-    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-        viewModel.dispatch(CheckoutIntent.CheckPaymentResult)
-    }
-
     CheckoutScreenContent(
         state = state,
         dispatch = viewModel::dispatch,
@@ -142,175 +128,50 @@ fun CheckoutScreen(
 
     if (state.isLoyaltyAddCardSheetVisible) {
         LoyaltyAddCardSheet(
-            state = LoyaltyAddCardModel(
-                mode = state.loyaltyAddCardMode,
-                phone = state.loyaltyAddCardPhone,
-                cardNumber = state.loyaltyAddCardCardNumber,
-                isLoading = state.loyaltyAddCardJob?.isActive == true,
-                isPhoneErrorVisible = state.isLoyaltyAddCardPhoneErrorVisible
-            ),
-            dispatch = { intent ->
-                when (intent) {
-                    is LoyaltyAddCardIntent.DismissClick -> {
-                        viewModel.dispatch(CheckoutIntent.DismissLoyaltyAddCardSheet)
-                    }
-                    is LoyaltyAddCardIntent.ModeClick -> {
-                        viewModel.dispatch(CheckoutIntent.LoyaltyAddCardModeClick(intent.mode))
-                    }
-                    is LoyaltyAddCardIntent.PhoneChange -> {
-                        viewModel.dispatch(CheckoutIntent.LoyaltyAddCardPhoneChange(intent.phone))
-                    }
-                    is LoyaltyAddCardIntent.CardNumberChange -> {
-                        viewModel.dispatch(CheckoutIntent.LoyaltyAddCardCardNumberChange(intent.cardNumber))
-                    }
-                    is LoyaltyAddCardIntent.ConfirmClick -> {
-                        when (state.loyaltyAddCardMode) {
-                            LoyaltyAddCardMode.Phone -> {
-                                viewModel.dispatch(CheckoutIntent.LoyaltyAddCardPhoneConfirmClick)
-                            }
-                            LoyaltyAddCardMode.CardNumber -> {
-                                viewModel.dispatch(CheckoutIntent.LoyaltyAddCardCardNumberConfirmClick)
-                            }
-                        }
-                    }
-                }
-            }
+            state = state.loyaltyAddCardState,
+            dispatch = { intent -> viewModel.dispatch(CheckoutIntent.OnLoyaltyAddCardIntent(intent)) }
         )
     }
 
     if (state.isLoyaltyCodeSheetVisible) {
         LoyaltyCodeSheet(
-            state = LoyaltyCodeModel(
-                mode = state.loyaltyCodeMode,
-                phone = state.loyaltyCodePhone,
-                cardNumber = state.loyaltyCodeCardNumber,
-                code = state.loyaltyCode,
-                isLoading = state.isLoyaltyCodeLoading,
-                isResendLoading = state.isLoyaltyCodeResendLoading,
-                isCodeErrorVisible = state.isLoyaltyCodeErrorVisible,
-                resendTimerStartedAt = state.loyaltyCodeResendTimerStartedAt,
-                resendSecondsLeft = state.loyaltyCodeResendSecondsLeft,
-                resendTimerJob = state.loyaltyCodeResendTimerJob
-            ),
-            dispatch = { intent ->
-                when (intent) {
-                    is LoyaltyCodeIntent.DismissClick -> {
-                        viewModel.dispatch(CheckoutIntent.DismissLoyaltyCodeSheet)
-                    }
-                    is LoyaltyCodeIntent.StartResendTimerTicker -> {
-                        viewModel.dispatch(CheckoutIntent.StartLoyaltyCodeResendTimerTicker)
-                    }
-                    is LoyaltyCodeIntent.CodeChange -> {
-                        viewModel.dispatch(CheckoutIntent.LoyaltyCodeChange(intent.code))
-                    }
-                    is LoyaltyCodeIntent.ConfirmClick -> {
-                        viewModel.dispatch(CheckoutIntent.LoyaltyCodeConfirmClick)
-                    }
-                    is LoyaltyCodeIntent.ResendCodeClick -> {
-                        viewModel.dispatch(CheckoutIntent.LoyaltyCodeResendCodeClick)
-                    }
-                }
-            }
+            state = state.loyaltyCodeState,
+            dispatch = { intent -> viewModel.dispatch(CheckoutIntent.OnLoyaltyCodeIntent(intent)) }
         )
     }
 
     if (state.isCheckoutBonusSheetVisible) {
         CheckoutBonusSheet(
-            state = state.checkoutBonusModel,
-            dispatch = { intent ->
-                when (intent) {
-                    is CheckoutBonusIntent.DismissClick -> {
-                        viewModel.dispatch(CheckoutIntent.DismissCheckoutBonusSheet)
-                    }
-                    is CheckoutBonusIntent.CodeChange -> {
-                        viewModel.dispatch(CheckoutIntent.BonusCodeChange(intent.code))
-                    }
-                    is CheckoutBonusIntent.ConfirmClick -> {
-                        viewModel.dispatch(CheckoutIntent.BonusCodeConfirmClick)
-                    }
-                    is CheckoutBonusIntent.ResendCodeClick -> {
-                        viewModel.dispatch(CheckoutIntent.BonusCodeResendClick)
-                    }
-                }
-            }
+            state = state.checkoutBonusState,
+            dispatch = { intent -> viewModel.dispatch(CheckoutIntent.OnCheckoutBonusIntent(intent)) }
         )
     }
 
     if (state.isCheckoutPaymentMethodSheetVisible) {
         CheckoutPaymentMethodSheet(
-            state = state.checkoutPaymentMethodModel,
-            dispatch = { intent ->
-                when (intent) {
-                    is CheckoutPaymentMethodIntent.DismissClick -> {
-                        viewModel.dispatch(CheckoutIntent.DismissCheckoutPaymentMethodSheet)
-                    }
-                    is CheckoutPaymentMethodIntent.CardClick -> {
-                        viewModel.dispatch(CheckoutIntent.PaymentCardClick(intent.cardId))
-                    }
-                    is CheckoutPaymentMethodIntent.DeleteCardClick -> {
-                        viewModel.dispatch(CheckoutIntent.DeletePaymentCardClick(intent.cardId))
-                    }
-                    is CheckoutPaymentMethodIntent.AddNewCardClick -> {
-                        viewModel.dispatch(CheckoutIntent.AddNewPaymentCardClick)
-                    }
-                    is CheckoutPaymentMethodIntent.PayClick -> {
-                        viewModel.dispatch(CheckoutIntent.PaymentMethodPayClick)
-                    }
-                }
-            }
+            state = state.checkoutPaymentMethodState,
+            dispatch = { intent -> viewModel.dispatch(CheckoutIntent.OnCheckoutPaymentMethodIntent(intent)) }
         )
     }
 
     if (state.isCheckoutSbpBankSheetVisible) {
         CheckoutSbpBankSheet(
-            state = state.checkoutSbpBankModel,
-            dispatch = { intent ->
-                when (intent) {
-                    is CheckoutSbpBankIntent.DismissClick -> {
-                        viewModel.dispatch(CheckoutIntent.DismissCheckoutSbpBankSheet)
-                    }
-                    is CheckoutSbpBankIntent.BankClick -> {
-                        viewModel.dispatch(CheckoutIntent.SbpBankClick(intent.bank))
-                    }
-                }
-            }
+            state = state.checkoutSbpBankState,
+            dispatch = { intent -> viewModel.dispatch(CheckoutIntent.OnCheckoutSbpBankIntent(intent)) }
         )
     }
 
     if (state.isCheckoutBankCardSheetVisible) {
         CheckoutBankCardSheet(
-            state = state.checkoutBankCardModel,
-            dispatch = { intent ->
-                when (intent) {
-                    is CheckoutBankCardIntent.DismissClick -> {
-                        viewModel.dispatch(CheckoutIntent.DismissCheckoutBankCardSheet)
-                    }
-                    is CheckoutBankCardIntent.SaveCardClick -> {
-                        viewModel.dispatch(CheckoutIntent.BankCardSaveClick)
-                    }
-                    is CheckoutBankCardIntent.PayClick -> {
-                        viewModel.dispatch(CheckoutIntent.BankCardPayClick)
-                    }
-                    is CheckoutBankCardIntent.CardNumberFocusLost -> {
-                        viewModel.dispatch(CheckoutIntent.BankCardNumberFocusLost)
-                    }
-                    is CheckoutBankCardIntent.ExpirationDateFocusLost -> {
-                        viewModel.dispatch(CheckoutIntent.BankCardExpirationDateFocusLost)
-                    }
-                    is CheckoutBankCardIntent.CvvFocusLost -> {
-                        viewModel.dispatch(CheckoutIntent.BankCardCvvFocusLost)
-                    }
-                    is CheckoutBankCardIntent.CardNumberChange -> {
-                        viewModel.dispatch(CheckoutIntent.BankCardNumberChange(intent.value))
-                    }
-                    is CheckoutBankCardIntent.ExpirationDateChange -> {
-                        viewModel.dispatch(CheckoutIntent.BankCardExpirationDateChange(intent.value))
-                    }
-                    is CheckoutBankCardIntent.CvvChange -> {
-                        viewModel.dispatch(CheckoutIntent.BankCardCvvChange(intent.value))
-                    }
-                }
-            }
+            state = state.checkoutBankCardState,
+            dispatch = { intent -> viewModel.dispatch(CheckoutIntent.OnCheckoutBankCardIntent(intent)) }
+        )
+    }
+
+    if (state.isCheckoutAmountChangedDialogVisible) {
+        CheckoutAmountChangedDialog(
+            state = state.checkoutAmountChangedState,
+            dispatch = { intent -> viewModel.dispatch(CheckoutIntent.OnCheckoutAmountChangedIntent(intent)) }
         )
     }
 
@@ -343,17 +204,8 @@ fun CheckoutScreen(
         viewModel.dispatch(CheckoutIntent.ReceiveFittingAddressesEvent(event))
     }
 
-    if (state.isCheckoutAmountChangedDialogVisible) {
-        CheckoutAmountChangedDialog(
-            state = state.checkoutAmountChangedModel,
-            dispatch = { intent ->
-                when (intent) {
-                    is CheckoutAmountChangedIntent.ConfirmClick -> {
-                        viewModel.dispatch(CheckoutIntent.AmountChangedContinueClick)
-                    }
-                }
-            }
-        )
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        viewModel.dispatch(CheckoutIntent.CheckPaymentResult)
     }
 }
 

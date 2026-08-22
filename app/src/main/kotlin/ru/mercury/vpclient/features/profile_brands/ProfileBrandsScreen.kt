@@ -88,10 +88,10 @@ fun ProfileBrandsScreen(
         snackbarHostStateError = snackbarHostStateError
     )
 
-    if (state.isBrandSheetVisible) {
+    if (state.isProfileBrandSheetVisible) {
         ProfileBrandSheet(
             categoryId = state.selectedTab.value,
-            onDismiss = { viewModel.dispatch(ProfileBrandsIntent.HideBrandSheet) }
+            onDismiss = { viewModel.dispatch(ProfileBrandsIntent.DismissProfileBrandSheet) }
         )
     }
 

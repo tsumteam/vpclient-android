@@ -1,5 +1,6 @@
 package ru.mercury.vpclient.features.profile_my_data.intent
 
+import ru.mercury.vpclient.features.profile_delete_dialog.intent.ProfileDeleteIntent
 import ru.mercury.vpclient.shared.mvi.Intent
 
 sealed interface ProfileMyDataIntent: Intent {
@@ -13,6 +14,5 @@ sealed interface ProfileMyDataIntent: Intent {
     data object FittingClick: ProfileMyDataIntent
     data object MessengerClick: ProfileMyDataIntent
     data object ShowDeleteProfileDialog: ProfileMyDataIntent
-    data object DismissProfileDeleteDialog: ProfileMyDataIntent
-    data object DeleteProfile: ProfileMyDataIntent
+    data class OnProfileDeleteIntent(val intent: ProfileDeleteIntent): ProfileMyDataIntent
 }

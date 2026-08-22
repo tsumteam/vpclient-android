@@ -1,5 +1,6 @@
 package ru.mercury.vpclient.features.compilations.intent
 
+import ru.mercury.vpclient.features.compilation_chat_sheet.intent.CompilationChatIntent
 import ru.mercury.vpclient.shared.mvi.Intent
 
 sealed interface CompilationsIntent: Intent {
@@ -13,8 +14,7 @@ sealed interface CompilationsIntent: Intent {
     data object CartClick: CompilationsIntent
     data object FittingClick: CompilationsIntent
     data object MessengerClick: CompilationsIntent
-    data object HideCompilationChatSheet: CompilationsIntent
     data class CompilationClick(val id: Int): CompilationsIntent
     data class CompilationChatClick(val id: Int): CompilationsIntent
-    data class CompilationChatSendClick(val comment: String): CompilationsIntent
+    data class OnCompilationChatIntent(val intent: CompilationChatIntent): CompilationsIntent
 }

@@ -47,6 +47,7 @@ import ru.mercury.vpclient.shared.domain.mapper.quantityWithThousandsSeparator
 import ru.mercury.vpclient.shared.domain.mapper.requireQuantity
 import ru.mercury.vpclient.shared.domain.mapper.values
 import ru.mercury.vpclient.shared.ui.components.SharedAnimatedVisibility
+import ru.mercury.vpclient.shared.ui.components.SharedColumn
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.filters.FilterSelectableRow
@@ -66,7 +67,7 @@ fun FilterValuesSheet(
     SharedModalBottomSheet(
         onDismissRequest = { dispatch(FilterValuesIntent.DismissClick) }
     ) {
-        Column {
+        SharedColumn {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
@@ -220,7 +221,7 @@ fun FilterValuesSheet(
 @Preview
 @Composable
 private fun FilterValuesSheetPreview(
-    @PreviewParameter(FilterValuesSheetStateProvider::class) state: FilterValuesModel
+    @PreviewParameter(FilterValuesModelPreviewParameterProvider::class) state: FilterValuesModel
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -232,7 +233,7 @@ private fun FilterValuesSheetPreview(
     }
 }
 
-private class FilterValuesSheetStateProvider: PreviewParameterProvider<FilterValuesModel> {
+private class FilterValuesModelPreviewParameterProvider: PreviewParameterProvider<FilterValuesModel> {
     override val values: Sequence<FilterValuesModel> = sequenceOf(
         FilterValuesModel(
             entity = FilterValuesEntity(

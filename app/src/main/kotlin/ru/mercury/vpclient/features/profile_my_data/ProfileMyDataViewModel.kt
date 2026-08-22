@@ -8,6 +8,7 @@ import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.features.auth_welcome.navigation.WelcomeRoute
 import ru.mercury.vpclient.features.cart.navigation.CartPage
 import ru.mercury.vpclient.features.cart.navigation.CartRoute
+import ru.mercury.vpclient.features.profile_delete_dialog.intent.ProfileDeleteIntent
 import ru.mercury.vpclient.features.profile_my_data.intent.ProfileMyDataIntent
 import ru.mercury.vpclient.features.profile_my_data.model.ProfileMyDataModel
 import ru.mercury.vpclient.features.profile_root.event.ProfileRootEventManager
@@ -94,18 +95,22 @@ class ProfileMyDataViewModel @Inject constructor(
             is ProfileMyDataIntent.ShowDeleteProfileDialog -> {
                 reduce { it.copy(isProfileDeleteDialogVisible = true) }
             }
-            is ProfileMyDataIntent.DismissProfileDeleteDialog -> {
-                reduce { it.copy(isProfileDeleteDialogVisible = false) }
-            }
-            is ProfileMyDataIntent.DeleteProfile -> {
-                val job = launch {
-                    reduce { it.copy(isProfileDeleteDialogVisible = false) }
-                    deleteProfileUseCase(Unit).getOrThrow()
-                    MainEventManager.send(WelcomeRoute)
-                }.also { launchedJob ->
-                    launchedJob.invokeOnCompletion { reduce { it.copy(deleteProfileJob = null) } }
+            is ProfileMyDataIntent.OnProfileDeleteIntent -> {
+                when (intent.intent) {
+                    is ProfileDeleteIntent.DismissRequest -> {
+                        reduce { it.copy(isProfileDeleteDialogVisible = false) }
+                    }
+                    is ProfileDeleteIntent.ConfirmRequest -> {
+                        val job = launch {
+                            reduce { it.copy(isProfileDeleteDialogVisible = false) }
+                            deleteProfileUseCase(Unit).getOrThrow()
+                            MainEventManager.send(WelcomeRoute)
+                        }.also { launchedJob ->
+                            launchedJob.invokeOnCompletion { reduce { it.copy(deleteProfileJob = null) } }
+                        }
+                        reduce { it.copy(deleteProfileJob = job) }
+                    }
                 }
-                reduce { it.copy(deleteProfileJob = job) }
             }
         }
     }

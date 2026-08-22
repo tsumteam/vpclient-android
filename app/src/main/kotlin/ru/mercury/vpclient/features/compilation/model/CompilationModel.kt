@@ -1,12 +1,19 @@
 package ru.mercury.vpclient.features.compilation.model
 
 import kotlinx.coroutines.Job
+import ru.mercury.vpclient.features.compilation_add_to_basket_sheet.model.CompilationAddToBasketModel
+import ru.mercury.vpclient.features.compilation_benefit_sheet.model.CompilationBenefitModel
+import ru.mercury.vpclient.features.compilation_cart_added_sheet.model.CompilationCartAddedModel
+import ru.mercury.vpclient.features.compilation_chat_sheet.model.CompilationChatModel
+import ru.mercury.vpclient.features.details_message_sheet.model.DetailsMessageModel
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CompilationEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CompilationPreviewPageEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductAvailableSizesEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
 import ru.mercury.vpclient.shared.domain.mapper.compilationBenefitDiscountPrice
 import ru.mercury.vpclient.shared.domain.mapper.compilationBenefitFullPrice
+import ru.mercury.vpclient.shared.domain.mapper.messageSheetProductEntity
 import ru.mercury.vpclient.shared.mvi.Model
 import kotlin.math.roundToInt
 
@@ -48,8 +55,38 @@ data class CompilationModel(
     val isCartBadgeVisible: Boolean
         get() = cartBadge > 0
 
-    val isDetailsChatSheetVisible: Boolean
+    val isDetailsMessageSheetVisible: Boolean
         get() = messageSheetProductEntity != null
+
+    val compilationChatState: CompilationChatModel
+        get() = CompilationChatModel(
+            compilationEntity = compilationChatEntity,
+            selectedLookTitle = selectedLookTitle
+        )
+
+    val detailsMessageState: DetailsMessageModel
+        get() = DetailsMessageModel(
+            productEntity = messageSheetProductEntity?.messageSheetProductEntity() ?: ProductEntity.Empty
+        )
+
+    val compilationAddToBasketState: CompilationAddToBasketModel
+        get() = CompilationAddToBasketModel(
+            productEntities = selectedLookAddToBasketProductEntities,
+            selectedProductIds = addToBasketDialogSelectedProductIds,
+            availableSizes = addToBasketDialogAvailableSizes,
+            oneSizeProductIds = addToBasketDialogOneSizeProductIds,
+            isLoading = isAddToBasketLoading
+        )
+
+    val compilationCartAddedState: CompilationCartAddedModel
+        get() = CompilationCartAddedModel(
+            pageEntity = selectedPageEntity ?: CompilationPreviewPageEntity.Empty
+        )
+
+    val compilationBenefitState: CompilationBenefitModel
+        get() = CompilationBenefitModel(
+            catalogFilterProductsEntities = selectedLookProductEntities
+        )
 
     val selectedPageEntity: CompilationPreviewPageEntity?
         get() = compilationPreviewPageEntities.getOrNull(selectedLookIndex)
@@ -134,6 +171,6 @@ data class CompilationModel(
     }
 }
 
-private fun Int.formatPriceText(): String {
+private fun Int.formatPriceText(): String { // fixme
     return "%,d ₽".format(this).replace(',', ' ')
 }

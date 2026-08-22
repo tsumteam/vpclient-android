@@ -3,7 +3,6 @@
 package ru.mercury.vpclient.features.filter_price_sheet
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -45,6 +44,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesQ
 import ru.mercury.vpclient.shared.domain.mapper.quantityWithThousandsSeparator
 import ru.mercury.vpclient.shared.domain.mapper.requireQuantity
 import ru.mercury.vpclient.shared.ui.components.SharedAnimatedVisibility
+import ru.mercury.vpclient.shared.ui.components.SharedColumn
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.filters.FilterSelectableRow
@@ -64,9 +64,7 @@ fun FilterPriceSheet(
     SharedModalBottomSheet(
         onDismissRequest = { dispatch(FilterPriceIntent.DismissClick) }
     ) {
-        val isResetVisible = state.priceFrom.isNotEmpty() || state.priceTo.isNotEmpty() || state.selectedPresetId != null
-
-        Column {
+        SharedColumn {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
@@ -90,7 +88,7 @@ fun FilterPriceSheet(
                 },
                 actions = {
                     SharedAnimatedVisibility(
-                        visible = isResetVisible
+                        visible = state.isResetVisible
                     ) {
                         TextButton(
                             onClick = { dispatch(FilterPriceIntent.ResetPrice) },
@@ -120,7 +118,7 @@ fun FilterPriceSheet(
                     value = state.priceFrom,
                     accepted = true,
                     onValueChange = { value -> dispatch(FilterPriceIntent.ChangeMinPrice(value)) },
-                    placeholder = "From",
+                    placeholder = "From", // fixme
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.weight(1F)
                 )
@@ -129,7 +127,7 @@ fun FilterPriceSheet(
                     value = state.priceTo,
                     accepted = true,
                     onValueChange = { value -> dispatch(FilterPriceIntent.ChangeMaxPrice(value)) },
-                    placeholder = "To",
+                    placeholder = "To", // fixme
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier
                         .weight(1F)
@@ -213,7 +211,7 @@ fun FilterPriceSheet(
 @Preview
 @Composable
 private fun FilterPriceSheetPreview(
-    @PreviewParameter(FilterPriceModelProvider::class) state: FilterPriceModel
+    @PreviewParameter(FilterPriceModelPreviewParameterProvider::class) state: FilterPriceModel
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -225,7 +223,7 @@ private fun FilterPriceSheetPreview(
     }
 }
 
-private class FilterPriceModelProvider: PreviewParameterProvider<FilterPriceModel> {
+private class FilterPriceModelPreviewParameterProvider: PreviewParameterProvider<FilterPriceModel> {
     override val values: Sequence<FilterPriceModel> = sequenceOf(
         FilterPriceModel(
             title = "Price",

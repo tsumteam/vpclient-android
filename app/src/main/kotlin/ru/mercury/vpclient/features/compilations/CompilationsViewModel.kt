@@ -8,6 +8,7 @@ import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.features.cart.navigation.CartPage
 import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.features.compilation.navigation.CompilationRoute
+import ru.mercury.vpclient.features.compilation_chat_sheet.intent.CompilationChatIntent
 import ru.mercury.vpclient.features.compilations.event.CompilationsEvent
 import ru.mercury.vpclient.features.compilations.intent.CompilationsIntent
 import ru.mercury.vpclient.features.compilations.model.CompilationsModel
@@ -112,14 +113,18 @@ class CompilationsViewModel @Inject constructor(
             is CompilationsIntent.CompilationClick -> {
                 launch { MainEventManager.send(CompilationRoute(intent.id)) }
             }
-            is CompilationsIntent.HideCompilationChatSheet -> {
-                reduce { it.copy(selectedCompilationChatEntity = CompilationEntity.Empty) }
-            }
             is CompilationsIntent.CompilationChatClick -> {
                 val entity = stateFlow.value.compilationEntities.firstOrNull { entity -> entity.id == intent.id } ?: return
                 reduce { it.copy(selectedCompilationChatEntity = entity) }
             }
-            is CompilationsIntent.CompilationChatSendClick -> return
+            is CompilationsIntent.OnCompilationChatIntent -> {
+                when (intent.intent) {
+                    is CompilationChatIntent.DismissClick -> {
+                        reduce { it.copy(selectedCompilationChatEntity = CompilationEntity.Empty) }
+                    }
+                    is CompilationChatIntent.SendClick -> return
+                }
+            }
         }
     }
 

@@ -1,5 +1,8 @@
 package ru.mercury.vpclient.features.details.intent
 
+import ru.mercury.vpclient.features.details_cart_added_sheet.intent.DetailsCartAddedIntent
+import ru.mercury.vpclient.features.details_message_sheet.intent.DetailsMessageIntent
+import ru.mercury.vpclient.features.details_wear_with_sheet.intent.DetailsWearWithIntent
 import ru.mercury.vpclient.shared.data.entity.DetailsField
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.mvi.Intent
@@ -21,13 +24,8 @@ sealed interface DetailsIntent: Intent {
     data object AddToBasketClick: DetailsIntent
     data object OpenVideo: DetailsIntent
     data object BrandClick: DetailsIntent
-    data object HideSizePicker: DetailsIntent
     data object ShowWearWithSheet: DetailsIntent
-    data object HideWearWithSheet: DetailsIntent
     data object ShowMessageSheet: DetailsIntent
-    data object HideMessageSheet: DetailsIntent
-    data object HideCartAddedSheet: DetailsIntent
-    data object CartAddedSheetCartClick: DetailsIntent
     data class SizeClick(val index: Int): DetailsIntent
     data class ColorClick(val index: Int): DetailsIntent
     data class ButtonClick(val index: Int): DetailsIntent
@@ -35,4 +33,8 @@ sealed interface DetailsIntent: Intent {
     data class ProductBasketClick(val product: CatalogFilterProductsEntity): DetailsIntent
     data class OpenMedia(val initialPage: Int): DetailsIntent
     data class FieldCopyClick(val field: DetailsField): DetailsIntent
+    data class OnDetailsMessageIntent(val intent: DetailsMessageIntent): DetailsIntent
+    data class OnDetailsCartAddedIntent(val intent: DetailsCartAddedIntent): DetailsIntent
+    data class OnDetailsWearWithIntent(val intent: DetailsWearWithIntent): DetailsIntent
+    data class OnSizeSheetIntent(val intent: ru.mercury.vpclient.features.size_sheet.intent.SizeSheetIntent): DetailsIntent
 }

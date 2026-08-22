@@ -91,7 +91,7 @@ fun GiftCardTermsSheet(
 @Preview
 @Composable
 private fun GiftCardTermsSheetPreview(
-    @PreviewParameter(GiftCardTermsSheetModelPreviewParameterProvider::class) state: GiftCardTermsModel
+    @PreviewParameter(GiftCardTermsModelPreviewParameterProvider::class) state: GiftCardTermsModel
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -103,7 +103,7 @@ private fun GiftCardTermsSheetPreview(
     }
 }
 
-private class GiftCardTermsSheetModelPreviewParameterProvider: PreviewParameterProvider<GiftCardTermsModel> {
+private class GiftCardTermsModelPreviewParameterProvider: PreviewParameterProvider<GiftCardTermsModel> {
     override val values: Sequence<GiftCardTermsModel> = sequenceOf(
         GiftCardTermsModel(
             text = "После внесения предоплаты на Ваш номер телефона придет sms с PIN-кодом, а на почту – письмо с номером карты и штрихкодом. Сразу после этого карту можно использовать. Вы можете воспользоваться картой в течение года с момента активации. Подробнее об условиях использования – в регламенте."

@@ -42,8 +42,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.compilation_chat_sheet.CompilationChatSheet
-import ru.mercury.vpclient.features.compilation_chat_sheet.intent.CompilationChatIntent
-import ru.mercury.vpclient.features.compilation_chat_sheet.model.CompilationChatModel
 import ru.mercury.vpclient.features.compilations.event.CompilationsEvent
 import ru.mercury.vpclient.features.compilations.intent.CompilationsIntent
 import ru.mercury.vpclient.features.compilations.model.CompilationsModel
@@ -84,20 +82,8 @@ fun CompilationsScreen(
 
     if (state.isCompilationChatSheetVisible) {
         CompilationChatSheet(
-            state = CompilationChatModel(
-                compilationEntity = state.selectedCompilationChatEntity
-            ),
-            dispatch = { intent ->
-                when (intent) {
-                    is CompilationChatIntent.DismissClick -> {
-                        viewModel.dispatch(CompilationsIntent.HideCompilationChatSheet)
-                    }
-                    is CompilationChatIntent.CommentChange -> Unit
-                    is CompilationChatIntent.SendClick -> {
-                        viewModel.dispatch(CompilationsIntent.CompilationChatSendClick(intent.comment))
-                    }
-                }
-            }
+            state = state.compilationChatState,
+            dispatch = { intent -> viewModel.dispatch(CompilationsIntent.OnCompilationChatIntent(intent)) }
         )
     }
 

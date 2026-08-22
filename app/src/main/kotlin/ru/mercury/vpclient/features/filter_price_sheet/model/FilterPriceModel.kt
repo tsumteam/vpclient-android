@@ -13,4 +13,8 @@ data class FilterPriceModel(
     val quantityEntity: FilterValuesQuantityEntity,
     val isProductsQuantityLoading: Boolean,
     val isLoading: Boolean = false
-): Model
+): Model {
+
+    val isResetVisible: Boolean
+        get() = priceFrom.isNotEmpty() || priceTo.isNotEmpty() || selectedPresetId != null
+}

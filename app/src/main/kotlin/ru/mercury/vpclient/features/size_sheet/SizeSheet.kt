@@ -3,7 +3,6 @@
 package ru.mercury.vpclient.features.size_sheet
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -31,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.features.size_sheet.intent.SizeSheetIntent
 import ru.mercury.vpclient.features.size_sheet.model.SizeSheetModel
+import ru.mercury.vpclient.shared.ui.components.SharedColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.details.DetailsSizeSelector
 import ru.mercury.vpclient.shared.ui.components.details.SizeSelectorState
@@ -49,7 +49,7 @@ fun SizeSheet(
     SharedModalBottomSheet(
         onDismissRequest = { dispatch(SizeSheetIntent.DismissClick) }
     ) {
-        Column {
+        SharedColumn {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
@@ -115,19 +115,19 @@ fun SizeSheet(
 @Preview
 @Composable
 private fun SizeSheetPreview(
-    @PreviewParameter(SizeSheetSizeSelectorStateProvider::class) state: SizeSelectorState
+    @PreviewParameter(SizeSheetModelPreviewParameterProvider::class) state: SizeSheetModel
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
         SizeSheet(
-            state = SizeSheetModel(sizeSelectorState = state),
+            state = state,
             dispatch = {}
         )
     }
 }
 
-private class SizeSheetSizeSelectorStateProvider: PreviewParameterProvider<SizeSelectorState> {
+private class SizeSheetModelPreviewParameterProvider: PreviewParameterProvider<SizeSheetModel> {
 
     private val sizes = listOf(
         SizeState(topText = "RU 36", bottomText = "IT 34", selected = false, enabled = true),
@@ -138,18 +138,22 @@ private class SizeSheetSizeSelectorStateProvider: PreviewParameterProvider<SizeS
         SizeState(topText = "RU 46", bottomText = "IT 44", selected = false, enabled = false)
     )
 
-    override val values: Sequence<SizeSelectorState> = sequenceOf(
-        SizeSelectorState(
-            sizes = sizes,
-            topText = "IT",
-            bottomText = "RU",
-            isSizeTableVisible = true
+    override val values: Sequence<SizeSheetModel> = sequenceOf(
+        SizeSheetModel(
+            sizeSelectorState = SizeSelectorState(
+                sizes = sizes,
+                topText = "IT",
+                bottomText = "RU",
+                isSizeTableVisible = true
+            )
         ),
-        SizeSelectorState(
-            sizes = sizes.mapIndexed { index, state -> state.copy(selected = index == 1) },
-            topText = "IT",
-            bottomText = "RU",
-            isSizeTableVisible = true
+        SizeSheetModel(
+            sizeSelectorState = SizeSelectorState(
+                sizes = sizes.mapIndexed { index, state -> state.copy(selected = index == 1) },
+                topText = "IT",
+                bottomText = "RU",
+                isSizeTableVisible = true
+            )
         )
     )
 }

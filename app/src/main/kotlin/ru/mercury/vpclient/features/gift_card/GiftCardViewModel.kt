@@ -10,6 +10,7 @@ import ru.mercury.vpclient.features.gift_card.event.GiftCardEvent
 import ru.mercury.vpclient.features.gift_card.intent.GiftCardIntent
 import ru.mercury.vpclient.features.gift_card.model.GiftCardModel
 import ru.mercury.vpclient.features.gift_card_checkout.navigation.GiftCardCheckoutRoute
+import ru.mercury.vpclient.features.gift_card_terms_sheet.intent.GiftCardTermsIntent
 import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.network.type.GiftCardType
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
@@ -82,10 +83,14 @@ class GiftCardViewModel @Inject constructor(
                 launch { MainEventManager.send(CartRoute()) }
             }
             is GiftCardIntent.TermsClick -> {
-                reduce { state -> state.copy(isTermsSheetVisible = true) }
+                reduce { state -> state.copy(isGiftCardTermsSheetVisible = true) }
             }
-            is GiftCardIntent.TermsDismiss -> {
-                reduce { state -> state.copy(isTermsSheetVisible = false) }
+            is GiftCardIntent.OnGiftCardTermsIntent -> {
+                when (intent.intent) {
+                    is GiftCardTermsIntent.DismissClick -> {
+                        reduce { state -> state.copy(isGiftCardTermsSheetVisible = false) }
+                    }
+                }
             }
             is GiftCardIntent.BuyClick -> {
                 val state = stateFlow.value

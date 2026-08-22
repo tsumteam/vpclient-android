@@ -24,8 +24,8 @@ import ru.mercury.vpclient.shared.domain.usecase.CatalogBrandsUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CatalogBrandsUseCase.CatalogBrandsException
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 
-@HiltViewModel(assistedFactory = ProfileBrandSheetViewModel.Factory::class)
-class ProfileBrandSheetViewModel @AssistedInject constructor(
+@HiltViewModel(assistedFactory = ProfileBrandViewModel.Factory::class)
+class ProfileBrandViewModel @AssistedInject constructor(
     @Assisted private val categoryId: Int,
     private val catalogBrandEntitiesFlowUseCase: CatalogBrandEntitiesFlowUseCase,
     private val catalogBrandsUseCase: CatalogBrandsUseCase,
@@ -192,6 +192,6 @@ class ProfileBrandSheetViewModel @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(categoryId: Int): ProfileBrandSheetViewModel
+        fun create(categoryId: Int): ProfileBrandViewModel
     }
 }

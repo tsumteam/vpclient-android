@@ -4,7 +4,6 @@ package ru.mercury.vpclient.features.filter_tree_sheet
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -47,6 +46,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesQ
 import ru.mercury.vpclient.shared.domain.mapper.quantityWithThousandsSeparator
 import ru.mercury.vpclient.shared.domain.mapper.requireQuantity
 import ru.mercury.vpclient.shared.ui.components.SharedAnimatedVisibility
+import ru.mercury.vpclient.shared.ui.components.SharedColumn
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.filters.FilterSelectableRow
@@ -69,7 +69,7 @@ fun FilterTreeSheet(
     SharedModalBottomSheet(
         onDismissRequest = { dispatch(FilterTreeIntent.DismissClick) }
     ) {
-        Column {
+        SharedColumn {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
@@ -259,7 +259,7 @@ fun FilterTreeSheet(
 @Preview
 @Composable
 private fun FilterTreeSheetPreview(
-    @PreviewParameter(FilterTreeModelProvider::class) state: FilterTreeModel
+    @PreviewParameter(FilterTreeModelPreviewParameterProvider::class) state: FilterTreeModel
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -271,7 +271,7 @@ private fun FilterTreeSheetPreview(
     }
 }
 
-private class FilterTreeModelProvider: PreviewParameterProvider<FilterTreeModel> {
+private class FilterTreeModelPreviewParameterProvider: PreviewParameterProvider<FilterTreeModel> {
     override val values: Sequence<FilterTreeModel> = sequenceOf(
         FilterTreeModel(
             title = "Category",

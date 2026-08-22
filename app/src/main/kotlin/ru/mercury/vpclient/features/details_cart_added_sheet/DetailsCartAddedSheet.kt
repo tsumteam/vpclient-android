@@ -27,6 +27,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -83,7 +85,7 @@ fun DetailsCartAddedSheet(
             )
 
             OutlinedButton(
-                onClick = { dispatch(DetailsCartAddedIntent.ContinueShoppingClick) },
+                onClick = { dispatch(DetailsCartAddedIntent.DismissClick) },
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
                     .fillMaxWidth()
@@ -138,24 +140,32 @@ fun DetailsCartAddedSheet(
 @PreviewWrapper(ThemeWrapper::class)
 @Preview(showBackground = true)
 @Composable
-private fun DetailsCartAddedSheetPreview() {
+private fun DetailsCartAddedSheetPreview(
+    @PreviewParameter(DetailsCartAddedModelPreviewParameterProvider::class) state: DetailsCartAddedModel
+) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
         DetailsCartAddedSheet(
-            state = DetailsCartAddedModel(
-                productEntity = ProductEntity.Empty.copy(
-                    id = "preview",
-                    name = "Пиджак",
-                    itemId = "79393030",
-                    brand = "DOLCE&GABBANA",
-                    colorName = "Черный",
-                    shortDescription = "Пиджак",
-                    price = 1_600_000.0,
-                    colorImageUrls = listOf("")
-                )
-            ),
+            state = state,
             dispatch = {}
         )
     }
+}
+
+private class DetailsCartAddedModelPreviewParameterProvider: PreviewParameterProvider<DetailsCartAddedModel> {
+    override val values: Sequence<DetailsCartAddedModel> = sequenceOf(
+        DetailsCartAddedModel(
+            productEntity = ProductEntity.Empty.copy(
+                id = "preview",
+                name = "Пиджак",
+                itemId = "79393030",
+                brand = "DOLCE&GABBANA",
+                colorName = "Черный",
+                shortDescription = "Пиджак",
+                price = 1_600_000.0,
+                colorImageUrls = listOf("")
+            )
+        )
+    )
 }

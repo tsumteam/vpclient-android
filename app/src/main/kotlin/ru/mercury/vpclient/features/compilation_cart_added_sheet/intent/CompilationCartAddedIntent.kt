@@ -4,6 +4,5 @@ import ru.mercury.vpclient.shared.mvi.Intent
 
 sealed interface CompilationCartAddedIntent: Intent {
     data object DismissClick: CompilationCartAddedIntent
-    data object ReturnToCompilationClick: CompilationCartAddedIntent
     data object CartClick: CompilationCartAddedIntent
 }

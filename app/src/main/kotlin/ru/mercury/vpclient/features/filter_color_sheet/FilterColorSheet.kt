@@ -49,6 +49,7 @@ import ru.mercury.vpclient.shared.domain.mapper.colorValues
 import ru.mercury.vpclient.shared.domain.mapper.quantityWithThousandsSeparator
 import ru.mercury.vpclient.shared.domain.mapper.requireQuantity
 import ru.mercury.vpclient.shared.ui.components.SharedAnimatedVisibility
+import ru.mercury.vpclient.shared.ui.components.SharedColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.filters.FilterColorBox
 import ru.mercury.vpclient.shared.ui.icons.Close24
@@ -67,7 +68,7 @@ fun FilterColorSheet(
     SharedModalBottomSheet(
         onDismissRequest = { dispatch(FilterColorIntent.DismissClick) }
     ) {
-        Column {
+        SharedColumn {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
@@ -244,7 +245,7 @@ fun FilterColorSheet(
 @Preview
 @Composable
 private fun FilterColorSheetPreview(
-    @PreviewParameter(FilterColorSheetStateProvider::class) state: FilterColorModel
+    @PreviewParameter(FilterColorModelPreviewParameterProvider::class) state: FilterColorModel
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -256,7 +257,7 @@ private fun FilterColorSheetPreview(
     }
 }
 
-private class FilterColorSheetStateProvider: PreviewParameterProvider<FilterColorModel> {
+private class FilterColorModelPreviewParameterProvider: PreviewParameterProvider<FilterColorModel> {
     override val values: Sequence<FilterColorModel> = sequenceOf(
         FilterColorModel(
             entity = FilterValuesEntity(

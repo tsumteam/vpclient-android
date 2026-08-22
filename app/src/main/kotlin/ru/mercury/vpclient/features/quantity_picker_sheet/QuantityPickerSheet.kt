@@ -236,7 +236,7 @@ fun QuantityPickerSheet(
 @Preview
 @Composable
 private fun QuantityPickerSheetPreview(
-    @PreviewParameter(QuantityPickerSheetModelProvider::class) state: QuantityPickerModel
+    @PreviewParameter(QuantityPickerModelPreviewParameterProvider::class) state: QuantityPickerModel
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -248,7 +248,7 @@ private fun QuantityPickerSheetPreview(
     }
 }
 
-private class QuantityPickerSheetModelProvider: PreviewParameterProvider<QuantityPickerModel> {
+private class QuantityPickerModelPreviewParameterProvider: PreviewParameterProvider<QuantityPickerModel> {
     override val values: Sequence<QuantityPickerModel> = sequenceOf(
         QuantityPickerModel(
             quantities = (1..10).map { value ->

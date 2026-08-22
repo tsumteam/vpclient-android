@@ -25,9 +25,9 @@ data class FittingConfirmationModel(
     val pendingClientAddressId: Int? = null,
     val addressActionAddressId: Int? = null,
     val deleteAddressId: Int? = null,
-    val isAddressFormVisible: Boolean = false,
-    val isAddressSearchVisible: Boolean = false,
-    val addressForm: FittingAddressModel = FittingAddressModel(),
+    val isFittingAddressSheetVisible: Boolean = false,
+    val isFittingAddressSearchSheetVisible: Boolean = false,
+    val fittingAddressState: FittingAddressModel = FittingAddressModel(),
     val addressListJob: Job? = null,
     val isAddressSaving: Boolean = false,
     val isClientAddressAvailable: Boolean = true,
@@ -65,16 +65,19 @@ data class FittingConfirmationModel(
     val deleteAddress: ClientDeliveryAddressEntity?
         get() = clientAddresses.firstOrNull { address -> address.id == deleteAddressId }
 
-    val isAddressActionsSheetVisible: Boolean
+    val isFittingAddressActionsSheetVisible: Boolean
         get() = addressActionAddress != null
 
     val isFittingAddressDeleteDialogVisible: Boolean
         get() = deleteAddress != null
 
-    val fittingAddressDeleteModel: FittingAddressDeleteModel
+    val fittingAddressDeleteState: FittingAddressDeleteModel
         get() = FittingAddressDeleteModel(
             address = deleteAddress?.title.orEmpty()
         )
+
+    val isLoadingBoxVisible: Boolean
+        get() = isConfirmLoading || isAddressSaving || (isIntervalsLoading && !isInitialIntervalsLoading)
 
     val displayedClientAddress: String?
         get() = selectedClientAddress?.title ?: clientAddress

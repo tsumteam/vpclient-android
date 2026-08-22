@@ -44,12 +44,9 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.fitting_address_actions_sheet.FittingAddressActionsSheet
-import ru.mercury.vpclient.features.fitting_address_actions_sheet.intent.FittingAddressActionsIntent
 import ru.mercury.vpclient.features.fitting_address_delete_dialog.FittingAddressDeleteDialog
-import ru.mercury.vpclient.features.fitting_address_delete_dialog.intent.FittingAddressDeleteIntent
 import ru.mercury.vpclient.features.fitting_address_search_sheet.FittingAddressSearchSheet
 import ru.mercury.vpclient.features.fitting_address_sheet.FittingAddressSheet
-import ru.mercury.vpclient.features.fitting_address_sheet.intent.FittingAddressIntent
 import ru.mercury.vpclient.features.fitting_addresses.intent.FittingAddressesIntent
 import ru.mercury.vpclient.features.fitting_addresses.navigation.FittingAddressesRoute
 import ru.mercury.vpclient.features.fitting_confirmation.event.FittingConfirmationEvent
@@ -94,6 +91,37 @@ fun FittingAddressesScreen(
         snackbarHostStateError = snackbarHostStateError
     )
 
+    if (state.isFittingAddressActionsSheetVisible) {
+        FittingAddressActionsSheet(
+            dispatch = { intent -> viewModel.dispatch(FittingAddressesIntent.OnFittingAddressActionsIntent(intent)) }
+        )
+    }
+
+    if (state.isFittingAddressSheetVisible) {
+        FittingAddressSheet(
+            state = state.fittingAddressState,
+            dispatch = { intent -> viewModel.dispatch(FittingAddressesIntent.OnFittingAddressIntent(intent)) },
+            snackbarHostStateError = snackbarHostStateError
+        )
+    }
+
+    if (state.isFittingAddressSearchSheetVisible) {
+        FittingAddressSearchSheet(
+            initialQuery = state.fittingAddressState.address,
+            onDismissRequest = { viewModel.dispatch(FittingAddressesIntent.DismissFittingAddressSearchSheet) },
+            onSelectAddressSuggestion = { suggestion ->
+                viewModel.dispatch(FittingAddressesIntent.SelectAddressSuggestion(suggestion))
+            }
+        )
+    }
+
+    if (state.isFittingAddressDeleteDialogVisible) {
+        FittingAddressDeleteDialog(
+            state = state.fittingAddressDeleteState,
+            dispatch = { intent -> viewModel.dispatch(FittingAddressesIntent.OnFittingAddressDeleteIntent(intent)) }
+        )
+    }
+
     ObserveAsEvents(
         flow = viewModel.eventFlow
     ) { event ->
@@ -103,77 +131,6 @@ fun FittingAddressesScreen(
                 scope.launch { snackbarHostStateError.showSnackbar(event.message) }
             }
         }
-    }
-
-    if (state.isAddressActionsSheetVisible) {
-        FittingAddressActionsSheet(
-            dispatch = { intent ->
-                when (intent) {
-                    is FittingAddressActionsIntent.EditClick -> {
-                        viewModel.dispatch(FittingAddressesIntent.EditAddressClick)
-                    }
-                    is FittingAddressActionsIntent.DeleteClick -> {
-                        state.addressActionAddressId?.let { addressId ->
-                            viewModel.dispatch(FittingAddressesIntent.RequestDeleteAddress(addressId))
-                        }
-                    }
-                    is FittingAddressActionsIntent.DismissClick -> {
-                        viewModel.dispatch(FittingAddressesIntent.HideAddressActions)
-                    }
-                }
-            }
-        )
-    }
-
-    if (state.isAddressFormVisible) {
-        FittingAddressSheet(
-            state = state.addressForm,
-            dispatch = { intent ->
-                when (intent) {
-                    is FittingAddressIntent.AddressFormValueChange -> {
-                        viewModel.dispatch(
-                            FittingAddressesIntent.AddressFormValueChange(intent.field, intent.value)
-                        )
-                    }
-                    is FittingAddressIntent.DismissClick -> {
-                        viewModel.dispatch(FittingAddressesIntent.HideAddressForm)
-                    }
-                    is FittingAddressIntent.OpenAddressSearch -> {
-                        viewModel.dispatch(FittingAddressesIntent.OpenAddressSearch)
-                    }
-                    is FittingAddressIntent.SaveAddressClick -> {
-                        viewModel.dispatch(FittingAddressesIntent.SaveAddressClick)
-                    }
-                }
-            },
-            snackbarHostStateError = snackbarHostStateError
-        )
-    }
-
-    if (state.isAddressSearchVisible) {
-        FittingAddressSearchSheet(
-            initialQuery = state.addressForm.address,
-            onDismissRequest = { viewModel.dispatch(FittingAddressesIntent.HideAddressSearch) },
-            onSelectAddressSuggestion = { suggestion ->
-                viewModel.dispatch(FittingAddressesIntent.SelectAddressSuggestion(suggestion))
-            }
-        )
-    }
-
-    if (state.isFittingAddressDeleteDialogVisible) {
-        FittingAddressDeleteDialog(
-            state = state.fittingAddressDeleteModel,
-            dispatch = { intent ->
-                when (intent) {
-                    is FittingAddressDeleteIntent.ConfirmClick -> {
-                        viewModel.dispatch(FittingAddressesIntent.ConfirmDeleteAddress)
-                    }
-                    is FittingAddressDeleteIntent.DismissRequest -> {
-                        viewModel.dispatch(FittingAddressesIntent.DismissFittingAddressDeleteDialog)
-                    }
-                }
-            }
-        )
     }
 }
 

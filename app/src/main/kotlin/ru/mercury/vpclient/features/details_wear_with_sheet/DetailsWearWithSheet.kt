@@ -112,7 +112,7 @@ fun DetailsWearWithSheet(
 @Preview
 @Composable
 private fun DetailsWearWithSheetPreview(
-    @PreviewParameter(DetailsWearWithSheetModelProvider::class) state: DetailsWearWithModel
+    @PreviewParameter(DetailsWearWithModelPreviewParameterProvider::class) state: DetailsWearWithModel
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -124,7 +124,7 @@ private fun DetailsWearWithSheetPreview(
     }
 }
 
-private class DetailsWearWithSheetModelProvider: PreviewParameterProvider<DetailsWearWithModel> {
+private class DetailsWearWithModelPreviewParameterProvider: PreviewParameterProvider<DetailsWearWithModel> {
     override val values: Sequence<DetailsWearWithModel> = sequenceOf(
         DetailsWearWithModel(
             products = listOf(

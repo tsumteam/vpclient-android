@@ -13,8 +13,14 @@ import ru.mercury.vpclient.features.cart.intent.CartIntent
 import ru.mercury.vpclient.features.cart.model.CartModel
 import ru.mercury.vpclient.features.cart.navigation.CartPage
 import ru.mercury.vpclient.features.cart.navigation.CartRoute
+import ru.mercury.vpclient.features.cart_edit_product_sheet.intent.CartEditProductIntent
+import ru.mercury.vpclient.features.cart_empty_order_dialog.intent.CartEmptyOrderIntent
+import ru.mercury.vpclient.features.cart_fitting_edit_product_sheet.intent.CartFittingEditProductIntent
+import ru.mercury.vpclient.features.cart_fitting_empty_order_dialog.intent.CartFittingEmptyOrderIntent
+import ru.mercury.vpclient.features.cart_fitting_sheet.intent.CartFittingIntent
 import ru.mercury.vpclient.features.checkout.model.CheckoutSource
 import ru.mercury.vpclient.features.checkout.navigation.CheckoutRoute
+import ru.mercury.vpclient.features.color_picker_sheet.intent.ColorPickerIntent
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.features.fitting_confirmation.navigation.FittingConfirmationRoute
 import ru.mercury.vpclient.features.fitting_info.navigation.FittingInfoRoute
@@ -58,6 +64,8 @@ import ru.mercury.vpclient.shared.domain.usecase.LoadFittingUseCase
 import ru.mercury.vpclient.shared.domain.usecase.LoadProductUseCase
 import ru.mercury.vpclient.shared.domain.usecase.MoveProductsAfterDragUseCase
 import ru.mercury.vpclient.shared.domain.usecase.MoveProductsAfterDragUseCase.MoveProductsAfterDragException
+import ru.mercury.vpclient.features.quantity_picker_sheet.intent.QuantityPickerIntent
+import ru.mercury.vpclient.features.size_picker_sheet.intent.SizePickerIntent
 import ru.mercury.vpclient.shared.domain.usecase.ProductFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.RemoveAlternativeUseCase
 import ru.mercury.vpclient.shared.domain.usecase.RemoveAlternativeUseCase.RemoveAlternativeException
@@ -150,18 +158,14 @@ class CartViewModel @AssistedInject constructor(
                 launch {
                     fittingCountFlowUseCase(Unit)
                         .distinctUntilChanged()
-                        .collectLatest { count ->
-                            reduce { it.copy(fittingCount = count) }
-                        }
+                        .collectLatest { count -> reduce { it.copy(fittingCount = count) } }
                 }
             }
             is CartIntent.CollectActiveEmployee -> {
                 launch {
                     employeeActiveFlowUseCase(Unit)
                         .distinctUntilChanged()
-                        .collectLatest { employee ->
-                            reduce { it.copy(activeEmployee = employee) }
-                        }
+                        .collectLatest { employee -> reduce { it.copy(activeEmployee = employee) } }
                 }
             }
             is CartIntent.LoadCurrentUser -> {
@@ -223,7 +227,6 @@ class CartViewModel @AssistedInject constructor(
             is CartIntent.CloseClick -> launch { MainEventManager.send(BackRoute) }
             is CartIntent.FittingClick -> reduce { it.copy(isCartFittingSheetVisible = true) }
             is CartIntent.FittingTabClick -> return
-            is CartIntent.SizeTableClick -> return
             is CartIntent.FittingDeliveryClick -> {
                 launch {
                     when {
@@ -247,17 +250,23 @@ class CartViewModel @AssistedInject constructor(
                     }
                 }
             }
-            is CartIntent.DismissCartFittingSheet -> reduce { it.copy(isCartFittingSheetVisible = false) }
-            is CartIntent.ConfirmFittingSheet -> {
-                when (intent.option) {
-                    CartFittingSheetOption.Manual -> dispatch(CartIntent.ShowFittingProductsSheet)
-                    CartFittingSheetOption.AllProducts, CartFittingSheetOption.PaymentProducts -> {
-                        val productIds = when (intent.option) {
-                            CartFittingSheetOption.AllProducts -> stateFlow.value.fittingProducts
-                            else -> stateFlow.value.fittingPaymentProducts
-                        }.map { product -> product.id }
+            is CartIntent.OnCartFittingIntent -> {
+                when (intent.intent) {
+                    is CartFittingIntent.DismissClick -> {
                         reduce { it.copy(isCartFittingSheetVisible = false) }
-                        launch { MainEventManager.send(FittingConfirmationRoute(productIds)) }
+                    }
+                    is CartFittingIntent.ConfirmClick -> {
+                        when (intent.intent.option) {
+                            CartFittingSheetOption.Manual -> dispatch(CartIntent.ShowFittingProductsSheet)
+                            CartFittingSheetOption.AllProducts, CartFittingSheetOption.PaymentProducts -> {
+                                val productIds = when (intent.intent.option) {
+                                    CartFittingSheetOption.AllProducts -> stateFlow.value.fittingProducts
+                                    else -> stateFlow.value.fittingPaymentProducts
+                                }.map { product -> product.id }
+                                reduce { it.copy(isCartFittingSheetVisible = false) }
+                                launch { MainEventManager.send(FittingConfirmationRoute(productIds)) }
+                            }
+                        }
                     }
                 }
             }
@@ -269,7 +278,7 @@ class CartViewModel @AssistedInject constructor(
                     )
                 }
             }
-            is CartIntent.HideFittingProductsSheet -> {
+            is CartIntent.DismissFittingProductsSheet -> {
                 reduce { it.copy(isFittingProductsSheetVisible = false) }
             }
             is CartIntent.ConfirmFittingProductsSheet -> {
@@ -354,110 +363,83 @@ class CartViewModel @AssistedInject constructor(
                 }
                 reduce { it.copy(sizePickerJob = sizePickerJob) }
             }
-            is CartIntent.ShowFittingSizePicker -> {
-                val product = requireNotNull(stateFlow.value.fittingEditProduct)
-                if (!product.isSizeSelectionAvailable) {
-                    return
-                }
-                stateFlow.value.sizePickerJob?.cancel()
-                reduce {
-                    it.copy(
-                        fittingEditProduct = null,
-                        sizePickerProduct = product,
-                        sizePickerSizes = null,
-                        sizePickerSelectedId = null,
-                        sizePickerForFitting = true,
-                        sizePickerAddSize = false,
-                        sizePickerJob = null
-                    )
-                }
-                val sizePickerJob = launch {
-                    val sizes = loadAvailableSizesUseCase(product).getOrThrow()
-                    reduce {
-                        when (it.sizePickerProduct?.id) {
-                            product.id -> it.copy(sizePickerSizes = sizes)
-                            else -> it
+            is CartIntent.OnSizePickerIntent -> {
+                when (intent.intent) {
+                    is SizePickerIntent.DismissClick -> {
+                        stateFlow.value.sizePickerJob?.cancel()
+                        reduce {
+                            it.copy(
+                                sizePickerProduct = null,
+                                sizePickerSizes = null,
+                                sizePickerSelectedId = null,
+                                sizePickerForFitting = false,
+                                sizePickerAddSize = false,
+                                sizePickerJob = null
+                            )
                         }
                     }
-                }
-                reduce { it.copy(sizePickerJob = sizePickerJob) }
-            }
-            is CartIntent.DismissSizePickerSheet -> {
-                stateFlow.value.sizePickerJob?.cancel()
-                reduce {
-                    it.copy(
-                        sizePickerProduct = null,
-                        sizePickerSizes = null,
-                        sizePickerSelectedId = null,
-                        sizePickerForFitting = false,
-                        sizePickerAddSize = false,
-                        sizePickerJob = null
-                    )
-                }
-            }
-            is CartIntent.ToggleSizePickerItem -> {
-                val sizeId = stateFlow.value.visibleSizePickerItems.getOrNull(intent.index)?.sizeId
-                reduce { it.copy(sizePickerSelectedId = sizeId) }
-            }
-            is CartIntent.ConfirmSizePicker -> {
-                val product = stateFlow.value.sizePickerProduct ?: return
-                val sizeId = stateFlow.value.sizePickerSelectedId ?: return
-                val forFitting = stateFlow.value.sizePickerForFitting
-                val addSize = stateFlow.value.sizePickerAddSize
-                stateFlow.value.sizePickerJob?.cancel()
-                reduce {
-                    it.copy(
-                        sizePickerProduct = null,
-                        sizePickerSizes = null,
-                        sizePickerSelectedId = null,
-                        sizePickerForFitting = false,
-                        sizePickerAddSize = false,
-                        sizePickerJob = null
-                    )
-                }
-                launch {
-                    withCenterLoading {
-                        when {
-                            addSize -> addProductSizeUseCase(
-                                AddProductSizeUseCase.Params(
-                                    product = product,
-                                    sizeId = sizeId
-                                )
-                            ).getOrThrow()
-                            forFitting -> {
-                                val confirmationRoute = stateFlow.value.fittingConfirmationRoute(product.id)
-                                setFittingProductSizeUseCase(
-                                    SetFittingProductSizeUseCase.Params(
-                                        product = product,
-                                        sizeId = sizeId
-                                    )
-                                ).getOrThrow()
-                                when (confirmationRoute) {
-                                    null -> {
-                                        val fitting = runCatching { loadFittingUseCase(Unit).getOrThrow() }.getOrDefault(FittingData())
-                                        reduce {
-                                            it.copy(
-                                                apiFittingProducts = fitting.products,
-                                                apiFittingDeliveries = fitting.deliveries
+                    is SizePickerIntent.SizeClick -> {
+                        val sizeId = stateFlow.value.visibleSizePickerItems.getOrNull(intent.intent.index)?.sizeId
+                        reduce { it.copy(sizePickerSelectedId = sizeId) }
+                    }
+                    is SizePickerIntent.ConfirmClick -> {
+                        val product = stateFlow.value.sizePickerProduct ?: return
+                        val sizeId = stateFlow.value.sizePickerSelectedId ?: return
+                        val forFitting = stateFlow.value.sizePickerForFitting
+                        val addSize = stateFlow.value.sizePickerAddSize
+                        stateFlow.value.sizePickerJob?.cancel()
+                        reduce {
+                            it.copy(
+                                sizePickerProduct = null,
+                                sizePickerSizes = null,
+                                sizePickerSelectedId = null,
+                                sizePickerForFitting = false,
+                                sizePickerAddSize = false,
+                                sizePickerJob = null
+                            )
+                        }
+                        launch {
+                            withCenterLoading {
+                                when {
+                                    addSize -> addProductSizeUseCase(
+                                        AddProductSizeUseCase.Params(
+                                            product = product,
+                                            sizeId = sizeId
+                                        )
+                                    ).getOrThrow()
+                                    forFitting -> {
+                                        val confirmationRoute = stateFlow.value.fittingConfirmationRoute(product.id)
+                                        setFittingProductSizeUseCase(
+                                            SetFittingProductSizeUseCase.Params(
+                                                product = product,
+                                                sizeId = sizeId
                                             )
+                                        ).getOrThrow()
+                                        when (confirmationRoute) {
+                                            null -> {
+                                                val fitting = runCatching { loadFittingUseCase(Unit).getOrThrow() }.getOrDefault(FittingData())
+                                                reduce {
+                                                    it.copy(
+                                                        apiFittingProducts = fitting.products,
+                                                        apiFittingDeliveries = fitting.deliveries
+                                                    )
+                                                }
+                                            }
+                                            else -> MainEventManager.send(confirmationRoute)
                                         }
                                     }
-                                    else -> MainEventManager.send(confirmationRoute)
+                                    else -> setProductSizeUseCase(
+                                        SetProductSizeUseCase.Params(
+                                            product = product,
+                                            sizeId = sizeId
+                                        )
+                                    ).getOrThrow()
                                 }
                             }
-                            else -> setProductSizeUseCase(
-                                SetProductSizeUseCase.Params(
-                                    product = product,
-                                    sizeId = sizeId
-                                )
-                            ).getOrThrow()
                         }
                     }
+                    is SizePickerIntent.SizeTableClick -> return
                 }
-            }
-            is CartIntent.ShowFittingColorPicker -> {
-                val product = requireNotNull(stateFlow.value.fittingEditProduct)
-                dispatch(CartIntent.ShowColorPicker(product, forFitting = true))
             }
             is CartIntent.ShowColorPicker -> {
                 launch {
@@ -487,56 +469,62 @@ class CartViewModel @AssistedInject constructor(
                     )
                 }
             }
-            is CartIntent.ToggleColorPickerItem -> {
-                val colorId = stateFlow.value.colorPickerColors?.getOrNull(intent.index)?.id
-                reduce { it.copy(colorPickerSelectedId = colorId) }
-            }
-            is CartIntent.ConfirmColorPicker -> {
-                val product = stateFlow.value.colorPickerProduct ?: return
-                val colorId = stateFlow.value.colorPickerSelectedId ?: return
-                val forFitting = stateFlow.value.colorPickerForFitting
-                if (colorId == product.colorId) {
-                    dispatch(CartIntent.DismissColorPickerSheet)
-                    return
-                }
-                reduce {
-                    it.copy(
-                        colorPickerProduct = null,
-                        colorPickerColors = null,
-                        colorPickerSelectedId = null,
-                        colorPickerForFitting = false
-                    )
-                }
-                launch {
-                    withCenterLoading {
-                        when {
-                            forFitting -> {
-                                val confirmationRoute = stateFlow.value.fittingConfirmationRoute(product.id)
-                                setFittingProductColorUseCase(
-                                    SetFittingProductColorUseCase.Params(
-                                        product = product,
-                                        colorId = colorId
-                                    )
-                                ).getOrThrow()
-                                when (confirmationRoute) {
-                                    null -> {
-                                        val fitting = runCatching { loadFittingUseCase(Unit).getOrThrow() }.getOrDefault(FittingData())
-                                        reduce {
-                                            it.copy(
-                                                apiFittingProducts = fitting.products,
-                                                apiFittingDeliveries = fitting.deliveries
+            is CartIntent.OnColorPickerIntent -> {
+                when (intent.intent) {
+                    is ColorPickerIntent.DismissClick -> {
+                        dispatch(CartIntent.DismissColorPickerSheet)
+                    }
+                    is ColorPickerIntent.ColorClick -> {
+                        val colorId = stateFlow.value.colorPickerColors?.getOrNull(intent.intent.index)?.id
+                        reduce { it.copy(colorPickerSelectedId = colorId) }
+                    }
+                    is ColorPickerIntent.ConfirmClick -> {
+                        val product = stateFlow.value.colorPickerProduct ?: return
+                        val colorId = stateFlow.value.colorPickerSelectedId ?: return
+                        val forFitting = stateFlow.value.colorPickerForFitting
+                        if (colorId == product.colorId) {
+                            dispatch(CartIntent.DismissColorPickerSheet)
+                            return
+                        }
+                        reduce {
+                            it.copy(
+                                colorPickerProduct = null,
+                                colorPickerColors = null,
+                                colorPickerSelectedId = null,
+                                colorPickerForFitting = false
+                            )
+                        }
+                        launch {
+                            withCenterLoading {
+                                when {
+                                    forFitting -> {
+                                        val confirmationRoute = stateFlow.value.fittingConfirmationRoute(product.id)
+                                        setFittingProductColorUseCase(
+                                            SetFittingProductColorUseCase.Params(
+                                                product = product,
+                                                colorId = colorId
                                             )
+                                        ).getOrThrow()
+                                        when (confirmationRoute) {
+                                            null -> {
+                                                val fitting = runCatching { loadFittingUseCase(Unit).getOrThrow() }.getOrDefault(FittingData())
+                                                reduce {
+                                                    it.copy(
+                                                        apiFittingProducts = fitting.products,
+                                                        apiFittingDeliveries = fitting.deliveries
+                                                    )
+                                                }
+                                            }
+                                            else -> MainEventManager.send(confirmationRoute)
                                         }
                                     }
-                                    else -> MainEventManager.send(confirmationRoute)
+                                    else -> {
+                                        setProductColorUseCase(
+                                            SetProductColorUseCase.Params(product, colorId)
+                                        ).getOrThrow()
+                                    }
                                 }
                             }
-                            else -> setProductColorUseCase(
-                                SetProductColorUseCase.Params(
-                                    product = product,
-                                    colorId = colorId
-                                )
-                            ).getOrThrow()
                         }
                     }
                 }
@@ -557,31 +545,35 @@ class CartViewModel @AssistedInject constructor(
                     )
                 }
             }
-            is CartIntent.ToggleQuantityPickerItem -> {
-                val quantity = stateFlow.value.quantityPickerValues.getOrNull(intent.index)?.value
-                reduce { it.copy(quantityPickerSelectedValue = quantity) }
-            }
-            is CartIntent.ConfirmQuantityPicker -> {
-                val product = stateFlow.value.quantityPickerProduct ?: return
-                val quantity = stateFlow.value.quantityPickerValues.firstOrNull { it.selected }?.value ?: return
-                if (quantity == product.quantity) {
-                    dispatch(CartIntent.DismissQuantityPickerSheet)
-                    return
-                }
-                reduce {
-                    it.copy(
-                        quantityPickerProduct = null,
-                        quantityPickerSelectedValue = null
-                    )
-                }
-                launch {
-                    withCenterLoading {
-                        setProductQuantityUseCase(
-                            SetProductQuantityUseCase.Params(
-                                product = product,
-                                quantity = quantity
+            is CartIntent.OnQuantityPickerIntent -> {
+                when (intent.intent) {
+                    is QuantityPickerIntent.DismissClick -> {
+                        dispatch(CartIntent.DismissQuantityPickerSheet)
+                    }
+                    is QuantityPickerIntent.QuantityClick -> {
+                        val quantity = stateFlow.value.quantityPickerValues.getOrNull(intent.intent.index)?.value
+                        reduce { it.copy(quantityPickerSelectedValue = quantity) }
+                    }
+                    is QuantityPickerIntent.ConfirmClick -> {
+                        val product = stateFlow.value.quantityPickerProduct ?: return
+                        val quantity = stateFlow.value.quantityPickerValues.firstOrNull { it.selected }?.value ?: return
+                        if (quantity == product.quantity) {
+                            dispatch(CartIntent.DismissQuantityPickerSheet)
+                            return
+                        }
+                        reduce {
+                            it.copy(
+                                quantityPickerProduct = null,
+                                quantityPickerSelectedValue = null
                             )
-                        ).getOrThrow()
+                        }
+                        launch {
+                            withCenterLoading {
+                                setProductQuantityUseCase(
+                                    SetProductQuantityUseCase.Params(product, quantity)
+                                ).getOrThrow()
+                            }
+                        }
                     }
                 }
             }
@@ -645,10 +637,7 @@ class CartViewModel @AssistedInject constructor(
                 launch {
                     withCenterLoading {
                         removeProductSizeUseCase(
-                            RemoveProductSizeUseCase.Params(
-                                product = intent.product,
-                                size = intent.size
-                            )
+                            RemoveProductSizeUseCase.Params(intent.product, intent.size)
                         ).getOrThrow()
                     }
                 }
@@ -661,12 +650,58 @@ class CartViewModel @AssistedInject constructor(
                     else -> reduce { it.copy(editProduct = intent.product) }
                 }
             }
-            is CartIntent.DismissCartEditProductSheet -> reduce { it.copy(editProduct = null) }
+            is CartIntent.OnCartEditProductIntent -> {
+                when (intent.intent) {
+                    is CartEditProductIntent.DismissClick -> {
+                        reduce { it.copy(editProduct = null) }
+                    }
+                    is CartEditProductIntent.ActionClick -> {
+                        reduce { it.copy(editProduct = null) }
+                        dispatch(stateFlow.value.editProductActions[intent.intent.index].second)
+                    }
+                }
+            }
             is CartIntent.EditFittingProductSwipeClick -> {
                 reduce { it.copy(fittingEditProduct = intent.product) }
             }
-            is CartIntent.DismissCartFittingEditProductSheet -> {
-                reduce { it.copy(fittingEditProduct = null) }
+            is CartIntent.OnCartFittingEditProductIntent -> {
+                when (intent.intent) {
+                    is CartFittingEditProductIntent.DismissClick -> {
+                        reduce { it.copy(fittingEditProduct = null) }
+                    }
+                    is CartFittingEditProductIntent.ChangeColorClick -> {
+                        val product = requireNotNull(stateFlow.value.fittingEditProduct)
+                        dispatch(CartIntent.ShowColorPicker(product, forFitting = true))
+                    }
+                    is CartFittingEditProductIntent.ChangeSizeClick -> {
+                        val product = requireNotNull(stateFlow.value.fittingEditProduct)
+                        if (!product.isSizeSelectionAvailable) {
+                            return
+                        }
+                        stateFlow.value.sizePickerJob?.cancel()
+                        reduce {
+                            it.copy(
+                                fittingEditProduct = null,
+                                sizePickerProduct = product,
+                                sizePickerSizes = null,
+                                sizePickerSelectedId = null,
+                                sizePickerForFitting = true,
+                                sizePickerAddSize = false,
+                                sizePickerJob = null
+                            )
+                        }
+                        val sizePickerJob = launch {
+                            val sizes = loadAvailableSizesUseCase(product).getOrThrow()
+                            reduce {
+                                when (it.sizePickerProduct?.id) {
+                                    product.id -> it.copy(sizePickerSizes = sizes)
+                                    else -> it
+                                }
+                            }
+                        }
+                        reduce { it.copy(sizePickerJob = sizePickerJob) }
+                    }
+                }
             }
             is CartIntent.ReturnFittingProductToBasketSwipeClick -> {
                 launch {
@@ -691,7 +726,7 @@ class CartViewModel @AssistedInject constructor(
                     else -> return
                 }
             }
-            is CartIntent.ChangeColorClick -> return
+            is CartIntent.ChangeColorClick -> return // fixme
             is CartIntent.ChangeQuantityClick -> {
                 dispatch(CartIntent.ShowQuantityPicker(intent.product))
             }
@@ -733,13 +768,21 @@ class CartViewModel @AssistedInject constructor(
                     else -> reduce { it.copy(isCartFittingEmptyOrderDialogVisible = true) }
                 }
             }
-            is CartIntent.DismissCartEmptyOrderDialog -> {
-                reduce { it.copy(isCartEmptyOrderDialogVisible = false) }
+            is CartIntent.OnCartEmptyOrderIntent -> {
+                when (intent.intent) {
+                    is CartEmptyOrderIntent.DismissRequest -> {
+                        reduce { it.copy(isCartEmptyOrderDialogVisible = false) }
+                    }
+                }
             }
-            is CartIntent.DismissCartFittingEmptyOrderDialog -> {
-                reduce { it.copy(isCartFittingEmptyOrderDialogVisible = false) }
+            is CartIntent.OnCartFittingEmptyOrderIntent -> {
+                when (intent.intent) {
+                    is CartFittingEmptyOrderIntent.DismissRequest -> {
+                        reduce { it.copy(isCartFittingEmptyOrderDialogVisible = false) }
+                    }
+                }
             }
-            is CartIntent.ChatClick -> return
+            is CartIntent.ChatClick -> return // fixme
         }
     }
 

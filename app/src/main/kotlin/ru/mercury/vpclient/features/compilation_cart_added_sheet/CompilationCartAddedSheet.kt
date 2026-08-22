@@ -26,6 +26,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -78,7 +80,7 @@ fun CompilationCartAddedSheet(
             )
 
             OutlinedButton(
-                onClick = { dispatch(CompilationCartAddedIntent.ReturnToCompilationClick) },
+                onClick = { dispatch(CompilationCartAddedIntent.DismissClick) },
                 modifier = Modifier
                     .padding(start = 16.dp, top = 8.dp, end = 16.dp)
                     .fillMaxWidth()
@@ -129,22 +131,30 @@ fun CompilationCartAddedSheet(
 @PreviewWrapper(ThemeWrapper::class)
 @Preview(showBackground = true)
 @Composable
-private fun CompilationCartAddedSheetPreview() {
+private fun CompilationCartAddedSheetPreview(
+    @PreviewParameter(CompilationCartAddedModelPreviewParameterProvider::class) state: CompilationCartAddedModel
+) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
         CompilationCartAddedSheet(
-            state = CompilationCartAddedModel(
-                pageEntity = CompilationPreviewPageEntity.Empty.copy(
-                    compilationId = 103,
-                    id = 1,
-                    position = 0,
-                    compilationName = "Летние образы",
-                    title = "Образ 1",
-                    imageUrl = ""
-                )
-            ),
+            state = state,
             dispatch = {}
         )
     }
+}
+
+private class CompilationCartAddedModelPreviewParameterProvider: PreviewParameterProvider<CompilationCartAddedModel> {
+    override val values: Sequence<CompilationCartAddedModel> = sequenceOf(
+        CompilationCartAddedModel(
+            pageEntity = CompilationPreviewPageEntity.Empty.copy(
+                compilationId = 103,
+                id = 1,
+                position = 0,
+                compilationName = "Летние образы",
+                title = "Образ 1",
+                imageUrl = ""
+            )
+        )
+    )
 }

@@ -7,6 +7,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.activity.event.MainEventManager
+import ru.mercury.vpclient.features.fitting_address_actions_sheet.intent.FittingAddressActionsIntent
+import ru.mercury.vpclient.features.fitting_address_delete_dialog.intent.FittingAddressDeleteIntent
+import ru.mercury.vpclient.features.fitting_address_sheet.intent.FittingAddressIntent
 import ru.mercury.vpclient.features.fitting_address_sheet.model.FittingAddressModel
 import ru.mercury.vpclient.features.fitting_addresses.event.FittingAddressesEvent
 import ru.mercury.vpclient.features.fitting_addresses.event.FittingAddressesEventManager
@@ -25,8 +28,8 @@ import ru.mercury.vpclient.shared.domain.mapper.withSuggestion
 import ru.mercury.vpclient.shared.domain.usecase.ClientAddressListUseCase
 import ru.mercury.vpclient.shared.domain.usecase.ClientAddressListUseCase.ClientAddressListException
 import ru.mercury.vpclient.shared.domain.usecase.ClientAddressesFlowUseCase
-import ru.mercury.vpclient.shared.domain.usecase.DeleteClientDeliveryAddressUseCase.ClientAddressException
 import ru.mercury.vpclient.shared.domain.usecase.DeleteClientDeliveryAddressUseCase
+import ru.mercury.vpclient.shared.domain.usecase.DeleteClientDeliveryAddressUseCase.ClientAddressException
 import ru.mercury.vpclient.shared.domain.usecase.SaveClientDeliveryAddressUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.navigation.BackRoute
@@ -120,127 +123,140 @@ class FittingAddressesViewModel @AssistedInject constructor(
             is FittingAddressesIntent.AddAddressClick -> {
                 reduce {
                     it.copy(
-                        isAddressFormVisible = true,
-                        addressForm = FittingAddressModel()
+                        isFittingAddressSheetVisible = true,
+                        fittingAddressState = FittingAddressModel()
                     )
                 }
             }
-            is FittingAddressesIntent.HideAddressForm -> {
-                reduce {
-                    it.copy(
-                        isAddressFormVisible = false,
-                        isAddressSaving = false
-                    )
+            is FittingAddressesIntent.OnFittingAddressIntent -> {
+                when (intent.intent) {
+                    is FittingAddressIntent.DismissClick -> {
+                        reduce {
+                            it.copy(
+                                isFittingAddressSheetVisible = false,
+                                isAddressSaving = false
+                            )
+                        }
+                    }
+                    is FittingAddressIntent.OpenAddressSearch -> reduce {
+                        it.copy(isFittingAddressSearchSheetVisible = true)
+                    }
+                    is FittingAddressIntent.AddressFormValueChange -> reduce {
+                        it.copy(fittingAddressState = it.fittingAddressState.updated(intent.intent.field, intent.intent.value))
+                    }
+                    is FittingAddressIntent.SaveAddressClick -> {
+                        launch {
+                            reduce { it.copy(isAddressSaving = true) }
+                            val form = stateFlow.value.fittingAddressState
+                            val address = form.clientDeliveryAddress()
+                            runCatching {
+                                saveClientDeliveryAddressUseCase(
+                                    SaveClientDeliveryAddressUseCase.Params(
+                                        address = address,
+                                        isEdit = form.isEdit
+                                    )
+                                ).getOrThrow()
+                            }
+                                .onSuccess { savedAddress ->
+                                    reduce { state ->
+                                        val addresses = (state.clientAddresses.filter { address ->
+                                            address.id != savedAddress.id
+                                        } + savedAddress).sortedBy { address -> address.id }
+
+                                        state.copy(
+                                            clientAddresses = addresses,
+                                            selectedClientAddressId = when {
+                                                !form.isEdit -> savedAddress.id
+                                                else -> state.selectedClientAddressId
+                                            },
+                                            pendingClientAddressId = when {
+                                                !form.isEdit -> savedAddress.id
+                                                else -> state.pendingClientAddressId
+                                            },
+                                            isFittingAddressSheetVisible = false,
+                                            isAddressSaving = false
+                                        )
+                                    }
+                                    if (!form.isEdit) {
+                                        FittingAddressesEventManager.send(
+                                            FittingAddressesEvent.SelectAddress(
+                                                origin = route.origin,
+                                                selectedClientAddressId = stateFlow.value.pendingClientAddressId,
+                                                clientAddresses = stateFlow.value.clientAddresses
+                                            )
+                                        )
+                                        MainEventManager.send(BackRoute)
+                                    }
+                                }
+                                .onFailure { error ->
+                                    reduce { it.copy(isAddressSaving = false) }
+                                    throw error
+                                }
+                        }
+                    }
                 }
             }
-            is FittingAddressesIntent.OpenAddressSearch -> reduce {
-                it.copy(isAddressSearchVisible = true)
-            }
-            is FittingAddressesIntent.HideAddressSearch -> {
-                reduce { it.copy(isAddressSearchVisible = false) }
-            }
-            is FittingAddressesIntent.AddressFormValueChange -> reduce {
-                it.copy(addressForm = it.addressForm.updated(intent.field, intent.value))
+            is FittingAddressesIntent.DismissFittingAddressSearchSheet -> {
+                reduce { it.copy(isFittingAddressSearchSheetVisible = false) }
             }
             is FittingAddressesIntent.SelectAddressSuggestion -> {
                 reduce {
                     it.copy(
-                        addressForm = it.addressForm.withSuggestion(intent.suggestion),
-                        isAddressSearchVisible = false
+                        fittingAddressState = it.fittingAddressState.withSuggestion(intent.suggestion),
+                        isFittingAddressSearchSheetVisible = false
                     )
-                }
-            }
-            is FittingAddressesIntent.SaveAddressClick -> {
-                launch {
-                    reduce { it.copy(isAddressSaving = true) }
-                    val form = stateFlow.value.addressForm
-                    val address = form.clientDeliveryAddress()
-                    runCatching {
-                        saveClientDeliveryAddressUseCase(
-                            SaveClientDeliveryAddressUseCase.Params(
-                                address = address,
-                                isEdit = form.isEdit
-                            )
-                        ).getOrThrow()
-                    }
-                        .onSuccess { savedAddress ->
-                            reduce { state ->
-                                val addresses = (state.clientAddresses.filter { address ->
-                                    address.id != savedAddress.id
-                                } + savedAddress).sortedBy { address -> address.id }
-
-                                state.copy(
-                                    clientAddresses = addresses,
-                                    selectedClientAddressId = when {
-                                        !form.isEdit -> savedAddress.id
-                                        else -> state.selectedClientAddressId
-                                    },
-                                    pendingClientAddressId = when {
-                                        !form.isEdit -> savedAddress.id
-                                        else -> state.pendingClientAddressId
-                                    },
-                                    isAddressFormVisible = false,
-                                    isAddressSaving = false
-                                )
-                            }
-                            if (!form.isEdit) {
-                                FittingAddressesEventManager.send(
-                                    FittingAddressesEvent.SelectAddress(
-                                        origin = route.origin,
-                                        selectedClientAddressId = stateFlow.value.pendingClientAddressId,
-                                        clientAddresses = stateFlow.value.clientAddresses
-                                    )
-                                )
-                                MainEventManager.send(BackRoute)
-                            }
-                        }
-                        .onFailure { error ->
-                            reduce { it.copy(isAddressSaving = false) }
-                            throw error
-                        }
                 }
             }
             is FittingAddressesIntent.OpenAddressActions -> reduce {
                 it.copy(addressActionAddressId = intent.addressId)
             }
-            is FittingAddressesIntent.HideAddressActions -> reduce {
-                it.copy(addressActionAddressId = null)
-            }
-            is FittingAddressesIntent.EditAddressClick -> {
-                reduce {
-                    it.copy(
-                        addressForm = it.addressActionAddress?.fittingAddressModel ?: FittingAddressModel(),
-                        isAddressFormVisible = true,
-                        addressActionAddressId = null
-                    )
+            is FittingAddressesIntent.OnFittingAddressActionsIntent -> {
+                when (intent.intent) {
+                    is FittingAddressActionsIntent.DismissClick -> reduce {
+                        it.copy(addressActionAddressId = null)
+                    }
+                    is FittingAddressActionsIntent.EditClick -> {
+                        reduce {
+                            it.copy(
+                                fittingAddressState = it.addressActionAddress?.fittingAddressModel ?: FittingAddressModel(),
+                                isFittingAddressSheetVisible = true,
+                                addressActionAddressId = null
+                            )
+                        }
+                    }
+                    is FittingAddressActionsIntent.DeleteClick -> {
+                        val addressId = stateFlow.value.addressActionAddressId ?: return
+                        reduce { it.copy(addressActionAddressId = null, deleteAddressId = addressId) }
+                    }
                 }
             }
-            is FittingAddressesIntent.RequestDeleteAddress -> {
-                reduce { it.copy(addressActionAddressId = null, deleteAddressId = intent.addressId) }
-            }
-            is FittingAddressesIntent.DismissFittingAddressDeleteDialog -> {
-                reduce { it.copy(deleteAddressId = null) }
-            }
-            is FittingAddressesIntent.ConfirmDeleteAddress -> {
-                launch {
-                    val addressId = stateFlow.value.deleteAddressId ?: return@launch
-                    deleteClientDeliveryAddressUseCase(addressId).getOrThrow()
-                    reduce { state ->
-                        val addresses = state.clientAddresses.filter { address -> address.id != addressId }
-                        val selectedId = when (state.selectedClientAddressId) {
-                            addressId -> addresses.firstOrNull()?.id
-                            else -> state.selectedClientAddressId
-                        }
+            is FittingAddressesIntent.OnFittingAddressDeleteIntent -> {
+                when (intent.intent) {
+                    is FittingAddressDeleteIntent.DismissRequest -> {
+                        reduce { it.copy(deleteAddressId = null) }
+                    }
+                    is FittingAddressDeleteIntent.ConfirmClick -> {
+                        launch {
+                            val addressId = stateFlow.value.deleteAddressId ?: return@launch
+                            deleteClientDeliveryAddressUseCase(addressId).getOrThrow()
+                            reduce { state ->
+                                val addresses = state.clientAddresses.filter { address -> address.id != addressId }
+                                val selectedId = when (state.selectedClientAddressId) {
+                                    addressId -> addresses.firstOrNull()?.id
+                                    else -> state.selectedClientAddressId
+                                }
 
-                        state.copy(
-                            clientAddresses = addresses,
-                            selectedClientAddressId = selectedId,
-                            pendingClientAddressId = when (state.pendingClientAddressId) {
-                                addressId -> selectedId
-                                else -> state.pendingClientAddressId
-                            },
-                            deleteAddressId = null
-                        )
+                                state.copy(
+                                    clientAddresses = addresses,
+                                    selectedClientAddressId = selectedId,
+                                    pendingClientAddressId = when (state.pendingClientAddressId) {
+                                        addressId -> selectedId
+                                        else -> state.pendingClientAddressId
+                                    },
+                                    deleteAddressId = null
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -249,9 +265,15 @@ class FittingAddressesViewModel @AssistedInject constructor(
 
     override fun catch(throwable: Throwable) {
         when (throwable) {
-            is ClientAddressListException -> launch { send(FittingConfirmationEvent.SnackbarMessage(throwable.message)) }
-            is ClientAddressException -> launch { send(FittingConfirmationEvent.SnackbarMessage(throwable.message)) }
-            is ClientException -> launch { send(FittingConfirmationEvent.SnackbarMessage(throwable.message)) }
+            is ClientAddressListException -> {
+                launch { send(FittingConfirmationEvent.SnackbarMessage(throwable.message)) }
+            }
+            is ClientAddressException -> {
+                launch { send(FittingConfirmationEvent.SnackbarMessage(throwable.message)) }
+            }
+            is ClientException -> {
+                launch { send(FittingConfirmationEvent.SnackbarMessage(throwable.message)) }
+            }
             is RoomException, is RoomSQLiteException -> {
                 launch { send(FittingConfirmationEvent.SnackbarMessage(throwable.message.orEmpty())) }
             }

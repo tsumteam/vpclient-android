@@ -16,9 +16,13 @@ import ru.mercury.vpclient.features.details.event.DetailsEvent
 import ru.mercury.vpclient.features.details.intent.DetailsIntent
 import ru.mercury.vpclient.features.details.model.DetailsModel
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
+import ru.mercury.vpclient.features.details_cart_added_sheet.intent.DetailsCartAddedIntent
+import ru.mercury.vpclient.features.details_message_sheet.intent.DetailsMessageIntent
+import ru.mercury.vpclient.features.details_wear_with_sheet.intent.DetailsWearWithIntent
 import ru.mercury.vpclient.features.filter.navigation.FilterRoute
 import ru.mercury.vpclient.features.home_root.event.HomeRootEventManager
 import ru.mercury.vpclient.features.media.navigation.MediaRoute
+import ru.mercury.vpclient.features.size_sheet.intent.SizeSheetIntent
 import ru.mercury.vpclient.features.video.navigation.VideoRoute
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.entity.DetailsField
@@ -146,7 +150,7 @@ class DetailsViewModel @AssistedInject constructor(
                 launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
             }
             is DetailsIntent.MessengerClick -> return
-            is DetailsIntent.MessageClick -> reduce { it.copy(isDetailsChatSheetVisible = true) }
+            is DetailsIntent.MessageClick -> reduce { it.copy(isDetailsMessageSheetVisible = true) }
             is DetailsIntent.SizeTableClick -> Unit
             is DetailsIntent.AddToBasketClick -> {
                 val state = stateFlow.value
@@ -159,12 +163,12 @@ class DetailsViewModel @AssistedInject constructor(
                         reduce {
                             it.copy(
                                 selectedSizeId = selectedSizeId,
-                                isSizePickerSheetVisible = true
+                                isSizeSheetVisible = true
                             )
                         }
                     }
                     else -> {
-                        reduce { it.copy(isSizePickerSheetVisible = false) }
+                        reduce { it.copy(isSizeSheetVisible = false) }
                         launch {
                             withCenterLoading {
                                 addProductToBasketUseCase(
@@ -174,20 +178,60 @@ class DetailsViewModel @AssistedInject constructor(
                                     )
                                 ).getOrThrow()
                             }
-                            reduce { it.copy(isCartAddedSheetVisible = true) }
+                            reduce { it.copy(isDetailsCartAddedSheetVisible = true) }
                         }
                     }
                 }
             }
-            is DetailsIntent.HideSizePicker -> reduce { it.copy(isSizePickerSheetVisible = false) }
-            is DetailsIntent.ShowWearWithSheet -> reduce { it.copy(isWearWithSheetVisible = true) }
-            is DetailsIntent.HideWearWithSheet -> reduce { it.copy(isWearWithSheetVisible = false) }
-            is DetailsIntent.ShowMessageSheet -> reduce { it.copy(isDetailsChatSheetVisible = true) }
-            is DetailsIntent.HideMessageSheet -> reduce { it.copy(isDetailsChatSheetVisible = false) }
-            is DetailsIntent.HideCartAddedSheet -> reduce { it.copy(isCartAddedSheetVisible = false) }
-            is DetailsIntent.CartAddedSheetCartClick -> {
-                reduce { it.copy(isCartAddedSheetVisible = false) }
-                launch { MainEventManager.send(CartRoute()) }
+            is DetailsIntent.OnSizeSheetIntent -> {
+                when (intent.intent) {
+                    is SizeSheetIntent.DismissClick -> {
+                        reduce { it.copy(isSizeSheetVisible = false) }
+                    }
+                    is SizeSheetIntent.SizeClick -> dispatch(DetailsIntent.SizeClick(intent.intent.index))
+                    is SizeSheetIntent.SizeTableClick -> dispatch(DetailsIntent.SizeTableClick)
+                    is SizeSheetIntent.AddToBasketClick -> dispatch(DetailsIntent.AddToBasketClick)
+                }
+            }
+            is DetailsIntent.ShowWearWithSheet -> {
+                reduce { it.copy(isDetailsWearWithSheetVisible = true) }
+            }
+            is DetailsIntent.OnDetailsWearWithIntent -> {
+                when (intent.intent) {
+                    is DetailsWearWithIntent.DismissClick -> {
+                        reduce { it.copy(isDetailsWearWithSheetVisible = false) }
+                    }
+                    is DetailsWearWithIntent.ProductClick -> {
+                        dispatch(DetailsIntent.ProductClick(intent.intent.id))
+                    }
+                    is DetailsWearWithIntent.ProductBasketClick -> {
+                        dispatch(DetailsIntent.ProductBasketClick(intent.intent.product))
+                    }
+                }
+            }
+            is DetailsIntent.ShowMessageSheet -> {
+                reduce { it.copy(isDetailsMessageSheetVisible = true) }
+            }
+            is DetailsIntent.OnDetailsMessageIntent -> {
+                when (intent.intent) {
+                    is DetailsMessageIntent.DismissClick -> {
+                        reduce { it.copy(isDetailsMessageSheetVisible = false) }
+                    }
+                    is DetailsMessageIntent.SendClick -> {
+                        // fixme
+                    }
+                }
+            }
+            is DetailsIntent.OnDetailsCartAddedIntent -> {
+                when (intent.intent) {
+                    is DetailsCartAddedIntent.DismissClick -> {
+                        reduce { it.copy(isDetailsCartAddedSheetVisible = false) }
+                    }
+                    is DetailsCartAddedIntent.CartClick -> {
+                        reduce { it.copy(isDetailsCartAddedSheetVisible = false) }
+                        launch { MainEventManager.send(CartRoute()) }
+                    }
+                }
             }
             is DetailsIntent.SizeClick -> {
                 val size = stateFlow.value.productEntity.availableSizes?.items?.getOrNull(intent.index)

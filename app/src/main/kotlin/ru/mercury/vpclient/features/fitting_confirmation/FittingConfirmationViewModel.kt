@@ -7,6 +7,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.activity.event.MainEventManager
+import ru.mercury.vpclient.features.fitting_address_actions_sheet.intent.FittingAddressActionsIntent
+import ru.mercury.vpclient.features.fitting_address_delete_dialog.intent.FittingAddressDeleteIntent
+import ru.mercury.vpclient.features.fitting_address_sheet.intent.FittingAddressIntent
 import ru.mercury.vpclient.features.fitting_address_sheet.model.FittingAddressModel
 import ru.mercury.vpclient.features.fitting_addresses.event.FittingAddressesEvent
 import ru.mercury.vpclient.features.fitting_addresses.navigation.FittingAddressesOrigin
@@ -37,8 +40,8 @@ import ru.mercury.vpclient.shared.domain.usecase.ClientAddressListUseCase.Client
 import ru.mercury.vpclient.shared.domain.usecase.ClientAddressesFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.ConfirmFittingUseCase
 import ru.mercury.vpclient.shared.domain.usecase.ConfirmFittingUseCase.ConfirmFittingException
-import ru.mercury.vpclient.shared.domain.usecase.DeleteClientDeliveryAddressUseCase.ClientAddressException
 import ru.mercury.vpclient.shared.domain.usecase.DeleteClientDeliveryAddressUseCase
+import ru.mercury.vpclient.shared.domain.usecase.DeleteClientDeliveryAddressUseCase.ClientAddressException
 import ru.mercury.vpclient.shared.domain.usecase.LoadFittingConfirmationDataUseCase
 import ru.mercury.vpclient.shared.domain.usecase.LoadFittingUseCase
 import ru.mercury.vpclient.shared.domain.usecase.SaveClientDeliveryAddressUseCase
@@ -297,154 +300,191 @@ class FittingConfirmationViewModel @AssistedInject constructor(
             is FittingConfirmationIntent.AddAddressClick -> {
                 reduce {
                     it.copy(
-                        isAddressFormVisible = true,
-                        addressForm = FittingAddressModel()
+                        isFittingAddressSheetVisible = true,
+                        fittingAddressState = FittingAddressModel()
                     )
                 }
             }
-            is FittingConfirmationIntent.HideAddressForm -> {
-                reduce { it.copy(isAddressFormVisible = false, isAddressSaving = false) }
+            is FittingConfirmationIntent.OnFittingAddressIntent -> {
+                when (intent.intent) {
+                    is FittingAddressIntent.DismissClick -> {
+                        reduce { it.copy(isFittingAddressSheetVisible = false, isAddressSaving = false) }
+                    }
+                    is FittingAddressIntent.OpenAddressSearch -> reduce {
+                        it.copy(isFittingAddressSearchSheetVisible = true)
+                    }
+                    is FittingAddressIntent.AddressFormValueChange -> reduce {
+                        it.copy(fittingAddressState = it.fittingAddressState.updated(intent.intent.field, intent.intent.value))
+                    }
+                    is FittingAddressIntent.SaveAddressClick -> {
+                        launch {
+                            reduce { it.copy(isAddressSaving = true) }
+                            val form = stateFlow.value.fittingAddressState
+                            val address = form.clientDeliveryAddress()
+                            runCatching {
+                                saveClientDeliveryAddressUseCase(
+                                    SaveClientDeliveryAddressUseCase.Params(
+                                        address = address,
+                                        isEdit = form.isEdit
+                                    )
+                                ).getOrThrow()
+                            }
+                                .onSuccess { savedAddress ->
+                                    reduce { state ->
+                                        val addresses = (state.clientAddresses.filter { address ->
+                                            address.id != savedAddress.id
+                                        } + savedAddress).sortedBy { address -> address.id }
+
+                                        state.copy(
+                                            clientAddresses = addresses,
+                                            selectedClientAddressId = savedAddress.id,
+                                            pendingClientAddressId = savedAddress.id,
+                                            selectedPlaceType = FittingConfirmationPlaceType.Home,
+                                            isFittingAddressSheetVisible = false,
+                                            isAddressSaving = false
+                                        )
+                                    }
+                                    dispatch(FittingConfirmationIntent.LoadFittingData)
+                                }
+                                .onFailure { error ->
+                                    reduce { it.copy(isAddressSaving = false) }
+                                    throw error
+                                }
+                        }
+                    }
+                }
             }
-            is FittingConfirmationIntent.OpenAddressSearch -> reduce {
-                it.copy(isAddressSearchVisible = true)
-            }
-            is FittingConfirmationIntent.HideAddressSearch -> {
-                reduce { it.copy(isAddressSearchVisible = false) }
-            }
-            is FittingConfirmationIntent.AddressFormValueChange -> reduce {
-                it.copy(addressForm = it.addressForm.updated(intent.field, intent.value))
+            is FittingConfirmationIntent.DismissFittingAddressSearchSheet -> {
+                reduce { it.copy(isFittingAddressSearchSheetVisible = false) }
             }
             is FittingConfirmationIntent.SelectAddressSuggestion -> {
                 reduce {
                     it.copy(
-                        addressForm = it.addressForm.withSuggestion(intent.suggestion),
-                        isAddressSearchVisible = false
+                        fittingAddressState = it.fittingAddressState.withSuggestion(intent.suggestion),
+                        isFittingAddressSearchSheetVisible = false
                     )
                 }
             }
-            is FittingConfirmationIntent.SaveAddressClick -> {
-                launch {
-                    reduce { it.copy(isAddressSaving = true) }
-                    val form = stateFlow.value.addressForm
-                    val address = form.clientDeliveryAddress()
-                    runCatching {
-                        saveClientDeliveryAddressUseCase(
-                            SaveClientDeliveryAddressUseCase.Params(
-                                address = address,
-                                isEdit = form.isEdit
-                            )
-                        ).getOrThrow()
+            is FittingConfirmationIntent.OpenAddressActions -> {
+                reduce { it.copy(addressActionAddressId = intent.addressId) }
+            }
+            is FittingConfirmationIntent.OnFittingAddressActionsIntent -> {
+                when (intent.intent) {
+                    is FittingAddressActionsIntent.DismissClick -> {
+                        reduce { it.copy(addressActionAddressId = null) }
                     }
-                        .onSuccess { savedAddress ->
+                    is FittingAddressActionsIntent.EditClick -> {
+                        reduce {
+                            it.copy(
+                                fittingAddressState = it.addressActionAddress?.fittingAddressModel ?: FittingAddressModel(),
+                                isFittingAddressSheetVisible = true,
+                                addressActionAddressId = null
+                            )
+                        }
+                    }
+                    is FittingAddressActionsIntent.DeleteClick -> {
+                        val addressId = stateFlow.value.addressActionAddressId ?: return
+                        reduce { it.copy(addressActionAddressId = null, deleteAddressId = addressId) }
+                    }
+                }
+            }
+            is FittingConfirmationIntent.OnFittingAddressDeleteIntent -> {
+                when (intent.intent) {
+                    is FittingAddressDeleteIntent.DismissRequest -> {
+                        reduce { it.copy(deleteAddressId = null) }
+                    }
+                    is FittingAddressDeleteIntent.ConfirmClick -> {
+                        launch {
+                            val addressId = stateFlow.value.deleteAddressId ?: return@launch
+                            deleteClientDeliveryAddressUseCase(addressId).getOrThrow()
                             reduce { state ->
-                                val addresses = (state.clientAddresses.filter { address ->
-                                    address.id != savedAddress.id
-                                } + savedAddress).sortedBy { address -> address.id }
+                                val addresses = state.clientAddresses.filter { address -> address.id != addressId }
+                                val selectedId = when (state.selectedClientAddressId) {
+                                    addressId -> addresses.firstOrNull()?.id
+                                    else -> state.selectedClientAddressId
+                                }
 
                                 state.copy(
                                     clientAddresses = addresses,
-                                    selectedClientAddressId = savedAddress.id,
-                                    pendingClientAddressId = savedAddress.id,
-                                    selectedPlaceType = FittingConfirmationPlaceType.Home,
-                                    isAddressFormVisible = false,
-                                    isAddressSaving = false
+                                    selectedClientAddressId = selectedId,
+                                    pendingClientAddressId = when (state.pendingClientAddressId) {
+                                        addressId -> selectedId
+                                        else -> state.pendingClientAddressId
+                                    },
+                                    deleteAddressId = null
                                 )
                             }
                             dispatch(FittingConfirmationIntent.LoadFittingData)
                         }
-                        .onFailure { error ->
-                            reduce { it.copy(isAddressSaving = false) }
-                            throw error
-                        }
-                }
-            }
-            is FittingConfirmationIntent.OpenAddressActions -> reduce { it.copy(addressActionAddressId = intent.addressId) }
-            is FittingConfirmationIntent.HideAddressActions -> reduce { it.copy(addressActionAddressId = null) }
-            is FittingConfirmationIntent.EditAddressClick -> {
-                reduce {
-                    it.copy(
-                        addressForm = it.addressActionAddress?.fittingAddressModel ?: FittingAddressModel(),
-                        isAddressFormVisible = true,
-                        addressActionAddressId = null
-                    )
-                }
-            }
-            is FittingConfirmationIntent.RequestDeleteAddress -> reduce { it.copy(addressActionAddressId = null, deleteAddressId = intent.addressId) }
-            is FittingConfirmationIntent.DismissDeleteAddress -> reduce { it.copy(deleteAddressId = null) }
-            is FittingConfirmationIntent.ConfirmDeleteAddress -> {
-                launch {
-                    val addressId = stateFlow.value.deleteAddressId ?: return@launch
-                    deleteClientDeliveryAddressUseCase(addressId).getOrThrow()
-                    reduce { state ->
-                        val addresses = state.clientAddresses.filter { address -> address.id != addressId }
-                        val selectedId = when (state.selectedClientAddressId) {
-                            addressId -> addresses.firstOrNull()?.id
-                            else -> state.selectedClientAddressId
-                        }
-
-                        state.copy(
-                            clientAddresses = addresses,
-                            selectedClientAddressId = selectedId,
-                            pendingClientAddressId = when (state.pendingClientAddressId) {
-                                addressId -> selectedId
-                                else -> state.pendingClientAddressId
-                            },
-                            deleteAddressId = null
-                        )
                     }
-                    dispatch(FittingConfirmationIntent.LoadFittingData)
                 }
             }
             is FittingConfirmationIntent.SelectPlace -> {
                 reduce { it.copy(selectedPlaceType = intent.placeType) }
                 dispatch(FittingConfirmationIntent.LoadFittingData)
             }
-            is FittingConfirmationIntent.SelectDeliveryMode -> reduce { it.copy(deliveryMode = intent.mode) }
-            is FittingConfirmationIntent.SelectSingleDay -> reduce {
-                it.copy(
-                    selectedSingleDayId = intent.dayId,
-                    selectedSingleIntervalId = it.singleIntervals.firstOrNull { interval -> interval.dayId == intent.dayId }?.id
-                )
+            is FittingConfirmationIntent.SelectDeliveryMode -> {
+                reduce { it.copy(deliveryMode = intent.mode) }
             }
-            is FittingConfirmationIntent.SelectSingleInterval -> reduce {
-                it.copy(selectedSingleIntervalId = intent.intervalId)
+            is FittingConfirmationIntent.SelectSingleDay -> {
+                reduce {
+                    it.copy(
+                        selectedSingleDayId = intent.dayId,
+                        selectedSingleIntervalId = it.singleIntervals.firstOrNull { interval ->
+                            interval.dayId == intent.dayId
+                        }?.id
+                    )
+                }
             }
-            is FittingConfirmationIntent.SelectDeliveryDay -> reduce {
-                val intervalId = it.deliveryGroups
-                    .firstOrNull { group -> group.id == intent.deliveryId }
-                    ?.intervals
-                    ?.firstOrNull { interval -> interval.dayId == intent.dayId }
-                    ?.id
-                it.copy(
-                    selectedDeliveryDayIds = it.selectedDeliveryDayIds + (intent.deliveryId to intent.dayId),
-                    selectedDeliveryIntervalIds = when {
-                        intervalId != null -> it.selectedDeliveryIntervalIds + (intent.deliveryId to intervalId)
-                        else -> it.selectedDeliveryIntervalIds - intent.deliveryId
-                    }
-                )
+            is FittingConfirmationIntent.SelectSingleInterval -> {
+                reduce { it.copy(selectedSingleIntervalId = intent.intervalId) }
             }
-            is FittingConfirmationIntent.SelectDeliveryInterval -> reduce {
-                it.copy(
-                    selectedDeliveryIntervalIds = it.selectedDeliveryIntervalIds + (intent.deliveryId to intent.intervalId)
-                )
+            is FittingConfirmationIntent.SelectDeliveryDay -> {
+                reduce {
+                    val intervalId = it.deliveryGroups
+                        .firstOrNull { group -> group.id == intent.deliveryId }
+                        ?.intervals
+                        ?.firstOrNull { interval -> interval.dayId == intent.dayId }
+                        ?.id
+                    it.copy(
+                        selectedDeliveryDayIds = it.selectedDeliveryDayIds + (intent.deliveryId to intent.dayId),
+                        selectedDeliveryIntervalIds = when {
+                            intervalId != null -> it.selectedDeliveryIntervalIds + (intent.deliveryId to intervalId)
+                            else -> it.selectedDeliveryIntervalIds - intent.deliveryId
+                        }
+                    )
+                }
             }
-            is FittingConfirmationIntent.ChangeDeliveryTimeClick -> reduce {
-                it.copy(
-                    expandedDeliveryId = when (it.expandedDeliveryId) {
-                        intent.deliveryId -> null
-                        else -> intent.deliveryId
-                    }
-                )
+            is FittingConfirmationIntent.SelectDeliveryInterval -> {
+                reduce { it.copy(selectedDeliveryIntervalIds = it.selectedDeliveryIntervalIds + (intent.deliveryId to intent.intervalId)) }
+            }
+            is FittingConfirmationIntent.ChangeDeliveryTimeClick -> {
+                reduce {
+                    it.copy(
+                        expandedDeliveryId = when (it.expandedDeliveryId) {
+                            intent.deliveryId -> null
+                            else -> intent.deliveryId
+                        }
+                    )
+                }
             }
         }
     }
 
     override fun catch(throwable: Throwable) {
         when (throwable) {
-            is ConfirmFittingException -> launch { send(FittingConfirmationEvent.SnackbarMessage(throwable.message)) }
-            is ClientAddressListException -> launch { send(FittingConfirmationEvent.SnackbarMessage(throwable.message)) }
-            is ClientAddressException -> launch { send(FittingConfirmationEvent.SnackbarMessage(throwable.message)) }
-            is ClientException -> launch { send(FittingConfirmationEvent.SnackbarMessage(throwable.message)) }
+            is ConfirmFittingException -> {
+                launch { send(FittingConfirmationEvent.SnackbarMessage(throwable.message)) }
+            }
+            is ClientAddressListException -> {
+                launch { send(FittingConfirmationEvent.SnackbarMessage(throwable.message)) }
+            }
+            is ClientAddressException -> {
+                launch { send(FittingConfirmationEvent.SnackbarMessage(throwable.message)) }
+            }
+            is ClientException -> {
+                launch { send(FittingConfirmationEvent.SnackbarMessage(throwable.message)) }
+            }
             else -> super.catch(throwable)
         }
     }

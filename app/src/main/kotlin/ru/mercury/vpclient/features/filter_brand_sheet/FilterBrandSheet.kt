@@ -81,6 +81,7 @@ import ru.mercury.vpclient.shared.domain.mapper.quantityWithThousandsSeparator
 import ru.mercury.vpclient.shared.domain.mapper.requireQuantity
 import ru.mercury.vpclient.shared.ui.PlaceholderHighlight
 import ru.mercury.vpclient.shared.ui.components.SharedAnimatedVisibility
+import ru.mercury.vpclient.shared.ui.components.SharedColumn
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.brands.BrandAlphabetScrubber
@@ -339,10 +340,9 @@ fun FilterBrandSheet(
                     }
                 }
                 else -> {
-                    Column(
-                        modifier = Modifier
-                            .padding(innerPadding)
-                            .fillMaxSize()
+                    SharedColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = innerPadding
                     ) {
                         if (animatingIds.isNotEmpty()) {
                             val displayedBrands = state.brands.filter { it.id in animatingIds }
@@ -622,7 +622,7 @@ fun FilterBrandSheet(
 @Preview
 @Composable
 private fun FilterBrandSheetPreview(
-    @PreviewParameter(FilterBrandModelProvider::class) state: FilterBrandModel
+    @PreviewParameter(FilterBrandModelPreviewParameterProvider::class) state: FilterBrandModel
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -634,7 +634,7 @@ private fun FilterBrandSheetPreview(
     }
 }
 
-private class FilterBrandModelProvider: PreviewParameterProvider<FilterBrandModel> {
+private class FilterBrandModelPreviewParameterProvider: PreviewParameterProvider<FilterBrandModel> {
     override val values: Sequence<FilterBrandModel> = sequenceOf(
         FilterBrandModel(
             brands = listOf(

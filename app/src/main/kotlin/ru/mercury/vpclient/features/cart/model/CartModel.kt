@@ -63,7 +63,7 @@ data class CartModel(
     val isCartEmptyOrderDialogVisible: Boolean = false,
     val isCartFittingEmptyOrderDialogVisible: Boolean = false
 ): Model {
-    val isEditProductSheetVisible: Boolean
+    val isCartEditProductSheetVisible: Boolean
         get() = editProduct != null
 
     val editProductActions: List<Pair<Int, CartIntent>>
@@ -83,7 +83,7 @@ data class CartModel(
             }
         }
 
-    val editProductModel: CartEditProductModel
+    val editProductState: CartEditProductModel
         get() = CartEditProductModel(
             actions = editProductActions.map { it.first }
         )
@@ -91,7 +91,7 @@ data class CartModel(
     val isCartFittingEditProductSheetVisible: Boolean
         get() = fittingEditProduct != null
 
-    val fittingEditProductModel: CartFittingEditProductModel
+    val fittingEditProductState: CartFittingEditProductModel
         get() = CartFittingEditProductModel(
             isSizeSelectionAvailable = fittingEditProduct?.isSizeSelectionAvailable.orEmpty
         )
@@ -114,7 +114,7 @@ data class CartModel(
             }
         }
 
-    val sizePickerState: SizeSelectorState
+    val sizePickerSelectorState: SizeSelectorState
         get() {
             val sizes = sizePickerSizes ?: return SizeSelectorState.Empty
             if (sizePickerProduct == null) return SizeSelectorState.Empty
@@ -137,9 +137,9 @@ data class CartModel(
             )
         }
 
-    val sizePickerModel: SizePickerModel
+    val sizePickerState: SizePickerModel
         get() = SizePickerModel(
-            sizeSelectorState = sizePickerState,
+            sizeSelectorState = sizePickerSelectorState,
             buttonText = when {
                 sizePickerForFitting -> ClientStrings.CartSave
                 else -> ClientStrings.CartSizeSheetSelect
@@ -154,7 +154,7 @@ data class CartModel(
             }
         }
 
-    val colorPickerModel: ColorPickerModel
+    val colorPickerState: ColorPickerModel
         get() = ColorPickerModel(colors = colorPickerColorsState)
 
     val quantityPickerValues: List<CartQuantityItem>
@@ -174,7 +174,7 @@ data class CartModel(
             }
         }
 
-    val quantityPickerModel: QuantityPickerModel
+    val quantityPickerState: QuantityPickerModel
         get() = QuantityPickerModel(quantities = quantityPickerValues)
 
     val visibleProducts: List<CartProduct>
@@ -235,7 +235,7 @@ data class CartModel(
     val fittingPaymentProductsSummary: String
         get() = summary(fittingPaymentProducts)
 
-    val cartFittingModel: CartFittingModel
+    val cartFittingState: CartFittingModel
         get() = CartFittingModel(
             clientName = fittingSheetClientName,
             clientFeminine = isFittingSheetClientFeminine,

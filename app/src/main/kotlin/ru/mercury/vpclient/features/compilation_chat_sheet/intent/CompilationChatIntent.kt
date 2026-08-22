@@ -4,6 +4,5 @@ import ru.mercury.vpclient.shared.mvi.Intent
 
 sealed interface CompilationChatIntent: Intent {
     data object DismissClick: CompilationChatIntent
-    data class CommentChange(val comment: String): CompilationChatIntent
     data class SendClick(val comment: String): CompilationChatIntent
 }

@@ -66,10 +66,10 @@ class ProfileBrandsViewModel @Inject constructor(
             }
             is ProfileBrandsIntent.BackClick -> launch { MainEventManager.send(BackRoute) }
             is ProfileBrandsIntent.AddFavoriteBrandsClick -> {
-                reduce { it.copy(isBrandSheetVisible = true) }
+                reduce { it.copy(isProfileBrandSheetVisible = true) }
             }
-            is ProfileBrandsIntent.HideBrandSheet -> {
-                reduce { it.copy(isBrandSheetVisible = false) }
+            is ProfileBrandsIntent.DismissProfileBrandSheet -> {
+                reduce { it.copy(isProfileBrandSheetVisible = false) }
             }
             is ProfileBrandsIntent.SelectTab -> {
                 reduce { it.copy(selectedTab = intent.tab) }

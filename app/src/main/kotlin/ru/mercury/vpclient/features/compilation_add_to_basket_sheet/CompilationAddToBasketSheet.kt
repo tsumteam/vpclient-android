@@ -150,7 +150,7 @@ fun CompilationAddToBasketSheet(
 @Preview
 @Composable
 private fun CompilationAddToBasketSheetPreview(
-    @PreviewParameter(CompilationAddToBasketSheetStateProvider::class) state: CompilationAddToBasketModel
+    @PreviewParameter(CompilationAddToBasketModelPreviewParameterProvider::class) state: CompilationAddToBasketModel
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -162,7 +162,7 @@ private fun CompilationAddToBasketSheetPreview(
     }
 }
 
-private class CompilationAddToBasketSheetStateProvider: PreviewParameterProvider<CompilationAddToBasketModel> {
+private class CompilationAddToBasketModelPreviewParameterProvider: PreviewParameterProvider<CompilationAddToBasketModel> {
 
     private val products = listOf(
         CatalogFilterProductsEntity.Empty.copy(

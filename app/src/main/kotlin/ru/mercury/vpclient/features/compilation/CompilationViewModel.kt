@@ -13,16 +13,22 @@ import ru.mercury.vpclient.features.compilation.event.CompilationEvent
 import ru.mercury.vpclient.features.compilation.intent.CompilationIntent
 import ru.mercury.vpclient.features.compilation.model.CompilationModel
 import ru.mercury.vpclient.features.compilation.navigation.CompilationRoute
+import ru.mercury.vpclient.features.compilation_actions_sheet.intent.CompilationActionsIntent
+import ru.mercury.vpclient.features.compilation_add_to_basket_sheet.intent.CompilationAddToBasketIntent
+import ru.mercury.vpclient.features.compilation_benefit_sheet.intent.CompilationBenefitIntent
+import ru.mercury.vpclient.features.compilation_cart_added_sheet.intent.CompilationCartAddedIntent
+import ru.mercury.vpclient.features.compilation_chat_sheet.intent.CompilationChatIntent
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
+import ru.mercury.vpclient.features.details_message_sheet.intent.DetailsMessageIntent
 import ru.mercury.vpclient.features.media.navigation.MediaRoute
 import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.domain.usecase.CartBadgeUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CartCountFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CartProductsFlowUseCase
-import ru.mercury.vpclient.shared.domain.usecase.CatalogFashionImageByIdUseCase
-import ru.mercury.vpclient.shared.domain.usecase.CatalogFashionImageByIdUseCase.CatalogFashionImageByIdException
 import ru.mercury.vpclient.shared.domain.usecase.CatalogAvailableForMultipleSizesUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CatalogAvailableForMultipleSizesUseCase.CatalogAvailableForMultipleSizesException
+import ru.mercury.vpclient.shared.domain.usecase.CatalogFashionImageByIdUseCase
+import ru.mercury.vpclient.shared.domain.usecase.CatalogFashionImageByIdUseCase.CatalogFashionImageByIdException
 import ru.mercury.vpclient.shared.domain.usecase.CatalogFilterProductsEntitiesFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CompilationPreviewPageEntitiesFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CompilationsClientByIdUseCase
@@ -135,17 +141,30 @@ class CompilationViewModel @AssistedInject constructor(
             }
             is CompilationIntent.BackClick -> launch { MainEventManager.send(BackRoute) }
             is CompilationIntent.CartClick -> launch { MainEventManager.send(CartRoute()) }
-            is CompilationIntent.MenuClick -> reduce { it.copy(isCompilationActionsSheetVisible = true) }
-            is CompilationIntent.HideMenuDialog -> reduce { it.copy(isCompilationActionsSheetVisible = false) }
-            is CompilationIntent.ShowCompilationChatSheet -> {
-                reduce {
-                    it.copy(
-                        isCompilationActionsSheetVisible = false,
-                        isCompilationChatSheetVisible = true
-                    )
+            is CompilationIntent.MenuClick -> {
+                reduce { it.copy(isCompilationActionsSheetVisible = true) }
+            }
+            is CompilationIntent.OnCompilationActionsIntent -> {
+                when (intent.intent) {
+                    is CompilationActionsIntent.DismissClick -> {
+                        reduce { it.copy(isCompilationActionsSheetVisible = false) }
+                    }
+                    is CompilationActionsIntent.ShowCompilationChatSheet -> {
+                        reduce { it.copy(isCompilationActionsSheetVisible = false, isCompilationChatSheetVisible = true) }
+                    }
+                    is CompilationActionsIntent.ShowAddToBasketDialog -> {
+                        dispatch(CompilationIntent.ShowAddToBasketDialog)
+                    }
                 }
             }
-            is CompilationIntent.HideCompilationChatSheet -> reduce { it.copy(isCompilationChatSheetVisible = false) }
+            is CompilationIntent.OnCompilationChatIntent -> {
+                when (intent.intent) {
+                    is CompilationChatIntent.DismissClick -> {
+                        reduce { it.copy(isCompilationChatSheetVisible = false) }
+                    }
+                    is CompilationChatIntent.SendClick -> return // fixme
+                }
+            }
             is CompilationIntent.ShowAddToBasketDialog -> {
                 if (route.isFashionImage) return
                 stateFlow.value.addToBasketAvailableSizesJob?.cancel()
@@ -184,39 +203,36 @@ class CompilationViewModel @AssistedInject constructor(
                 }
                 reduce { it.copy(addToBasketAvailableSizesJob = job) }
             }
-            is CompilationIntent.HideAddToBasketDialog -> {
-                stateFlow.value.addToBasketAvailableSizesJob?.cancel()
-                reduce {
-                    it.copy(
-                        isCompilationAddToBasketSheetVisible = false,
-                        addToBasketDialogSelectedProductIds = emptySet(),
-                        addToBasketDialogAvailableSizes = emptyMap(),
-                        addToBasketDialogOneSizeProductIds = emptySet(),
-                        addToBasketAvailableSizesJob = null
-                    )
-                }
-            }
-            is CompilationIntent.HideCartAddedSheet -> reduce { it.copy(isCompilationCartAddedSheetVisible = false) }
-            is CompilationIntent.CartAddedSheetCartClick -> {
-                reduce { it.copy(isCompilationCartAddedSheetVisible = false) }
-                launch { MainEventManager.send(CartRoute()) }
-            }
-            is CompilationIntent.ShowBenefitSheet -> reduce { it.copy(isCompilationBenefitSheetVisible = true) }
-            is CompilationIntent.HideBenefitSheet -> reduce { it.copy(isCompilationBenefitSheetVisible = false) }
-            is CompilationIntent.HideMessageSheet -> reduce { it.copy(messageSheetProductEntity = null) }
-            is CompilationIntent.AddToBasketClick -> {
-                if (stateFlow.value.isAddToBasketLoading) return
-                val page = stateFlow.value.selectedPageEntity ?: return
-                reduce { it.copy(isCompilationAddToBasketSheetVisible = false) }
-                val job = launch {
-                    compilationsClientLookByIdToBasketUseCase(page.id).getOrThrow()
-                    reduce { it.copy(isCompilationCartAddedSheetVisible = true) }
-                }.also { launchedJob ->
-                    launchedJob.invokeOnCompletion {
-                        reduce { it.copy(addToBasketJob = null) }
+            is CompilationIntent.OnCompilationCartAddedIntent -> {
+                when (intent.intent) {
+                    is CompilationCartAddedIntent.DismissClick -> {
+                        reduce { it.copy(isCompilationCartAddedSheetVisible = false) }
+                    }
+                    is CompilationCartAddedIntent.CartClick -> {
+                        reduce { it.copy(isCompilationCartAddedSheetVisible = false) }
+                        launch { MainEventManager.send(CartRoute()) }
                     }
                 }
-                reduce { it.copy(addToBasketJob = job) }
+            }
+            is CompilationIntent.ShowBenefitSheet -> {
+                reduce { it.copy(isCompilationBenefitSheetVisible = true) }
+            }
+            is CompilationIntent.OnCompilationBenefitIntent -> {
+                when (intent.intent) {
+                    is CompilationBenefitIntent.DismissClick -> {
+                        reduce { it.copy(isCompilationBenefitSheetVisible = false) }
+                    }
+                }
+            }
+            is CompilationIntent.OnDetailsMessageIntent -> {
+                when (intent.intent) {
+                    is DetailsMessageIntent.DismissClick -> {
+                        reduce { it.copy(messageSheetProductEntity = null) }
+                    }
+                    is DetailsMessageIntent.SendClick -> {
+                        // fixme
+                    }
+                }
             }
             is CompilationIntent.PageChange -> {
                 val lastIndex = stateFlow.value.compilationPreviewPageEntities.lastIndex
@@ -246,14 +262,43 @@ class CompilationViewModel @AssistedInject constructor(
             is CompilationIntent.ProductMessageClick -> {
                 reduce { it.copy(messageSheetProductEntity = intent.productEntity) }
             }
-            is CompilationIntent.AddToBasketProductCheckedChange -> {
-                val selectedIds = when {
-                    intent.checked -> stateFlow.value.addToBasketDialogSelectedProductIds + intent.productId
-                    else -> stateFlow.value.addToBasketDialogSelectedProductIds - intent.productId
+            is CompilationIntent.OnCompilationAddToBasketIntent -> {
+                when (intent.intent) {
+                    is CompilationAddToBasketIntent.DismissClick -> {
+                        stateFlow.value.addToBasketAvailableSizesJob?.cancel()
+                        reduce {
+                            it.copy(
+                                isCompilationAddToBasketSheetVisible = false,
+                                addToBasketDialogSelectedProductIds = emptySet(),
+                                addToBasketDialogAvailableSizes = emptyMap(),
+                                addToBasketDialogOneSizeProductIds = emptySet(),
+                                addToBasketAvailableSizesJob = null
+                            )
+                        }
+                    }
+                    is CompilationAddToBasketIntent.AddToBasketClick -> {
+                        if (stateFlow.value.isAddToBasketLoading) return
+                        val page = stateFlow.value.selectedPageEntity ?: return
+                        reduce { it.copy(isCompilationAddToBasketSheetVisible = false) }
+                        val job = launch {
+                            compilationsClientLookByIdToBasketUseCase(page.id).getOrThrow()
+                            reduce { it.copy(isCompilationCartAddedSheetVisible = true) }
+                        }.also { launchedJob ->
+                            launchedJob.invokeOnCompletion {
+                                reduce { it.copy(addToBasketJob = null) }
+                            }
+                        }
+                        reduce { it.copy(addToBasketJob = job) }
+                    }
+                    is CompilationAddToBasketIntent.AddToBasketProductCheckedChange -> {
+                        val selectedIds = when {
+                            intent.intent.checked -> stateFlow.value.addToBasketDialogSelectedProductIds + intent.intent.productId
+                            else -> stateFlow.value.addToBasketDialogSelectedProductIds - intent.intent.productId
+                        }
+                        reduce { it.copy(addToBasketDialogSelectedProductIds = selectedIds) }
+                    }
                 }
-                reduce { it.copy(addToBasketDialogSelectedProductIds = selectedIds) }
             }
-            is CompilationIntent.CompilationChatSendClick -> return
         }
     }
 

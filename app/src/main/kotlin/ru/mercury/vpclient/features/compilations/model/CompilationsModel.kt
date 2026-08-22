@@ -1,6 +1,7 @@
 package ru.mercury.vpclient.features.compilations.model
 
 import kotlinx.coroutines.Job
+import ru.mercury.vpclient.features.compilation_chat_sheet.model.CompilationChatModel
 import ru.mercury.vpclient.shared.data.FORMAT_RUB
 import ru.mercury.vpclient.shared.data.entity.CartPayMode
 import ru.mercury.vpclient.shared.data.entity.CartProduct
@@ -50,6 +51,11 @@ data class CompilationsModel(
 
     val isCompilationChatSheetVisible: Boolean
         get() = selectedCompilationChatEntity != CompilationEntity.Empty
+
+    val compilationChatState: CompilationChatModel
+        get() = CompilationChatModel(
+            compilationEntity = selectedCompilationChatEntity
+        )
 
     val isLoading: Boolean
         get() = compilationsClientJob?.isActive == true
@@ -108,7 +114,7 @@ data class CompilationsModel(
     private fun summary(products: List<CartProduct>): String {
         val itemsCount = products.sumOf { it.itemsCount }
         val sum = products.sumOf { (it.priceValue * it.itemsCount).roundToInt() }
-        return "$itemsCount ${itemsCount.productsWord} на сумму ${FORMAT_RUB.format(sum.thousandsSeparator)}"
+        return "$itemsCount ${itemsCount.productsWord} на сумму ${FORMAT_RUB.format(sum.thousandsSeparator)}" // fixme
     }
 
     private val CartProduct.itemsCount: Int
@@ -116,7 +122,7 @@ data class CompilationsModel(
 
     private val Int.productsWord: String
         get() = when {
-            this % 100 in 11..14 -> "товаров"
+            this % 100 in 11..14 -> "товаров" // fixme
             this % 10 == 1 -> "товар"
             this % 10 in 2..4 -> "товара"
             else -> "товаров"

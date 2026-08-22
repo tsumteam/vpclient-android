@@ -1,5 +1,6 @@
 package ru.mercury.vpclient.features.gift_card.intent
 
+import ru.mercury.vpclient.features.gift_card_terms_sheet.intent.GiftCardTermsIntent
 import ru.mercury.vpclient.shared.mvi.Intent
 
 sealed interface GiftCardIntent: Intent {
@@ -10,9 +11,9 @@ sealed interface GiftCardIntent: Intent {
     data object FittingClick: GiftCardIntent
     data object CartClick: GiftCardIntent
     data object TermsClick: GiftCardIntent
-    data object TermsDismiss: GiftCardIntent
     data object BuyClick: GiftCardIntent
     data class SelectTemplate(val index: Int): GiftCardIntent
     data class AmountChange(val value: String): GiftCardIntent
     data class SelectAmount(val amount: Int): GiftCardIntent
+    data class OnGiftCardTermsIntent(val intent: GiftCardTermsIntent): GiftCardIntent
 }

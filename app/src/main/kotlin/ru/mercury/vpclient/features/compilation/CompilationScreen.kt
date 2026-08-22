@@ -60,25 +60,13 @@ import ru.mercury.vpclient.features.compilation.intent.CompilationIntent
 import ru.mercury.vpclient.features.compilation.model.CompilationModel
 import ru.mercury.vpclient.features.compilation.navigation.CompilationRoute
 import ru.mercury.vpclient.features.compilation_actions_sheet.CompilationActionsSheet
-import ru.mercury.vpclient.features.compilation_actions_sheet.intent.CompilationActionsIntent
 import ru.mercury.vpclient.features.compilation_add_to_basket_sheet.CompilationAddToBasketSheet
-import ru.mercury.vpclient.features.compilation_add_to_basket_sheet.intent.CompilationAddToBasketIntent
-import ru.mercury.vpclient.features.compilation_add_to_basket_sheet.model.CompilationAddToBasketModel
 import ru.mercury.vpclient.features.compilation_benefit_sheet.CompilationBenefitSheet
-import ru.mercury.vpclient.features.compilation_benefit_sheet.intent.CompilationBenefitIntent
-import ru.mercury.vpclient.features.compilation_benefit_sheet.model.CompilationBenefitModel
 import ru.mercury.vpclient.features.compilation_cart_added_sheet.CompilationCartAddedSheet
-import ru.mercury.vpclient.features.compilation_cart_added_sheet.intent.CompilationCartAddedIntent
-import ru.mercury.vpclient.features.compilation_cart_added_sheet.model.CompilationCartAddedModel
 import ru.mercury.vpclient.features.compilation_chat_sheet.CompilationChatSheet
-import ru.mercury.vpclient.features.compilation_chat_sheet.intent.CompilationChatIntent
-import ru.mercury.vpclient.features.compilation_chat_sheet.model.CompilationChatModel
 import ru.mercury.vpclient.features.details_message_sheet.DetailsMessageSheet
-import ru.mercury.vpclient.features.details_message_sheet.intent.DetailsMessageIntent
-import ru.mercury.vpclient.features.details_message_sheet.model.DetailsMessageModel
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CompilationPreviewPageEntity
-import ru.mercury.vpclient.shared.domain.mapper.messageSheetProductEntity
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
@@ -119,123 +107,42 @@ fun CompilationScreen(
 
     if (state.isCompilationActionsSheetVisible) {
         CompilationActionsSheet(
-            dispatch = { intent ->
-                when (intent) {
-                    is CompilationActionsIntent.ShowCompilationChatSheet -> {
-                        viewModel.dispatch(CompilationIntent.ShowCompilationChatSheet)
-                    }
-                    is CompilationActionsIntent.ShowAddToBasketDialog -> {
-                        viewModel.dispatch(CompilationIntent.ShowAddToBasketDialog)
-                    }
-                    is CompilationActionsIntent.DismissClick -> {
-                        viewModel.dispatch(CompilationIntent.HideMenuDialog)
-                    }
-                }
-            }
+            dispatch = { intent -> viewModel.dispatch(CompilationIntent.OnCompilationActionsIntent(intent)) }
         )
     }
 
     if (state.isCompilationChatSheetVisible) {
         CompilationChatSheet(
-            state = CompilationChatModel(
-                compilationEntity = state.compilationChatEntity,
-                selectedLookTitle = state.selectedLookTitle
-            ),
-            dispatch = { intent ->
-                when (intent) {
-                    is CompilationChatIntent.DismissClick -> {
-                        viewModel.dispatch(CompilationIntent.HideCompilationChatSheet)
-                    }
-                    is CompilationChatIntent.CommentChange -> Unit
-                    is CompilationChatIntent.SendClick -> {
-                        viewModel.dispatch(CompilationIntent.CompilationChatSendClick(intent.comment))
-                    }
-                }
-            }
+            state = state.compilationChatState,
+            dispatch = { intent -> viewModel.dispatch(CompilationIntent.OnCompilationChatIntent(intent)) }
         )
     }
 
-    if (state.isDetailsChatSheetVisible) {
-        val messageSheetProductEntity = state.messageSheetProductEntity?.messageSheetProductEntity()
-        if (messageSheetProductEntity != null) {
-            DetailsMessageSheet(
-                state = DetailsMessageModel(
-                    productEntity = messageSheetProductEntity
-                ),
-                dispatch = { intent ->
-                    when (intent) {
-                        is DetailsMessageIntent.CommentChange -> Unit
-                        is DetailsMessageIntent.SendClick,
-                        is DetailsMessageIntent.DismissClick -> {
-                            viewModel.dispatch(CompilationIntent.HideMessageSheet)
-                        }
-                    }
-                }
-            )
-        }
+    if (state.isDetailsMessageSheetVisible) {
+        DetailsMessageSheet(
+            state = state.detailsMessageState,
+            dispatch = { intent -> viewModel.dispatch(CompilationIntent.OnDetailsMessageIntent(intent)) }
+        )
     }
 
     if (state.isCompilationAddToBasketSheetVisible) {
         CompilationAddToBasketSheet(
-            state = CompilationAddToBasketModel(
-                productEntities = state.selectedLookAddToBasketProductEntities,
-                selectedProductIds = state.addToBasketDialogSelectedProductIds,
-                availableSizes = state.addToBasketDialogAvailableSizes,
-                oneSizeProductIds = state.addToBasketDialogOneSizeProductIds,
-                isLoading = state.isAddToBasketLoading
-            ),
-            dispatch = { intent ->
-                when (intent) {
-                    is CompilationAddToBasketIntent.AddToBasketClick -> {
-                        viewModel.dispatch(CompilationIntent.AddToBasketClick)
-                    }
-                    is CompilationAddToBasketIntent.DismissClick -> {
-                        viewModel.dispatch(CompilationIntent.HideAddToBasketDialog)
-                    }
-                    is CompilationAddToBasketIntent.AddToBasketProductCheckedChange -> {
-                        viewModel.dispatch(
-                            CompilationIntent.AddToBasketProductCheckedChange(
-                                productId = intent.productId,
-                                checked = intent.checked
-                            )
-                        )
-                    }
-                }
-            }
+            state = state.compilationAddToBasketState,
+            dispatch = { intent -> viewModel.dispatch(CompilationIntent.OnCompilationAddToBasketIntent(intent)) }
         )
     }
 
     if (state.isCompilationCartAddedSheetVisible) {
         CompilationCartAddedSheet(
-            state = CompilationCartAddedModel(
-                pageEntity = state.selectedPageEntity ?: CompilationPreviewPageEntity.Empty
-            ),
-            dispatch = { intent ->
-                when (intent) {
-                    is CompilationCartAddedIntent.ReturnToCompilationClick,
-                    is CompilationCartAddedIntent.DismissClick -> {
-                        viewModel.dispatch(CompilationIntent.HideCartAddedSheet)
-                    }
-                    is CompilationCartAddedIntent.CartClick -> {
-                        viewModel.dispatch(CompilationIntent.CartAddedSheetCartClick)
-                    }
-                }
-            }
+            state = state.compilationCartAddedState,
+            dispatch = { intent -> viewModel.dispatch(CompilationIntent.OnCompilationCartAddedIntent(intent)) }
         )
     }
 
     if (state.isCompilationBenefitSheetVisible) {
         CompilationBenefitSheet(
-            state = CompilationBenefitModel(
-                catalogFilterProductsEntities = state.selectedLookProductEntities
-            ),
-            dispatch = { intent ->
-                when (intent) {
-                    is CompilationBenefitIntent.DismissClick -> {
-                        viewModel.dispatch(CompilationIntent.HideBenefitSheet)
-                    }
-                }
-            }
+            state = state.compilationBenefitState,
+            dispatch = { intent -> viewModel.dispatch(CompilationIntent.OnCompilationBenefitIntent(intent)) }
         )
     }
 
