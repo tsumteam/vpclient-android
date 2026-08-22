@@ -215,7 +215,7 @@ fun DetailsScreen(
                     is SizeSheetIntent.AddToBasketClick -> {
                         viewModel.dispatch(DetailsIntent.AddToBasketClick)
                     }
-                    is SizeSheetIntent.DismissRequest -> {
+                    is SizeSheetIntent.DismissClick -> {
                         viewModel.dispatch(DetailsIntent.HideSizePicker)
                     }
                 }

@@ -81,7 +81,7 @@ fun FittingAddressSheet(
         modifier = Modifier
             .fillMaxHeight()
             .statusBarsPadding(),
-        onDismissRequest = { dispatch(FittingAddressIntent.DismissRequest) },
+        onDismissRequest = { dispatch(FittingAddressIntent.DismissClick) },
         sheetState = sheetState
     ) {
         val focusManager = LocalFocusManager.current
@@ -105,7 +105,7 @@ fun FittingAddressSheet(
                     },
                     navigationIcon = {
                         IconButton(
-                            onClick = { dispatch(FittingAddressIntent.DismissRequest) }
+                            onClick = { dispatch(FittingAddressIntent.DismissClick) }
                         ) {
                             Icon(
                                 imageVector = Close24,

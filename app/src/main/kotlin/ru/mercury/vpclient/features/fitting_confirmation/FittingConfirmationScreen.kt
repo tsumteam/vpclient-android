@@ -159,7 +159,7 @@ fun FittingConfirmationScreen(
                             FittingConfirmationIntent.AddressFormValueChange(intent.field, intent.value)
                         )
                     }
-                    is FittingAddressIntent.DismissRequest -> {
+                    is FittingAddressIntent.DismissClick -> {
                         viewModel.dispatch(FittingConfirmationIntent.HideAddressForm)
                     }
                     is FittingAddressIntent.OpenAddressSearch -> {

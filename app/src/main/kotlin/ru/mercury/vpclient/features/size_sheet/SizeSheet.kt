@@ -54,7 +54,7 @@ fun SizeSheet(
     val sheetDispatch: (SizeSheetIntent) -> Unit = { intent ->
         when (intent) {
             is SizeSheetIntent.AddToBasketClick,
-            is SizeSheetIntent.DismissRequest -> {
+            is SizeSheetIntent.DismissClick -> {
                 scope.launch {
                     sheetState.hide()
                     dispatch(intent)
@@ -66,7 +66,7 @@ fun SizeSheet(
     }
 
     SharedModalBottomSheet(
-        onDismissRequest = { dispatch(SizeSheetIntent.DismissRequest) },
+        onDismissRequest = { dispatch(SizeSheetIntent.DismissClick) },
         sheetState = sheetState
     ) {
         Column {
@@ -82,7 +82,7 @@ fun SizeSheet(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { sheetDispatch(SizeSheetIntent.DismissRequest) }
+                        onClick = { sheetDispatch(SizeSheetIntent.DismissClick) }
                     ) {
                         Icon(
                             imageVector = Close24,
