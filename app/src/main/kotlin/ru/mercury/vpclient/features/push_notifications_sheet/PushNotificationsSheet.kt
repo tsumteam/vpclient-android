@@ -35,8 +35,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.R
-import ru.mercury.vpclient.features.push_notifications_sheet.intent.PushNotificationsSheetIntent
-import ru.mercury.vpclient.features.push_notifications_sheet.model.PushNotificationsSheetModel
+import ru.mercury.vpclient.features.push_notifications_sheet.intent.PushNotificationsIntent
+import ru.mercury.vpclient.features.push_notifications_sheet.model.PushNotificationsModel
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
@@ -47,15 +47,15 @@ import ru.mercury.vpclient.shared.ui.theme.regular14
 
 @Composable
 fun PushNotificationsSheet(
-    state: PushNotificationsSheetModel,
-    dispatch: (PushNotificationsSheetIntent) -> Unit
+    state: PushNotificationsModel,
+    dispatch: (PushNotificationsIntent) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
     val dismiss: () -> Unit = {
         scope.launch {
             sheetState.hide()
-            dispatch(PushNotificationsSheetIntent.DismissClick)
+            dispatch(PushNotificationsIntent.DismissClick)
         }
     }
 
@@ -114,7 +114,7 @@ fun PushNotificationsSheet(
                     onClick = {
                         scope.launch {
                             sheetState.hide()
-                            dispatch(PushNotificationsSheetIntent.EnableClick)
+                            dispatch(PushNotificationsIntent.EnableClick)
                         }
                     },
                     modifier = Modifier
@@ -161,7 +161,7 @@ fun PushNotificationsSheet(
 @Preview
 @Composable
 private fun PushNotificationsSheetPreview(
-    @PreviewParameter(PushNotificationsSheetModelPreviewParameterProvider::class) state: PushNotificationsSheetModel
+    @PreviewParameter(PushNotificationsSheetModelPreviewParameterProvider::class) state: PushNotificationsModel
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -174,9 +174,9 @@ private fun PushNotificationsSheetPreview(
 }
 
 private class PushNotificationsSheetModelPreviewParameterProvider:
-    PreviewParameterProvider<PushNotificationsSheetModel> {
+    PreviewParameterProvider<PushNotificationsModel> {
 
-    override val values: Sequence<PushNotificationsSheetModel> = sequenceOf(
-        PushNotificationsSheetModel()
+    override val values: Sequence<PushNotificationsModel> = sequenceOf(
+        PushNotificationsModel()
     )
 }

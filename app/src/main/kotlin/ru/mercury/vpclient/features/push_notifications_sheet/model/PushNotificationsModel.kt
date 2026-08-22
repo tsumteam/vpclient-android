@@ -1,5 +1,7 @@
 package ru.mercury.vpclient.features.push_notifications_sheet.model
 
-data class PushNotificationsSheetModel(
+import ru.mercury.vpclient.shared.mvi.Model
+
+data class PushNotificationsModel(
     val isEnableButtonEnabled: Boolean = true
-)
+): Model

@@ -47,7 +47,7 @@ fun GiftCardTermsSheet(
     val dismiss: () -> Unit = {
         scope.launch {
             sheetState.hide()
-            dispatch(GiftCardTermsIntent.DismissRequest)
+            dispatch(GiftCardTermsIntent.DismissClick)
         }
     }
 

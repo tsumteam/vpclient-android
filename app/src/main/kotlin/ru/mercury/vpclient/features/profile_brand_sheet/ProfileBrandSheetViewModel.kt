@@ -7,10 +7,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.features.profile_brand_sheet.event.ProfileBrandSheetEvent
-import ru.mercury.vpclient.features.profile_brand_sheet.intent.ProfileBrandSheetIntent
-import ru.mercury.vpclient.features.profile_brand_sheet.model.ProfileBrandSheetModel
-import ru.mercury.vpclient.features.profile_brand_sheet.model.ProfileBrandSheetModel.ProfileBrandSection
+import ru.mercury.vpclient.features.profile_brand_sheet.event.ProfileBrandEvent
+import ru.mercury.vpclient.features.profile_brand_sheet.intent.ProfileBrandIntent
+import ru.mercury.vpclient.features.profile_brand_sheet.model.ProfileBrandModel
+import ru.mercury.vpclient.features.profile_brand_sheet.model.ProfileBrandModel.ProfileBrandSection
 import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
@@ -31,19 +31,19 @@ class ProfileBrandSheetViewModel @AssistedInject constructor(
     private val catalogBrandsUseCase: CatalogBrandsUseCase,
     private val catalogBrandsSaveFavoritesUseCase: CatalogBrandsSaveFavoritesUseCase,
     private val catalogBrandFavoritesUseCase: CatalogBrandFavoritesUseCase
-): ClientViewModel<ProfileBrandSheetIntent, ProfileBrandSheetModel, ProfileBrandSheetEvent>(ProfileBrandSheetModel()) {
+): ClientViewModel<ProfileBrandIntent, ProfileBrandModel, ProfileBrandEvent>(ProfileBrandModel()) {
 
     init {
-        dispatch(ProfileBrandSheetIntent.CollectBrands)
-        dispatch(ProfileBrandSheetIntent.LoadBrands)
+        dispatch(ProfileBrandIntent.CollectBrands)
+        dispatch(ProfileBrandIntent.LoadBrands)
     }
 
-    override fun dispatch(intent: ProfileBrandSheetIntent) {
+    override fun dispatch(intent: ProfileBrandIntent) {
         when (intent) {
-            is ProfileBrandSheetIntent.DismissRequest -> {
-                launch { send(ProfileBrandSheetEvent.Dismiss) }
+            is ProfileBrandIntent.DismissClick -> {
+                launch { send(ProfileBrandEvent.Dismiss) }
             }
-            is ProfileBrandSheetIntent.CollectBrands -> {
+            is ProfileBrandIntent.CollectBrands -> {
                 launch {
                     catalogBrandEntitiesFlowUseCase(categoryId)
                         .distinctUntilChanged()
@@ -88,7 +88,7 @@ class ProfileBrandSheetViewModel @AssistedInject constructor(
                         }
                 }
             }
-            is ProfileBrandSheetIntent.LoadBrands -> {
+            is ProfileBrandIntent.LoadBrands -> {
                 val job = launch {
                     catalogBrandsUseCase(Unit).getOrThrow()
                 }.also { launchedJob ->
@@ -98,14 +98,14 @@ class ProfileBrandSheetViewModel @AssistedInject constructor(
                 }
                 reduce { it.copy(loadBrandsJob = job) }
             }
-            is ProfileBrandSheetIntent.SaveClick -> {
+            is ProfileBrandIntent.SaveClick -> {
                 val state = stateFlow.value
                 val addedBrandIds = state.selectedBrandIds - state.initialSelectedBrandIds
                 val removedBrandIds = state.initialSelectedBrandIds - state.selectedBrandIds
                 when {
                     state.isSaving -> return
                     addedBrandIds.isEmpty() && removedBrandIds.isEmpty() -> {
-                        launch { send(ProfileBrandSheetEvent.Dismiss) }
+                        launch { send(ProfileBrandEvent.Dismiss) }
                     }
                     else -> {
                         val job = launch {
@@ -116,7 +116,7 @@ class ProfileBrandSheetViewModel @AssistedInject constructor(
                             )
                             catalogBrandsSaveFavoritesUseCase(params).getOrThrow()
                             catalogBrandFavoritesUseCase(Unit).getOrThrow()
-                            send(ProfileBrandSheetEvent.Dismiss)
+                            send(ProfileBrandEvent.Dismiss)
                         }.also { launchedJob ->
                             launchedJob.invokeOnCompletion {
                                 reduce { currentState -> currentState.copy(saveFavoriteBrandsJob = null) }
@@ -126,7 +126,7 @@ class ProfileBrandSheetViewModel @AssistedInject constructor(
                     }
                 }
             }
-            is ProfileBrandSheetIntent.SearchQueryChange -> {
+            is ProfileBrandIntent.SearchQueryChange -> {
                 val catalogBrandEntities = stateFlow.value.catalogBrandEntities
                 val filteredEntities = when {
                     intent.query.isBlank() -> catalogBrandEntities
@@ -159,7 +159,7 @@ class ProfileBrandSheetViewModel @AssistedInject constructor(
                     )
                 }
             }
-            is ProfileBrandSheetIntent.BrandClick -> {
+            is ProfileBrandIntent.BrandClick -> {
                 val selectedBrandIds = stateFlow.value.selectedBrandIds
                 val updatedBrandIds = when (intent.brandId) {
                     in selectedBrandIds -> selectedBrandIds - intent.brandId
@@ -174,17 +174,17 @@ class ProfileBrandSheetViewModel @AssistedInject constructor(
         when (throwable) {
             is CatalogBrandsException -> {
                 reduce { it.copy(loadBrandsJob = null) }
-                launch { send(ProfileBrandSheetEvent.SnackbarErrorMessage(throwable.message)) }
+                launch { send(ProfileBrandEvent.SnackbarErrorMessage(throwable.message)) }
             }
             is CatalogBrandsSaveFavoritesException, is CatalogBrandFavoritesException -> {
                 reduce { it.copy(saveFavoriteBrandsJob = null) }
-                launch { send(ProfileBrandSheetEvent.SnackbarErrorMessage(throwable.message)) }
+                launch { send(ProfileBrandEvent.SnackbarErrorMessage(throwable.message)) }
             }
             is ClientException -> {
-                launch { send(ProfileBrandSheetEvent.SnackbarErrorMessage(throwable.message)) }
+                launch { send(ProfileBrandEvent.SnackbarErrorMessage(throwable.message)) }
             }
             is RoomException, is RoomSQLiteException -> {
-                launch { send(ProfileBrandSheetEvent.SnackbarErrorMessage(throwable.message.orEmpty())) }
+                launch { send(ProfileBrandEvent.SnackbarErrorMessage(throwable.message.orEmpty())) }
             }
             else -> super.catch(throwable)
         }

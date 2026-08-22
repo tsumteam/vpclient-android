@@ -56,10 +56,10 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.features.profile_brand_sheet.event.ProfileBrandSheetEvent
-import ru.mercury.vpclient.features.profile_brand_sheet.intent.ProfileBrandSheetIntent
-import ru.mercury.vpclient.features.profile_brand_sheet.model.ProfileBrandSheetModel
-import ru.mercury.vpclient.features.profile_brand_sheet.model.ProfileBrandSheetModel.ProfileBrandSection
+import ru.mercury.vpclient.features.profile_brand_sheet.event.ProfileBrandEvent
+import ru.mercury.vpclient.features.profile_brand_sheet.intent.ProfileBrandIntent
+import ru.mercury.vpclient.features.profile_brand_sheet.model.ProfileBrandModel
+import ru.mercury.vpclient.features.profile_brand_sheet.model.ProfileBrandModel.ProfileBrandSection
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogBrandEntity
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
@@ -86,7 +86,7 @@ fun ProfileBrandSheet(
     categoryId: Int,
     onDismiss: () -> Unit,
     viewModel: ProfileBrandSheetViewModel = hiltViewModel<ProfileBrandSheetViewModel, ProfileBrandSheetViewModel.Factory>(
-        creationCallback = { factory -> factory.create(categoryId) }
+        creationCallback = { it.create(categoryId) }
     )
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
@@ -105,13 +105,13 @@ fun ProfileBrandSheet(
         flow = viewModel.eventFlow
     ) { event ->
         when (event) {
-            is ProfileBrandSheetEvent.Dismiss -> {
+            is ProfileBrandEvent.Dismiss -> {
                 scope.launch {
                     sheetState.hide()
                     onDismiss()
                 }
             }
-            is ProfileBrandSheetEvent.SnackbarErrorMessage -> {
+            is ProfileBrandEvent.SnackbarErrorMessage -> {
                 snackbarHostStateError.currentSnackbarData?.dismiss()
                 scope.launch { snackbarHostStateError.showSnackbar(event.message) }
             }
@@ -121,8 +121,8 @@ fun ProfileBrandSheet(
 
 @Composable
 private fun ProfileBrandSheetContent(
-    state: ProfileBrandSheetModel,
-    dispatch: (ProfileBrandSheetIntent) -> Unit,
+    state: ProfileBrandModel,
+    dispatch: (ProfileBrandIntent) -> Unit,
     sheetState: SheetState,
     snackbarHostStateError: SnackbarHostState
 ) {
@@ -133,7 +133,7 @@ private fun ProfileBrandSheetContent(
         onDismissRequest = {
             scope.launch {
                 sheetState.hide()
-                dispatch(ProfileBrandSheetIntent.DismissRequest)
+                dispatch(ProfileBrandIntent.DismissClick)
             }
         },
         modifier = Modifier
@@ -164,7 +164,7 @@ private fun ProfileBrandSheetContent(
                                 onClick = {
                                     scope.launch {
                                         sheetState.hide()
-                                        dispatch(ProfileBrandSheetIntent.DismissRequest)
+                                        dispatch(ProfileBrandIntent.DismissClick)
                                     }
                                 }
                             ) {
@@ -185,8 +185,8 @@ private fun ProfileBrandSheetContent(
                     BrandSearchField(
                         state = BrandSearchFieldState(
                             value = state.searchQuery,
-                            onValueChange = { query -> dispatch(ProfileBrandSheetIntent.SearchQueryChange(query)) },
-                            onClear = { dispatch(ProfileBrandSheetIntent.SearchQueryChange("")) },
+                            onValueChange = { query -> dispatch(ProfileBrandIntent.SearchQueryChange(query)) },
+                            onClear = { dispatch(ProfileBrandIntent.SearchQueryChange("")) },
                             onSearch = { focusManager.clearFocus() }
                         ),
                         modifier = Modifier
@@ -210,7 +210,7 @@ private fun ProfileBrandSheetContent(
                     Button(
                         onClick = {
                             focusManager.clearFocus()
-                            dispatch(ProfileBrandSheetIntent.SaveClick)
+                            dispatch(ProfileBrandIntent.SaveClick)
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -348,7 +348,7 @@ private fun ProfileBrandSheetContent(
                                             .height(48.dp)
                                             .clickable {
                                                 focusManager.clearFocus()
-                                                dispatch(ProfileBrandSheetIntent.BrandClick(brand.brandId))
+                                                dispatch(ProfileBrandIntent.BrandClick(brand.brandId))
                                             }
                                             .padding(start = 16.dp, end = 24.dp),
                                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -415,7 +415,7 @@ private fun ProfileBrandSheetContent(
 @Preview
 @Composable
 private fun ProfileBrandSheetPreview(
-    @PreviewParameter(ProfileBrandSheetModelProvider::class) state: ProfileBrandSheetModel
+    @PreviewParameter(ProfileBrandSheetModelProvider::class) state: ProfileBrandModel
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -429,9 +429,9 @@ private fun ProfileBrandSheetPreview(
     }
 }
 
-private class ProfileBrandSheetModelProvider: PreviewParameterProvider<ProfileBrandSheetModel> {
-    override val values: Sequence<ProfileBrandSheetModel> = sequenceOf(
-        ProfileBrandSheetModel(
+private class ProfileBrandSheetModelProvider: PreviewParameterProvider<ProfileBrandModel> {
+    override val values: Sequence<ProfileBrandModel> = sequenceOf(
+        ProfileBrandModel(
             catalogBrandEntities = emptyList(),
             sections = listOf(
                 ProfileBrandSection(
@@ -470,10 +470,10 @@ private class ProfileBrandSheetModelProvider: PreviewParameterProvider<ProfileBr
             selectedBrandIds = setOf(2),
             initialSelectedBrandIds = setOf(2)
         ),
-        ProfileBrandSheetModel(
+        ProfileBrandModel(
             loadBrandsJob = Job()
         ),
-        ProfileBrandSheetModel(
+        ProfileBrandModel(
             catalogBrandEntities = emptyList(),
             sections = emptyList(),
             searchQuery = "Missing brand"

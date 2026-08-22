@@ -4,7 +4,7 @@ import kotlinx.coroutines.Job
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogBrandEntity
 import ru.mercury.vpclient.shared.mvi.Model
 
-data class ProfileBrandSheetModel(
+data class ProfileBrandModel(
     val catalogBrandEntities: List<CatalogBrandEntity> = emptyList(),
     val sections: List<ProfileBrandSection> = emptyList(),
     val selectedBrandIds: Set<Int> = emptySet(),

@@ -121,7 +121,7 @@ fun GiftCardScreen(
             ),
             dispatch = { intent ->
                 when (intent) {
-                    is GiftCardTermsIntent.DismissRequest -> {
+                    is GiftCardTermsIntent.DismissClick -> {
                         viewModel.dispatch(GiftCardIntent.TermsDismiss)
                     }
                 }
