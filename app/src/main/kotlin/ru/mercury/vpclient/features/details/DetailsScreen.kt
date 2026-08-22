@@ -66,14 +66,14 @@ import ru.mercury.vpclient.features.details.intent.DetailsIntent
 import ru.mercury.vpclient.features.details.model.DetailsModel
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.features.details_cart_added_sheet.DetailsCartAddedSheet
-import ru.mercury.vpclient.features.details_cart_added_sheet.intent.DetailsCartAddedSheetIntent
-import ru.mercury.vpclient.features.details_cart_added_sheet.model.DetailsCartAddedSheetModel
-import ru.mercury.vpclient.features.details_message_sheet.DetailsChatSheet
-import ru.mercury.vpclient.features.details_message_sheet.intent.DetailsChatIntent
-import ru.mercury.vpclient.features.details_message_sheet.model.DetailsChatModel
+import ru.mercury.vpclient.features.details_cart_added_sheet.intent.DetailsCartAddedIntent
+import ru.mercury.vpclient.features.details_cart_added_sheet.model.DetailsCartAddedModel
+import ru.mercury.vpclient.features.details_message_sheet.DetailsMessageSheet
+import ru.mercury.vpclient.features.details_message_sheet.intent.DetailsMessageIntent
+import ru.mercury.vpclient.features.details_message_sheet.model.DetailsMessageModel
 import ru.mercury.vpclient.features.details_wear_with_sheet.DetailsWearWithSheet
-import ru.mercury.vpclient.features.details_wear_with_sheet.intent.DetailsWearWithSheetIntent
-import ru.mercury.vpclient.features.details_wear_with_sheet.model.DetailsWearWithSheetModel
+import ru.mercury.vpclient.features.details_wear_with_sheet.intent.DetailsWearWithIntent
+import ru.mercury.vpclient.features.details_wear_with_sheet.model.DetailsWearWithModel
 import ru.mercury.vpclient.features.size_sheet.SizeSheet
 import ru.mercury.vpclient.features.size_sheet.intent.SizeSheetIntent
 import ru.mercury.vpclient.features.size_sheet.model.SizeSheetModel
@@ -137,17 +137,17 @@ fun DetailsScreen(
     )
 
     if (state.isDetailsChatSheetVisible) {
-        DetailsChatSheet(
-            state = DetailsChatModel(
+        DetailsMessageSheet(
+            state = DetailsMessageModel(
                 productEntity = state.productEntity
             ),
             dispatch = { intent ->
                 when (intent) {
-                    is DetailsChatIntent.CommentChange -> Unit
-                    is DetailsChatIntent.SendClick -> {
+                    is DetailsMessageIntent.CommentChange -> Unit
+                    is DetailsMessageIntent.SendClick -> {
                         viewModel.dispatch(DetailsIntent.HideMessageSheet)
                     }
-                    is DetailsChatIntent.DismissRequest -> {
+                    is DetailsMessageIntent.DismissClick -> {
                         viewModel.dispatch(DetailsIntent.HideMessageSheet)
                     }
                 }
@@ -157,18 +157,18 @@ fun DetailsScreen(
 
     if (state.isCartAddedSheetVisible) {
         DetailsCartAddedSheet(
-            state = DetailsCartAddedSheetModel(
+            state = DetailsCartAddedModel(
                 productEntity = state.productEntity
             ),
             dispatch = { intent ->
                 when (intent) {
-                    is DetailsCartAddedSheetIntent.ContinueShoppingClick -> {
+                    is DetailsCartAddedIntent.ContinueShoppingClick -> {
                         viewModel.dispatch(DetailsIntent.HideCartAddedSheet)
                     }
-                    is DetailsCartAddedSheetIntent.CartClick -> {
+                    is DetailsCartAddedIntent.CartClick -> {
                         viewModel.dispatch(DetailsIntent.CartAddedSheetCartClick)
                     }
-                    is DetailsCartAddedSheetIntent.DismissRequest -> {
+                    is DetailsCartAddedIntent.DismissClick -> {
                         viewModel.dispatch(DetailsIntent.HideCartAddedSheet)
                     }
                 }
@@ -178,20 +178,20 @@ fun DetailsScreen(
 
     if (state.isWearWithSheetVisible) {
         DetailsWearWithSheet(
-            state = DetailsWearWithSheetModel(
+            state = DetailsWearWithModel(
                 products = state.wearWithProducts,
                 basketProductIds = state.basketProductIds,
                 basketProductKeys = state.basketProductKeys
             ),
             dispatch = { intent ->
                 when (intent) {
-                    is DetailsWearWithSheetIntent.ProductClick -> {
+                    is DetailsWearWithIntent.ProductClick -> {
                         viewModel.dispatch(DetailsIntent.ProductClick(intent.id))
                     }
-                    is DetailsWearWithSheetIntent.ProductBasketClick -> {
+                    is DetailsWearWithIntent.ProductBasketClick -> {
                         viewModel.dispatch(DetailsIntent.ProductBasketClick(intent.product))
                     }
-                    is DetailsWearWithSheetIntent.DismissRequest -> {
+                    is DetailsWearWithIntent.DismissClick -> {
                         viewModel.dispatch(DetailsIntent.HideWearWithSheet)
                     }
                 }

@@ -30,8 +30,8 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.features.details_message_sheet.intent.DetailsChatIntent
-import ru.mercury.vpclient.features.details_message_sheet.model.DetailsChatModel
+import ru.mercury.vpclient.features.details_message_sheet.intent.DetailsMessageIntent
+import ru.mercury.vpclient.features.details_message_sheet.model.DetailsMessageModel
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.details.DetailsMessageProductCard
@@ -43,18 +43,18 @@ import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.livretMedium17
 
 @Composable
-fun DetailsChatSheet(
-    state: DetailsChatModel,
-    dispatch: (DetailsChatIntent) -> Unit
+fun DetailsMessageSheet(
+    state: DetailsMessageModel,
+    dispatch: (DetailsMessageIntent) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
     var commentText by rememberSaveable { mutableStateOf("") }
-    val sheetDispatch: (DetailsChatIntent) -> Unit = { intent ->
+    val sheetDispatch: (DetailsMessageIntent) -> Unit = { intent ->
         when (intent) {
-            is DetailsChatIntent.CommentChange -> commentText = intent.comment
-            is DetailsChatIntent.SendClick -> dispatch(intent)
-            is DetailsChatIntent.DismissRequest -> {
+            is DetailsMessageIntent.CommentChange -> commentText = intent.comment
+            is DetailsMessageIntent.SendClick -> dispatch(intent)
+            is DetailsMessageIntent.DismissClick -> {
                 scope.launch {
                     sheetState.hide()
                     dispatch(intent)
@@ -64,7 +64,7 @@ fun DetailsChatSheet(
     }
 
     SharedModalBottomSheet(
-        onDismissRequest = { dispatch(DetailsChatIntent.DismissRequest) },
+        onDismissRequest = { dispatch(DetailsMessageIntent.DismissClick) },
         sheetState = sheetState
     ) {
         val inlinedState = state.copy(commentText = commentText)
@@ -84,7 +84,7 @@ fun DetailsChatSheet(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { sheetDispatch(DetailsChatIntent.DismissRequest) }
+                        onClick = { sheetDispatch(DetailsMessageIntent.DismissClick) }
                     ) {
                         Icon(
                             imageVector = Close24,
@@ -107,8 +107,8 @@ fun DetailsChatSheet(
             MessageInput(
                 state = MessageInputState(
                     commentText = inlinedState.commentText,
-                    onCommentChange = { comment -> sheetDispatch(DetailsChatIntent.CommentChange(comment)) },
-                    onSendClick = { sheetDispatch(DetailsChatIntent.SendClick(inlinedState.commentText)) }
+                    onCommentChange = { comment -> sheetDispatch(DetailsMessageIntent.CommentChange(comment)) },
+                    onSendClick = { sheetDispatch(DetailsMessageIntent.SendClick(inlinedState.commentText)) }
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -121,12 +121,12 @@ fun DetailsChatSheet(
 @PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Composable
-private fun DetailsChatSheetPreview() {
+private fun DetailsMessageSheetPreview() {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        DetailsChatSheet(
-            state = DetailsChatModel(
+        DetailsMessageSheet(
+            state = DetailsMessageModel(
                 productEntity = ProductEntity.Empty.copy(
                     id = "preview",
                     name = "Платье миди с поясом",

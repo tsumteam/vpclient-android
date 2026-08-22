@@ -32,8 +32,8 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.features.details_wear_with_sheet.intent.DetailsWearWithSheetIntent
-import ru.mercury.vpclient.features.details_wear_with_sheet.model.DetailsWearWithSheetModel
+import ru.mercury.vpclient.features.details_wear_with_sheet.intent.DetailsWearWithIntent
+import ru.mercury.vpclient.features.details_wear_with_sheet.model.DetailsWearWithModel
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
@@ -46,26 +46,26 @@ import ru.mercury.vpclient.shared.ui.theme.livretMedium17
 
 @Composable
 fun DetailsWearWithSheet(
-    state: DetailsWearWithSheetModel,
-    dispatch: (DetailsWearWithSheetIntent) -> Unit
+    state: DetailsWearWithModel,
+    dispatch: (DetailsWearWithIntent) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
-    val sheetDispatch: (DetailsWearWithSheetIntent) -> Unit = { intent ->
+    val sheetDispatch: (DetailsWearWithIntent) -> Unit = { intent ->
         when (intent) {
-            is DetailsWearWithSheetIntent.DismissRequest -> {
+            is DetailsWearWithIntent.DismissClick -> {
                 scope.launch {
                     sheetState.hide()
                     dispatch(intent)
                 }
             }
-            is DetailsWearWithSheetIntent.ProductBasketClick,
-            is DetailsWearWithSheetIntent.ProductClick -> dispatch(intent)
+            is DetailsWearWithIntent.ProductBasketClick,
+            is DetailsWearWithIntent.ProductClick -> dispatch(intent)
         }
     }
 
     SharedModalBottomSheet(
-        onDismissRequest = { dispatch(DetailsWearWithSheetIntent.DismissRequest) },
+        onDismissRequest = { dispatch(DetailsWearWithIntent.DismissClick) },
         modifier = Modifier
             .fillMaxHeight()
             .statusBarsPadding(),
@@ -85,7 +85,7 @@ fun DetailsWearWithSheet(
                     },
                     navigationIcon = {
                         IconButton(
-                            onClick = { sheetDispatch(DetailsWearWithSheetIntent.DismissRequest) }
+                            onClick = { sheetDispatch(DetailsWearWithIntent.DismissClick) }
                         ) {
                             Icon(
                                 imageVector = Close24,
@@ -117,8 +117,8 @@ fun DetailsWearWithSheet(
                         state = ProductCardState(
                             entity = product,
                             isInBasket = state.isProductInBasket(product),
-                            onClick = { sheetDispatch(DetailsWearWithSheetIntent.ProductClick(product.id)) },
-                            onBasketIconClick = { sheetDispatch(DetailsWearWithSheetIntent.ProductBasketClick(product)) }
+                            onClick = { sheetDispatch(DetailsWearWithIntent.ProductClick(product.id)) },
+                            onBasketIconClick = { sheetDispatch(DetailsWearWithIntent.ProductBasketClick(product)) }
                         )
                     )
                 }
@@ -131,7 +131,7 @@ fun DetailsWearWithSheet(
 @Preview
 @Composable
 private fun DetailsWearWithSheetPreview(
-    @PreviewParameter(DetailsWearWithSheetModelProvider::class) state: DetailsWearWithSheetModel
+    @PreviewParameter(DetailsWearWithSheetModelProvider::class) state: DetailsWearWithModel
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -143,9 +143,9 @@ private fun DetailsWearWithSheetPreview(
     }
 }
 
-private class DetailsWearWithSheetModelProvider: PreviewParameterProvider<DetailsWearWithSheetModel> {
-    override val values: Sequence<DetailsWearWithSheetModel> = sequenceOf(
-        DetailsWearWithSheetModel(
+private class DetailsWearWithSheetModelProvider: PreviewParameterProvider<DetailsWearWithModel> {
+    override val values: Sequence<DetailsWearWithModel> = sequenceOf(
+        DetailsWearWithModel(
             products = listOf(
                 CatalogFilterProductsEntity.Empty.copy(
                     id = "preview-1",

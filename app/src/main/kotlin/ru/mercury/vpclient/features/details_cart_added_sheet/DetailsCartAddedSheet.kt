@@ -33,8 +33,8 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.features.details_cart_added_sheet.intent.DetailsCartAddedSheetIntent
-import ru.mercury.vpclient.features.details_cart_added_sheet.model.DetailsCartAddedSheetModel
+import ru.mercury.vpclient.features.details_cart_added_sheet.intent.DetailsCartAddedIntent
+import ru.mercury.vpclient.features.details_cart_added_sheet.model.DetailsCartAddedModel
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
@@ -46,12 +46,12 @@ import ru.mercury.vpclient.shared.ui.theme.medium15
 
 @Composable
 fun DetailsCartAddedSheet(
-    state: DetailsCartAddedSheetModel,
-    dispatch: (DetailsCartAddedSheetIntent) -> Unit
+    state: DetailsCartAddedModel,
+    dispatch: (DetailsCartAddedIntent) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
-    val sheetDispatch: (DetailsCartAddedSheetIntent) -> Unit = { intent ->
+    val sheetDispatch: (DetailsCartAddedIntent) -> Unit = { intent ->
         scope.launch {
             sheetState.hide()
             dispatch(intent)
@@ -59,7 +59,7 @@ fun DetailsCartAddedSheet(
     }
 
     SharedModalBottomSheet(
-        onDismissRequest = { dispatch(DetailsCartAddedSheetIntent.DismissRequest) },
+        onDismissRequest = { dispatch(DetailsCartAddedIntent.DismissClick) },
         sheetState = sheetState,
         containerColor = Color.Transparent
     ) {
@@ -100,7 +100,7 @@ fun DetailsCartAddedSheet(
             }
             item {
                 OutlinedButton(
-                    onClick = { sheetDispatch(DetailsCartAddedSheetIntent.ContinueShoppingClick) },
+                    onClick = { sheetDispatch(DetailsCartAddedIntent.ContinueShoppingClick) },
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
                         .fillMaxWidth()
@@ -131,7 +131,7 @@ fun DetailsCartAddedSheet(
             }
             item {
                 Button(
-                    onClick = { sheetDispatch(DetailsCartAddedSheetIntent.CartClick) },
+                    onClick = { sheetDispatch(DetailsCartAddedIntent.CartClick) },
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
                         .fillMaxWidth()
@@ -163,7 +163,7 @@ private fun DetailsCartAddedSheetPreview() {
         modifier = Modifier.fillMaxSize()
     ) {
         DetailsCartAddedSheet(
-            state = DetailsCartAddedSheetModel(
+            state = DetailsCartAddedModel(
                 productEntity = ProductEntity.Empty.copy(
                     id = "preview",
                     name = "Пиджак",
