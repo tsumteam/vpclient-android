@@ -65,7 +65,7 @@ fun FilterPriceSheet(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     SharedModalBottomSheet(
-        onDismissRequest = { dispatch(FilterPriceIntent.HideFilterPriceDialog) },
+        onDismissRequest = { dispatch(FilterPriceIntent.DismissClick) },
         sheetState = sheetState
     ) {
         val isResetVisible = state.priceFrom.isNotEmpty() || state.priceTo.isNotEmpty() || state.selectedPresetId != null
@@ -83,7 +83,7 @@ fun FilterPriceSheet(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { dispatch(FilterPriceIntent.HideFilterPriceDialog) }
+                        onClick = { dispatch(FilterPriceIntent.DismissClick) }
                     ) {
                         Icon(
                             imageVector = Close24,

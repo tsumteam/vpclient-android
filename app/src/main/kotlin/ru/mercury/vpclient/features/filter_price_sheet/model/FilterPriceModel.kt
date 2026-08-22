@@ -2,6 +2,7 @@ package ru.mercury.vpclient.features.filter_price_sheet.model
 
 import ru.mercury.vpclient.shared.data.entity.FilterChip
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValuesQuantityEntity
+import ru.mercury.vpclient.shared.mvi.Model
 
 data class FilterPriceModel(
     val title: String,
@@ -12,4 +13,4 @@ data class FilterPriceModel(
     val quantityEntity: FilterValuesQuantityEntity,
     val isProductsQuantityLoading: Boolean,
     val isLoading: Boolean = false
-)
+): Model

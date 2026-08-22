@@ -70,7 +70,7 @@ fun FilterTreeSheet(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     SharedModalBottomSheet(
-        onDismissRequest = { dispatch(FilterTreeIntent.HideFilterTreeDialog) },
+        onDismissRequest = { dispatch(FilterTreeIntent.DismissClick) },
         sheetState = sheetState
     ) {
         Column {
@@ -86,7 +86,7 @@ fun FilterTreeSheet(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { dispatch(FilterTreeIntent.HideFilterTreeDialog) }
+                        onClick = { dispatch(FilterTreeIntent.DismissClick) }
                     ) {
                         Icon(
                             imageVector = Close24,

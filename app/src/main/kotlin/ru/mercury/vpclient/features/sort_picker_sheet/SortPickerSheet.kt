@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package ru.mercury.vpclient.features.filter_sort_sheet
+package ru.mercury.vpclient.features.sort_picker_sheet
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,8 +37,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.mercury.vpclient.features.filter_sort_sheet.intent.SortIntent
-import ru.mercury.vpclient.features.filter_sort_sheet.model.SortModel
+import ru.mercury.vpclient.features.sort_picker_sheet.intent.SortPickerIntent
+import ru.mercury.vpclient.features.sort_picker_sheet.model.SortPickerModel
 import ru.mercury.vpclient.shared.data.entity.SortType
 import ru.mercury.vpclient.shared.domain.mapper.isResetButtonVisible
 import ru.mercury.vpclient.shared.ui.components.SharedAnimatedVisibility
@@ -52,14 +52,14 @@ import ru.mercury.vpclient.shared.ui.theme.medium15
 import ru.mercury.vpclient.shared.ui.theme.medium16
 
 @Composable
-fun FilterSortSheet(
-    state: SortModel,
-    dispatch: (SortIntent) -> Unit
+fun SortPickerSheet(
+    state: SortPickerModel,
+    dispatch: (SortPickerIntent) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     SharedModalBottomSheet(
-        onDismissRequest = { dispatch(SortIntent.HideSortDialog) },
+        onDismissRequest = { dispatch(SortPickerIntent.DismissClick) },
         sheetState = sheetState
     ) {
         var selectedSortType by remember(state.selectedSortType) { mutableStateOf(state.selectedSortType) }
@@ -77,7 +77,7 @@ fun FilterSortSheet(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { dispatch(SortIntent.HideSortDialog) }
+                        onClick = { dispatch(SortPickerIntent.DismissClick) }
                     ) {
                         Icon(
                             imageVector = Close24,
@@ -149,7 +149,7 @@ fun FilterSortSheet(
             )
 
             Button(
-                onClick = { dispatch(SortIntent.ConfirmSort(selectedSortType)) },
+                onClick = { dispatch(SortPickerIntent.ConfirmSort(selectedSortType)) },
                 modifier = Modifier
                     .padding(start = 16.dp, top = 32.dp, end = 16.dp, bottom = 8.dp)
                     .fillMaxWidth()
@@ -175,14 +175,14 @@ fun FilterSortSheet(
 @PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Composable
-private fun FilterSortSheetPreview(
+private fun SortPickerSheetPreview(
     @PreviewParameter(SortTypeProvider::class) selectedSortType: SortType
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        FilterSortSheet(
-            state = SortModel(
+        SortPickerSheet(
+            state = SortPickerModel(
                 selectedSortType = selectedSortType
             ),
             dispatch = {}

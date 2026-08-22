@@ -113,7 +113,7 @@ fun FilterBrandSheet(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     SharedModalBottomSheet(
-        onDismissRequest = { dispatch(FilterBrandIntent.HideFilterBrandDialog) },
+        onDismissRequest = { dispatch(FilterBrandIntent.DismissClick) },
         modifier = Modifier
             .fillMaxHeight()
             .statusBarsPadding(),
@@ -155,7 +155,7 @@ fun FilterBrandSheet(
                         },
                         navigationIcon = {
                             IconButton(
-                                onClick = { dispatch(FilterBrandIntent.HideFilterBrandDialog) }
+                                onClick = { dispatch(FilterBrandIntent.DismissClick) }
                             ) {
                                 Icon(
                                     imageVector = Close24,

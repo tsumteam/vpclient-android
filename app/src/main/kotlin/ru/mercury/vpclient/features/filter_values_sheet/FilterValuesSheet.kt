@@ -67,7 +67,7 @@ fun FilterValuesSheet(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     SharedModalBottomSheet(
-        onDismissRequest = { dispatch(FilterValuesIntent.HideFilterValuesDialog) },
+        onDismissRequest = { dispatch(FilterValuesIntent.DismissClick) },
         sheetState = sheetState
     ) {
         Column {
@@ -83,7 +83,7 @@ fun FilterValuesSheet(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { dispatch(FilterValuesIntent.HideFilterValuesDialog) }
+                        onClick = { dispatch(FilterValuesIntent.DismissClick) }
                     ) {
                         Icon(
                             imageVector = Close24,

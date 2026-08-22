@@ -77,7 +77,7 @@ fun FilterSizeSheet(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     SharedModalBottomSheet(
-        onDismissRequest = { dispatch(FilterSizeIntent.HideFilterSizeDialog) },
+        onDismissRequest = { dispatch(FilterSizeIntent.DismissClick) },
         sheetState = sheetState
     ) {
         var selectedCountry by remember { mutableStateOf<SizeCountry>(SizeCountry.Russia) }
@@ -95,7 +95,7 @@ fun FilterSizeSheet(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { dispatch(FilterSizeIntent.HideFilterSizeDialog) }
+                        onClick = { dispatch(FilterSizeIntent.DismissClick) }
                     ) {
                         Icon(
                             imageVector = Close24,

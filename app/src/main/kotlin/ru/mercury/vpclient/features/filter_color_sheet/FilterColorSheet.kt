@@ -68,7 +68,7 @@ fun FilterColorSheet(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     SharedModalBottomSheet(
-        onDismissRequest = { dispatch(FilterColorIntent.HideFilterColorDialog) },
+        onDismissRequest = { dispatch(FilterColorIntent.DismissClick) },
         sheetState = sheetState
     ) {
         Column {
@@ -84,7 +84,7 @@ fun FilterColorSheet(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { dispatch(FilterColorIntent.HideFilterColorDialog) }
+                        onClick = { dispatch(FilterColorIntent.DismissClick) }
                     ) {
                         Icon(
                             imageVector = Close24,

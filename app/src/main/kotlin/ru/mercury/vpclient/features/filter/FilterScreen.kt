@@ -84,9 +84,9 @@ import ru.mercury.vpclient.features.filter_price_sheet.FilterPriceSheet
 import ru.mercury.vpclient.features.filter_price_sheet.intent.FilterPriceIntent
 import ru.mercury.vpclient.features.filter_size_sheet.FilterSizeSheet
 import ru.mercury.vpclient.features.filter_size_sheet.intent.FilterSizeIntent
-import ru.mercury.vpclient.features.filter_sort_sheet.FilterSortSheet
-import ru.mercury.vpclient.features.filter_sort_sheet.intent.SortIntent
-import ru.mercury.vpclient.features.filter_sort_sheet.model.SortModel
+import ru.mercury.vpclient.features.sort_picker_sheet.SortPickerSheet
+import ru.mercury.vpclient.features.sort_picker_sheet.intent.SortPickerIntent
+import ru.mercury.vpclient.features.sort_picker_sheet.model.SortPickerModel
 import ru.mercury.vpclient.features.filter_tree_sheet.FilterTreeSheet
 import ru.mercury.vpclient.features.filter_tree_sheet.intent.FilterTreeIntent
 import ru.mercury.vpclient.features.filter_values_sheet.FilterValuesSheet
@@ -166,7 +166,7 @@ fun FilterScreen(
             state = requireNotNull(state.filterBrandSheetState),
             dispatch = { intent ->
                 when (intent) {
-                    is FilterBrandIntent.HideFilterBrandDialog -> {
+                    is FilterBrandIntent.DismissClick -> {
                         viewModel.dispatch(FilterIntent.HideFilterValuesDialog)
                     }
                     is FilterBrandIntent.ResetFilterBrandValues -> {
@@ -186,14 +186,14 @@ fun FilterScreen(
         )
     }
     if (state.isSortDialogVisible) {
-        FilterSortSheet(
-            state = SortModel(
+        SortPickerSheet(
+            state = SortPickerModel(
                 selectedSortType = state.selectedSortType
             ),
             dispatch = { intent ->
                 when (intent) {
-                    is SortIntent.HideSortDialog -> viewModel.dispatch(FilterIntent.HideSortDialog)
-                    is SortIntent.ConfirmSort -> {
+                    is SortPickerIntent.DismissClick -> viewModel.dispatch(FilterIntent.HideSortDialog)
+                    is SortPickerIntent.ConfirmSort -> {
                         viewModel.dispatch(FilterIntent.ConfirmSort(intent.sortType))
                     }
                 }
@@ -205,7 +205,7 @@ fun FilterScreen(
             state = requireNotNull(state.filterPriceSheetState),
             dispatch = { intent ->
                 when (intent) {
-                    is FilterPriceIntent.HideFilterPriceDialog -> {
+                    is FilterPriceIntent.DismissClick -> {
                         viewModel.dispatch(FilterIntent.HideFilterValuesDialog)
                     }
                     is FilterPriceIntent.ResetPrice -> {
@@ -232,7 +232,7 @@ fun FilterScreen(
             state = requireNotNull(state.filterSizeSheetState),
             dispatch = { intent ->
                 when (intent) {
-                    is FilterSizeIntent.HideFilterSizeDialog -> {
+                    is FilterSizeIntent.DismissClick -> {
                         viewModel.dispatch(FilterIntent.HideFilterValuesDialog)
                     }
                     is FilterSizeIntent.ResetFilterSizeValues -> {
@@ -253,7 +253,7 @@ fun FilterScreen(
             state = requireNotNull(state.filterTreeSheetState),
             dispatch = { intent ->
                 when (intent) {
-                    is FilterTreeIntent.HideFilterTreeDialog -> {
+                    is FilterTreeIntent.DismissClick -> {
                         viewModel.dispatch(FilterIntent.HideFilterValuesDialog)
                     }
                     is FilterTreeIntent.ResetFilterValues -> {
@@ -280,7 +280,7 @@ fun FilterScreen(
             state = requireNotNull(state.filterColorSheetState),
             dispatch = { intent ->
                 when (intent) {
-                    is FilterColorIntent.HideFilterColorDialog -> {
+                    is FilterColorIntent.DismissClick -> {
                         viewModel.dispatch(FilterIntent.HideFilterValuesDialog)
                     }
                     is FilterColorIntent.ResetFilterColorValues -> {
@@ -301,7 +301,7 @@ fun FilterScreen(
             state = requireNotNull(state.filterValuesSheetState),
             dispatch = { intent ->
                 when (intent) {
-                    is FilterValuesIntent.HideFilterValuesDialog -> {
+                    is FilterValuesIntent.DismissClick -> {
                         viewModel.dispatch(FilterIntent.HideFilterValuesDialog)
                     }
                     is FilterValuesIntent.ResetFilterValues -> {
