@@ -56,9 +56,9 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.features.loyalty_add_card_sheet.model.LoyaltyAddCardMode
 import ru.mercury.vpclient.features.loyalty_code_sheet.intent.LoyaltyCodeIntent
 import ru.mercury.vpclient.features.loyalty_code_sheet.model.LoyaltyCodeModel
+import ru.mercury.vpclient.shared.data.entity.LoyaltyAddCardMode
 import ru.mercury.vpclient.shared.domain.mapper.formatCodeResendTime
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.SmsCodeInput
@@ -83,7 +83,7 @@ fun LoyaltyCodeSheet(
     val focusRequester = remember { FocusRequester() }
     val sheetDispatch: (LoyaltyCodeIntent) -> Unit = { intent ->
         when (intent) {
-            is LoyaltyCodeIntent.DismissRequest -> {
+            is LoyaltyCodeIntent.DismissClick -> {
                 scope.launch {
                     sheetState.hide()
                     dispatch(intent)
@@ -94,7 +94,7 @@ fun LoyaltyCodeSheet(
     }
 
     SharedModalBottomSheet(
-        onDismissRequest = { dispatch(LoyaltyCodeIntent.DismissRequest) },
+        onDismissRequest = { dispatch(LoyaltyCodeIntent.DismissClick) },
         sheetState = sheetState
     ) {
         Column(
@@ -115,7 +115,7 @@ fun LoyaltyCodeSheet(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { sheetDispatch(LoyaltyCodeIntent.DismissRequest) }
+                        onClick = { sheetDispatch(LoyaltyCodeIntent.DismissClick) }
                     ) {
                         Icon(
                             imageVector = Close24,

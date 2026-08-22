@@ -45,8 +45,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.loyalty_add_card_sheet.intent.LoyaltyAddCardIntent
-import ru.mercury.vpclient.features.loyalty_add_card_sheet.model.LoyaltyAddCardMode
 import ru.mercury.vpclient.features.loyalty_add_card_sheet.model.LoyaltyAddCardModel
+import ru.mercury.vpclient.shared.data.entity.LoyaltyAddCardMode
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.SharedTabRow
 import ru.mercury.vpclient.shared.ui.components.SharedTabRowState
@@ -71,7 +71,7 @@ fun LoyaltyAddCardSheet(
     val focusRequester = remember { FocusRequester() }
     val sheetDispatch: (LoyaltyAddCardIntent) -> Unit = { intent ->
         when (intent) {
-            is LoyaltyAddCardIntent.DismissRequest -> {
+            is LoyaltyAddCardIntent.DismissClick -> {
                 scope.launch {
                     sheetState.hide()
                     dispatch(intent)
@@ -82,7 +82,7 @@ fun LoyaltyAddCardSheet(
     }
 
     SharedModalBottomSheet(
-        onDismissRequest = { dispatch(LoyaltyAddCardIntent.DismissRequest) },
+        onDismissRequest = { dispatch(LoyaltyAddCardIntent.DismissClick) },
         sheetState = sheetState
     ) {
         Column(
@@ -103,7 +103,7 @@ fun LoyaltyAddCardSheet(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { sheetDispatch(LoyaltyAddCardIntent.DismissRequest) }
+                        onClick = { sheetDispatch(LoyaltyAddCardIntent.DismissClick) }
                     ) {
                         Icon(
                             imageVector = Close24,

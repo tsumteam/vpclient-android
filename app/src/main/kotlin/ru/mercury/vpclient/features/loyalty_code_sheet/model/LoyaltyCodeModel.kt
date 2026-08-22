@@ -1,7 +1,7 @@
 package ru.mercury.vpclient.features.loyalty_code_sheet.model
 
 import kotlinx.coroutines.Job
-import ru.mercury.vpclient.features.loyalty_add_card_sheet.model.LoyaltyAddCardMode
+import ru.mercury.vpclient.shared.data.entity.LoyaltyAddCardMode
 import ru.mercury.vpclient.shared.domain.usecase.AuthValidateCodeUseCase.Companion.CODE_LENGTH
 import ru.mercury.vpclient.shared.mvi.Model
 

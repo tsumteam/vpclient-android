@@ -6,7 +6,6 @@ import ru.mercury.vpclient.features.checkout_bank_card_sheet.model.CheckoutBankC
 import ru.mercury.vpclient.features.checkout_bonus_sheet.model.CheckoutBonusModel
 import ru.mercury.vpclient.features.checkout_payment_method_sheet.model.CheckoutPaymentMethodModel
 import ru.mercury.vpclient.features.checkout_sbp_bank_sheet.model.CheckoutSbpBankModel
-import ru.mercury.vpclient.features.loyalty_add_card_sheet.model.LoyaltyAddCardMode
 import ru.mercury.vpclient.shared.data.entity.CheckoutSbpBank
 import ru.mercury.vpclient.shared.data.entity.FittingCheckoutData
 import ru.mercury.vpclient.shared.data.entity.FittingCheckoutOnlinePaymentMethod
@@ -14,6 +13,7 @@ import ru.mercury.vpclient.shared.data.entity.FittingCheckoutPaymentCardModel
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationData
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationDeliveryInterval
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationPlaceType
+import ru.mercury.vpclient.shared.data.entity.LoyaltyAddCardMode
 import ru.mercury.vpclient.shared.data.network.type.PaymentType
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ClientDeliveryAddressEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ClientEntity

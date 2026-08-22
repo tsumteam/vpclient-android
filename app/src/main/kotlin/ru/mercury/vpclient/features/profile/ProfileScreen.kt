@@ -54,7 +54,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.loyalty_add_card_sheet.LoyaltyAddCardSheet
 import ru.mercury.vpclient.features.loyalty_add_card_sheet.intent.LoyaltyAddCardIntent
-import ru.mercury.vpclient.features.loyalty_add_card_sheet.model.LoyaltyAddCardMode
 import ru.mercury.vpclient.features.loyalty_add_card_sheet.model.LoyaltyAddCardModel
 import ru.mercury.vpclient.features.loyalty_code_sheet.LoyaltyCodeSheet
 import ru.mercury.vpclient.features.loyalty_code_sheet.intent.LoyaltyCodeIntent
@@ -67,6 +66,7 @@ import ru.mercury.vpclient.features.profile_logout_dialog.intent.ProfileLogoutIn
 import ru.mercury.vpclient.features.profile_privileges_sheet.ProfilePrivilegesSheet
 import ru.mercury.vpclient.features.profile_privileges_sheet.intent.ProfilePrivilegeIntent
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
+import ru.mercury.vpclient.shared.data.entity.LoyaltyAddCardMode
 import ru.mercury.vpclient.shared.data.entity.LoyaltyCardType
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.LoyaltyCardInfoEntity
@@ -149,7 +149,7 @@ fun ProfileScreen(
             ),
             dispatch = { intent ->
                 when (intent) {
-                    is LoyaltyAddCardIntent.DismissRequest -> {
+                    is LoyaltyAddCardIntent.DismissClick -> {
                         viewModel.dispatch(ProfileIntent.DismissLoyaltyAddCardSheet)
                     }
                     is LoyaltyAddCardIntent.ModeClick -> {
@@ -192,7 +192,7 @@ fun ProfileScreen(
             ),
             dispatch = { intent ->
                 when (intent) {
-                    is LoyaltyCodeIntent.DismissRequest -> {
+                    is LoyaltyCodeIntent.DismissClick -> {
                         viewModel.dispatch(ProfileIntent.DismissLoyaltyCodeSheet)
                     }
                     is LoyaltyCodeIntent.StartResendTimerTicker -> {
@@ -217,7 +217,7 @@ fun ProfileScreen(
             state = state.profilePrivilegesModel,
             dispatch = { intent ->
                 when (intent) {
-                    is ProfilePrivilegeIntent.DismissRequest -> {
+                    is ProfilePrivilegeIntent.DismissClick -> {
                         viewModel.dispatch(ProfileIntent.DismissAlphaBankPrivilegesSheet)
                     }
                 }

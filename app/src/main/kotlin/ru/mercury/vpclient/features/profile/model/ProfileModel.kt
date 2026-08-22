@@ -1,8 +1,8 @@
 package ru.mercury.vpclient.features.profile.model
 
 import kotlinx.coroutines.Job
-import ru.mercury.vpclient.features.loyalty_add_card_sheet.model.LoyaltyAddCardMode
 import ru.mercury.vpclient.features.profile_privileges_sheet.model.ProfilePrivilegesModel
+import ru.mercury.vpclient.shared.data.entity.LoyaltyAddCardMode
 import ru.mercury.vpclient.shared.data.entity.LoyaltyCardType
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ClientEntity

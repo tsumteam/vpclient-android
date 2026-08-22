@@ -20,7 +20,6 @@ import ru.mercury.vpclient.features.checkout_payment_result.navigation.CheckoutP
 import ru.mercury.vpclient.features.fitting_addresses.event.FittingAddressesEvent
 import ru.mercury.vpclient.features.fitting_addresses.navigation.FittingAddressesOrigin
 import ru.mercury.vpclient.features.fitting_addresses.navigation.FittingAddressesRoute
-import ru.mercury.vpclient.features.loyalty_add_card_sheet.model.LoyaltyAddCardMode
 import ru.mercury.vpclient.features.main.navigation.MainRoute
 import ru.mercury.vpclient.shared.data.CODE_RESEND_TIMER_DELAY
 import ru.mercury.vpclient.shared.data.LOYALTY_PHONE_NUMBER_LENGTH
@@ -28,6 +27,7 @@ import ru.mercury.vpclient.shared.data.entity.CheckoutBankCardPaymentSystem
 import ru.mercury.vpclient.shared.data.entity.FittingCheckoutOnlinePaymentMethod
 import ru.mercury.vpclient.shared.data.entity.FittingCheckoutPaymentCardModel
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationPlaceType
+import ru.mercury.vpclient.shared.data.entity.LoyaltyAddCardMode
 import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.network.type.CheckoutBonusType
 import ru.mercury.vpclient.shared.data.network.type.OrderPaymentStatus

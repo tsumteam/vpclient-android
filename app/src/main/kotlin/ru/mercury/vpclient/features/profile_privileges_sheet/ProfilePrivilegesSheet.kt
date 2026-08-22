@@ -56,7 +56,7 @@ fun ProfilePrivilegesSheet(
     val dismiss: () -> Unit = {
         scope.launch {
             sheetState.hide()
-            dispatch(ProfilePrivilegeIntent.DismissRequest)
+            dispatch(ProfilePrivilegeIntent.DismissClick)
         }
     }
 

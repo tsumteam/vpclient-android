@@ -75,7 +75,6 @@ import ru.mercury.vpclient.features.checkout_sbp_bank_sheet.intent.CheckoutSbpBa
 import ru.mercury.vpclient.features.fitting_addresses.event.FittingAddressesEventManager
 import ru.mercury.vpclient.features.loyalty_add_card_sheet.LoyaltyAddCardSheet
 import ru.mercury.vpclient.features.loyalty_add_card_sheet.intent.LoyaltyAddCardIntent
-import ru.mercury.vpclient.features.loyalty_add_card_sheet.model.LoyaltyAddCardMode
 import ru.mercury.vpclient.features.loyalty_add_card_sheet.model.LoyaltyAddCardModel
 import ru.mercury.vpclient.features.loyalty_code_sheet.LoyaltyCodeSheet
 import ru.mercury.vpclient.features.loyalty_code_sheet.intent.LoyaltyCodeIntent
@@ -84,6 +83,7 @@ import ru.mercury.vpclient.shared.data.entity.FittingCheckoutData
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationData
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationDeliveryInterval
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationPlaceType
+import ru.mercury.vpclient.shared.data.entity.LoyaltyAddCardMode
 import ru.mercury.vpclient.shared.data.network.type.PaymentType
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ClientDeliveryAddressEntity
 import ru.mercury.vpclient.shared.domain.mapper.title
@@ -151,7 +151,7 @@ fun CheckoutScreen(
             ),
             dispatch = { intent ->
                 when (intent) {
-                    is LoyaltyAddCardIntent.DismissRequest -> {
+                    is LoyaltyAddCardIntent.DismissClick -> {
                         viewModel.dispatch(CheckoutIntent.DismissLoyaltyAddCardSheet)
                     }
                     is LoyaltyAddCardIntent.ModeClick -> {
@@ -194,7 +194,7 @@ fun CheckoutScreen(
             ),
             dispatch = { intent ->
                 when (intent) {
-                    is LoyaltyCodeIntent.DismissRequest -> {
+                    is LoyaltyCodeIntent.DismissClick -> {
                         viewModel.dispatch(CheckoutIntent.DismissLoyaltyCodeSheet)
                     }
                     is LoyaltyCodeIntent.StartResendTimerTicker -> {

@@ -1,6 +1,6 @@
 package ru.mercury.vpclient.features.profile.intent
 
-import ru.mercury.vpclient.features.loyalty_add_card_sheet.model.LoyaltyAddCardMode
+import ru.mercury.vpclient.shared.data.entity.LoyaltyAddCardMode
 import ru.mercury.vpclient.shared.mvi.Intent
 
 sealed interface ProfileIntent: Intent {

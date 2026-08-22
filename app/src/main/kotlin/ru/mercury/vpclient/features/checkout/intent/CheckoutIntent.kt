@@ -1,9 +1,9 @@
 package ru.mercury.vpclient.features.checkout.intent
 
 import ru.mercury.vpclient.features.fitting_addresses.event.FittingAddressesEvent
-import ru.mercury.vpclient.features.loyalty_add_card_sheet.model.LoyaltyAddCardMode
 import ru.mercury.vpclient.shared.data.entity.CheckoutSbpBank
 import ru.mercury.vpclient.shared.data.entity.FittingConfirmationPlaceType
+import ru.mercury.vpclient.shared.data.entity.LoyaltyAddCardMode
 import ru.mercury.vpclient.shared.data.network.type.CheckoutBonusType
 import ru.mercury.vpclient.shared.mvi.Intent
 

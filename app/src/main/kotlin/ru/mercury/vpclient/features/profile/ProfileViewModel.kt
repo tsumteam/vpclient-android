@@ -10,7 +10,6 @@ import ru.mercury.vpclient.features.auth_welcome.navigation.WelcomeRoute
 import ru.mercury.vpclient.features.cart.navigation.CartPage
 import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
-import ru.mercury.vpclient.features.loyalty_add_card_sheet.model.LoyaltyAddCardMode
 import ru.mercury.vpclient.features.notifications.navigation.NotificationsRoute
 import ru.mercury.vpclient.features.profile.event.ProfileEvent
 import ru.mercury.vpclient.features.profile.intent.ProfileIntent
@@ -26,6 +25,7 @@ import ru.mercury.vpclient.features.profile_root.event.ProfileRootEventManager
 import ru.mercury.vpclient.features.profile_view_history.navigation.ProfileViewHistoryRoute
 import ru.mercury.vpclient.shared.data.CODE_RESEND_TIMER_DELAY
 import ru.mercury.vpclient.shared.data.LOYALTY_PHONE_NUMBER_LENGTH
+import ru.mercury.vpclient.shared.data.entity.LoyaltyAddCardMode
 import ru.mercury.vpclient.shared.data.entity.LoyaltyCardType
 import ru.mercury.vpclient.shared.data.network.type.ActivityCounterType
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
