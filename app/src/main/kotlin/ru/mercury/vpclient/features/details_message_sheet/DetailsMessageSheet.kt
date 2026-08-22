@@ -16,11 +16,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -29,7 +27,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.details_message_sheet.intent.DetailsMessageIntent
 import ru.mercury.vpclient.features.details_message_sheet.model.DetailsMessageModel
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
@@ -47,25 +44,10 @@ fun DetailsMessageSheet(
     state: DetailsMessageModel,
     dispatch: (DetailsMessageIntent) -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val scope = rememberCoroutineScope()
     var commentText by rememberSaveable { mutableStateOf("") }
-    val sheetDispatch: (DetailsMessageIntent) -> Unit = { intent ->
-        when (intent) {
-            is DetailsMessageIntent.CommentChange -> commentText = intent.comment
-            is DetailsMessageIntent.SendClick -> dispatch(intent)
-            is DetailsMessageIntent.DismissClick -> {
-                scope.launch {
-                    sheetState.hide()
-                    dispatch(intent)
-                }
-            }
-        }
-    }
 
     SharedModalBottomSheet(
-        onDismissRequest = { dispatch(DetailsMessageIntent.DismissClick) },
-        sheetState = sheetState
+        onDismissRequest = { dispatch(DetailsMessageIntent.DismissClick) }
     ) {
         val inlinedState = state.copy(commentText = commentText)
 
@@ -84,7 +66,7 @@ fun DetailsMessageSheet(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { sheetDispatch(DetailsMessageIntent.DismissClick) }
+                        onClick = { dispatch(DetailsMessageIntent.DismissClick) }
                     ) {
                         Icon(
                             imageVector = Close24,
@@ -107,8 +89,8 @@ fun DetailsMessageSheet(
             MessageInput(
                 state = MessageInputState(
                     commentText = inlinedState.commentText,
-                    onCommentChange = { comment -> sheetDispatch(DetailsMessageIntent.CommentChange(comment)) },
-                    onSendClick = { sheetDispatch(DetailsMessageIntent.SendClick(inlinedState.commentText)) }
+                    onCommentChange = { comment -> commentText = comment },
+                    onSendClick = { dispatch(DetailsMessageIntent.SendClick(inlinedState.commentText)) }
                 ),
                 modifier = Modifier
                     .fillMaxWidth()

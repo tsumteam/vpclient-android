@@ -25,10 +25,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,7 +37,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.fitting_products_sheet.intent.FittingProductsIntent
 import ru.mercury.vpclient.features.fitting_products_sheet.model.FittingProductsModel
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
@@ -74,33 +71,11 @@ private fun FittingProductsSheetContent(
     state: FittingProductsModel,
     dispatch: (FittingProductsIntent) -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val scope = rememberCoroutineScope()
-    val sheetDispatch: (FittingProductsIntent) -> Unit = { intent ->
-        when (intent) {
-            is FittingProductsIntent.ConfirmClick -> {
-                scope.launch {
-                    sheetState.hide()
-                    dispatch(intent)
-                }
-            }
-            is FittingProductsIntent.DismissClick -> {
-                scope.launch {
-                    sheetState.hide()
-                    dispatch(intent)
-                }
-            }
-            is FittingProductsIntent.CollectProducts -> dispatch(intent)
-            is FittingProductsIntent.ProductCheckedChange -> dispatch(intent)
-        }
-    }
-
     SharedModalBottomSheet(
         onDismissRequest = { dispatch(FittingProductsIntent.DismissClick) },
         modifier = Modifier
             .fillMaxHeight()
-            .statusBarsPadding(),
-        sheetState = sheetState
+            .statusBarsPadding()
     ) {
         SharedScaffold(
             topBar = {
@@ -116,7 +91,7 @@ private fun FittingProductsSheetContent(
                     },
                     navigationIcon = {
                         IconButton(
-                            onClick = { sheetDispatch(FittingProductsIntent.DismissClick) }
+                            onClick = { dispatch(FittingProductsIntent.DismissClick) }
                         ) {
                             Icon(
                                 imageVector = Close24,
@@ -140,7 +115,7 @@ private fun FittingProductsSheetContent(
                         .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
                 ) {
                     Button(
-                        onClick = { sheetDispatch(FittingProductsIntent.ConfirmClick) },
+                        onClick = { dispatch(FittingProductsIntent.ConfirmClick) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(52.dp),
@@ -178,7 +153,7 @@ private fun FittingProductsSheetContent(
                         state = FittingProductRowState(
                             cartProductEntity = product,
                             checked = state.selectedProductIds.contains(product.id),
-                            onCheckedChange = { checked -> sheetDispatch(FittingProductsIntent.ProductCheckedChange(product.id, checked)) }
+                            onCheckedChange = { checked -> dispatch(FittingProductsIntent.ProductCheckedChange(product.id, checked)) }
                         )
                     )
 

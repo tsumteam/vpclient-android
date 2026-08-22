@@ -26,7 +26,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -67,11 +66,8 @@ fun FilterTreeSheet(
     state: FilterTreeModel,
     dispatch: (FilterTreeIntent) -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
     SharedModalBottomSheet(
-        onDismissRequest = { dispatch(FilterTreeIntent.DismissClick) },
-        sheetState = sheetState
+        onDismissRequest = { dispatch(FilterTreeIntent.DismissClick) }
     ) {
         Column {
             CenterAlignedTopAppBar(

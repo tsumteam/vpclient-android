@@ -15,9 +15,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,7 +24,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.gift_card_terms_sheet.intent.GiftCardTermsIntent
 import ru.mercury.vpclient.features.gift_card_terms_sheet.model.GiftCardTermsModel
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
@@ -42,18 +39,8 @@ fun GiftCardTermsSheet(
     state: GiftCardTermsModel,
     dispatch: (GiftCardTermsIntent) -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val scope = rememberCoroutineScope()
-    val dismiss: () -> Unit = {
-        scope.launch {
-            sheetState.hide()
-            dispatch(GiftCardTermsIntent.DismissClick)
-        }
-    }
-
     SharedModalBottomSheet(
-        onDismissRequest = dismiss,
-        sheetState = sheetState
+        onDismissRequest = { dispatch(GiftCardTermsIntent.DismissClick) }
     ) {
         SharedLazyColumn(
             modifier = Modifier.fillMaxWidth(),
@@ -72,7 +59,7 @@ fun GiftCardTermsSheet(
                     },
                     navigationIcon = {
                         IconButton(
-                            onClick = dismiss
+                            onClick = { dispatch(GiftCardTermsIntent.DismissClick) }
                         ) {
                             Icon(
                                 imageVector = Close24,

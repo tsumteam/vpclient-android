@@ -30,11 +30,9 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.autofill.ContentType
@@ -55,7 +53,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.loyalty_code_sheet.intent.LoyaltyCodeIntent
 import ru.mercury.vpclient.features.loyalty_code_sheet.model.LoyaltyCodeModel
 import ru.mercury.vpclient.shared.data.entity.LoyaltyAddCardMode
@@ -78,24 +75,10 @@ fun LoyaltyCodeSheet(
     state: LoyaltyCodeModel,
     dispatch: (LoyaltyCodeIntent) -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val scope = rememberCoroutineScope()
     val focusRequester = remember { FocusRequester() }
-    val sheetDispatch: (LoyaltyCodeIntent) -> Unit = { intent ->
-        when (intent) {
-            is LoyaltyCodeIntent.DismissClick -> {
-                scope.launch {
-                    sheetState.hide()
-                    dispatch(intent)
-                }
-            }
-            else -> dispatch(intent)
-        }
-    }
 
     SharedModalBottomSheet(
-        onDismissRequest = { dispatch(LoyaltyCodeIntent.DismissClick) },
-        sheetState = sheetState
+        onDismissRequest = { dispatch(LoyaltyCodeIntent.DismissClick) }
     ) {
         Column(
             modifier = Modifier
@@ -115,7 +98,7 @@ fun LoyaltyCodeSheet(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { sheetDispatch(LoyaltyCodeIntent.DismissClick) }
+                        onClick = { dispatch(LoyaltyCodeIntent.DismissClick) }
                     ) {
                         Icon(
                             imageVector = Close24,
@@ -136,14 +119,14 @@ fun LoyaltyCodeSheet(
                     value = state.code,
                     isErrorVisible = state.isCodeErrorVisible
                 ),
-                onValueChange = { sheetDispatch(LoyaltyCodeIntent.CodeChange(it)) },
+                onValueChange = { dispatch(LoyaltyCodeIntent.CodeChange(it)) },
                 focusRequester = focusRequester,
                 modifier = Modifier
                     .padding(start = 16.dp, top = 24.dp, end = 16.dp)
                     .fillMaxWidth()
                     .semantics { contentType = ContentType.SmsOtpCode },
                 keyboardActions = KeyboardActions(
-                    onDone = { sheetDispatch(LoyaltyCodeIntent.ConfirmClick) }
+                    onDone = { dispatch(LoyaltyCodeIntent.ConfirmClick) }
                 )
             )
 
@@ -226,7 +209,7 @@ fun LoyaltyCodeSheet(
                                 .clip(RoundedCornerShape(4.dp))
                                 .clickable(
                                     enabled = !state.isResendLoading,
-                                    onClick = { sheetDispatch(LoyaltyCodeIntent.ResendCodeClick) }
+                                    onClick = { dispatch(LoyaltyCodeIntent.ResendCodeClick) }
                                 )
                                 .padding(2.dp),
                             contentAlignment = Alignment.Center
@@ -258,7 +241,7 @@ fun LoyaltyCodeSheet(
             )
 
             Button(
-                onClick = { sheetDispatch(LoyaltyCodeIntent.ConfirmClick) },
+                onClick = { dispatch(LoyaltyCodeIntent.ConfirmClick) },
                 modifier = Modifier
                     .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
                     .fillMaxWidth()

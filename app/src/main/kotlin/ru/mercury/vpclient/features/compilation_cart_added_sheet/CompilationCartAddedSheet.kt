@@ -19,9 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -31,7 +29,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.compilation_cart_added_sheet.intent.CompilationCartAddedIntent
 import ru.mercury.vpclient.features.compilation_cart_added_sheet.model.CompilationCartAddedModel
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CompilationPreviewPageEntity
@@ -48,18 +45,8 @@ fun CompilationCartAddedSheet(
     state: CompilationCartAddedModel,
     dispatch: (CompilationCartAddedIntent) -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val scope = rememberCoroutineScope()
-    val sheetDispatch: (CompilationCartAddedIntent) -> Unit = { intent ->
-        scope.launch {
-            sheetState.hide()
-            dispatch(intent)
-        }
-    }
-
     SharedModalBottomSheet(
         onDismissRequest = { dispatch(CompilationCartAddedIntent.DismissClick) },
-        sheetState = sheetState,
         containerColor = Color.Transparent
     ) {
         SharedLazyColumn(
@@ -94,7 +81,7 @@ fun CompilationCartAddedSheet(
             }
             item {
                 OutlinedButton(
-                    onClick = { sheetDispatch(CompilationCartAddedIntent.ReturnToCompilationClick) },
+                    onClick = { dispatch(CompilationCartAddedIntent.ReturnToCompilationClick) },
                     modifier = Modifier
                         .padding(start = 16.dp, top = 8.dp, end = 16.dp)
                         .fillMaxWidth()
@@ -120,7 +107,7 @@ fun CompilationCartAddedSheet(
             }
             item {
                 Button(
-                    onClick = { sheetDispatch(CompilationCartAddedIntent.CartClick) },
+                    onClick = { dispatch(CompilationCartAddedIntent.CartClick) },
                     modifier = Modifier
                         .padding(start = 16.dp, top = 16.dp, end = 16.dp)
                         .fillMaxWidth()

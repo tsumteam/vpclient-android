@@ -22,7 +22,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -56,11 +55,8 @@ fun SortPickerSheet(
     state: SortPickerModel,
     dispatch: (SortPickerIntent) -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
     SharedModalBottomSheet(
-        onDismissRequest = { dispatch(SortPickerIntent.DismissClick) },
-        sheetState = sheetState
+        onDismissRequest = { dispatch(SortPickerIntent.DismissClick) }
     ) {
         var selectedSortType by remember(state.selectedSortType) { mutableStateOf(state.selectedSortType) }
 

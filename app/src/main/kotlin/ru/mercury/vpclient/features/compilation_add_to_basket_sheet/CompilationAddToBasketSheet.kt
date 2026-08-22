@@ -23,9 +23,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -35,7 +33,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.compilation_add_to_basket_sheet.intent.CompilationAddToBasketIntent
 import ru.mercury.vpclient.features.compilation_add_to_basket_sheet.model.CompilationAddToBasketModel
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
@@ -57,27 +54,11 @@ fun CompilationAddToBasketSheet(
     state: CompilationAddToBasketModel,
     dispatch: (CompilationAddToBasketIntent) -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val scope = rememberCoroutineScope()
-    val sheetDispatch: (CompilationAddToBasketIntent) -> Unit = { intent ->
-        when (intent) {
-            is CompilationAddToBasketIntent.AddToBasketClick,
-            is CompilationAddToBasketIntent.DismissClick -> {
-                scope.launch {
-                    sheetState.hide()
-                    dispatch(intent)
-                }
-            }
-            is CompilationAddToBasketIntent.AddToBasketProductCheckedChange -> dispatch(intent)
-        }
-    }
-
     SharedModalBottomSheet(
-        onDismissRequest = { sheetDispatch(CompilationAddToBasketIntent.DismissClick) },
+        onDismissRequest = { dispatch(CompilationAddToBasketIntent.DismissClick) },
         modifier = Modifier
             .fillMaxHeight()
-            .statusBarsPadding(),
-        sheetState = sheetState
+            .statusBarsPadding()
     ) {
         SharedScaffold(
             topBar = {
@@ -94,7 +75,7 @@ fun CompilationAddToBasketSheet(
                     },
                     navigationIcon = {
                         IconButton(
-                            onClick = { sheetDispatch(CompilationAddToBasketIntent.DismissClick) }
+                            onClick = { dispatch(CompilationAddToBasketIntent.DismissClick) }
                         ) {
                             Icon(
                                 imageVector = Close24,
@@ -116,7 +97,7 @@ fun CompilationAddToBasketSheet(
                         .background(MaterialTheme.colorScheme.background)
                 ) {
                     Button(
-                        onClick = { sheetDispatch(CompilationAddToBasketIntent.AddToBasketClick) },
+                        onClick = { dispatch(CompilationAddToBasketIntent.AddToBasketClick) },
                         modifier = Modifier
                             .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
                             .fillMaxWidth()
@@ -154,7 +135,7 @@ fun CompilationAddToBasketSheet(
                             entity = entity,
                             checked = entity.id in state.selectedProductIds,
                             onCheckedChange = { checked ->
-                                sheetDispatch(CompilationAddToBasketIntent.AddToBasketProductCheckedChange(entity.id, checked))
+                                dispatch(CompilationAddToBasketIntent.AddToBasketProductCheckedChange(entity.id, checked))
                             },
                             sizeSelectorState = state.sizeSelectorState(entity)
                         )

@@ -15,9 +15,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -26,7 +24,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.compilation_actions_sheet.intent.CompilationActionsIntent
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
@@ -38,24 +35,8 @@ import ru.mercury.vpclient.shared.ui.theme.medium15
 fun CompilationActionsSheet(
     dispatch: (CompilationActionsIntent) -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val scope = rememberCoroutineScope()
-    val sheetDispatch: (CompilationActionsIntent) -> Unit = { intent ->
-        when (intent) {
-            is CompilationActionsIntent.DismissClick,
-            is CompilationActionsIntent.ShowCompilationChatSheet,
-            is CompilationActionsIntent.ShowAddToBasketDialog -> {
-                scope.launch {
-                    sheetState.hide()
-                    dispatch(intent)
-                }
-            }
-        }
-    }
-
     SharedModalBottomSheet(
-        onDismissRequest = { sheetDispatch(CompilationActionsIntent.DismissClick) },
-        sheetState = sheetState,
+        onDismissRequest = { dispatch(CompilationActionsIntent.DismissClick) },
         containerColor = Color.Transparent
     ) {
         SharedLazyColumn(
@@ -64,7 +45,7 @@ fun CompilationActionsSheet(
         ) {
             item {
                 Button(
-                    onClick = { sheetDispatch(CompilationActionsIntent.ShowCompilationChatSheet) },
+                    onClick = { dispatch(CompilationActionsIntent.ShowCompilationChatSheet) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(58.dp),
@@ -90,7 +71,7 @@ fun CompilationActionsSheet(
             }
             item {
                 Button(
-                    onClick = { sheetDispatch(CompilationActionsIntent.ShowAddToBasketDialog) },
+                    onClick = { dispatch(CompilationActionsIntent.ShowAddToBasketDialog) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(58.dp),
@@ -116,7 +97,7 @@ fun CompilationActionsSheet(
             }
             item {
                 Button(
-                    onClick = { sheetDispatch(CompilationActionsIntent.DismissClick) },
+                    onClick = { dispatch(CompilationActionsIntent.DismissClick) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(52.dp),

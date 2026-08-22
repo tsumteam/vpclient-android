@@ -26,11 +26,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -43,7 +41,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.loyalty_add_card_sheet.intent.LoyaltyAddCardIntent
 import ru.mercury.vpclient.features.loyalty_add_card_sheet.model.LoyaltyAddCardModel
 import ru.mercury.vpclient.shared.data.entity.LoyaltyAddCardMode
@@ -66,24 +63,10 @@ fun LoyaltyAddCardSheet(
     state: LoyaltyAddCardModel,
     dispatch: (LoyaltyAddCardIntent) -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val scope = rememberCoroutineScope()
     val focusRequester = remember { FocusRequester() }
-    val sheetDispatch: (LoyaltyAddCardIntent) -> Unit = { intent ->
-        when (intent) {
-            is LoyaltyAddCardIntent.DismissClick -> {
-                scope.launch {
-                    sheetState.hide()
-                    dispatch(intent)
-                }
-            }
-            else -> dispatch(intent)
-        }
-    }
 
     SharedModalBottomSheet(
-        onDismissRequest = { dispatch(LoyaltyAddCardIntent.DismissClick) },
-        sheetState = sheetState
+        onDismissRequest = { dispatch(LoyaltyAddCardIntent.DismissClick) }
     ) {
         Column(
             modifier = Modifier
@@ -103,7 +86,7 @@ fun LoyaltyAddCardSheet(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { sheetDispatch(LoyaltyAddCardIntent.DismissClick) }
+                        onClick = { dispatch(LoyaltyAddCardIntent.DismissClick) }
                     ) {
                         Icon(
                             imageVector = Close24,
@@ -128,10 +111,10 @@ fun LoyaltyAddCardSheet(
                     firstTabText = stringResource(ClientStrings.LoyaltyAddCardPhoneModeCaps),
                     secondTabText = stringResource(ClientStrings.LoyaltyAddCardCardModeCaps),
                     onFirstTabClick = {
-                        sheetDispatch(LoyaltyAddCardIntent.ModeClick(LoyaltyAddCardMode.Phone))
+                        dispatch(LoyaltyAddCardIntent.ModeClick(LoyaltyAddCardMode.Phone))
                     },
                     onSecondTabClick = {
-                        sheetDispatch(LoyaltyAddCardIntent.ModeClick(LoyaltyAddCardMode.CardNumber))
+                        dispatch(LoyaltyAddCardIntent.ModeClick(LoyaltyAddCardMode.CardNumber))
                     },
                     isLoading = false
                 ),
@@ -147,7 +130,7 @@ fun LoyaltyAddCardSheet(
                 LoyaltyAddCardMode.Phone -> {
                     ClientTextField(
                         value = state.phone,
-                        onValueChange = { sheetDispatch(LoyaltyAddCardIntent.PhoneChange(it)) },
+                        onValueChange = { dispatch(LoyaltyAddCardIntent.PhoneChange(it)) },
                         label = stringResource(ClientStrings.LoyaltyAddCardPhoneLabel),
                         modifier = Modifier
                             .padding(horizontal = 16.dp)
@@ -169,7 +152,7 @@ fun LoyaltyAddCardSheet(
                 LoyaltyAddCardMode.CardNumber -> {
                     ClientTextField(
                         value = state.cardNumber,
-                        onValueChange = { sheetDispatch(LoyaltyAddCardIntent.CardNumberChange(it)) },
+                        onValueChange = { dispatch(LoyaltyAddCardIntent.CardNumberChange(it)) },
                         label = stringResource(ClientStrings.LoyaltyAddCardCardPlaceholder),
                         modifier = Modifier
                             .padding(horizontal = 16.dp)
@@ -201,7 +184,7 @@ fun LoyaltyAddCardSheet(
             }
 
             Button(
-                onClick = { sheetDispatch(LoyaltyAddCardIntent.ConfirmClick) },
+                onClick = { dispatch(LoyaltyAddCardIntent.ConfirmClick) },
                 modifier = Modifier
                     .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
                     .fillMaxWidth()

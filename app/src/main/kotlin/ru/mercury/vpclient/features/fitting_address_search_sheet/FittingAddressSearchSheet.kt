@@ -30,7 +30,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -97,15 +96,13 @@ private fun FittingAddressSearchSheetContent(
     state: FittingAddressSearchModel,
     dispatch: (FittingAddressSearchIntent) -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val focusRequester = remember { FocusRequester() }
 
     SharedModalBottomSheet(
         modifier = Modifier
             .fillMaxHeight()
             .statusBarsPadding(),
-        onDismissRequest = { dispatch(FittingAddressSearchIntent.DismissClick) },
-        sheetState = sheetState
+        onDismissRequest = { dispatch(FittingAddressSearchIntent.DismissClick) }
     ) {
         SharedScaffold(
             topBar = {

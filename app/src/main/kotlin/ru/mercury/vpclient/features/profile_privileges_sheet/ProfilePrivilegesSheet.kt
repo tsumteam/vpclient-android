@@ -22,9 +22,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,7 +31,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.profile_privileges_sheet.intent.ProfilePrivilegeIntent
 import ru.mercury.vpclient.features.profile_privileges_sheet.model.ProfilePrivilegesModel
 import ru.mercury.vpclient.shared.data.entity.LoyaltyCardType
@@ -51,18 +48,8 @@ fun ProfilePrivilegesSheet(
     state: ProfilePrivilegesModel,
     dispatch: (ProfilePrivilegeIntent) -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val scope = rememberCoroutineScope()
-    val dismiss: () -> Unit = {
-        scope.launch {
-            sheetState.hide()
-            dispatch(ProfilePrivilegeIntent.DismissClick)
-        }
-    }
-
     SharedModalBottomSheet(
-        onDismissRequest = dismiss,
-        sheetState = sheetState
+        onDismissRequest = { dispatch(ProfilePrivilegeIntent.DismissClick) }
     ) {
         SharedLazyColumn(
             modifier = Modifier.fillMaxWidth(),
@@ -81,7 +68,7 @@ fun ProfilePrivilegesSheet(
                     },
                     navigationIcon = {
                         IconButton(
-                            onClick = dismiss
+                            onClick = { dispatch(ProfilePrivilegeIntent.DismissClick) }
                         ) {
                             Icon(
                                 imageVector = Close24,

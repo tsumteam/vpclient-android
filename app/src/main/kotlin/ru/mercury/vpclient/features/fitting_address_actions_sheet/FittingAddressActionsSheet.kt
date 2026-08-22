@@ -15,7 +15,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,11 +35,8 @@ import ru.mercury.vpclient.shared.ui.theme.medium15
 fun FittingAddressActionsSheet(
     dispatch: (FittingAddressActionsIntent) -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
     SharedModalBottomSheet(
         onDismissRequest = { dispatch(FittingAddressActionsIntent.DismissClick) },
-        sheetState = sheetState,
         containerColor = Color.Transparent
     ) {
         SharedLazyColumn(

@@ -31,11 +31,9 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -90,14 +88,12 @@ fun ProfileBrandSheet(
     )
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val snackbarHostStateError = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
     ProfileBrandSheetContent(
         state = state,
         dispatch = viewModel::dispatch,
-        sheetState = sheetState,
         snackbarHostStateError = snackbarHostStateError
     )
 
@@ -105,12 +101,7 @@ fun ProfileBrandSheet(
         flow = viewModel.eventFlow
     ) { event ->
         when (event) {
-            is ProfileBrandEvent.Dismiss -> {
-                scope.launch {
-                    sheetState.hide()
-                    onDismiss()
-                }
-            }
+            is ProfileBrandEvent.Dismiss -> onDismiss()
             is ProfileBrandEvent.SnackbarErrorMessage -> {
                 snackbarHostStateError.currentSnackbarData?.dismiss()
                 scope.launch { snackbarHostStateError.showSnackbar(event.message) }
@@ -123,23 +114,16 @@ fun ProfileBrandSheet(
 private fun ProfileBrandSheetContent(
     state: ProfileBrandModel,
     dispatch: (ProfileBrandIntent) -> Unit,
-    sheetState: SheetState,
     snackbarHostStateError: SnackbarHostState
 ) {
     val scope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
 
     SharedModalBottomSheet(
-        onDismissRequest = {
-            scope.launch {
-                sheetState.hide()
-                dispatch(ProfileBrandIntent.DismissClick)
-            }
-        },
+        onDismissRequest = { dispatch(ProfileBrandIntent.DismissClick) },
         modifier = Modifier
             .fillMaxHeight()
-            .statusBarsPadding(),
-        sheetState = sheetState
+            .statusBarsPadding()
     ) {
         SharedScaffold(
             topBar = {
@@ -161,12 +145,7 @@ private fun ProfileBrandSheetContent(
                         },
                         navigationIcon = {
                             IconButton(
-                                onClick = {
-                                    scope.launch {
-                                        sheetState.hide()
-                                        dispatch(ProfileBrandIntent.DismissClick)
-                                    }
-                                }
+                                onClick = { dispatch(ProfileBrandIntent.DismissClick) }
                             ) {
                                 Icon(
                                     imageVector = Close24,
@@ -423,7 +402,6 @@ private fun ProfileBrandSheetPreview(
         ProfileBrandSheetContent(
             state = state,
             dispatch = {},
-            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
             snackbarHostStateError = remember { SnackbarHostState() }
         )
     }

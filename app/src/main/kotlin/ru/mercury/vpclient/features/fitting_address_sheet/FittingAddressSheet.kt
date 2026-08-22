@@ -34,7 +34,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -75,14 +74,11 @@ fun FittingAddressSheet(
     dispatch: (FittingAddressIntent) -> Unit,
     snackbarHostStateError: SnackbarHostState
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
     SharedModalBottomSheet(
         modifier = Modifier
             .fillMaxHeight()
             .statusBarsPadding(),
-        onDismissRequest = { dispatch(FittingAddressIntent.DismissClick) },
-        sheetState = sheetState
+        onDismissRequest = { dispatch(FittingAddressIntent.DismissClick) }
     ) {
         val focusManager = LocalFocusManager.current
         val flatFocusRequester = remember { FocusRequester() }

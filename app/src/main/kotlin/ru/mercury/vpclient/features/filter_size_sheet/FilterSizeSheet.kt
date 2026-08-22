@@ -30,7 +30,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -74,11 +73,8 @@ fun FilterSizeSheet(
     state: FilterSizeModel,
     dispatch: (FilterSizeIntent) -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
     SharedModalBottomSheet(
-        onDismissRequest = { dispatch(FilterSizeIntent.DismissClick) },
-        sheetState = sheetState
+        onDismissRequest = { dispatch(FilterSizeIntent.DismissClick) }
     ) {
         var selectedCountry by remember { mutableStateOf<SizeCountry>(SizeCountry.Russia) }
 

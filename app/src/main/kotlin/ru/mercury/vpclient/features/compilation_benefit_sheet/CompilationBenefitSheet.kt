@@ -22,9 +22,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -35,7 +33,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.compilation_benefit_sheet.intent.CompilationBenefitIntent
 import ru.mercury.vpclient.features.compilation_benefit_sheet.model.CompilationBenefitModel
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
@@ -55,15 +52,11 @@ fun CompilationBenefitSheet(
     state: CompilationBenefitModel,
     dispatch: (CompilationBenefitIntent) -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val scope = rememberCoroutineScope()
-
     SharedModalBottomSheet(
         onDismissRequest = { dispatch(CompilationBenefitIntent.DismissClick) },
         modifier = Modifier
             .fillMaxHeight()
-            .statusBarsPadding(),
-        sheetState = sheetState
+            .statusBarsPadding()
     ) {
         SharedScaffold(
             topBar = {
@@ -79,12 +72,7 @@ fun CompilationBenefitSheet(
                     },
                     navigationIcon = {
                         IconButton(
-                            onClick = {
-                                scope.launch {
-                                    sheetState.hide()
-                                    dispatch(CompilationBenefitIntent.DismissClick)
-                                }
-                            }
+                            onClick = { dispatch(CompilationBenefitIntent.DismissClick) }
                         ) {
                             Icon(
                                 imageVector = Close24,

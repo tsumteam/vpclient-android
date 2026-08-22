@@ -20,9 +20,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,7 +29,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.details_wear_with_sheet.intent.DetailsWearWithIntent
 import ru.mercury.vpclient.features.details_wear_with_sheet.model.DetailsWearWithModel
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
@@ -49,27 +46,11 @@ fun DetailsWearWithSheet(
     state: DetailsWearWithModel,
     dispatch: (DetailsWearWithIntent) -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val scope = rememberCoroutineScope()
-    val sheetDispatch: (DetailsWearWithIntent) -> Unit = { intent ->
-        when (intent) {
-            is DetailsWearWithIntent.DismissClick -> {
-                scope.launch {
-                    sheetState.hide()
-                    dispatch(intent)
-                }
-            }
-            is DetailsWearWithIntent.ProductBasketClick,
-            is DetailsWearWithIntent.ProductClick -> dispatch(intent)
-        }
-    }
-
     SharedModalBottomSheet(
         onDismissRequest = { dispatch(DetailsWearWithIntent.DismissClick) },
         modifier = Modifier
             .fillMaxHeight()
-            .statusBarsPadding(),
-        sheetState = sheetState
+            .statusBarsPadding()
     ) {
         SharedScaffold(
             topBar = {
@@ -85,7 +66,7 @@ fun DetailsWearWithSheet(
                     },
                     navigationIcon = {
                         IconButton(
-                            onClick = { sheetDispatch(DetailsWearWithIntent.DismissClick) }
+                            onClick = { dispatch(DetailsWearWithIntent.DismissClick) }
                         ) {
                             Icon(
                                 imageVector = Close24,
@@ -117,8 +98,8 @@ fun DetailsWearWithSheet(
                         state = ProductCardState(
                             entity = product,
                             isInBasket = state.isProductInBasket(product),
-                            onClick = { sheetDispatch(DetailsWearWithIntent.ProductClick(product.id)) },
-                            onBasketIconClick = { sheetDispatch(DetailsWearWithIntent.ProductBasketClick(product)) }
+                            onClick = { dispatch(DetailsWearWithIntent.ProductClick(product.id)) },
+                            onBasketIconClick = { dispatch(DetailsWearWithIntent.ProductBasketClick(product)) }
                         )
                     )
                 }

@@ -19,9 +19,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -31,7 +29,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.size_sheet.intent.SizeSheetIntent
 import ru.mercury.vpclient.features.size_sheet.model.SizeSheetModel
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
@@ -49,25 +46,8 @@ fun SizeSheet(
     state: SizeSheetModel,
     dispatch: (SizeSheetIntent) -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val scope = rememberCoroutineScope()
-    val sheetDispatch: (SizeSheetIntent) -> Unit = { intent ->
-        when (intent) {
-            is SizeSheetIntent.AddToBasketClick,
-            is SizeSheetIntent.DismissClick -> {
-                scope.launch {
-                    sheetState.hide()
-                    dispatch(intent)
-                }
-            }
-            is SizeSheetIntent.SizeClick,
-            is SizeSheetIntent.SizeTableClick -> dispatch(intent)
-        }
-    }
-
     SharedModalBottomSheet(
-        onDismissRequest = { dispatch(SizeSheetIntent.DismissClick) },
-        sheetState = sheetState
+        onDismissRequest = { dispatch(SizeSheetIntent.DismissClick) }
     ) {
         Column {
             CenterAlignedTopAppBar(
@@ -82,7 +62,7 @@ fun SizeSheet(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { sheetDispatch(SizeSheetIntent.DismissClick) }
+                        onClick = { dispatch(SizeSheetIntent.DismissClick) }
                     ) {
                         Icon(
                             imageVector = Close24,
@@ -101,14 +81,14 @@ fun SizeSheet(
             DetailsSizeSelector(
                 state = state.sizeSelectorState.copy(
                     isSizeSelectTextVisible = false,
-                    onSizeClick = { index -> sheetDispatch(SizeSheetIntent.SizeClick(index)) },
-                    onSizeTableClick = { sheetDispatch(SizeSheetIntent.SizeTableClick) }
+                    onSizeClick = { index -> dispatch(SizeSheetIntent.SizeClick(index)) },
+                    onSizeTableClick = { dispatch(SizeSheetIntent.SizeTableClick) }
                 ),
                 modifier = Modifier.padding(top = 8.dp)
             )
 
             Button(
-                onClick = { sheetDispatch(SizeSheetIntent.AddToBasketClick) },
+                onClick = { dispatch(SizeSheetIntent.AddToBasketClick) },
                 modifier = Modifier
                     .padding(start = 16.dp, top = 28.dp, end = 16.dp, bottom = 8.dp)
                     .fillMaxWidth()

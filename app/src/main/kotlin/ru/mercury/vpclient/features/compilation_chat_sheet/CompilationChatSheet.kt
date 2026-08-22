@@ -16,11 +16,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -31,7 +29,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.compilation_chat_sheet.intent.CompilationChatIntent
 import ru.mercury.vpclient.features.compilation_chat_sheet.model.CompilationChatModel
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CompilationEntity
@@ -50,25 +47,10 @@ fun CompilationChatSheet(
     state: CompilationChatModel,
     dispatch: (CompilationChatIntent) -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val scope = rememberCoroutineScope()
     var commentText by rememberSaveable { mutableStateOf(state.commentText) }
-    val sheetDispatch: (CompilationChatIntent) -> Unit = { intent ->
-        when (intent) {
-            is CompilationChatIntent.DismissClick -> {
-                scope.launch {
-                    sheetState.hide()
-                    dispatch(intent)
-                }
-            }
-            is CompilationChatIntent.CommentChange -> commentText = intent.comment
-            is CompilationChatIntent.SendClick -> dispatch(intent)
-        }
-    }
 
     SharedModalBottomSheet(
-        onDismissRequest = { sheetDispatch(CompilationChatIntent.DismissClick) },
-        sheetState = sheetState
+        onDismissRequest = { dispatch(CompilationChatIntent.DismissClick) }
     ) {
         val inlinedState = state.copy(commentText = commentText)
 
@@ -87,7 +69,7 @@ fun CompilationChatSheet(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { sheetDispatch(CompilationChatIntent.DismissClick) }
+                        onClick = { dispatch(CompilationChatIntent.DismissClick) }
                     ) {
                         Icon(
                             imageVector = Close24,
@@ -114,8 +96,8 @@ fun CompilationChatSheet(
             MessageInput(
                 state = MessageInputState(
                     commentText = commentText,
-                    onCommentChange = { comment -> sheetDispatch(CompilationChatIntent.CommentChange(comment)) },
-                    onSendClick = { sheetDispatch(CompilationChatIntent.SendClick(commentText)) }
+                    onCommentChange = { comment -> commentText = comment },
+                    onSendClick = { dispatch(CompilationChatIntent.SendClick(commentText)) }
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
