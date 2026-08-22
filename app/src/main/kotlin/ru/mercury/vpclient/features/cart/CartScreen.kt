@@ -57,9 +57,6 @@ import ru.mercury.vpclient.features.cart_fitting_empty_order_dialog.intent.CartF
 import ru.mercury.vpclient.features.cart_fitting_sheet.CartFittingSheet
 import ru.mercury.vpclient.features.cart_fitting_sheet.intent.CartFittingIntent
 import ru.mercury.vpclient.features.cart_list.CartListScreen
-import ru.mercury.vpclient.features.cart_size_sheet.CartSizeSheet
-import ru.mercury.vpclient.features.cart_size_sheet.intent.CartSizeSheetIntent
-import ru.mercury.vpclient.features.cart_size_sheet.model.CartSizeSheetModel
 import ru.mercury.vpclient.features.color_picker_sheet.ColorPickerSheet
 import ru.mercury.vpclient.features.color_picker_sheet.intent.ColorPickerIntent
 import ru.mercury.vpclient.features.fitting_products_sheet.FittingProductsSheet
@@ -67,6 +64,8 @@ import ru.mercury.vpclient.features.fitting_products_sheet.event.FittingProducts
 import ru.mercury.vpclient.features.fitting_products_sheet.event.FittingProductsSheetEventManager
 import ru.mercury.vpclient.features.quantity_picker_sheet.QuantityPickerSheet
 import ru.mercury.vpclient.features.quantity_picker_sheet.intent.QuantityPickerIntent
+import ru.mercury.vpclient.features.size_picker_sheet.SizePickerSheet
+import ru.mercury.vpclient.features.size_picker_sheet.intent.SizePickerIntent
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
@@ -154,26 +153,20 @@ fun CartScreen(
     }
 
     if (state.isSizePickerSheetVisible) {
-        CartSizeSheet(
-            state = CartSizeSheetModel(
-                sizeSelectorState = state.sizePickerState,
-                buttonText = when {
-                    state.sizePickerForFitting -> stringResource(ClientStrings.CartSave)
-                    else -> stringResource(ClientStrings.CartSizeSheetSelect)
-                }
-            ),
+        SizePickerSheet(
+            state = state.sizePickerModel,
             dispatch = { intent ->
                 when (intent) {
-                    is CartSizeSheetIntent.SizeClick -> {
+                    is SizePickerIntent.SizeClick -> {
                         viewModel.dispatch(CartIntent.ToggleSizePickerItem(intent.index))
                     }
-                    is CartSizeSheetIntent.ConfirmClick -> {
+                    is SizePickerIntent.ConfirmClick -> {
                         viewModel.dispatch(CartIntent.ConfirmSizePicker)
                     }
-                    is CartSizeSheetIntent.DismissRequest -> {
-                        viewModel.dispatch(CartIntent.HideSizePicker)
+                    is SizePickerIntent.DismissClick -> {
+                        viewModel.dispatch(CartIntent.DismissSizePickerSheet)
                     }
-                    is CartSizeSheetIntent.SizeTableClick -> {
+                    is SizePickerIntent.SizeTableClick -> {
                         viewModel.dispatch(CartIntent.SizeTableClick)
                     }
                 }

@@ -1,9 +1,8 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package ru.mercury.vpclient.features.cart_size_sheet
+package ru.mercury.vpclient.features.size_picker_sheet
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,9 +18,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -31,9 +28,9 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.launch
-import ru.mercury.vpclient.features.cart_size_sheet.intent.CartSizeSheetIntent
-import ru.mercury.vpclient.features.cart_size_sheet.model.CartSizeSheetModel
+import ru.mercury.vpclient.features.size_picker_sheet.intent.SizePickerIntent
+import ru.mercury.vpclient.features.size_picker_sheet.model.SizePickerModel
+import ru.mercury.vpclient.shared.ui.components.SharedColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.cart.CartSizePickerLoading
 import ru.mercury.vpclient.shared.ui.components.details.DetailsSizeSelector
@@ -49,37 +46,14 @@ import ru.mercury.vpclient.shared.ui.theme.medium15
 import ru.mercury.vpclient.shared.ui.theme.onDisabled
 
 @Composable
-fun CartSizeSheet(
-    state: CartSizeSheetModel,
-    dispatch: (CartSizeSheetIntent) -> Unit
+fun SizePickerSheet(
+    state: SizePickerModel,
+    dispatch: (SizePickerIntent) -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val scope = rememberCoroutineScope()
-
-    val sheetDispatch: (CartSizeSheetIntent) -> Unit = { intent ->
-        when (intent) {
-            is CartSizeSheetIntent.ConfirmClick,
-            is CartSizeSheetIntent.DismissRequest -> {
-                scope.launch {
-                    sheetState.hide()
-                    dispatch(intent)
-                }
-            }
-            is CartSizeSheetIntent.SizeClick,
-            is CartSizeSheetIntent.SizeTableClick -> dispatch(intent)
-        }
-    }
-
     SharedModalBottomSheet(
-        onDismissRequest = { dispatch(CartSizeSheetIntent.DismissRequest) },
-        sheetState = sheetState
+        onDismissRequest = { dispatch(SizePickerIntent.DismissClick) }
     ) {
-        val buttonText = when {
-            state.sizeSelectorState.selectedSize?.enabled == true -> stringResource(ClientStrings.CartSizeSheetSelect)
-            state.sizeSelectorState.selectedSize != null -> stringResource(ClientStrings.CartSizeSheetSelectForAlternative)
-            else -> state.buttonText
-        }
-        Column {
+        SharedColumn {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
@@ -92,7 +66,7 @@ fun CartSizeSheet(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { sheetDispatch(CartSizeSheetIntent.DismissRequest) }
+                        onClick = { dispatch(SizePickerIntent.DismissClick) }
                     ) {
                         Icon(
                             imageVector = Close24,
@@ -114,15 +88,15 @@ fun CartSizeSheet(
                     DetailsSizeSelector(
                         state = state.sizeSelectorState.copy(
                             isSizeSelectTextVisible = false,
-                            onSizeClick = { index -> sheetDispatch(CartSizeSheetIntent.SizeClick(index)) },
-                            onSizeTableClick = { sheetDispatch(CartSizeSheetIntent.SizeTableClick) }
+                            onSizeClick = { index -> dispatch(SizePickerIntent.SizeClick(index)) },
+                            onSizeTableClick = { dispatch(SizePickerIntent.SizeTableClick) }
                         )
                     )
                 }
             }
 
             Button(
-                onClick = { sheetDispatch(CartSizeSheetIntent.ConfirmClick) },
+                onClick = { dispatch(SizePickerIntent.ConfirmClick) },
                 modifier = Modifier
                     .padding(start = 16.dp, top = 28.dp, end = 16.dp, bottom = 8.dp)
                     .fillMaxWidth()
@@ -141,7 +115,15 @@ fun CartSizeSheet(
                 )
             ) {
                 Text(
-                    text = buttonText,
+                    text = when {
+                        state.sizeSelectorState.selectedSize?.enabled == true -> {
+                            stringResource(ClientStrings.CartSizeSheetSelect)
+                        }
+                        state.sizeSelectorState.selectedSize != null -> {
+                            stringResource(ClientStrings.CartSizeSheetSelectForAlternative)
+                        }
+                        else -> stringResource(state.buttonText)
+                    },
                     style = MaterialTheme.typography.medium15.copy(
                         textAlign = TextAlign.Center,
                         letterSpacing = .3.sp
@@ -155,23 +137,20 @@ fun CartSizeSheet(
 @PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Composable
-private fun CartSizeSheetPreview(
-    @PreviewParameter(CartSizeSheetSizeSelectorStateProvider::class) state: SizeSelectorState
+private fun SizePickerSheetPreview(
+    @PreviewParameter(SizePickerModelPreviewParameterProvider::class) state: SizePickerModel
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        CartSizeSheet(
-            state = CartSizeSheetModel(
-                sizeSelectorState = state,
-                buttonText = stringResource(ClientStrings.CartSizeSheetSelect)
-            ),
+        SizePickerSheet(
+            state = state,
             dispatch = {}
         )
     }
 }
 
-private class CartSizeSheetSizeSelectorStateProvider: PreviewParameterProvider<SizeSelectorState> {
+private class SizePickerModelPreviewParameterProvider: PreviewParameterProvider<SizePickerModel> {
 
     private val sizes = listOf(
         SizeState(topText = "RU 36", bottomText = "IT 34", selected = false, enabled = true),
@@ -182,25 +161,37 @@ private class CartSizeSheetSizeSelectorStateProvider: PreviewParameterProvider<S
         SizeState(topText = "RU 46", bottomText = "IT 44", selected = false, enabled = false)
     )
 
-    override val values: Sequence<SizeSelectorState> = sequenceOf(
-        SizeSelectorState.Empty,
-        SizeSelectorState(
-            sizes = sizes,
-            topText = "IT",
-            bottomText = "RU",
-            isSizeTableVisible = true
+    override val values: Sequence<SizePickerModel> = sequenceOf(
+        SizePickerModel(
+            sizeSelectorState = SizeSelectorState.Empty,
+            buttonText = ClientStrings.CartSizeSheetSelect
         ),
-        SizeSelectorState(
-            sizes = sizes.mapIndexed { index, state -> state.copy(selected = index == 1) },
-            topText = "IT",
-            bottomText = "RU",
-            isSizeTableVisible = true
+        SizePickerModel(
+            sizeSelectorState = SizeSelectorState(
+                sizes = sizes,
+                topText = "IT",
+                bottomText = "RU",
+                isSizeTableVisible = true
+            ),
+            buttonText = ClientStrings.CartSizeSheetSelect
         ),
-        SizeSelectorState(
-            sizes = sizes.mapIndexed { index, state -> state.copy(selected = index == 3) },
-            topText = "IT",
-            bottomText = "RU",
-            isSizeTableVisible = true
+        SizePickerModel(
+            sizeSelectorState = SizeSelectorState(
+                sizes = sizes.mapIndexed { index, state -> state.copy(selected = index == 1) },
+                topText = "IT",
+                bottomText = "RU",
+                isSizeTableVisible = true
+            ),
+            buttonText = ClientStrings.CartSizeSheetSelect
+        ),
+        SizePickerModel(
+            sizeSelectorState = SizeSelectorState(
+                sizes = sizes.mapIndexed { index, state -> state.copy(selected = index == 3) },
+                topText = "IT",
+                bottomText = "RU",
+                isSizeTableVisible = true
+            ),
+            buttonText = ClientStrings.CartSizeSheetSelect
         )
     )
 }

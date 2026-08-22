@@ -7,6 +7,7 @@ import ru.mercury.vpclient.features.cart_fitting_edit_product_sheet.model.CartFi
 import ru.mercury.vpclient.features.cart_fitting_sheet.model.CartFittingModel
 import ru.mercury.vpclient.features.color_picker_sheet.model.ColorPickerModel
 import ru.mercury.vpclient.features.quantity_picker_sheet.model.QuantityPickerModel
+import ru.mercury.vpclient.features.size_picker_sheet.model.SizePickerModel
 import ru.mercury.vpclient.shared.data.CART_DRAG_AND_DROP_ENABLED
 import ru.mercury.vpclient.shared.data.FORMAT_RUB
 import ru.mercury.vpclient.shared.data.PREFIX_SPACE
@@ -135,6 +136,15 @@ data class CartModel(
                 isSizeTableVisible = !sizes.sizeTableTitle.isNullOrEmpty() && !sizes.sizeTableUrl.isNullOrEmpty()
             )
         }
+
+    val sizePickerModel: SizePickerModel
+        get() = SizePickerModel(
+            sizeSelectorState = sizePickerState,
+            buttonText = when {
+                sizePickerForFitting -> ClientStrings.CartSave
+                else -> ClientStrings.CartSizeSheetSelect
+            }
+        )
 
     val colorPickerColorsState: List<ProductAvailableColor>
         get() {

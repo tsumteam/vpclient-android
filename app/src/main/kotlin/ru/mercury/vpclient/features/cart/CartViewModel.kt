@@ -382,7 +382,7 @@ class CartViewModel @AssistedInject constructor(
                 }
                 reduce { it.copy(sizePickerJob = sizePickerJob) }
             }
-            is CartIntent.HideSizePicker -> {
+            is CartIntent.DismissSizePickerSheet -> {
                 stateFlow.value.sizePickerJob?.cancel()
                 reduce {
                     it.copy(
