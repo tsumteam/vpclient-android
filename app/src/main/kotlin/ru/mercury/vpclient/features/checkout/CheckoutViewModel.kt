@@ -585,7 +585,7 @@ class CheckoutViewModel @AssistedInject constructor(
                                 val startedAt = System.currentTimeMillis()
                                 reduce {
                                     it.copy(
-                                        isBonusConfirmationSheetVisible = true,
+                                        isCheckoutBonusSheetVisible = true,
                                         bonusCode = "",
                                         isBonusCodeErrorVisible = false,
                                         bonusCodeResendTimerStartedAt = startedAt,
@@ -665,11 +665,11 @@ class CheckoutViewModel @AssistedInject constructor(
                 }
                 reduce { it.copy(paymentJob = job) }
             }
-            is CheckoutIntent.DismissBonusConfirmationSheet -> {
+            is CheckoutIntent.DismissCheckoutBonusSheet -> {
                 stateFlow.value.bonusCodeResendTimerJob?.cancel()
                 reduce {
                     it.copy(
-                        isBonusConfirmationSheetVisible = false,
+                        isCheckoutBonusSheetVisible = false,
                         bonusCodeResendTimerJob = null
                     )
                 }
@@ -680,7 +680,7 @@ class CheckoutViewModel @AssistedInject constructor(
                     while (true) {
                         delay(CODE_RESEND_TIMER_DELAY.milliseconds)
                         val state = stateFlow.value
-                        if (!state.isBonusConfirmationSheetVisible) break
+                        if (!state.isCheckoutBonusSheetVisible) break
                         val secondsLeft = codeResendSecondsLeft(state.bonusCodeResendTimerStartedAt)
                         when {
                             secondsLeft != state.bonusCodeResendSecondsLeft -> {
@@ -702,7 +702,7 @@ class CheckoutViewModel @AssistedInject constructor(
             is CheckoutIntent.BonusCodeConfirmClick -> {
                 val state = stateFlow.value
                 when {
-                    !state.isBonusConfirmationSheetVisible ||
+                    !state.isCheckoutBonusSheetVisible ||
                         state.paymentOrderNumber.isBlank() ||
                         state.bonusCode.length != CODE_LENGTH -> return
                     else -> {
@@ -715,7 +715,7 @@ class CheckoutViewModel @AssistedInject constructor(
                             stateFlow.value.bonusCodeResendTimerJob?.cancel()
                             reduce {
                                 it.copy(
-                                    isBonusConfirmationSheetVisible = false,
+                                    isCheckoutBonusSheetVisible = false,
                                     bonusCodeResendTimerJob = null
                                 )
                             }
@@ -747,7 +747,7 @@ class CheckoutViewModel @AssistedInject constructor(
             is CheckoutIntent.BonusCodeResendClick -> {
                 val state = stateFlow.value
                 when {
-                    !state.isBonusConfirmationSheetVisible ||
+                    !state.isCheckoutBonusSheetVisible ||
                         state.paymentOrderNumber.isBlank() ||
                         state.bonusCodeResendSecondsLeft > 0 ||
                         state.isBonusCodeResendLoading -> return

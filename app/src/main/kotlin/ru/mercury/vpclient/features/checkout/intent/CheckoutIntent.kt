@@ -29,7 +29,7 @@ sealed interface CheckoutIntent: Intent {
     data object PayByCardClick: CheckoutIntent
     data object PayBySbpClick: CheckoutIntent
     data object ConfirmOrderClick: CheckoutIntent
-    data object DismissBonusConfirmationSheet: CheckoutIntent
+    data object DismissCheckoutBonusSheet: CheckoutIntent
     data object StartBonusCodeResendTimerTicker: CheckoutIntent
     data object BonusCodeConfirmClick: CheckoutIntent
     data object BonusCodeResendClick: CheckoutIntent

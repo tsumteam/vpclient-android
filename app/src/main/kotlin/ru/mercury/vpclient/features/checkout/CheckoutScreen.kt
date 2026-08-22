@@ -68,7 +68,6 @@ import ru.mercury.vpclient.features.checkout_bank_card_sheet.CheckoutBankCardShe
 import ru.mercury.vpclient.features.checkout_bank_card_sheet.intent.CheckoutBankCardIntent
 import ru.mercury.vpclient.features.checkout_bonus_sheet.CheckoutBonusSheet
 import ru.mercury.vpclient.features.checkout_bonus_sheet.intent.CheckoutBonusIntent
-import ru.mercury.vpclient.features.checkout_bonus_sheet.model.CheckoutBonusModel
 import ru.mercury.vpclient.features.checkout_payment_method_sheet.CheckoutPaymentMethodSheet
 import ru.mercury.vpclient.features.checkout_payment_method_sheet.intent.CheckoutPaymentMethodIntent
 import ru.mercury.vpclient.features.checkout_payment_method_sheet.model.CheckoutPaymentMethodModel
@@ -217,19 +216,13 @@ fun CheckoutScreen(
         )
     }
 
-    if (state.isBonusConfirmationSheetVisible) {
+    if (state.isCheckoutBonusSheetVisible) {
         CheckoutBonusSheet(
-            state = CheckoutBonusModel(
-                code = state.bonusCode,
-                isLoading = state.isBonusCodeLoading,
-                isResendLoading = state.isBonusCodeResendLoading,
-                isCodeErrorTextVisible = state.isBonusCodeErrorVisible,
-                resendSecondsLeft = state.bonusCodeResendSecondsLeft
-            ),
+            state = state.checkoutBonusModel,
             dispatch = { intent ->
                 when (intent) {
-                    is CheckoutBonusIntent.DismissRequest -> {
-                        viewModel.dispatch(CheckoutIntent.DismissBonusConfirmationSheet)
+                    is CheckoutBonusIntent.DismissClick -> {
+                        viewModel.dispatch(CheckoutIntent.DismissCheckoutBonusSheet)
                     }
                     is CheckoutBonusIntent.CodeChange -> {
                         viewModel.dispatch(CheckoutIntent.BonusCodeChange(intent.code))

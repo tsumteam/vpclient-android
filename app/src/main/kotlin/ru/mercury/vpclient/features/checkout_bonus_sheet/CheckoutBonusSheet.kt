@@ -5,7 +5,6 @@ package ru.mercury.vpclient.features.checkout_bonus_sheet
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -30,11 +29,9 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.autofill.ContentType
@@ -55,10 +52,10 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.checkout_bonus_sheet.intent.CheckoutBonusIntent
 import ru.mercury.vpclient.features.checkout_bonus_sheet.model.CheckoutBonusModel
 import ru.mercury.vpclient.shared.domain.mapper.formatCodeResendTime
+import ru.mercury.vpclient.shared.ui.components.SharedColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.SmsCodeInput
 import ru.mercury.vpclient.shared.ui.components.SmsCodeInputState
@@ -77,26 +74,12 @@ fun CheckoutBonusSheet(
     state: CheckoutBonusModel,
     dispatch: (CheckoutBonusIntent) -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val scope = rememberCoroutineScope()
     val focusRequester = remember { FocusRequester() }
-    val sheetDispatch: (CheckoutBonusIntent) -> Unit = { intent ->
-        when (intent) {
-            is CheckoutBonusIntent.DismissRequest -> {
-                scope.launch {
-                    sheetState.hide()
-                    dispatch(intent)
-                }
-            }
-            else -> dispatch(intent)
-        }
-    }
 
     SharedModalBottomSheet(
-        onDismissRequest = { dispatch(CheckoutBonusIntent.DismissRequest) },
-        sheetState = sheetState
+        onDismissRequest = { dispatch(CheckoutBonusIntent.DismissClick) }
     ) {
-        Column(
+        SharedColumn(
             modifier = Modifier
                 .fillMaxWidth()
                 .imePadding()
@@ -115,7 +98,7 @@ fun CheckoutBonusSheet(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { sheetDispatch(CheckoutBonusIntent.DismissRequest) }
+                        onClick = { dispatch(CheckoutBonusIntent.DismissClick) }
                     ) {
                         Icon(
                             imageVector = Close24,
@@ -141,14 +124,14 @@ fun CheckoutBonusSheet(
                     value = state.code,
                     isErrorVisible = state.isCodeErrorTextVisible
                 ),
-                onValueChange = { sheetDispatch(CheckoutBonusIntent.CodeChange(it)) },
+                onValueChange = { dispatch(CheckoutBonusIntent.CodeChange(it)) },
                 focusRequester = focusRequester,
                 modifier = Modifier
                     .padding(start = 16.dp, top = 24.dp, end = 16.dp)
                     .fillMaxWidth()
                     .semantics { contentType = ContentType.SmsOtpCode },
                 keyboardActions = KeyboardActions(
-                    onDone = { sheetDispatch(CheckoutBonusIntent.ConfirmClick) }
+                    onDone = { dispatch(CheckoutBonusIntent.ConfirmClick) }
                 )
             )
 
@@ -218,7 +201,7 @@ fun CheckoutBonusSheet(
                                 .clip(RoundedCornerShape(4.dp))
                                 .clickable(
                                     enabled = !state.isResendLoading,
-                                    onClick = { sheetDispatch(CheckoutBonusIntent.ResendCodeClick) }
+                                    onClick = { dispatch(CheckoutBonusIntent.ResendCodeClick) }
                                 )
                                 .padding(2.dp),
                             contentAlignment = Alignment.Center
@@ -251,7 +234,7 @@ fun CheckoutBonusSheet(
             )
 
             Button(
-                onClick = { sheetDispatch(CheckoutBonusIntent.ConfirmClick) },
+                onClick = { dispatch(CheckoutBonusIntent.ConfirmClick) },
                 modifier = Modifier
                     .padding(start = 16.dp, end = 16.dp, bottom = 24.dp)
                     .fillMaxWidth()
@@ -296,7 +279,7 @@ fun CheckoutBonusSheet(
 @Preview
 @Composable
 private fun CheckoutBonusSheetPreview(
-    @PreviewParameter(CheckoutBonusSheetModelProvider::class) state: CheckoutBonusModel
+    @PreviewParameter(CheckoutBonusModelPreviewParameterProvider::class) state: CheckoutBonusModel
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -308,7 +291,7 @@ private fun CheckoutBonusSheetPreview(
     }
 }
 
-private class CheckoutBonusSheetModelProvider: PreviewParameterProvider<CheckoutBonusModel> {
+private class CheckoutBonusModelPreviewParameterProvider: PreviewParameterProvider<CheckoutBonusModel> {
     override val values: Sequence<CheckoutBonusModel> = sequenceOf(
         CheckoutBonusModel(resendSecondsLeft = 30),
         CheckoutBonusModel(
