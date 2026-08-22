@@ -4,11 +4,13 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilter
 import ru.mercury.vpclient.shared.domain.mapper.compilationBenefitDiscountPrice
 import ru.mercury.vpclient.shared.domain.mapper.compilationBenefitFullPrice
 import ru.mercury.vpclient.shared.domain.mapper.formatPriceText
+import ru.mercury.vpclient.shared.mvi.Model
 import kotlin.math.roundToInt
 
 data class CompilationBenefitModel(
     val catalogFilterProductsEntities: List<CatalogFilterProductsEntity>
-) {
+): Model {
+
     val fullPriceText: String
         get() {
             val price = catalogFilterProductsEntities.sumOf { entity -> entity.compilationBenefitFullPrice.roundToInt() }

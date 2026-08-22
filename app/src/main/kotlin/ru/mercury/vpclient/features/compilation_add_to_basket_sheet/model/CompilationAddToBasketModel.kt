@@ -2,16 +2,17 @@ package ru.mercury.vpclient.features.compilation_add_to_basket_sheet.model
 
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductAvailableSizesEntity
+import ru.mercury.vpclient.shared.mvi.Model
 import ru.mercury.vpclient.shared.ui.components.details.SizeSelectorState
 import ru.mercury.vpclient.shared.ui.components.details.SizeState
 
-data class CompilationAddToBasketSheetModel(
+data class CompilationAddToBasketModel(
     val productEntities: List<CatalogFilterProductsEntity>,
     val selectedProductIds: Set<String>,
     val availableSizes: Map<String, ProductAvailableSizesEntity> = emptyMap(),
     val oneSizeProductIds: Set<String> = emptySet(),
     val isLoading: Boolean
-) {
+): Model {
 
     val isAddToBasketButtonEnabled: Boolean
         get() = !isLoading && selectedProductIds.isNotEmpty()

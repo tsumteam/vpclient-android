@@ -60,22 +60,22 @@ import ru.mercury.vpclient.features.compilation.intent.CompilationIntent
 import ru.mercury.vpclient.features.compilation.model.CompilationModel
 import ru.mercury.vpclient.features.compilation.navigation.CompilationRoute
 import ru.mercury.vpclient.features.compilation_actions_sheet.CompilationActionsSheet
-import ru.mercury.vpclient.features.compilation_actions_sheet.intent.CompilationActionsSheetIntent
+import ru.mercury.vpclient.features.compilation_actions_sheet.intent.CompilationActionsIntent
 import ru.mercury.vpclient.features.compilation_add_to_basket_sheet.CompilationAddToBasketSheet
-import ru.mercury.vpclient.features.compilation_add_to_basket_sheet.intent.CompilationAddToBasketSheetIntent
-import ru.mercury.vpclient.features.compilation_add_to_basket_sheet.model.CompilationAddToBasketSheetModel
+import ru.mercury.vpclient.features.compilation_add_to_basket_sheet.intent.CompilationAddToBasketIntent
+import ru.mercury.vpclient.features.compilation_add_to_basket_sheet.model.CompilationAddToBasketModel
 import ru.mercury.vpclient.features.compilation_benefit_sheet.CompilationBenefitSheet
 import ru.mercury.vpclient.features.compilation_benefit_sheet.intent.CompilationBenefitIntent
 import ru.mercury.vpclient.features.compilation_benefit_sheet.model.CompilationBenefitModel
 import ru.mercury.vpclient.features.compilation_cart_added_sheet.CompilationCartAddedSheet
-import ru.mercury.vpclient.features.compilation_cart_added_sheet.intent.CompilationCartAddedSheetIntent
-import ru.mercury.vpclient.features.compilation_cart_added_sheet.model.CompilationCartAddedSheetModel
+import ru.mercury.vpclient.features.compilation_cart_added_sheet.intent.CompilationCartAddedIntent
+import ru.mercury.vpclient.features.compilation_cart_added_sheet.model.CompilationCartAddedModel
 import ru.mercury.vpclient.features.compilation_chat_sheet.CompilationChatSheet
 import ru.mercury.vpclient.features.compilation_chat_sheet.intent.CompilationChatIntent
 import ru.mercury.vpclient.features.compilation_chat_sheet.model.CompilationChatModel
-import ru.mercury.vpclient.features.details_message_sheet.DetailsChatSheet
-import ru.mercury.vpclient.features.details_message_sheet.intent.DetailsChatIntent
-import ru.mercury.vpclient.features.details_message_sheet.model.DetailsChatModel
+import ru.mercury.vpclient.features.details_message_sheet.DetailsMessageSheet
+import ru.mercury.vpclient.features.details_message_sheet.intent.DetailsMessageIntent
+import ru.mercury.vpclient.features.details_message_sheet.model.DetailsMessageModel
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CompilationPreviewPageEntity
 import ru.mercury.vpclient.shared.domain.mapper.messageSheetProductEntity
@@ -121,13 +121,13 @@ fun CompilationScreen(
         CompilationActionsSheet(
             dispatch = { intent ->
                 when (intent) {
-                    is CompilationActionsSheetIntent.ShowCompilationChatSheet -> {
+                    is CompilationActionsIntent.ShowCompilationChatSheet -> {
                         viewModel.dispatch(CompilationIntent.ShowCompilationChatSheet)
                     }
-                    is CompilationActionsSheetIntent.ShowAddToBasketDialog -> {
+                    is CompilationActionsIntent.ShowAddToBasketDialog -> {
                         viewModel.dispatch(CompilationIntent.ShowAddToBasketDialog)
                     }
-                    is CompilationActionsSheetIntent.DismissRequest -> {
+                    is CompilationActionsIntent.DismissClick -> {
                         viewModel.dispatch(CompilationIntent.HideMenuDialog)
                     }
                 }
@@ -143,7 +143,7 @@ fun CompilationScreen(
             ),
             dispatch = { intent ->
                 when (intent) {
-                    is CompilationChatIntent.DismissRequest -> {
+                    is CompilationChatIntent.DismissClick -> {
                         viewModel.dispatch(CompilationIntent.HideCompilationChatSheet)
                     }
                     is CompilationChatIntent.CommentChange -> Unit
@@ -158,15 +158,15 @@ fun CompilationScreen(
     if (state.isDetailsChatSheetVisible) {
         val messageSheetProductEntity = state.messageSheetProductEntity?.messageSheetProductEntity()
         if (messageSheetProductEntity != null) {
-            DetailsChatSheet(
-                state = DetailsChatModel(
+            DetailsMessageSheet(
+                state = DetailsMessageModel(
                     productEntity = messageSheetProductEntity
                 ),
                 dispatch = { intent ->
                     when (intent) {
-                        is DetailsChatIntent.CommentChange -> Unit
-                        is DetailsChatIntent.SendClick,
-                        is DetailsChatIntent.DismissRequest -> {
+                        is DetailsMessageIntent.CommentChange -> Unit
+                        is DetailsMessageIntent.SendClick,
+                        is DetailsMessageIntent.DismissClick -> {
                             viewModel.dispatch(CompilationIntent.HideMessageSheet)
                         }
                     }
@@ -177,7 +177,7 @@ fun CompilationScreen(
 
     if (state.isCompilationAddToBasketSheetVisible) {
         CompilationAddToBasketSheet(
-            state = CompilationAddToBasketSheetModel(
+            state = CompilationAddToBasketModel(
                 productEntities = state.selectedLookAddToBasketProductEntities,
                 selectedProductIds = state.addToBasketDialogSelectedProductIds,
                 availableSizes = state.addToBasketDialogAvailableSizes,
@@ -186,13 +186,13 @@ fun CompilationScreen(
             ),
             dispatch = { intent ->
                 when (intent) {
-                    is CompilationAddToBasketSheetIntent.AddToBasketClick -> {
+                    is CompilationAddToBasketIntent.AddToBasketClick -> {
                         viewModel.dispatch(CompilationIntent.AddToBasketClick)
                     }
-                    is CompilationAddToBasketSheetIntent.DismissRequest -> {
+                    is CompilationAddToBasketIntent.DismissClick -> {
                         viewModel.dispatch(CompilationIntent.HideAddToBasketDialog)
                     }
-                    is CompilationAddToBasketSheetIntent.AddToBasketProductCheckedChange -> {
+                    is CompilationAddToBasketIntent.AddToBasketProductCheckedChange -> {
                         viewModel.dispatch(
                             CompilationIntent.AddToBasketProductCheckedChange(
                                 productId = intent.productId,
@@ -207,16 +207,16 @@ fun CompilationScreen(
 
     if (state.isCompilationCartAddedSheetVisible) {
         CompilationCartAddedSheet(
-            state = CompilationCartAddedSheetModel(
+            state = CompilationCartAddedModel(
                 pageEntity = state.selectedPageEntity ?: CompilationPreviewPageEntity.Empty
             ),
             dispatch = { intent ->
                 when (intent) {
-                    is CompilationCartAddedSheetIntent.ReturnToCompilationClick,
-                    is CompilationCartAddedSheetIntent.DismissRequest -> {
+                    is CompilationCartAddedIntent.ReturnToCompilationClick,
+                    is CompilationCartAddedIntent.DismissClick -> {
                         viewModel.dispatch(CompilationIntent.HideCartAddedSheet)
                     }
-                    is CompilationCartAddedSheetIntent.CartClick -> {
+                    is CompilationCartAddedIntent.CartClick -> {
                         viewModel.dispatch(CompilationIntent.CartAddedSheetCartClick)
                     }
                 }
@@ -231,7 +231,7 @@ fun CompilationScreen(
             ),
             dispatch = { intent ->
                 when (intent) {
-                    is CompilationBenefitIntent.DismissRequest -> {
+                    is CompilationBenefitIntent.DismissClick -> {
                         viewModel.dispatch(CompilationIntent.HideBenefitSheet)
                     }
                 }

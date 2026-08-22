@@ -32,8 +32,8 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.features.compilation_cart_added_sheet.intent.CompilationCartAddedSheetIntent
-import ru.mercury.vpclient.features.compilation_cart_added_sheet.model.CompilationCartAddedSheetModel
+import ru.mercury.vpclient.features.compilation_cart_added_sheet.intent.CompilationCartAddedIntent
+import ru.mercury.vpclient.features.compilation_cart_added_sheet.model.CompilationCartAddedModel
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CompilationPreviewPageEntity
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
@@ -45,12 +45,12 @@ import ru.mercury.vpclient.shared.ui.theme.medium15
 
 @Composable
 fun CompilationCartAddedSheet(
-    state: CompilationCartAddedSheetModel,
-    dispatch: (CompilationCartAddedSheetIntent) -> Unit
+    state: CompilationCartAddedModel,
+    dispatch: (CompilationCartAddedIntent) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
-    val sheetDispatch: (CompilationCartAddedSheetIntent) -> Unit = { intent ->
+    val sheetDispatch: (CompilationCartAddedIntent) -> Unit = { intent ->
         scope.launch {
             sheetState.hide()
             dispatch(intent)
@@ -58,7 +58,7 @@ fun CompilationCartAddedSheet(
     }
 
     SharedModalBottomSheet(
-        onDismissRequest = { dispatch(CompilationCartAddedSheetIntent.DismissRequest) },
+        onDismissRequest = { dispatch(CompilationCartAddedIntent.DismissClick) },
         sheetState = sheetState,
         containerColor = Color.Transparent
     ) {
@@ -94,7 +94,7 @@ fun CompilationCartAddedSheet(
             }
             item {
                 OutlinedButton(
-                    onClick = { sheetDispatch(CompilationCartAddedSheetIntent.ReturnToCompilationClick) },
+                    onClick = { sheetDispatch(CompilationCartAddedIntent.ReturnToCompilationClick) },
                     modifier = Modifier
                         .padding(start = 16.dp, top = 8.dp, end = 16.dp)
                         .fillMaxWidth()
@@ -120,7 +120,7 @@ fun CompilationCartAddedSheet(
             }
             item {
                 Button(
-                    onClick = { sheetDispatch(CompilationCartAddedSheetIntent.CartClick) },
+                    onClick = { sheetDispatch(CompilationCartAddedIntent.CartClick) },
                     modifier = Modifier
                         .padding(start = 16.dp, top = 16.dp, end = 16.dp)
                         .fillMaxWidth()
@@ -152,7 +152,7 @@ private fun CompilationCartAddedSheetPreview() {
         modifier = Modifier.fillMaxSize()
     ) {
         CompilationCartAddedSheet(
-            state = CompilationCartAddedSheetModel(
+            state = CompilationCartAddedModel(
                 pageEntity = CompilationPreviewPageEntity.Empty.copy(
                     compilationId = 103,
                     id = 1,

@@ -55,7 +55,7 @@ fun CompilationChatSheet(
     var commentText by rememberSaveable { mutableStateOf(state.commentText) }
     val sheetDispatch: (CompilationChatIntent) -> Unit = { intent ->
         when (intent) {
-            is CompilationChatIntent.DismissRequest -> {
+            is CompilationChatIntent.DismissClick -> {
                 scope.launch {
                     sheetState.hide()
                     dispatch(intent)
@@ -67,7 +67,7 @@ fun CompilationChatSheet(
     }
 
     SharedModalBottomSheet(
-        onDismissRequest = { sheetDispatch(CompilationChatIntent.DismissRequest) },
+        onDismissRequest = { sheetDispatch(CompilationChatIntent.DismissClick) },
         sheetState = sheetState
     ) {
         val inlinedState = state.copy(commentText = commentText)
@@ -87,7 +87,7 @@ fun CompilationChatSheet(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { sheetDispatch(CompilationChatIntent.DismissRequest) }
+                        onClick = { sheetDispatch(CompilationChatIntent.DismissClick) }
                     ) {
                         Icon(
                             imageVector = Close24,

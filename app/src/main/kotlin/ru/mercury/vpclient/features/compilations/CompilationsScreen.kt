@@ -89,7 +89,7 @@ fun CompilationsScreen(
             ),
             dispatch = { intent ->
                 when (intent) {
-                    is CompilationChatIntent.DismissRequest -> {
+                    is CompilationChatIntent.DismissClick -> {
                         viewModel.dispatch(CompilationsIntent.HideCompilationChatSheet)
                     }
                     is CompilationChatIntent.CommentChange -> Unit

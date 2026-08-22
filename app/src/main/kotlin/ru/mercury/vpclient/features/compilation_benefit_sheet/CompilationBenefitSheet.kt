@@ -59,7 +59,7 @@ fun CompilationBenefitSheet(
     val scope = rememberCoroutineScope()
 
     SharedModalBottomSheet(
-        onDismissRequest = { dispatch(CompilationBenefitIntent.DismissRequest) },
+        onDismissRequest = { dispatch(CompilationBenefitIntent.DismissClick) },
         modifier = Modifier
             .fillMaxHeight()
             .statusBarsPadding(),
@@ -82,7 +82,7 @@ fun CompilationBenefitSheet(
                             onClick = {
                                 scope.launch {
                                     sheetState.hide()
-                                    dispatch(CompilationBenefitIntent.DismissRequest)
+                                    dispatch(CompilationBenefitIntent.DismissClick)
                                 }
                             }
                         ) {

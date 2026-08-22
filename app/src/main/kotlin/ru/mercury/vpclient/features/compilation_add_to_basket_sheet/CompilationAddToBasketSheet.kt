@@ -36,8 +36,8 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.features.compilation_add_to_basket_sheet.intent.CompilationAddToBasketSheetIntent
-import ru.mercury.vpclient.features.compilation_add_to_basket_sheet.model.CompilationAddToBasketSheetModel
+import ru.mercury.vpclient.features.compilation_add_to_basket_sheet.intent.CompilationAddToBasketIntent
+import ru.mercury.vpclient.features.compilation_add_to_basket_sheet.model.CompilationAddToBasketModel
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
@@ -54,26 +54,26 @@ import ru.mercury.vpclient.shared.ui.theme.onDisabled
 
 @Composable
 fun CompilationAddToBasketSheet(
-    state: CompilationAddToBasketSheetModel,
-    dispatch: (CompilationAddToBasketSheetIntent) -> Unit
+    state: CompilationAddToBasketModel,
+    dispatch: (CompilationAddToBasketIntent) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
-    val sheetDispatch: (CompilationAddToBasketSheetIntent) -> Unit = { intent ->
+    val sheetDispatch: (CompilationAddToBasketIntent) -> Unit = { intent ->
         when (intent) {
-            is CompilationAddToBasketSheetIntent.AddToBasketClick,
-            is CompilationAddToBasketSheetIntent.DismissRequest -> {
+            is CompilationAddToBasketIntent.AddToBasketClick,
+            is CompilationAddToBasketIntent.DismissClick -> {
                 scope.launch {
                     sheetState.hide()
                     dispatch(intent)
                 }
             }
-            is CompilationAddToBasketSheetIntent.AddToBasketProductCheckedChange -> dispatch(intent)
+            is CompilationAddToBasketIntent.AddToBasketProductCheckedChange -> dispatch(intent)
         }
     }
 
     SharedModalBottomSheet(
-        onDismissRequest = { sheetDispatch(CompilationAddToBasketSheetIntent.DismissRequest) },
+        onDismissRequest = { sheetDispatch(CompilationAddToBasketIntent.DismissClick) },
         modifier = Modifier
             .fillMaxHeight()
             .statusBarsPadding(),
@@ -94,7 +94,7 @@ fun CompilationAddToBasketSheet(
                     },
                     navigationIcon = {
                         IconButton(
-                            onClick = { sheetDispatch(CompilationAddToBasketSheetIntent.DismissRequest) }
+                            onClick = { sheetDispatch(CompilationAddToBasketIntent.DismissClick) }
                         ) {
                             Icon(
                                 imageVector = Close24,
@@ -116,7 +116,7 @@ fun CompilationAddToBasketSheet(
                         .background(MaterialTheme.colorScheme.background)
                 ) {
                     Button(
-                        onClick = { sheetDispatch(CompilationAddToBasketSheetIntent.AddToBasketClick) },
+                        onClick = { sheetDispatch(CompilationAddToBasketIntent.AddToBasketClick) },
                         modifier = Modifier
                             .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
                             .fillMaxWidth()
@@ -154,7 +154,7 @@ fun CompilationAddToBasketSheet(
                             entity = entity,
                             checked = entity.id in state.selectedProductIds,
                             onCheckedChange = { checked ->
-                                sheetDispatch(CompilationAddToBasketSheetIntent.AddToBasketProductCheckedChange(entity.id, checked))
+                                sheetDispatch(CompilationAddToBasketIntent.AddToBasketProductCheckedChange(entity.id, checked))
                             },
                             sizeSelectorState = state.sizeSelectorState(entity)
                         )
@@ -169,7 +169,7 @@ fun CompilationAddToBasketSheet(
 @Preview
 @Composable
 private fun CompilationAddToBasketSheetPreview(
-    @PreviewParameter(CompilationAddToBasketSheetStateProvider::class) state: CompilationAddToBasketSheetModel
+    @PreviewParameter(CompilationAddToBasketSheetStateProvider::class) state: CompilationAddToBasketModel
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -181,7 +181,7 @@ private fun CompilationAddToBasketSheetPreview(
     }
 }
 
-private class CompilationAddToBasketSheetStateProvider: PreviewParameterProvider<CompilationAddToBasketSheetModel> {
+private class CompilationAddToBasketSheetStateProvider: PreviewParameterProvider<CompilationAddToBasketModel> {
 
     private val products = listOf(
         CatalogFilterProductsEntity.Empty.copy(
@@ -204,13 +204,13 @@ private class CompilationAddToBasketSheetStateProvider: PreviewParameterProvider
         )
     )
 
-    override val values: Sequence<CompilationAddToBasketSheetModel> = sequenceOf(
-        CompilationAddToBasketSheetModel(
+    override val values: Sequence<CompilationAddToBasketModel> = sequenceOf(
+        CompilationAddToBasketModel(
             productEntities = products,
             selectedProductIds = products.map { it.id }.toSet(),
             isLoading = false
         ),
-        CompilationAddToBasketSheetModel(
+        CompilationAddToBasketModel(
             productEntities = emptyList(),
             selectedProductIds = emptySet(),
             isLoading = false
