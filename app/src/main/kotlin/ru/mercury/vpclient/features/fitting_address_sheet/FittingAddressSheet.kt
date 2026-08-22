@@ -54,7 +54,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.mercury.vpclient.features.fitting_address_sheet.intent.FittingAddressSheetIntent
+import ru.mercury.vpclient.features.fitting_address_sheet.intent.FittingAddressIntent
 import ru.mercury.vpclient.features.fitting_address_sheet.model.FittingAddressModel
 import ru.mercury.vpclient.shared.data.entity.FittingAddressFormField
 import ru.mercury.vpclient.shared.ui.components.SharedColumn
@@ -72,7 +72,7 @@ import ru.mercury.vpclient.shared.ui.theme.regular15
 @Composable
 fun FittingAddressSheet(
     state: FittingAddressModel,
-    dispatch: (FittingAddressSheetIntent) -> Unit,
+    dispatch: (FittingAddressIntent) -> Unit,
     snackbarHostStateError: SnackbarHostState
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -81,7 +81,7 @@ fun FittingAddressSheet(
         modifier = Modifier
             .fillMaxHeight()
             .statusBarsPadding(),
-        onDismissRequest = { dispatch(FittingAddressSheetIntent.DismissRequest) },
+        onDismissRequest = { dispatch(FittingAddressIntent.DismissRequest) },
         sheetState = sheetState
     ) {
         val focusManager = LocalFocusManager.current
@@ -105,7 +105,7 @@ fun FittingAddressSheet(
                     },
                     navigationIcon = {
                         IconButton(
-                            onClick = { dispatch(FittingAddressSheetIntent.DismissRequest) }
+                            onClick = { dispatch(FittingAddressIntent.DismissRequest) }
                         ) {
                             Icon(
                                 imageVector = Close24,
@@ -123,7 +123,7 @@ fun FittingAddressSheet(
             },
             floatingActionButton = {
                 Button(
-                    onClick = { dispatch(FittingAddressSheetIntent.SaveAddressClick) },
+                    onClick = { dispatch(FittingAddressIntent.SaveAddressClick) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(52.dp),
@@ -172,7 +172,7 @@ fun FittingAddressSheet(
                                 .height(52.dp)
                                 .clip(RoundedCornerShape(8.dp))
                                 .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                                .clickable { dispatch(FittingAddressSheetIntent.OpenAddressSearch) }
+                                .clickable { dispatch(FittingAddressIntent.OpenAddressSearch) }
                                 .padding(horizontal = 16.dp),
                             verticalArrangement = Arrangement.Center
                         ) {
@@ -205,7 +205,7 @@ fun FittingAddressSheet(
                                 .height(52.dp)
                                 .clip(RoundedCornerShape(8.dp))
                                 .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                                .clickable { dispatch(FittingAddressSheetIntent.OpenAddressSearch) }
+                                .clickable { dispatch(FittingAddressIntent.OpenAddressSearch) }
                                 .padding(horizontal = 16.dp)
                                 .wrapContentHeight(Alignment.CenterVertically),
                             style = MaterialTheme.typography.regular15.copy(
@@ -225,7 +225,7 @@ fun FittingAddressSheet(
                         value = state.flat,
                         onValueChange = {
                             dispatch(
-                                FittingAddressSheetIntent.AddressFormValueChange(FittingAddressFormField.Flat, it)
+                                FittingAddressIntent.AddressFormValueChange(FittingAddressFormField.Flat, it)
                             )
                         },
                         modifier = Modifier
@@ -267,7 +267,7 @@ fun FittingAddressSheet(
                     TextField(
                         value = state.entrance,
                         onValueChange = {
-                            dispatch(FittingAddressSheetIntent.AddressFormValueChange(FittingAddressFormField.Entrance, it))
+                            dispatch(FittingAddressIntent.AddressFormValueChange(FittingAddressFormField.Entrance, it))
                         },
                         modifier = Modifier
                             .weight(1F)
@@ -313,7 +313,7 @@ fun FittingAddressSheet(
                     TextField(
                         value = state.intercom,
                         onValueChange = {
-                            dispatch(FittingAddressSheetIntent.AddressFormValueChange(FittingAddressFormField.Intercom, it))
+                            dispatch(FittingAddressIntent.AddressFormValueChange(FittingAddressFormField.Intercom, it))
                         },
                         modifier = Modifier
                             .weight(1F)
@@ -354,7 +354,7 @@ fun FittingAddressSheet(
                     TextField(
                         value = state.floor,
                         onValueChange = {
-                            dispatch(FittingAddressSheetIntent.AddressFormValueChange(FittingAddressFormField.Floor, it))
+                            dispatch(FittingAddressIntent.AddressFormValueChange(FittingAddressFormField.Floor, it))
                         },
                         modifier = Modifier
                             .weight(1F)
@@ -396,7 +396,7 @@ fun FittingAddressSheet(
                 TextField(
                     value = state.comment,
                     onValueChange = {
-                        dispatch(FittingAddressSheetIntent.AddressFormValueChange(FittingAddressFormField.Comment, it))
+                        dispatch(FittingAddressIntent.AddressFormValueChange(FittingAddressFormField.Comment, it))
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -430,7 +430,7 @@ fun FittingAddressSheet(
                     keyboardActions = KeyboardActions(
                         onDone = {
                             focusManager.clearFocus()
-                            dispatch(FittingAddressSheetIntent.SaveAddressClick)
+                            dispatch(FittingAddressIntent.SaveAddressClick)
                         }
                     ),
                     maxLines = 3

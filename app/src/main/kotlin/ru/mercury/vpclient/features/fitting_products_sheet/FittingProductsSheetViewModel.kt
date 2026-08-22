@@ -3,10 +3,10 @@ package ru.mercury.vpclient.features.fitting_products_sheet
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.features.fitting_products_sheet.event.FittingProductsSheetEvent
-import ru.mercury.vpclient.features.fitting_products_sheet.event.FittingProductsSheetEventManager
-import ru.mercury.vpclient.features.fitting_products_sheet.intent.FittingProductsSheetIntent
-import ru.mercury.vpclient.features.fitting_products_sheet.model.FittingProductsSheetModel
+import ru.mercury.vpclient.features.fitting_products_sheet.event.FittingProductsEvent
+import ru.mercury.vpclient.features.fitting_products_sheet.event.FittingProductsEventManager
+import ru.mercury.vpclient.features.fitting_products_sheet.intent.FittingProductsIntent
+import ru.mercury.vpclient.features.fitting_products_sheet.model.FittingProductsModel
 import ru.mercury.vpclient.shared.domain.usecase.FittingProductsFlowUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import javax.inject.Inject
@@ -14,31 +14,31 @@ import javax.inject.Inject
 @HiltViewModel
 class FittingProductsSheetViewModel @Inject constructor(
     private val fittingProductsFlowUseCase: FittingProductsFlowUseCase
-): ClientViewModel<FittingProductsSheetIntent, FittingProductsSheetModel, FittingProductsSheetEvent>(FittingProductsSheetModel()) {
+): ClientViewModel<FittingProductsIntent, FittingProductsModel, FittingProductsEvent>(FittingProductsModel()) {
 
     init {
-        dispatch(FittingProductsSheetIntent.CollectProducts)
+        dispatch(FittingProductsIntent.CollectProducts)
     }
 
-    override fun dispatch(intent: FittingProductsSheetIntent) {
+    override fun dispatch(intent: FittingProductsIntent) {
         when (intent) {
-            is FittingProductsSheetIntent.CollectProducts -> {
+            is FittingProductsIntent.CollectProducts -> {
                 launch {
                     fittingProductsFlowUseCase(Unit).collectLatest { entities ->
                         reduce { it.copy(cartProductEntities = entities) }
                     }
                 }
             }
-            is FittingProductsSheetIntent.ConfirmClick -> {
+            is FittingProductsIntent.ConfirmClick -> {
                 launch {
                     val productIds = stateFlow.value.selectedProductIds.toList()
-                    FittingProductsSheetEventManager.send(FittingProductsSheetEvent.ConfirmClick(productIds))
+                    FittingProductsEventManager.send(FittingProductsEvent.ConfirmClick(productIds))
                 }
             }
-            is FittingProductsSheetIntent.DismissRequest -> {
-                launch { FittingProductsSheetEventManager.send(FittingProductsSheetEvent.DismissRequest) }
+            is FittingProductsIntent.DismissClick -> {
+                launch { FittingProductsEventManager.send(FittingProductsEvent.DismissRequest) }
             }
-            is FittingProductsSheetIntent.ProductCheckedChange -> {
+            is FittingProductsIntent.ProductCheckedChange -> {
                 reduce {
                     it.copy(
                         selectedProductIds = when {

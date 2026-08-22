@@ -56,13 +56,13 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.fitting_address_actions_sheet.FittingAddressActionsSheet
-import ru.mercury.vpclient.features.fitting_address_actions_sheet.intent.FittingAddressActionsSheetIntent
+import ru.mercury.vpclient.features.fitting_address_actions_sheet.intent.FittingAddressActionsIntent
 import ru.mercury.vpclient.features.fitting_address_delete_dialog.FittingAddressDeleteDialog
 import ru.mercury.vpclient.features.fitting_address_delete_dialog.intent.FittingAddressDeleteIntent
 import ru.mercury.vpclient.features.fitting_address_delete_dialog.model.FittingAddressDeleteModel
 import ru.mercury.vpclient.features.fitting_address_search_sheet.FittingAddressSearchSheet
 import ru.mercury.vpclient.features.fitting_address_sheet.FittingAddressSheet
-import ru.mercury.vpclient.features.fitting_address_sheet.intent.FittingAddressSheetIntent
+import ru.mercury.vpclient.features.fitting_address_sheet.intent.FittingAddressIntent
 import ru.mercury.vpclient.features.fitting_addresses.event.FittingAddressesEventManager
 import ru.mercury.vpclient.features.fitting_confirmation.event.FittingConfirmationEvent
 import ru.mercury.vpclient.features.fitting_confirmation.intent.FittingConfirmationIntent
@@ -133,15 +133,15 @@ fun FittingConfirmationScreen(
         FittingAddressActionsSheet(
             dispatch = { intent ->
                 when (intent) {
-                    is FittingAddressActionsSheetIntent.EditClick -> {
+                    is FittingAddressActionsIntent.EditClick -> {
                         viewModel.dispatch(FittingConfirmationIntent.EditAddressClick)
                     }
-                    is FittingAddressActionsSheetIntent.DeleteClick -> {
+                    is FittingAddressActionsIntent.DeleteClick -> {
                         state.addressActionAddressId?.let { addressId ->
                             viewModel.dispatch(FittingConfirmationIntent.RequestDeleteAddress(addressId))
                         }
                     }
-                    is FittingAddressActionsSheetIntent.DismissRequest -> {
+                    is FittingAddressActionsIntent.DismissClick -> {
                         viewModel.dispatch(FittingConfirmationIntent.HideAddressActions)
                     }
                 }
@@ -154,18 +154,18 @@ fun FittingConfirmationScreen(
             state = state.addressForm,
             dispatch = { intent ->
                 when (intent) {
-                    is FittingAddressSheetIntent.AddressFormValueChange -> {
+                    is FittingAddressIntent.AddressFormValueChange -> {
                         viewModel.dispatch(
                             FittingConfirmationIntent.AddressFormValueChange(intent.field, intent.value)
                         )
                     }
-                    is FittingAddressSheetIntent.DismissRequest -> {
+                    is FittingAddressIntent.DismissRequest -> {
                         viewModel.dispatch(FittingConfirmationIntent.HideAddressForm)
                     }
-                    is FittingAddressSheetIntent.OpenAddressSearch -> {
+                    is FittingAddressIntent.OpenAddressSearch -> {
                         viewModel.dispatch(FittingConfirmationIntent.OpenAddressSearch)
                     }
-                    is FittingAddressSheetIntent.SaveAddressClick -> {
+                    is FittingAddressIntent.SaveAddressClick -> {
                         viewModel.dispatch(FittingConfirmationIntent.SaveAddressClick)
                     }
                 }

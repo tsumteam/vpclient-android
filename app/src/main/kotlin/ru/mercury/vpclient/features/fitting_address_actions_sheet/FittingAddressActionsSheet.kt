@@ -25,7 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.mercury.vpclient.features.fitting_address_actions_sheet.intent.FittingAddressActionsSheetIntent
+import ru.mercury.vpclient.features.fitting_address_actions_sheet.intent.FittingAddressActionsIntent
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
@@ -34,12 +34,12 @@ import ru.mercury.vpclient.shared.ui.theme.medium15
 
 @Composable
 fun FittingAddressActionsSheet(
-    dispatch: (FittingAddressActionsSheetIntent) -> Unit
+    dispatch: (FittingAddressActionsIntent) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     SharedModalBottomSheet(
-        onDismissRequest = { dispatch(FittingAddressActionsSheetIntent.DismissRequest) },
+        onDismissRequest = { dispatch(FittingAddressActionsIntent.DismissClick) },
         sheetState = sheetState,
         containerColor = Color.Transparent
     ) {
@@ -53,7 +53,7 @@ fun FittingAddressActionsSheet(
         ) {
             item {
                 Button(
-                    onClick = { dispatch(FittingAddressActionsSheetIntent.EditClick) },
+                    onClick = { dispatch(FittingAddressActionsIntent.EditClick) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(58.dp),
@@ -79,7 +79,7 @@ fun FittingAddressActionsSheet(
             }
             item {
                 Button(
-                    onClick = { dispatch(FittingAddressActionsSheetIntent.DeleteClick) },
+                    onClick = { dispatch(FittingAddressActionsIntent.DeleteClick) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(58.dp),
@@ -105,7 +105,7 @@ fun FittingAddressActionsSheet(
             }
             item {
                 Button(
-                    onClick = { dispatch(FittingAddressActionsSheetIntent.DismissRequest) },
+                    onClick = { dispatch(FittingAddressActionsIntent.DismissClick) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(52.dp),

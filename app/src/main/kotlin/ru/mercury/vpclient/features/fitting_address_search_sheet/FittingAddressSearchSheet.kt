@@ -49,7 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import ru.mercury.vpclient.features.fitting_address_search_sheet.intent.FittingAddressSearchSheetIntent
+import ru.mercury.vpclient.features.fitting_address_search_sheet.intent.FittingAddressSearchIntent
 import ru.mercury.vpclient.features.fitting_address_search_sheet.model.FittingAddressSearchModel
 import ru.mercury.vpclient.shared.data.entity.ClientDeliveryAddressSuggestion
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
@@ -75,18 +75,18 @@ fun FittingAddressSearchSheet(
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
 
     LaunchedEffect(initialQuery) {
-        viewModel.dispatch(FittingAddressSearchSheetIntent.CollectInitialQuery)
+        viewModel.dispatch(FittingAddressSearchIntent.CollectInitialQuery)
     }
 
     FittingAddressSearchSheetContent(
         state = state,
         dispatch = { intent ->
             when (intent) {
-                is FittingAddressSearchSheetIntent.QueryChange -> viewModel.dispatch(intent)
-                is FittingAddressSearchSheetIntent.DismissRequest -> onDismissRequest()
-                is FittingAddressSearchSheetIntent.SelectAddressSuggestion -> onSelectAddressSuggestion(intent.suggestion)
-                is FittingAddressSearchSheetIntent.CollectInitialQuery -> Unit
-                is FittingAddressSearchSheetIntent.CollectAddressSuggestions -> Unit
+                is FittingAddressSearchIntent.QueryChange -> viewModel.dispatch(intent)
+                is FittingAddressSearchIntent.DismissClick -> onDismissRequest()
+                is FittingAddressSearchIntent.SelectAddressSuggestion -> onSelectAddressSuggestion(intent.suggestion)
+                is FittingAddressSearchIntent.CollectInitialQuery -> Unit
+                is FittingAddressSearchIntent.CollectAddressSuggestions -> Unit
             }
         }
     )
@@ -95,7 +95,7 @@ fun FittingAddressSearchSheet(
 @Composable
 private fun FittingAddressSearchSheetContent(
     state: FittingAddressSearchModel,
-    dispatch: (FittingAddressSearchSheetIntent) -> Unit
+    dispatch: (FittingAddressSearchIntent) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val focusRequester = remember { FocusRequester() }
@@ -104,7 +104,7 @@ private fun FittingAddressSearchSheetContent(
         modifier = Modifier
             .fillMaxHeight()
             .statusBarsPadding(),
-        onDismissRequest = { dispatch(FittingAddressSearchSheetIntent.DismissRequest) },
+        onDismissRequest = { dispatch(FittingAddressSearchIntent.DismissClick) },
         sheetState = sheetState
     ) {
         SharedScaffold(
@@ -126,7 +126,7 @@ private fun FittingAddressSearchSheetContent(
                         },
                         navigationIcon = {
                             IconButton(
-                                onClick = { dispatch(FittingAddressSearchSheetIntent.DismissRequest) }
+                                onClick = { dispatch(FittingAddressSearchIntent.DismissClick) }
                             ) {
                                 Icon(
                                     imageVector = Close24,
@@ -145,7 +145,7 @@ private fun FittingAddressSearchSheetContent(
                     ClientTextField(
                         value = state.query,
                         onValueChange = { value ->
-                            dispatch(FittingAddressSearchSheetIntent.QueryChange(value))
+                            dispatch(FittingAddressSearchIntent.QueryChange(value))
                         },
                         label = stringResource(ClientStrings.FittingAddressCityStreetHousePlaceholder),
                         keyboardOptions = KeyboardOptions(
@@ -155,7 +155,7 @@ private fun FittingAddressSearchSheetContent(
                             onDone = {
                                 val query = state.query.trim()
                                 if (query.isNotEmpty()) {
-                                    dispatch(FittingAddressSearchSheetIntent.SelectAddressSuggestion(ClientDeliveryAddressSuggestion(query)))
+                                    dispatch(FittingAddressSearchIntent.SelectAddressSuggestion(ClientDeliveryAddressSuggestion(query)))
                                 }
                             }
                         ),
@@ -199,7 +199,7 @@ private fun FittingAddressSearchSheetContent(
                                 text = suggestion.title,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clickable { dispatch(FittingAddressSearchSheetIntent.SelectAddressSuggestion(suggestion)) }
+                                    .clickable { dispatch(FittingAddressSearchIntent.SelectAddressSuggestion(suggestion)) }
                                     .padding(horizontal = 16.dp, vertical = 15.dp)
                                     .wrapContentHeight(Alignment.CenterVertically),
                                 style = MaterialTheme.typography.medium15.copy(

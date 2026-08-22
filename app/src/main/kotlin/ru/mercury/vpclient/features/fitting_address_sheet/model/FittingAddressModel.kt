@@ -1,5 +1,7 @@
 package ru.mercury.vpclient.features.fitting_address_sheet.model
 
+import ru.mercury.vpclient.shared.mvi.Model
+
 data class FittingAddressModel(
     val addressId: Int? = null,
     val address: String = "",
@@ -10,7 +12,8 @@ data class FittingAddressModel(
     val comment: String = "",
     val latitude: Double? = null,
     val longitude: Double? = null
-) {
+): Model {
+
     val isEdit: Boolean
         get() = addressId != null
 

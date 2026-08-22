@@ -60,8 +60,8 @@ import ru.mercury.vpclient.features.cart_list.CartListScreen
 import ru.mercury.vpclient.features.color_picker_sheet.ColorPickerSheet
 import ru.mercury.vpclient.features.color_picker_sheet.intent.ColorPickerIntent
 import ru.mercury.vpclient.features.fitting_products_sheet.FittingProductsSheet
-import ru.mercury.vpclient.features.fitting_products_sheet.event.FittingProductsSheetEvent
-import ru.mercury.vpclient.features.fitting_products_sheet.event.FittingProductsSheetEventManager
+import ru.mercury.vpclient.features.fitting_products_sheet.event.FittingProductsEvent
+import ru.mercury.vpclient.features.fitting_products_sheet.event.FittingProductsEventManager
 import ru.mercury.vpclient.features.quantity_picker_sheet.QuantityPickerSheet
 import ru.mercury.vpclient.features.quantity_picker_sheet.intent.QuantityPickerIntent
 import ru.mercury.vpclient.features.size_picker_sheet.SizePickerSheet
@@ -248,13 +248,13 @@ fun CartScreen(
     }
 
     ObserveAsEvents(
-        flow = FittingProductsSheetEventManager.eventFlow
+        flow = FittingProductsEventManager.eventFlow
     ) { event ->
         when (event) {
-            is FittingProductsSheetEvent.ConfirmClick -> {
+            is FittingProductsEvent.ConfirmClick -> {
                 viewModel.dispatch(CartIntent.ConfirmFittingProductsSheet(event.productIds))
             }
-            is FittingProductsSheetEvent.DismissRequest -> {
+            is FittingProductsEvent.DismissRequest -> {
                 viewModel.dispatch(CartIntent.HideFittingProductsSheet)
             }
         }

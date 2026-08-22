@@ -1,3 +1,5 @@
+@file:OptIn(FlowPreview::class)
+
 package ru.mercury.vpclient.features.fitting_address_search_sheet
 
 import dagger.assisted.Assisted
@@ -11,7 +13,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.features.fitting_address_search_sheet.intent.FittingAddressSearchSheetIntent
+import ru.mercury.vpclient.features.fitting_address_search_sheet.intent.FittingAddressSearchIntent
 import ru.mercury.vpclient.features.fitting_address_search_sheet.model.FittingAddressSearchModel
 import ru.mercury.vpclient.shared.domain.usecase.AddressSuggestionUseCase
 import ru.mercury.vpclient.shared.domain.usecase.AddressSuggestionUseCase.Companion.ADDRESS_SEARCH_DEBOUNCE_MS
@@ -19,21 +21,20 @@ import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.mvi.Event
 import kotlin.time.Duration.Companion.milliseconds
 
-@OptIn(FlowPreview::class)
 @HiltViewModel(assistedFactory = FittingAddressSearchSheetViewModel.Factory::class)
 class FittingAddressSearchSheetViewModel @AssistedInject constructor(
     @Assisted private val initialQuery: String,
     private val addressSuggestionUseCase: AddressSuggestionUseCase
-): ClientViewModel<FittingAddressSearchSheetIntent, FittingAddressSearchModel, Event>(FittingAddressSearchModel()) {
+): ClientViewModel<FittingAddressSearchIntent, FittingAddressSearchModel, Event>(FittingAddressSearchModel()) {
 
     init {
-        dispatch(FittingAddressSearchSheetIntent.CollectInitialQuery)
-        dispatch(FittingAddressSearchSheetIntent.CollectAddressSuggestions)
+        dispatch(FittingAddressSearchIntent.CollectInitialQuery)
+        dispatch(FittingAddressSearchIntent.CollectAddressSuggestions)
     }
 
-    override fun dispatch(intent: FittingAddressSearchSheetIntent) {
+    override fun dispatch(intent: FittingAddressSearchIntent) {
         when (intent) {
-            is FittingAddressSearchSheetIntent.CollectInitialQuery -> {
+            is FittingAddressSearchIntent.CollectInitialQuery -> {
                 reduce {
                     it.copy(
                         query = initialQuery,
@@ -43,7 +44,7 @@ class FittingAddressSearchSheetViewModel @AssistedInject constructor(
                     )
                 }
             }
-            is FittingAddressSearchSheetIntent.CollectAddressSuggestions -> {
+            is FittingAddressSearchIntent.CollectAddressSuggestions -> {
                 launch {
                     stateFlow
                         .map { it.query.trim() }
@@ -91,7 +92,7 @@ class FittingAddressSearchSheetViewModel @AssistedInject constructor(
                         }
                 }
             }
-            is FittingAddressSearchSheetIntent.QueryChange -> {
+            is FittingAddressSearchIntent.QueryChange -> {
                 reduce {
                     when {
                         intent.value.isBlank() -> {

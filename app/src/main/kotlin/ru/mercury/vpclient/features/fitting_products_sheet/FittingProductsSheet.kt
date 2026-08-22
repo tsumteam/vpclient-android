@@ -40,8 +40,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
-import ru.mercury.vpclient.features.fitting_products_sheet.intent.FittingProductsSheetIntent
-import ru.mercury.vpclient.features.fitting_products_sheet.model.FittingProductsSheetModel
+import ru.mercury.vpclient.features.fitting_products_sheet.intent.FittingProductsIntent
+import ru.mercury.vpclient.features.fitting_products_sheet.model.FittingProductsModel
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CartProductEntity
 import ru.mercury.vpclient.shared.ui.components.SharedLazyColumn
@@ -71,32 +71,32 @@ fun FittingProductsSheet(
 
 @Composable
 private fun FittingProductsSheetContent(
-    state: FittingProductsSheetModel,
-    dispatch: (FittingProductsSheetIntent) -> Unit
+    state: FittingProductsModel,
+    dispatch: (FittingProductsIntent) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
-    val sheetDispatch: (FittingProductsSheetIntent) -> Unit = { intent ->
+    val sheetDispatch: (FittingProductsIntent) -> Unit = { intent ->
         when (intent) {
-            is FittingProductsSheetIntent.ConfirmClick -> {
+            is FittingProductsIntent.ConfirmClick -> {
                 scope.launch {
                     sheetState.hide()
                     dispatch(intent)
                 }
             }
-            is FittingProductsSheetIntent.DismissRequest -> {
+            is FittingProductsIntent.DismissClick -> {
                 scope.launch {
                     sheetState.hide()
                     dispatch(intent)
                 }
             }
-            is FittingProductsSheetIntent.CollectProducts -> dispatch(intent)
-            is FittingProductsSheetIntent.ProductCheckedChange -> dispatch(intent)
+            is FittingProductsIntent.CollectProducts -> dispatch(intent)
+            is FittingProductsIntent.ProductCheckedChange -> dispatch(intent)
         }
     }
 
     SharedModalBottomSheet(
-        onDismissRequest = { dispatch(FittingProductsSheetIntent.DismissRequest) },
+        onDismissRequest = { dispatch(FittingProductsIntent.DismissClick) },
         modifier = Modifier
             .fillMaxHeight()
             .statusBarsPadding(),
@@ -116,7 +116,7 @@ private fun FittingProductsSheetContent(
                     },
                     navigationIcon = {
                         IconButton(
-                            onClick = { sheetDispatch(FittingProductsSheetIntent.DismissRequest) }
+                            onClick = { sheetDispatch(FittingProductsIntent.DismissClick) }
                         ) {
                             Icon(
                                 imageVector = Close24,
@@ -140,7 +140,7 @@ private fun FittingProductsSheetContent(
                         .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
                 ) {
                     Button(
-                        onClick = { sheetDispatch(FittingProductsSheetIntent.ConfirmClick) },
+                        onClick = { sheetDispatch(FittingProductsIntent.ConfirmClick) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(52.dp),
@@ -178,7 +178,7 @@ private fun FittingProductsSheetContent(
                         state = FittingProductRowState(
                             cartProductEntity = product,
                             checked = state.selectedProductIds.contains(product.id),
-                            onCheckedChange = { checked -> sheetDispatch(FittingProductsSheetIntent.ProductCheckedChange(product.id, checked)) }
+                            onCheckedChange = { checked -> sheetDispatch(FittingProductsIntent.ProductCheckedChange(product.id, checked)) }
                         )
                     )
 
@@ -198,7 +198,7 @@ private fun FittingProductsSheetContent(
 @Preview
 @Composable
 private fun FittingProductsSheetPreview(
-    @PreviewParameter(FittingProductsSheetModelProvider::class) state: FittingProductsSheetModel
+    @PreviewParameter(FittingProductsSheetModelProvider::class) state: FittingProductsModel
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -210,7 +210,7 @@ private fun FittingProductsSheetPreview(
     }
 }
 
-private class FittingProductsSheetModelProvider: PreviewParameterProvider<FittingProductsSheetModel> {
+private class FittingProductsSheetModelProvider: PreviewParameterProvider<FittingProductsModel> {
     private val products = listOf(
         CartProductEntity(
             id = "1",
@@ -369,8 +369,8 @@ private class FittingProductsSheetModelProvider: PreviewParameterProvider<Fittin
         )
     )
 
-    override val values: Sequence<FittingProductsSheetModel> = sequenceOf(
-        FittingProductsSheetModel(
+    override val values: Sequence<FittingProductsModel> = sequenceOf(
+        FittingProductsModel(
             cartProductEntities = products.filter { it.size.isNotBlank() && !it.isSold },
             selectedProductIds = setOf("1")
         )
