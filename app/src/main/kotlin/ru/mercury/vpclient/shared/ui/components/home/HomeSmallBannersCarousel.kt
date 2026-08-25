@@ -40,6 +40,7 @@ import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.livretMedium17
+import ru.mercury.vpclient.shared.ui.theme.livretRegular13
 import ru.mercury.vpclient.shared.ui.theme.livretRegular15
 
 data class HomeSmallBannersCarouselState(
@@ -107,9 +108,9 @@ fun HomeSmallBannersCarousel(
                             .fillMaxWidth(),
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
-                        style = MaterialTheme.typography.livretRegular15.copy(
+                        style = MaterialTheme.typography.livretRegular13.copy(
                             color = MaterialTheme.colorScheme.onBackground,
-                            lineHeight = 15.sp,
+                            lineHeight = 13.sp,
                             textAlign = TextAlign.Center
                         )
                     )
