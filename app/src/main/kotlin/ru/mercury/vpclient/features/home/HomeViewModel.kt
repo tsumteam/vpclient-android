@@ -12,10 +12,10 @@ import ru.mercury.vpclient.features.compilation.navigation.CompilationRoute
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.features.filter.navigation.FilterRoute
 import ru.mercury.vpclient.features.gift_card.navigation.GiftCardRoute
-import ru.mercury.vpclient.features.home_root.event.HomeRootEventManager
 import ru.mercury.vpclient.features.home.event.HomeEvent
 import ru.mercury.vpclient.features.home.intent.HomeIntent
 import ru.mercury.vpclient.features.home.model.HomeModel
+import ru.mercury.vpclient.features.home_root.event.HomeRootEventManager
 import ru.mercury.vpclient.features.notifications.navigation.NotificationsRoute
 import ru.mercury.vpclient.features.search.navigation.SearchRoute
 import ru.mercury.vpclient.shared.data.entity.HomePage
@@ -25,8 +25,8 @@ import ru.mercury.vpclient.shared.data.network.type.ActivityCounterType
 import ru.mercury.vpclient.shared.data.network.type.MainScreenLinkType
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
-import ru.mercury.vpclient.shared.domain.mapper.mainScreenCategoryType
 import ru.mercury.vpclient.shared.domain.mapper.catalogRootId
+import ru.mercury.vpclient.shared.domain.mapper.mainScreenCategoryType
 import ru.mercury.vpclient.shared.domain.mapper.toCatalogLinkData
 import ru.mercury.vpclient.shared.domain.usecase.ActivityCounterFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CartBadgeUseCase
@@ -36,8 +36,8 @@ import ru.mercury.vpclient.shared.domain.usecase.FittingCountFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.HomeSectionEntitiesFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.MainScreenSectionsUseCase
 import ru.mercury.vpclient.shared.domain.usecase.MainScreenSectionsUseCase.MainScreenSectionsException
-import ru.mercury.vpclient.shared.domain.usecase.SetLastCatalogRootIdUseCase
 import ru.mercury.vpclient.shared.domain.usecase.SelectedTabFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.SetLastCatalogRootIdUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import javax.inject.Inject
 
@@ -158,11 +158,7 @@ class HomeViewModel @Inject constructor(
                             reduce { state -> state.copy(loadedTabs = state.loadedTabs + intent.tab) }
                         }.also { launchedJob ->
                             launchedJob.invokeOnCompletion {
-                                reduce { state ->
-                                    state.copy(
-                                        loadMainScreenSectionsJobs = state.loadMainScreenSectionsJobs - intent.tab
-                                    )
-                                }
+                                reduce { it.copy(loadMainScreenSectionsJobs = it.loadMainScreenSectionsJobs - intent.tab) }
                             }
                         }
                         reduce { state ->
