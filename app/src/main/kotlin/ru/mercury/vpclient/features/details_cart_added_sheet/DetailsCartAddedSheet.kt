@@ -110,7 +110,7 @@ fun DetailsCartAddedSheet(
             }
 
             Spacer(
-                modifier = Modifier.height(16.dp)
+                modifier = Modifier.height(12.dp)
             )
 
             Button(
