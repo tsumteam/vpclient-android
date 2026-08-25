@@ -336,60 +336,65 @@ private fun CompilationScreenContent(
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .weight(1F)
+                                    .weight(1F),
+                                contentAlignment = Alignment.Center
                             ) {
-                                HorizontalPager(
-                                    state = pagerState,
-                                    modifier = Modifier.fillMaxSize(),
-                                    userScrollEnabled = state.compilationPreviewPageEntities.size > 1
-                                ) { page ->
-                                    val pageIndex = when {
-                                        state.compilationPreviewPageEntities.size > 1 -> {
-                                            page % state.compilationPreviewPageEntities.size
+                                Box(
+                                    modifier = Modifier.aspectRatio(3F / 4F)
+                                ) {
+                                    HorizontalPager(
+                                        state = pagerState,
+                                        modifier = Modifier.fillMaxSize(),
+                                        userScrollEnabled = state.compilationPreviewPageEntities.size > 1
+                                    ) { page ->
+                                        val pageIndex = when {
+                                            state.compilationPreviewPageEntities.size > 1 -> {
+                                                page % state.compilationPreviewPageEntities.size
+                                            }
+                                            else -> page
                                         }
-                                        else -> page
+                                        val item = state.compilationPreviewPageEntities[pageIndex]
+
+                                        ClientAsyncImage(
+                                            imageUrl = item.imageUrl,
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .clickable { dispatch(CompilationIntent.ImageClick(pageIndex)) },
+                                            contentScale = ContentScale.Fit
+                                        )
                                     }
-                                    val item = state.compilationPreviewPageEntities[pageIndex]
 
-                                    ClientAsyncImage(
-                                        imageUrl = item.imageUrl,
-                                        modifier = Modifier
-                                            .fillMaxSize()
-                                            .clickable { dispatch(CompilationIntent.ImageClick(pageIndex)) },
-                                        contentScale = ContentScale.Fit
-                                    )
-                                }
-
-                                if (state.isSelectedLookNumberTextVisible) {
-                                    Box(
-                                        modifier = Modifier
-                                            .align(Alignment.TopEnd)
-                                            .padding(top = 16.dp, end = 16.dp)
-                                            .height(28.dp),
-                                        contentAlignment = Alignment.Center
-                                    ) {
+                                    if (state.isSelectedLookNumberTextVisible) {
                                         Box(
                                             modifier = Modifier
-                                                .matchParentSize()
-                                                .blur(
-                                                    radius = 4.dp,
-                                                    edgeTreatment = BlurredEdgeTreatment.Unbounded
-                                                )
-                                                .background(
-                                                    color = MaterialTheme.colorScheme.boulder.copy(alpha = .09F),
-                                                    shape = RoundedCornerShape(16.dp)
-                                                )
-                                        )
-
-                                        Text(
-                                            text = state.selectedLookNumberText,
-                                            maxLines = 1,
-                                            modifier = Modifier.padding(horizontal = 8.dp),
-                                            style = MaterialTheme.typography.regular13.copy(
-                                                color = MaterialTheme.colorScheme.onBackground,
-                                                textAlign = TextAlign.Center
+                                                .align(Alignment.TopEnd)
+                                                .padding(top = 16.dp, end = 16.dp)
+                                                .height(28.dp),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .matchParentSize()
+                                                    .blur(
+                                                        radius = 4.dp,
+                                                        edgeTreatment = BlurredEdgeTreatment.Unbounded
+                                                    )
+                                                    .background(
+                                                        color = MaterialTheme.colorScheme.boulder.copy(alpha = .09F),
+                                                        shape = RoundedCornerShape(16.dp)
+                                                    )
                                             )
-                                        )
+
+                                            Text(
+                                                text = state.selectedLookNumberText,
+                                                maxLines = 1,
+                                                modifier = Modifier.padding(horizontal = 8.dp),
+                                                style = MaterialTheme.typography.regular13.copy(
+                                                    color = MaterialTheme.colorScheme.onBackground,
+                                                    textAlign = TextAlign.Center
+                                                )
+                                            )
+                                        }
                                     }
                                 }
                             }
