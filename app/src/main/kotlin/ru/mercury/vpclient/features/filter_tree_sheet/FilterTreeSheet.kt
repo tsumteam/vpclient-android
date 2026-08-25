@@ -3,6 +3,7 @@
 package ru.mercury.vpclient.features.filter_tree_sheet
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -123,6 +124,7 @@ fun FilterTreeSheet(
                         .height(48.dp)
                         .clickable { dispatch(FilterTreeIntent.NavigateBackInFilterTree) }
                         .padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
@@ -133,7 +135,6 @@ fun FilterTreeSheet(
 
                     Text(
                         text = state.currentParentLabel.orEmpty(),
-                        modifier = Modifier.padding(start = 12.dp),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         style = MaterialTheme.typography.regular15.copy(
