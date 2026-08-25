@@ -136,11 +136,13 @@ private fun NotificationsScreenContent(
                         }
                     },
                     actions = {
-                        FittingIconButton(
-                            text = state.fittingText,
-                            showBadge = state.isFittingBadgeVisible,
-                            onClick = { dispatch(NotificationsIntent.FittingClick) }
-                        )
+                        if (state.isFittingButtonVisible) {
+                            FittingIconButton(
+                                text = state.fittingText,
+                                showBadge = state.isFittingBadgeVisible,
+                                onClick = { dispatch(NotificationsIntent.FittingClick) }
+                            )
+                        }
 
                         CartIconButton(
                             text = state.cartText,

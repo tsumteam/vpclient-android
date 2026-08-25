@@ -106,14 +106,16 @@ private fun BannerScreenContent(
                     }
                 },
                 actions = {
-                    FittingIconButton(
-                        text = "",
-                        showBadge = state.isFittingBadgeVisible,
-                        onClick = { dispatch(BannerIntent.FittingClick) }
-                    )
+                    if (state.isFittingButtonVisible) {
+                        FittingIconButton(
+                            text = state.fittingText,
+                            showBadge = state.isFittingBadgeVisible,
+                            onClick = { dispatch(BannerIntent.FittingClick) }
+                        )
+                    }
 
                     CartIconButton(
-                        text = "",
+                        text = state.cartText,
                         showBadge = state.isCartBadgeVisible,
                         onClick = { dispatch(BannerIntent.CartClick) }
                     )
@@ -162,6 +164,11 @@ private fun BannerScreenContentPreview(
 
 private class BannerModelPreviewParameterProvider: PreviewParameterProvider<BannerModel> {
     override val values: Sequence<BannerModel> = sequenceOf(
-        BannerModel()
+        BannerModel(),
+        BannerModel(
+            cartCount = 3,
+            cartBadge = 1,
+            fittingCount = 2
+        )
     )
 }

@@ -17,7 +17,9 @@ data class GiftCardModel(
     val isAmountErrorVisible: Boolean = false,
     val isBuyEnabled: Boolean = false,
     val isGiftCardTermsSheetVisible: Boolean = false,
+    val cartCount: Int = 0,
     val cartBadge: Int = 0,
+    val fittingCount: Int = 0,
     val activeEmployee: EmployeeEntity = EmployeeEntity.Empty,
     val loadGiftCardJob: Job? = null
 ): Model {
@@ -48,8 +50,17 @@ data class GiftCardModel(
             )
         }
 
+    val cartText: String
+        get() = if (cartCount > 0) cartCount.toString() else ""
+
     val isCartBadgeVisible: Boolean
         get() = cartBadge > 0
+
+    val fittingText: String
+        get() = if (fittingCount > 0) fittingCount.toString() else ""
+
+    val isFittingButtonVisible: Boolean
+        get() = fittingCount > 0
 
     val isFittingBadgeVisible: Boolean
         get() = activeEmployee.hasFittingBadge

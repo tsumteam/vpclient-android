@@ -7,12 +7,23 @@ import ru.mercury.vpclient.shared.mvi.Model
 
 data class BannerModel(
     val url: String = "",
+    val cartCount: Int = 0,
     val cartBadge: Int = 0,
+    val fittingCount: Int = 0,
     val activeEmployee: EmployeeEntity = EmployeeEntity.Empty
 ): Model {
 
+    val cartText: String
+        get() = if (cartCount > 0) cartCount.toString() else ""
+
     val isCartBadgeVisible: Boolean
         get() = cartBadge > 0
+
+    val fittingText: String
+        get() = if (fittingCount > 0) fittingCount.toString() else ""
+
+    val isFittingButtonVisible: Boolean
+        get() = fittingCount > 0
 
     val isFittingBadgeVisible: Boolean
         get() = activeEmployee.hasFittingBadge

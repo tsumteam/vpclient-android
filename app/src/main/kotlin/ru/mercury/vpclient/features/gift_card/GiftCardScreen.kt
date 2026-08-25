@@ -169,14 +169,16 @@ private fun GiftCardScreenContent(
                     }
                 },
                 actions = {
-                    FittingIconButton(
-                        text = "",
-                        showBadge = state.isFittingBadgeVisible,
-                        onClick = { dispatch(GiftCardIntent.FittingClick) }
-                    )
+                    if (state.isFittingButtonVisible) {
+                        FittingIconButton(
+                            text = state.fittingText,
+                            showBadge = state.isFittingBadgeVisible,
+                            onClick = { dispatch(GiftCardIntent.FittingClick) }
+                        )
+                    }
 
                     CartIconButton(
-                        text = "",
+                        text = state.cartText,
                         showBadge = state.isCartBadgeVisible,
                         onClick = { dispatch(GiftCardIntent.CartClick) }
                     )

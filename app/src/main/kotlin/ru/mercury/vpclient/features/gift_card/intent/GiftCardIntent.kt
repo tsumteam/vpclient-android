@@ -7,6 +7,9 @@ sealed interface GiftCardIntent: Intent {
     data object CollectGiftCard: GiftCardIntent
     data object LoadGiftCard: GiftCardIntent
     data object CollectActiveEmployee: GiftCardIntent
+    data object CollectCartCount: GiftCardIntent
+    data object CollectFittingCount: GiftCardIntent
+    data object LoadCartData: GiftCardIntent
     data object BackClick: GiftCardIntent
     data object FittingClick: GiftCardIntent
     data object CartClick: GiftCardIntent

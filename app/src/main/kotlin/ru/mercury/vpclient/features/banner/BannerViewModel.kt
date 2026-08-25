@@ -5,6 +5,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.features.banner.event.BannerEvent
@@ -19,7 +20,9 @@ import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
 import ru.mercury.vpclient.shared.domain.usecase.CartBadgeUseCase
+import ru.mercury.vpclient.shared.domain.usecase.CartCountFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.FittingCountFlowUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import ru.mercury.vpclient.shared.navigation.BackRoute
 
@@ -27,11 +30,15 @@ import ru.mercury.vpclient.shared.navigation.BackRoute
 class BannerViewModel @AssistedInject constructor(
     @Assisted route: BannerRoute,
     private val cartBadgeUseCase: CartBadgeUseCase,
+    private val cartCountFlowUseCase: CartCountFlowUseCase,
+    private val fittingCountFlowUseCase: FittingCountFlowUseCase,
     private val employeeActiveFlowUseCase: EmployeeActiveFlowUseCase
 ): ClientViewModel<BannerIntent, BannerModel, BannerEvent>(BannerModel(url = route.url)) {
 
     init {
         dispatch(BannerIntent.CollectActiveEmployee)
+        dispatch(BannerIntent.CollectCartCount)
+        dispatch(BannerIntent.CollectFittingCount)
         dispatch(BannerIntent.LoadCartData)
     }
 
@@ -42,6 +49,20 @@ class BannerViewModel @AssistedInject constructor(
                     employeeActiveFlowUseCase(Unit).collectLatest { entity ->
                         reduce { it.copy(activeEmployee = entity) }
                     }
+                }
+            }
+            is BannerIntent.CollectCartCount -> {
+                launch {
+                    cartCountFlowUseCase(Unit)
+                        .distinctUntilChanged()
+                        .collectLatest { count -> reduce { it.copy(cartCount = count) } }
+                }
+            }
+            is BannerIntent.CollectFittingCount -> {
+                launch {
+                    fittingCountFlowUseCase(Unit)
+                        .distinctUntilChanged()
+                        .collectLatest { count -> reduce { it.copy(fittingCount = count) } }
                 }
             }
             is BannerIntent.LoadCartData -> {

@@ -52,6 +52,9 @@ data class NotificationsModel(
     val fittingText: String
         get() = if (fittingCount > 0) fittingCount.toString() else ""
 
+    val isFittingButtonVisible: Boolean
+        get() = fittingCount > 0
+
     val isCartBadgeVisible: Boolean
         get() = activeEmployee.hasBasketBadge
 

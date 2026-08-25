@@ -2,6 +2,7 @@ package ru.mercury.vpclient.features.gift_card
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.features.cart.navigation.CartPage
@@ -16,7 +17,9 @@ import ru.mercury.vpclient.shared.data.network.type.GiftCardType
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
 import ru.mercury.vpclient.shared.domain.usecase.CartBadgeUseCase
+import ru.mercury.vpclient.shared.domain.usecase.CartCountFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
+import ru.mercury.vpclient.shared.domain.usecase.FittingCountFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.GiftCardEntityFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.GiftCardsUseCase
 import ru.mercury.vpclient.shared.domain.usecase.GiftCardsUseCase.GiftCardsException
@@ -29,12 +32,17 @@ class GiftCardViewModel @Inject constructor(
     private val giftCardEntityFlowUseCase: GiftCardEntityFlowUseCase,
     private val giftCardsUseCase: GiftCardsUseCase,
     private val cartBadgeUseCase: CartBadgeUseCase,
+    private val cartCountFlowUseCase: CartCountFlowUseCase,
+    private val fittingCountFlowUseCase: FittingCountFlowUseCase,
     private val employeeActiveFlowUseCase: EmployeeActiveFlowUseCase
 ): ClientViewModel<GiftCardIntent, GiftCardModel, GiftCardEvent>(GiftCardModel()) {
 
     init {
         dispatch(GiftCardIntent.CollectGiftCard)
         dispatch(GiftCardIntent.CollectActiveEmployee)
+        dispatch(GiftCardIntent.CollectCartCount)
+        dispatch(GiftCardIntent.CollectFittingCount)
+        dispatch(GiftCardIntent.LoadCartData)
         dispatch(GiftCardIntent.LoadGiftCard)
     }
 
@@ -73,6 +81,26 @@ class GiftCardViewModel @Inject constructor(
                     employeeActiveFlowUseCase(Unit).collectLatest { employee ->
                         reduce { state -> state.copy(activeEmployee = employee) }
                     }
+                }
+            }
+            is GiftCardIntent.CollectCartCount -> {
+                launch {
+                    cartCountFlowUseCase(Unit)
+                        .distinctUntilChanged()
+                        .collectLatest { count -> reduce { state -> state.copy(cartCount = count) } }
+                }
+            }
+            is GiftCardIntent.CollectFittingCount -> {
+                launch {
+                    fittingCountFlowUseCase(Unit)
+                        .distinctUntilChanged()
+                        .collectLatest { count -> reduce { state -> state.copy(fittingCount = count) } }
+                }
+            }
+            is GiftCardIntent.LoadCartData -> {
+                launch {
+                    val badge = cartBadgeUseCase(Unit).getOrThrow()
+                    reduce { state -> state.copy(cartBadge = badge) }
                 }
             }
             is GiftCardIntent.BackClick -> launch { MainEventManager.send(BackRoute) }
