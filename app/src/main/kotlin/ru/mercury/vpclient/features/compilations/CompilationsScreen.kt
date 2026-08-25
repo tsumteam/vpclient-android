@@ -54,9 +54,9 @@ import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.cart.CartIconButton
 import ru.mercury.vpclient.shared.ui.components.cart.FittingIconButton
-import ru.mercury.vpclient.shared.ui.components.cart.MessengerIconButton
 import ru.mercury.vpclient.shared.ui.components.compilations.CompilationCard
 import ru.mercury.vpclient.shared.ui.components.compilations.CompilationCardState
+import ru.mercury.vpclient.shared.ui.components.messenger.MessengerIconButton
 import ru.mercury.vpclient.shared.ui.icons.Search24
 import ru.mercury.vpclient.shared.ui.icons.VipPlatinumEmpty
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents

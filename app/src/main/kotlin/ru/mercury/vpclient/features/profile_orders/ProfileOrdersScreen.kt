@@ -63,7 +63,7 @@ import ru.mercury.vpclient.shared.ui.components.SharedPullToRefreshBox
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.cart.CartIconButton
 import ru.mercury.vpclient.shared.ui.components.cart.FittingIconButton
-import ru.mercury.vpclient.shared.ui.components.cart.MessengerIconButton
+import ru.mercury.vpclient.shared.ui.components.messenger.MessengerIconButton
 import ru.mercury.vpclient.shared.ui.components.profile.ProfileOrderItem
 import ru.mercury.vpclient.shared.ui.components.profile.ProfileOrderItemState
 import ru.mercury.vpclient.shared.ui.components.profile.ProfileOrderProductState

@@ -77,9 +77,9 @@ import ru.mercury.vpclient.shared.ui.components.brands.BrandSectionHeader
 import ru.mercury.vpclient.shared.ui.components.brands.BrandSectionHeaderState
 import ru.mercury.vpclient.shared.ui.components.cart.CartIconButton
 import ru.mercury.vpclient.shared.ui.components.cart.FittingIconButton
-import ru.mercury.vpclient.shared.ui.components.cart.MessengerIconButton
 import ru.mercury.vpclient.shared.ui.components.catalog.CatalogTabData
 import ru.mercury.vpclient.shared.ui.components.catalog.TabRow
+import ru.mercury.vpclient.shared.ui.components.messenger.MessengerIconButton
 import ru.mercury.vpclient.shared.ui.icons.Search24
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.placeholder

@@ -1,4 +1,4 @@
-package ru.mercury.vpclient.shared.ui.components.message
+package ru.mercury.vpclient.shared.ui.components.messenger
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

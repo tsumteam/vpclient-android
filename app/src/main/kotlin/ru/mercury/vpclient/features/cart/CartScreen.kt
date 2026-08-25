@@ -62,9 +62,9 @@ import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
-import ru.mercury.vpclient.shared.ui.components.cart.CartChatDock
-import ru.mercury.vpclient.shared.ui.components.cart.CartChatDockState
 import ru.mercury.vpclient.shared.ui.components.cart.CartFittingSwitch
+import ru.mercury.vpclient.shared.ui.components.messenger.MessengerDock
+import ru.mercury.vpclient.shared.ui.components.messenger.MessengerDockState
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
@@ -239,8 +239,8 @@ private fun CartScreenContent(
         },
         bottomBar = {
             Column {
-                CartChatDock(
-                    state = CartChatDockState(
+                MessengerDock(
+                    state = MessengerDockState(
                         name = state.activeEmployee.employeeName,
                         brand = state.cartChatBrand,
                         onClick = { dispatch(CartIntent.ChatClick) }

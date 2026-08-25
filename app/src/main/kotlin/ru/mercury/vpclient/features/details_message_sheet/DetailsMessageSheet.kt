@@ -34,8 +34,8 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
 import ru.mercury.vpclient.shared.ui.components.SharedColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.details.DetailsMessageProductCard
-import ru.mercury.vpclient.shared.ui.components.message.MessageInput
-import ru.mercury.vpclient.shared.ui.components.message.MessageInputState
+import ru.mercury.vpclient.shared.ui.components.messenger.MessageInput
+import ru.mercury.vpclient.shared.ui.components.messenger.MessageInputState
 import ru.mercury.vpclient.shared.ui.icons.Close24
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings

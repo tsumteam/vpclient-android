@@ -1,4 +1,4 @@
-package ru.mercury.vpclient.shared.ui.components.cart
+package ru.mercury.vpclient.shared.ui.components.messenger
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,27 +32,27 @@ import ru.mercury.vpclient.shared.ui.theme.medium14
 import ru.mercury.vpclient.shared.ui.theme.regular15
 import kotlin.math.min
 
-data class CartChatDockState(
+data class MessengerDockState(
     val name: String,
     val brand: String,
     val onClick: () -> Unit
 )
 
 @Composable
-fun CartChatDock(
-    state: CartChatDockState,
+fun MessengerDock(
+    state: MessengerDockState,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .height(91.dp)
+            .height(84.dp)
             .shadow(
                 elevation = 8.dp,
-                shape = CartChatDockShape,
+                shape = MessengerDockShape,
                 clip = false
             )
-            .clip(CartChatDockShape)
+            .clip(MessengerDockShape)
             .background(MaterialTheme.colorScheme.background)
             .clickable(onClick = state.onClick),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -81,13 +81,13 @@ fun CartChatDock(
 
             Text(
                 text = state.name,
+                modifier = Modifier.weight(1F, fill = false),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.medium14.copy(
                     color = MaterialTheme.colorScheme.onBackground,
                     lineHeight = 16.sp
-                ),
-                modifier = Modifier.weight(1F, fill = false)
+                )
             )
         }
 
@@ -103,8 +103,8 @@ fun CartChatDock(
     }
 }
 
-private val CartChatDockShape = GenericShape { size, _ ->
-    val footTop = size.height * (47F / 91F)
+private val MessengerDockShape = GenericShape { size, _ ->
+    val footTop = size.height * (40F / 84F)
     val centerWidth = size.width * .44F
     val centerStart = (size.width - centerWidth) / 2F
     val centerEnd = centerStart + centerWidth
@@ -125,28 +125,28 @@ private val CartChatDockShape = GenericShape { size, _ ->
 @PreviewWrapper(ThemeWrapper::class)
 @Preview(showBackground = true)
 @Composable
-private fun CartChatDockPreview(
-    @PreviewParameter(CartChatDockPreviewProvider::class) state: CartChatDockState
+private fun MessengerDockPreview(
+    @PreviewParameter(MessengerDockPreviewParameterProvider::class) state: MessengerDockState
 ) {
-    CartChatDock(
+    MessengerDock(
         state = state
     )
 }
 
-private class CartChatDockPreviewProvider: PreviewParameterProvider<CartChatDockState> {
+private class MessengerDockPreviewParameterProvider: PreviewParameterProvider<MessengerDockState> {
 
-    override val values: Sequence<CartChatDockState> = sequenceOf(
-        CartChatDockState(
+    override val values: Sequence<MessengerDockState> = sequenceOf(
+        MessengerDockState(
             name = "Катя",
             brand = "Brioni",
             onClick = {}
         ),
-        CartChatDockState(
+        MessengerDockState(
             name = "Екатеринищещещещеще",
             brand = "Brioni",
             onClick = {}
         ),
-        CartChatDockState(
+        MessengerDockState(
             name = "",
             brand = "",
             onClick = {}

@@ -1,4 +1,4 @@
-package ru.mercury.vpclient.shared.ui.components.cart
+package ru.mercury.vpclient.shared.ui.components.messenger
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn

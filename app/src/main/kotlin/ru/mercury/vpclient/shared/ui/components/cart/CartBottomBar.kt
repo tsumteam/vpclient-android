@@ -19,6 +19,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ru.mercury.vpclient.shared.ui.components.messenger.MessengerDock
+import ru.mercury.vpclient.shared.ui.components.messenger.MessengerDockState
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.medium15
@@ -91,8 +93,8 @@ fun CartBottomBar(
             }
         }
 
-        CartChatDock(
-            state = CartChatDockState(
+        MessengerDock(
+            state = MessengerDockState(
                 name = state.chatName,
                 brand = state.chatBrand,
                 onClick = state.onChatClick

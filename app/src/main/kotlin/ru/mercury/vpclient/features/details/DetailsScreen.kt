@@ -84,7 +84,6 @@ import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.brands.BrandBox
 import ru.mercury.vpclient.shared.ui.components.cart.CartIconButton
 import ru.mercury.vpclient.shared.ui.components.cart.FittingIconButton
-import ru.mercury.vpclient.shared.ui.components.cart.MessengerIconButton
 import ru.mercury.vpclient.shared.ui.components.details.DetailsColorImageSelector
 import ru.mercury.vpclient.shared.ui.components.details.DetailsCompleteSetSection
 import ru.mercury.vpclient.shared.ui.components.details.DetailsFieldRow
@@ -96,6 +95,7 @@ import ru.mercury.vpclient.shared.ui.components.details.DetailsProductInfoBoxSta
 import ru.mercury.vpclient.shared.ui.components.details.DetailsSizeSelector
 import ru.mercury.vpclient.shared.ui.components.details.DetailsWearWithSection
 import ru.mercury.vpclient.shared.ui.components.details.DetailsWearWithSectionState
+import ru.mercury.vpclient.shared.ui.components.messenger.MessengerIconButton
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.components.video.VideoPlayer
 import ru.mercury.vpclient.shared.ui.icons.ChevronStart24
