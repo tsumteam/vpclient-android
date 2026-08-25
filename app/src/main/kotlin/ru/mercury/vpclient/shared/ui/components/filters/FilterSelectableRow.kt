@@ -53,7 +53,7 @@ fun FilterSelectableRow(
             text = text,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 48.dp),
+                .padding(start = 32.dp),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.regular15.copy(
