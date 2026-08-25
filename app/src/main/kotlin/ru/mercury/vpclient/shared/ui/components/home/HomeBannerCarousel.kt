@@ -134,14 +134,14 @@ fun HomeBannerCarousel(
 @Preview(showBackground = true)
 @Composable
 private fun HomeBannerCarouselPreview(
-    @PreviewParameter(HomeBannerCarouselStateProvider::class) state: HomeBannerCarouselState
+    @PreviewParameter(HomeBannerCarouselStatePreviewParameterProvider::class) state: HomeBannerCarouselState
 ) {
     HomeBannerCarousel(
         state = state
     )
 }
 
-private class HomeBannerCarouselStateProvider: PreviewParameterProvider<HomeBannerCarouselState> {
+private class HomeBannerCarouselStatePreviewParameterProvider: PreviewParameterProvider<HomeBannerCarouselState> {
     override val values: Sequence<HomeBannerCarouselState> = sequenceOf(
         HomeBannerCarouselState(
             section = HomeSectionEntity(

@@ -70,14 +70,14 @@ fun HomeGiftCards(
 @Preview(showBackground = true)
 @Composable
 private fun HomeGiftCardsPreview(
-    @PreviewParameter(HomeGiftCardsStateProvider::class) state: HomeGiftCardsState
+    @PreviewParameter(HomeGiftCardsStatePreviewParameterProvider::class) state: HomeGiftCardsState
 ) {
     HomeGiftCards(
         state = state
     )
 }
 
-private class HomeGiftCardsStateProvider: PreviewParameterProvider<HomeGiftCardsState> {
+private class HomeGiftCardsStatePreviewParameterProvider: PreviewParameterProvider<HomeGiftCardsState> {
     override val values: Sequence<HomeGiftCardsState> = sequenceOf(
         HomeGiftCardsState(
             section = HomeSectionEntity(

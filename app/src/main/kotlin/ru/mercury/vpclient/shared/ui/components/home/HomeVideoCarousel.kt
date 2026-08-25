@@ -107,14 +107,14 @@ fun HomeVideoCarousel(
 @Preview(showBackground = true)
 @Composable
 private fun HomeVideoCarouselPreview(
-    @PreviewParameter(HomeVideoCarouselStateProvider::class) state: HomeVideoCarouselState
+    @PreviewParameter(HomeVideoCarouselStatePreviewParameterProvider::class) state: HomeVideoCarouselState
 ) {
     HomeVideoCarousel(
         state = state
     )
 }
 
-private class HomeVideoCarouselStateProvider: PreviewParameterProvider<HomeVideoCarouselState> {
+private class HomeVideoCarouselStatePreviewParameterProvider: PreviewParameterProvider<HomeVideoCarouselState> {
     override val values: Sequence<HomeVideoCarouselState> = sequenceOf(
         HomeVideoCarouselState(
             section = HomeSectionEntity(

@@ -122,7 +122,7 @@ fun CatalogCategorySection(
 @Preview(showBackground = true)
 @Composable
 private fun CatalogCategorySectionPreview(
-    @PreviewParameter(SubcategoryPojoProvider::class) pojo: SubcategoryPojo
+    @PreviewParameter(SubcategoryPojoPreviewParameterProvider::class) pojo: SubcategoryPojo
 ) {
     CatalogCategorySection(
         pojo = pojo,
@@ -131,7 +131,7 @@ private fun CatalogCategorySectionPreview(
     )
 }
 
-private class SubcategoryPojoProvider: PreviewParameterProvider<SubcategoryPojo> {
+private class SubcategoryPojoPreviewParameterProvider: PreviewParameterProvider<SubcategoryPojo> {
     private val catalogCategoryEntity = CatalogCategorySectionCatalogCategoryEntityProvider().values.first()
     private val childCategoryEntity = CatalogCategorySectionCatalogCategoryEntityProvider2().values.first()
 
