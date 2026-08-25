@@ -4,6 +4,7 @@ package ru.mercury.vpclient.features.video
 
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -189,7 +190,7 @@ private fun VideoScreenContent(
     ) { innerPadding ->
         Box(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .padding(innerPadding)
                 .pointerInput(controlsVisible, isPlaying) {
                     detectTapGestures {
