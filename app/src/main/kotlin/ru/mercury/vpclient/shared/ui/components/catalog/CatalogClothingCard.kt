@@ -17,13 +17,14 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.data.network.type.CatalogCategoryType
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogCategoryEntity
 import ru.mercury.vpclient.shared.domain.mapper.isEmpty
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.theme.livretMedium19
+import ru.mercury.vpclient.shared.ui.theme.livretMedium17
 
 @Composable
 fun CatalogClothingCard(
@@ -53,8 +54,10 @@ fun CatalogClothingCard(
                 .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
             overflow = TextOverflow.Ellipsis,
             maxLines = 2,
-            style = MaterialTheme.typography.livretMedium19.copy(
-                color = MaterialTheme.colorScheme.onBackground
+            style = MaterialTheme.typography.livretMedium17.copy(
+                color = MaterialTheme.colorScheme.onBackground,
+                lineHeight = 26.sp,
+                letterSpacing = .2.sp
             )
         )
     }
