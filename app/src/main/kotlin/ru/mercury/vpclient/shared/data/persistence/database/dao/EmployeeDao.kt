@@ -6,6 +6,7 @@ import androidx.room.Transaction
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
+import ru.mercury.vpclient.shared.data.persistence.database.pojo.ActiveEmployeePojo
 import ru.mercury.vpclient.shared.data.persistence.database.pojo.EmployeePojo
 
 @Dao
@@ -20,6 +21,21 @@ interface EmployeeDao {
 
     @Query("SELECT * FROM employee WHERE isActive = 1 LIMIT 1")
     fun selectActiveFlow(): Flow<EmployeeEntity?>
+
+    @Transaction
+    @Query(
+        """
+        SELECT Employee.*,
+               COALESCE(
+                   (SELECT value FROM ActivityCounter WHERE type = :messengerType LIMIT 1),
+                   0
+               ) AS messengerCounter
+        FROM Employee
+        WHERE isActive = 1
+        LIMIT 1
+        """
+    )
+    fun selectActivePojoFlow(messengerType: String): Flow<ActiveEmployeePojo?>
 
     @Query("SELECT * FROM employee WHERE employeeId = :employeeId LIMIT 1")
     fun selectFlow(employeeId: String): Flow<EmployeeEntity?>
