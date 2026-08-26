@@ -33,22 +33,22 @@ val EmployeePojo.hasMessengerBadge: Boolean
     get() = messengerBadge > 0
 
 val EmployeePojo.basketNumber: Int
-    get() = badgeEntity?.basketIconNumber ?: 0
+    get() = badgeEntity?.basketIconNumber.orEmpty
 
 val EmployeePojo.basketBadge: Int
-    get() = badgeEntity?.basketIconBadge ?: 0
+    get() = badgeEntity?.basketIconBadge.orEmpty
 
 val EmployeePojo.fittingNumber: Int
-    get() = badgeEntity?.fittingIconNumber ?: 0
+    get() = badgeEntity?.fittingIconNumber.orEmpty
 
 val EmployeePojo.fittingBadge: Int
-    get() = badgeEntity?.fittingIconBadge ?: 0
+    get() = badgeEntity?.fittingIconBadge.orEmpty
 
 val EmployeePojo.messengerBadge: Int
-    get() = badgeEntity?.messengerIconBadge ?: 0
+    get() = badgeEntity?.messengerIconBadge.orEmpty
 
 val EmployeePojo.orderBadge: Int
-    get() = badgeEntity?.orderIconBadge ?: 0
+    get() = badgeEntity?.orderIconBadge.orEmpty
 
 val EmployeePojo.compilationBadge: Int
-    get() = badgeEntity?.compilationIconBadge ?: 0
+    get() = badgeEntity?.compilationIconBadge.orEmpty
