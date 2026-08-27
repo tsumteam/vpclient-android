@@ -127,7 +127,9 @@ class NotificationsViewModel @Inject constructor(
             is NotificationsIntent.FittingClick -> {
                 launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
             }
-            is NotificationsIntent.MessengerClick -> return
+            is NotificationsIntent.MessengerClick -> {
+                launch { MainEventManager.send(CartRoute(navigateToMessenger = true)) }
+            }
             is NotificationsIntent.SelectCategory -> {
                 if (stateFlow.value.selectedCategory == intent.category) return
                 stateFlow.value.collectNotificationsJob?.cancel()

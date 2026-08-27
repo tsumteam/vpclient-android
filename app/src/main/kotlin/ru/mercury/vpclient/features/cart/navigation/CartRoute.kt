@@ -5,7 +5,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CartRoute(
-    val page: CartPage = CartPage.Cart
+    val page: CartPage = CartPage.Cart,
+    val navigateToMessenger: Boolean = false
 ): NavKey
 
 @Serializable

@@ -149,7 +149,9 @@ class DetailsViewModel @AssistedInject constructor(
             is DetailsIntent.FittingClick -> {
                 launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
             }
-            is DetailsIntent.MessengerClick -> return
+            is DetailsIntent.MessengerClick -> {
+                launch { MainEventManager.send(CartRoute(navigateToMessenger = true)) }
+            }
             is DetailsIntent.MessageClick -> reduce { it.copy(isDetailsMessageSheetVisible = true) }
             is DetailsIntent.SizeTableClick -> Unit
             is DetailsIntent.AddToBasketClick -> {

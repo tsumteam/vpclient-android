@@ -144,7 +144,8 @@ class CartViewModel @AssistedInject constructor(
                         initialPage = when (route.page) {
                             CartPage.Cart -> CartModel.CART_PAGE_INDEX
                             CartPage.Fitting -> CartModel.FITTING_PAGE_INDEX
-                        }
+                        },
+                        isMessengerSheetVisible = route.navigateToMessenger
                     )
                 }
             }

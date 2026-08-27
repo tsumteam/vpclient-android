@@ -107,7 +107,9 @@ class CatalogViewModel @Inject constructor(
             is CatalogIntent.FittingClick -> {
                 launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
             }
-            is CatalogIntent.MessengerClick -> return
+            is CatalogIntent.MessengerClick -> {
+                launch { MainEventManager.send(CartRoute(navigateToMessenger = true)) }
+            }
             is CatalogIntent.SearchClick -> launch { MainEventManager.send(SearchRoute()) }
         }
     }

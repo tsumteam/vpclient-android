@@ -91,7 +91,9 @@ class ProfileMyDataViewModel @Inject constructor(
             is ProfileMyDataIntent.FittingClick -> {
                 launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
             }
-            is ProfileMyDataIntent.MessengerClick -> return
+            is ProfileMyDataIntent.MessengerClick -> {
+                launch { MainEventManager.send(CartRoute(navigateToMessenger = true)) }
+            }
             is ProfileMyDataIntent.ShowDeleteProfileDialog -> {
                 reduce { it.copy(isProfileDeleteDialogVisible = true) }
             }

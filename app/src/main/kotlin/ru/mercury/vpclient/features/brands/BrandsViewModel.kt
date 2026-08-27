@@ -6,13 +6,13 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.features.brand_root.event.BrandRootEventManager
-import ru.mercury.vpclient.features.search.navigation.SearchRoute
 import ru.mercury.vpclient.features.brands.event.BrandsEvent
 import ru.mercury.vpclient.features.brands.intent.BrandsIntent
 import ru.mercury.vpclient.features.brands.model.BrandsModel
 import ru.mercury.vpclient.features.cart.navigation.CartPage
 import ru.mercury.vpclient.features.cart.navigation.CartRoute
 import ru.mercury.vpclient.features.filter.navigation.FilterRoute
+import ru.mercury.vpclient.features.search.navigation.SearchRoute
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.entity.BrandsPage
 import ru.mercury.vpclient.shared.data.entity.BrandsSection
@@ -24,6 +24,7 @@ import ru.mercury.vpclient.shared.data.network.type.CatalogViewType
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogBrandEntity
+import ru.mercury.vpclient.shared.domain.mapper.catalogRootId
 import ru.mercury.vpclient.shared.domain.usecase.CartCountFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CatalogBrandEntitiesFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.CatalogBrandFavoriteUseCase
@@ -36,7 +37,6 @@ import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.FittingCountFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.SelectedTabFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.SetLastCatalogRootIdUseCase
-import ru.mercury.vpclient.shared.domain.mapper.catalogRootId
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import javax.inject.Inject
 
@@ -174,7 +174,9 @@ class BrandsViewModel @Inject constructor(
             is BrandsIntent.FittingClick -> {
                 launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
             }
-            is BrandsIntent.MessengerClick -> return
+            is BrandsIntent.MessengerClick -> {
+                launch { MainEventManager.send(CartRoute(navigateToMessenger = true)) }
+            }
             is BrandsIntent.FavoriteBrandsClick -> {
                 launch {
                     val state = stateFlow.value

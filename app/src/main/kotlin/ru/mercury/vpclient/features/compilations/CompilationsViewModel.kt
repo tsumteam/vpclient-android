@@ -108,7 +108,9 @@ class CompilationsViewModel @Inject constructor(
             is CompilationsIntent.FittingClick -> {
                 launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
             }
-            is CompilationsIntent.MessengerClick -> return
+            is CompilationsIntent.MessengerClick -> {
+                launch { MainEventManager.send(CartRoute(navigateToMessenger = true)) }
+            }
             is CompilationsIntent.SearchClick -> launch { MainEventManager.send(SearchRoute()) }
             is CompilationsIntent.CompilationClick -> {
                 launch { MainEventManager.send(CompilationRoute(intent.id)) }

@@ -77,7 +77,9 @@ class BannerViewModel @AssistedInject constructor(
                 launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
             }
             is BannerIntent.CartClick -> launch { MainEventManager.send(CartRoute()) }
-            is BannerIntent.MessengerClick -> return
+            is BannerIntent.MessengerClick -> {
+                launch { MainEventManager.send(CartRoute(navigateToMessenger = true)) }
+            }
         }
     }
 

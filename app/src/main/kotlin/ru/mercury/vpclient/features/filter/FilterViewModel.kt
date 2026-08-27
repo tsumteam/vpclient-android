@@ -324,7 +324,9 @@ class FilterViewModel @AssistedInject constructor(
             is FilterIntent.FittingClick -> {
                 launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
             }
-            is FilterIntent.MessengerClick -> return
+            is FilterIntent.MessengerClick -> {
+                launch { MainEventManager.send(CartRoute(navigateToMessenger = true)) }
+            }
             is FilterIntent.SearchClick -> launch { MainEventManager.send(SearchRoute()) }
             is FilterIntent.ProductClick -> {
                 launch {

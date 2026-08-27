@@ -78,7 +78,9 @@ class ProfileInfoViewModel @Inject constructor(
             is ProfileInfoIntent.ContactsClick -> launch { ProfileRootEventManager.send(ProfileContactsRoute) }
             is ProfileInfoIntent.CartClick -> launch { MainEventManager.send(CartRoute()) }
             is ProfileInfoIntent.FittingClick -> launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
-            is ProfileInfoIntent.MessengerClick -> return
+            is ProfileInfoIntent.MessengerClick -> {
+                launch { MainEventManager.send(CartRoute(navigateToMessenger = true)) }
+            }
         }
     }
 }

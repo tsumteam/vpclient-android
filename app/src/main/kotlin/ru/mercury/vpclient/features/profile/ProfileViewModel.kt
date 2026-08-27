@@ -307,7 +307,9 @@ class ProfileViewModel @Inject constructor(
             is ProfileIntent.FittingClick -> {
                 launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
             }
-            is ProfileIntent.MessengerClick -> return
+            is ProfileIntent.MessengerClick -> {
+                launch { MainEventManager.send(CartRoute(navigateToMessenger = true)) }
+            }
             is ProfileIntent.OnLoyaltyAddCardIntent -> {
                 when (intent.intent) {
                     is LoyaltyAddCardIntent.DismissClick -> {

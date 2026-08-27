@@ -118,7 +118,9 @@ class HomeViewModel @Inject constructor(
             is HomeIntent.FittingClick -> {
                 launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
             }
-            is HomeIntent.MessengerClick -> return
+            is HomeIntent.MessengerClick -> {
+                launch { MainEventManager.send(CartRoute(navigateToMessenger = true)) }
+            }
             is HomeIntent.GiftCardsClick -> launch { MainEventManager.send(GiftCardRoute) }
             is HomeIntent.SearchClick -> launch { MainEventManager.send(SearchRoute()) }
             is HomeIntent.NotificationClick -> launch { MainEventManager.send(NotificationsRoute) }

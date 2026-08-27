@@ -102,7 +102,9 @@ class CategoryViewModel @AssistedInject constructor(
             is CategoryIntent.FittingClick -> {
                 launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
             }
-            is CategoryIntent.MessengerClick -> return
+            is CategoryIntent.MessengerClick -> {
+                launch { MainEventManager.send(CartRoute(navigateToMessenger = true)) }
+            }
             is CategoryIntent.SearchClick -> launch { MainEventManager.send(SearchRoute()) }
             is CategoryIntent.ViewAllClick -> {
                 val entity = stateFlow.value.catalogCategoryEntity

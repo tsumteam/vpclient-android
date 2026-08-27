@@ -98,7 +98,9 @@ class ProfileOrdersViewModel @Inject constructor(
             is ProfileOrdersIntent.FittingClick -> {
                 launch { MainEventManager.send(CartRoute(CartPage.Fitting)) }
             }
-            is ProfileOrdersIntent.MessengerClick -> return
+            is ProfileOrdersIntent.MessengerClick -> {
+                launch { MainEventManager.send(CartRoute(navigateToMessenger = true)) }
+            }
             is ProfileOrdersIntent.OrderClick -> {
                 launch {
                     ProfileRootEventManager.send(ProfileOrderRoute(intent.state.orderNumber, intent.state.amount))
