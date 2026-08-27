@@ -10,5 +10,6 @@ enum class PayloadType {
     @SerialName("clientCompilation") CLIENT_COMPILATION,
     @SerialName("basketLook") BASKET_LOOK,
     @SerialName("images") IMAGES,
+    @SerialName("videos") VIDEOS,
     @SerialName("giftCard") GIFT_CARD
 }

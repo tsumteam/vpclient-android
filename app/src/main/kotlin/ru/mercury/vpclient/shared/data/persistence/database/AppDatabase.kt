@@ -26,6 +26,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.dao.FittingProductDa
 import ru.mercury.vpclient.shared.data.persistence.database.dao.GiftCardDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.LoyaltyCardInfoDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.MainScreenSectionDao
+import ru.mercury.vpclient.shared.data.persistence.database.dao.MessengerMessageDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.PagingKeyDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.ProductDao
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ActivityCounterEntity
@@ -51,6 +52,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.GiftCardEntit
 import ru.mercury.vpclient.shared.data.persistence.database.entity.LoyaltyCardInfoEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.MainScreenSectionEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.MainScreenSectionItemEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.MessengerMessageEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.PagingKeyEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
 
@@ -79,6 +81,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductEntity
         LoyaltyCardInfoEntity::class,
         MainScreenSectionEntity::class,
         MainScreenSectionItemEntity::class,
+        MessengerMessageEntity::class,
         PagingKeyEntity::class,
         ProductEntity::class
     ],
@@ -104,17 +107,18 @@ abstract class AppDatabase: RoomDatabase() {
     abstract fun employeeDao(): EmployeeDao
     abstract fun employeeBadgeDao(): EmployeeBadgeDao
     abstract fun favoriteBrandDao(): FavoriteBrandDao
-    abstract fun pagingKeyDao(): PagingKeyDao
-    abstract fun productDao(): ProductDao
     abstract fun cartProductDao(): CartProductDao
     abstract fun fittingProductDao(): FittingProductDao
     abstract fun giftCardDao(): GiftCardDao
     abstract fun activityCounterDao(): ActivityCounterDao
     abstract fun loyaltyCardInfoDao(): LoyaltyCardInfoDao
     abstract fun mainScreenSectionDao(): MainScreenSectionDao
+    abstract fun messengerMessageDao(): MessengerMessageDao
+    abstract fun pagingKeyDao(): PagingKeyDao
+    abstract fun productDao(): ProductDao
 
     companion object {
         const val DATABASE_NAME = "vpclient.db"
-        const val DATABASE_VERSION = 88
+        private const val DATABASE_VERSION = 89
     }
 }
