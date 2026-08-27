@@ -24,7 +24,6 @@ fun MessageSendButton(
 ) {
     Box(
         modifier = modifier
-            .size(48.dp)
             .clip(CircleShape)
             .background(MaterialTheme.colorScheme.primary)
             .clickable(onClick = onClick),
@@ -44,6 +43,7 @@ fun MessageSendButton(
 @Composable
 private fun MessageSendButtonPreview() {
     MessageSendButton(
-        onClick = {}
+        onClick = {},
+        modifier = Modifier.size(48.dp)
     )
 }

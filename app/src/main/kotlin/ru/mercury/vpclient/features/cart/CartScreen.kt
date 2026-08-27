@@ -57,6 +57,8 @@ import ru.mercury.vpclient.features.fitting_products_sheet.FittingProductsSheet
 import ru.mercury.vpclient.features.fitting_products_sheet.event.FittingProductsEvent
 import ru.mercury.vpclient.features.fitting_products_sheet.event.FittingProductsEventManager
 import ru.mercury.vpclient.features.messenger_sheet.MessengerSheet
+import ru.mercury.vpclient.features.messenger_sheet.event.MessengerEvent
+import ru.mercury.vpclient.features.messenger_sheet.event.MessengerEventManager
 import ru.mercury.vpclient.features.quantity_picker_sheet.QuantityPickerSheet
 import ru.mercury.vpclient.features.size_picker_sheet.SizePickerSheet
 import ru.mercury.vpclient.shared.data.entity.CartProduct
@@ -148,10 +150,7 @@ fun CartScreen(
     }
 
     if (state.isMessengerSheetVisible) {
-        MessengerSheet(
-            state = state.messengerSheetState,
-            dispatch = { intent -> viewModel.dispatch(CartIntent.OnMessengerSheetIntent(intent)) }
-        )
+        MessengerSheet()
     }
 
     ObserveAsEvents(
@@ -174,6 +173,16 @@ fun CartScreen(
             }
             is FittingProductsEvent.DismissRequest -> {
                 viewModel.dispatch(CartIntent.DismissFittingProductsSheet)
+            }
+        }
+    }
+
+    ObserveAsEvents(
+        flow = MessengerEventManager.eventFlow
+    ) { event ->
+        when (event) {
+            is MessengerEvent.DismissRequest -> {
+                viewModel.dispatch(CartIntent.DismissMessengerSheet)
             }
         }
     }

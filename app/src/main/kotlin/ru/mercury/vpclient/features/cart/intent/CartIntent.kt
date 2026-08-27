@@ -6,7 +6,6 @@ import ru.mercury.vpclient.features.cart_fitting_edit_product_sheet.intent.CartF
 import ru.mercury.vpclient.features.cart_fitting_empty_order_dialog.intent.CartFittingEmptyOrderIntent
 import ru.mercury.vpclient.features.cart_fitting_sheet.intent.CartFittingIntent
 import ru.mercury.vpclient.features.color_picker_sheet.intent.ColorPickerIntent
-import ru.mercury.vpclient.features.messenger_sheet.intent.MessengerIntent
 import ru.mercury.vpclient.features.quantity_picker_sheet.intent.QuantityPickerIntent
 import ru.mercury.vpclient.features.size_picker_sheet.intent.SizePickerIntent
 import ru.mercury.vpclient.shared.data.entity.CartPayMode
@@ -36,6 +35,7 @@ sealed interface CartIntent: Intent {
     data object DismissQuantityPickerSheet: CartIntent
     data object ShowFittingProductsSheet: CartIntent
     data object DismissFittingProductsSheet: CartIntent
+    data object DismissMessengerSheet: CartIntent
     data object CollectInitialPage: CartIntent
     data class OnCartEditProductIntent(val intent: CartEditProductIntent): CartIntent
     data class OnCartFittingEditProductIntent(val intent: CartFittingEditProductIntent): CartIntent
@@ -45,7 +45,6 @@ sealed interface CartIntent: Intent {
     data class OnQuantityPickerIntent(val intent: QuantityPickerIntent): CartIntent
     data class OnCartEmptyOrderIntent(val intent: CartEmptyOrderIntent): CartIntent
     data class OnCartFittingEmptyOrderIntent(val intent: CartFittingEmptyOrderIntent): CartIntent
-    data class OnMessengerSheetIntent(val intent: MessengerIntent): CartIntent
     data class FittingDeliveryClick(val productIds: List<String>, val deliveryId: String, val fittingType: FittingType, val header: FittingDeliveryHeaderState): CartIntent
     data class ProductClick(val id: String): CartIntent
     data class ChangePaySwitch(val product: CartProduct, val paySwitch: Boolean): CartIntent
