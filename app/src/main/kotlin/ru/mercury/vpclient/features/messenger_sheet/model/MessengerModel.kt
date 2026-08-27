@@ -5,7 +5,8 @@ import ru.mercury.vpclient.shared.mvi.Model
 
 data class MessengerModel(
     val activeEmployeeEntity: EmployeeEntity = EmployeeEntity.Empty,
-    val messageText: String = ""
+    val messageText: String = "",
+    val isAttachSheetVisible: Boolean = false
 ): Model {
 
     val name: String

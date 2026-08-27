@@ -347,6 +347,11 @@ object ClientStrings {
     val DetailsArticleCopied get() = R.string.details_article_copied
     val DetailsManufacturerArticleCopied get() = R.string.details_manufacturer_article_copied
 
+    val MessengerAttachGallery get() = R.string.messenger_attach_gallery
+    val MessengerAttachCartProducts get() = R.string.messenger_attach_cart_products
+    val MessengerAttachCatalog get() = R.string.messenger_attach_catalog
+    val MessengerAttachCancel get() = R.string.messenger_attach_cancel
+
     val VideoSpeedTitle get() = R.string.video_speed_title
     val VideoSpeed05 get() = R.string.video_speed_05
     val VideoSpeed1 get() = R.string.video_speed_1

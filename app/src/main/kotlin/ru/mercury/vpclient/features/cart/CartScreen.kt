@@ -57,8 +57,8 @@ import ru.mercury.vpclient.features.fitting_products_sheet.FittingProductsSheet
 import ru.mercury.vpclient.features.fitting_products_sheet.event.FittingProductsEvent
 import ru.mercury.vpclient.features.fitting_products_sheet.event.FittingProductsEventManager
 import ru.mercury.vpclient.features.messenger_sheet.MessengerSheet
-import ru.mercury.vpclient.features.messenger_sheet.event.MessengerEvent
 import ru.mercury.vpclient.features.messenger_sheet.event.MessengerEventManager
+import ru.mercury.vpclient.features.messenger_sheet.event.MessengerHostEvent
 import ru.mercury.vpclient.features.quantity_picker_sheet.QuantityPickerSheet
 import ru.mercury.vpclient.features.size_picker_sheet.SizePickerSheet
 import ru.mercury.vpclient.shared.data.entity.CartProduct
@@ -181,7 +181,7 @@ fun CartScreen(
         flow = MessengerEventManager.eventFlow
     ) { event ->
         when (event) {
-            is MessengerEvent.DismissRequest -> {
+            is MessengerHostEvent.DismissRequest -> {
                 viewModel.dispatch(CartIntent.DismissMessengerSheet)
             }
         }

@@ -393,6 +393,11 @@
     <string name="details_article_copied">Артикул скопирован</string>
     <string name="details_manufacturer_article_copied">Артикул производителя скопирован</string>
 
+    <string name="messenger_attach_gallery">Добавить фото/видео из галереи</string>
+    <string name="messenger_attach_cart_products">Товары из корзины/примерки</string>
+    <string name="messenger_attach_catalog">Выбрать из каталога</string>
+    <string name="messenger_attach_cancel">Отменить</string>
+
     <string name="video_speed_title">Скорость</string>
     <string name="video_speed_05">0,5x</string>
     <string name="video_speed_1">1x</string>

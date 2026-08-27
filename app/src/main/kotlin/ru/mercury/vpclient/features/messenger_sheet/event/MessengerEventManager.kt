@@ -6,10 +6,10 @@ import kotlinx.coroutines.flow.receiveAsFlow
 
 object MessengerEventManager {
 
-    private val _eventChannel = Channel<MessengerEvent>()
-    val eventFlow: Flow<MessengerEvent> = _eventChannel.receiveAsFlow()
+    private val _eventChannel = Channel<MessengerHostEvent>()
+    val eventFlow: Flow<MessengerHostEvent> = _eventChannel.receiveAsFlow()
 
-    suspend fun send(event: MessengerEvent) {
+    suspend fun send(event: MessengerHostEvent) {
         _eventChannel.send(event)
     }
 }

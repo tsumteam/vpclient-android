@@ -7,6 +7,10 @@ sealed interface MessengerIntent: Intent {
     data object CollectActiveEmployee: MessengerIntent
     data object CallClick: MessengerIntent
     data object AttachClick: MessengerIntent
+    data object DismissAttachSheet: MessengerIntent
+    data object AttachGalleryClick: MessengerIntent
+    data object AttachCartProductsClick: MessengerIntent
+    data object AttachCatalogClick: MessengerIntent
     data object MicClick: MessengerIntent
     data object SendClick: MessengerIntent
     data class MessageTextChange(val text: String): MessengerIntent

@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.messenger_sheet.event.MessengerEvent
 import ru.mercury.vpclient.features.messenger_sheet.event.MessengerEventManager
+import ru.mercury.vpclient.features.messenger_sheet.event.MessengerHostEvent
 import ru.mercury.vpclient.features.messenger_sheet.intent.MessengerIntent
 import ru.mercury.vpclient.features.messenger_sheet.model.MessengerModel
 import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
@@ -34,19 +35,28 @@ class MessengerViewModel @Inject constructor(
                 reduce { it.copy(messageText = intent.text) }
             }
             is MessengerIntent.DismissClick -> {
-                launch { MessengerEventManager.send(MessengerEvent.DismissRequest) }
+                launch { MessengerEventManager.send(MessengerHostEvent.DismissRequest) }
             }
             is MessengerIntent.SendClick -> {
                 // FIXME: отправка сообщения в мессенджер пока не реализована
                 return
             }
             is MessengerIntent.CallClick -> {
-                // FIXME: сформировать и запустить Intent(Intent.ACTION_DIAL, "tel:" + activeEmployeeEntity.employeePhone) для звонка консультанту
-                return
+                launch { send(MessengerEvent.LaunchDialer(stateFlow.value.activeEmployeeEntity.employeePhone)) }
             }
-            is MessengerIntent.AttachClick -> {
-                // FIXME: выбор вложения пока не реализован
-                return
+            is MessengerIntent.AttachClick -> reduce { it.copy(isAttachSheetVisible = true) }
+            is MessengerIntent.DismissAttachSheet -> reduce { it.copy(isAttachSheetVisible = false) }
+            is MessengerIntent.AttachGalleryClick -> {
+                reduce { it.copy(isAttachSheetVisible = false) }
+                // FIXME: выбор фото/видео из галереи пока не реализован
+            }
+            is MessengerIntent.AttachCartProductsClick -> {
+                reduce { it.copy(isAttachSheetVisible = false) }
+                // FIXME: выбор товаров из корзины/примерки пока не реализован
+            }
+            is MessengerIntent.AttachCatalogClick -> {
+                reduce { it.copy(isAttachSheetVisible = false) }
+                // FIXME: выбор товаров из каталога пока не реализован
             }
             is MessengerIntent.MicClick -> {
                 // FIXME: запись голосового сообщения пока не реализована

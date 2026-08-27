@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,6 +48,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ru.mercury.vpclient.features.messenger_attach_sheet.MessengerAttachSheet
+import ru.mercury.vpclient.features.messenger_attach_sheet.intent.MessengerAttachIntent
+import ru.mercury.vpclient.features.messenger_sheet.event.MessengerEvent
 import ru.mercury.vpclient.features.messenger_sheet.intent.MessengerIntent
 import ru.mercury.vpclient.features.messenger_sheet.model.MessengerModel
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
@@ -59,6 +63,8 @@ import ru.mercury.vpclient.shared.ui.icons.ChevronDown24
 import ru.mercury.vpclient.shared.ui.icons.Microphone24
 import ru.mercury.vpclient.shared.ui.icons.Paperclip24
 import ru.mercury.vpclient.shared.ui.icons.PhoneCalling22
+import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
+import ru.mercury.vpclient.shared.ui.ktx.launcherDialer
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.medium14
@@ -69,11 +75,20 @@ fun MessengerSheet(
     viewModel: MessengerViewModel = hiltViewModel()
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     MessengerSheetContent(
         state = state,
         dispatch = viewModel::dispatch
     )
+
+    ObserveAsEvents(
+        flow = viewModel.eventFlow
+    ) { event ->
+        when (event) {
+            is MessengerEvent.LaunchDialer -> context.launcherDialer(event.phone)
+        }
+    }
 }
 
 @Composable
@@ -289,6 +304,19 @@ private fun MessengerSheetContent(
                     .padding(innerPadding)
             )
         }
+    }
+
+    if (state.isAttachSheetVisible) {
+        MessengerAttachSheet(
+            dispatch = { intent ->
+                when (intent) {
+                    is MessengerAttachIntent.DismissClick -> dispatch(MessengerIntent.DismissAttachSheet)
+                    is MessengerAttachIntent.GalleryClick -> dispatch(MessengerIntent.AttachGalleryClick)
+                    is MessengerAttachIntent.CartProductsClick -> dispatch(MessengerIntent.AttachCartProductsClick)
+                    is MessengerAttachIntent.CatalogClick -> dispatch(MessengerIntent.AttachCatalogClick)
+                }
+            }
+        )
     }
 }
 
