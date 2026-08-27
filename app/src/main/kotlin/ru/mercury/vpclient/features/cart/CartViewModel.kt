@@ -24,6 +24,7 @@ import ru.mercury.vpclient.features.color_picker_sheet.intent.ColorPickerIntent
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.features.fitting_confirmation.navigation.FittingConfirmationRoute
 import ru.mercury.vpclient.features.fitting_info.navigation.FittingInfoRoute
+import ru.mercury.vpclient.features.messenger_sheet.intent.MessengerIntent
 import ru.mercury.vpclient.shared.data.entity.CartFittingSheetOption
 import ru.mercury.vpclient.shared.data.entity.FittingData
 import ru.mercury.vpclient.shared.data.network.error.ClientException
@@ -782,7 +783,17 @@ class CartViewModel @AssistedInject constructor(
                     }
                 }
             }
-            is CartIntent.ChatClick -> return // fixme
+            is CartIntent.ChatClick -> {
+                reduce { it.copy(isMessengerSheetVisible = true) }
+            }
+            is CartIntent.OnMessengerSheetIntent -> {
+                when (intent.intent) {
+                    is MessengerIntent.DismissClick -> {
+                        reduce { it.copy(isMessengerSheetVisible = false) }
+                    }
+                    is MessengerIntent.SendClick -> return
+                }
+            }
         }
     }
 

@@ -56,6 +56,7 @@ import ru.mercury.vpclient.features.color_picker_sheet.ColorPickerSheet
 import ru.mercury.vpclient.features.fitting_products_sheet.FittingProductsSheet
 import ru.mercury.vpclient.features.fitting_products_sheet.event.FittingProductsEvent
 import ru.mercury.vpclient.features.fitting_products_sheet.event.FittingProductsEventManager
+import ru.mercury.vpclient.features.messenger_sheet.MessengerSheet
 import ru.mercury.vpclient.features.quantity_picker_sheet.QuantityPickerSheet
 import ru.mercury.vpclient.features.size_picker_sheet.SizePickerSheet
 import ru.mercury.vpclient.shared.data.entity.CartProduct
@@ -143,6 +144,13 @@ fun CartScreen(
     if (state.isCartFittingEmptyOrderDialogVisible) {
         CartFittingEmptyOrderDialog(
             dispatch = { intent -> viewModel.dispatch(CartIntent.OnCartFittingEmptyOrderIntent(intent)) }
+        )
+    }
+
+    if (state.isMessengerSheetVisible) {
+        MessengerSheet(
+            state = state.messengerSheetState,
+            dispatch = { intent -> viewModel.dispatch(CartIntent.OnMessengerSheetIntent(intent)) }
         )
     }
 

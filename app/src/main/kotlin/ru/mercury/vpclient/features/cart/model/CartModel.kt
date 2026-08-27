@@ -6,6 +6,7 @@ import ru.mercury.vpclient.features.cart_edit_product_sheet.model.CartEditProduc
 import ru.mercury.vpclient.features.cart_fitting_edit_product_sheet.model.CartFittingEditProductModel
 import ru.mercury.vpclient.features.cart_fitting_sheet.model.CartFittingModel
 import ru.mercury.vpclient.features.color_picker_sheet.model.ColorPickerModel
+import ru.mercury.vpclient.features.messenger_sheet.model.MessengerModel
 import ru.mercury.vpclient.features.quantity_picker_sheet.model.QuantityPickerModel
 import ru.mercury.vpclient.features.size_picker_sheet.model.SizePickerModel
 import ru.mercury.vpclient.shared.data.CART_DRAG_AND_DROP_ENABLED
@@ -44,6 +45,7 @@ data class CartModel(
     val fittingEditProduct: CartProduct? = null,
     val isCartFittingSheetVisible: Boolean = false,
     val isFittingProductsSheetVisible: Boolean = false,
+    val isMessengerSheetVisible: Boolean = false,
     val sizePickerProduct: CartProduct? = null,
     val sizePickerSizes: ProductAvailableSizesEntity? = null,
     val sizePickerSelectedId: String? = null,
@@ -285,6 +287,12 @@ data class CartModel(
 
     val cartChatBrand: String
         get() = activeEmployee.employeeBrand.trim()
+
+    val messengerSheetState: MessengerModel
+        get() = MessengerModel(
+            name = activeEmployee.employeeName,
+            brand = cartChatBrand
+        )
 
     private fun summary(products: List<CartProduct>): String {
         val itemsCount = products.sumOf { it.itemsCount }
