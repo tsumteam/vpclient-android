@@ -25,6 +25,8 @@ import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.features.fitting_confirmation.navigation.FittingConfirmationRoute
 import ru.mercury.vpclient.features.fitting_info.navigation.FittingInfoRoute
 import ru.mercury.vpclient.features.messenger_sheet.intent.MessengerIntent
+import ru.mercury.vpclient.features.quantity_picker_sheet.intent.QuantityPickerIntent
+import ru.mercury.vpclient.features.size_picker_sheet.intent.SizePickerIntent
 import ru.mercury.vpclient.shared.data.entity.CartFittingSheetOption
 import ru.mercury.vpclient.shared.data.entity.FittingData
 import ru.mercury.vpclient.shared.data.network.error.ClientException
@@ -65,8 +67,6 @@ import ru.mercury.vpclient.shared.domain.usecase.LoadFittingUseCase
 import ru.mercury.vpclient.shared.domain.usecase.LoadProductUseCase
 import ru.mercury.vpclient.shared.domain.usecase.MoveProductsAfterDragUseCase
 import ru.mercury.vpclient.shared.domain.usecase.MoveProductsAfterDragUseCase.MoveProductsAfterDragException
-import ru.mercury.vpclient.features.quantity_picker_sheet.intent.QuantityPickerIntent
-import ru.mercury.vpclient.features.size_picker_sheet.intent.SizePickerIntent
 import ru.mercury.vpclient.shared.domain.usecase.ProductFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.RemoveAlternativeUseCase
 import ru.mercury.vpclient.shared.domain.usecase.RemoveAlternativeUseCase.RemoveAlternativeException
@@ -405,7 +405,16 @@ class CartViewModel @AssistedInject constructor(
                                         )
                                     ).getOrThrow()
                                     forFitting -> {
-                                        val confirmationRoute = stateFlow.value.fittingConfirmationRoute(product.id)
+                                        val confirmationRoute = stateFlow.value.apiFittingDeliveries
+                                            .firstOrNull { delivery -> delivery.products.any { it.id == product.id } }
+                                            ?.takeIf { it.id.isNotBlank() }
+                                            ?.let { delivery ->
+                                                FittingConfirmationRoute(
+                                                    productIds = listOf(product.id),
+                                                    deliveryId = delivery.id,
+                                                    fittingType = delivery.fittingType
+                                                )
+                                            }
                                         setFittingProductSizeUseCase(
                                             SetFittingProductSizeUseCase.Params(
                                                 product = product,
@@ -495,7 +504,16 @@ class CartViewModel @AssistedInject constructor(
                             withCenterLoading {
                                 when {
                                     forFitting -> {
-                                        val confirmationRoute = stateFlow.value.fittingConfirmationRoute(product.id)
+                                        val confirmationRoute = stateFlow.value.apiFittingDeliveries
+                                            .firstOrNull { delivery -> delivery.products.any { it.id == product.id } }
+                                            ?.takeIf { it.id.isNotBlank() }
+                                            ?.let { delivery ->
+                                                FittingConfirmationRoute(
+                                                    productIds = listOf(product.id),
+                                                    deliveryId = delivery.id,
+                                                    fittingType = delivery.fittingType
+                                                )
+                                            }
                                         setFittingProductColorUseCase(
                                             SetFittingProductColorUseCase.Params(
                                                 product = product,
@@ -866,17 +884,4 @@ class CartViewModel @AssistedInject constructor(
     interface Factory {
         fun create(route: CartRoute): CartViewModel
     }
-}
-
-private fun CartModel.fittingConfirmationRoute(productId: String): FittingConfirmationRoute? { // fixme
-    val delivery = apiFittingDeliveries.firstOrNull { delivery ->
-        delivery.products.any { product -> product.id == productId }
-    } ?: return null
-    val deliveryId = delivery.id.takeIf { it.isNotBlank() } ?: return null
-
-    return FittingConfirmationRoute(
-        productIds = listOf(productId),
-        deliveryId = deliveryId,
-        fittingType = delivery.fittingType
-    )
 }
