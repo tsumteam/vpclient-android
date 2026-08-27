@@ -119,12 +119,7 @@ class CartViewModel @AssistedInject constructor(
     private val fittingCountFlowUseCase: FittingCountFlowUseCase,
     private val productFlowUseCase: ProductFlowUseCase,
     private val loadProductUseCase: LoadProductUseCase
-): ClientViewModel<CartIntent, CartModel, CartEvent>(
-    CartModel(
-        isCartInitialLoading = true,
-        isFittingInitialLoading = true
-    ) // fixme
-) {
+): ClientViewModel<CartIntent, CartModel, CartEvent>(CartModel()) {
 
     init {
         dispatch(CartIntent.CollectInitialPage)
