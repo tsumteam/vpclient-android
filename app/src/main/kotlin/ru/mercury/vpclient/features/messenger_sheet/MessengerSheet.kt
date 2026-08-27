@@ -7,6 +7,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -17,6 +18,9 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -25,12 +29,15 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,15 +55,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.messenger_attach_sheet.MessengerAttachSheet
 import ru.mercury.vpclient.features.messenger_attach_sheet.intent.MessengerAttachIntent
 import ru.mercury.vpclient.features.messenger_sheet.event.MessengerEvent
 import ru.mercury.vpclient.features.messenger_sheet.intent.MessengerIntent
 import ru.mercury.vpclient.features.messenger_sheet.model.MessengerModel
+import ru.mercury.vpclient.shared.data.entity.MessengerMessageDirection
+import ru.mercury.vpclient.shared.data.entity.MessengerMessageStatus
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
+import ru.mercury.vpclient.shared.data.persistence.database.entity.MessengerMessageEntity
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
+import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.messenger.MessageSendButton
+import ru.mercury.vpclient.shared.ui.components.messenger.MessengerTextMessage
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.icons.Chat24
 import ru.mercury.vpclient.shared.ui.icons.ChevronDown24
@@ -76,17 +89,45 @@ fun MessengerSheet(
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     MessengerSheetContent(
         state = state,
-        dispatch = viewModel::dispatch
+        dispatch = viewModel::dispatch,
+        snackbarHostState = snackbarHostState
     )
+
+    if (state.isAttachSheetVisible) {
+        MessengerAttachSheet(
+            dispatch = { intent ->
+                when (intent) {
+                    is MessengerAttachIntent.DismissClick -> {
+                        viewModel.dispatch(MessengerIntent.DismissAttachSheet)
+                    }
+                    is MessengerAttachIntent.GalleryClick -> {
+                        viewModel.dispatch(MessengerIntent.AttachGalleryClick)
+                    }
+                    is MessengerAttachIntent.CartProductsClick -> {
+                        viewModel.dispatch(MessengerIntent.AttachCartProductsClick)
+                    }
+                    is MessengerAttachIntent.CatalogClick -> {
+                        viewModel.dispatch(MessengerIntent.AttachCatalogClick)
+                    }
+                }
+            }
+        )
+    }
 
     ObserveAsEvents(
         flow = viewModel.eventFlow
     ) { event ->
         when (event) {
             is MessengerEvent.LaunchDialer -> context.launcherDialer(event.phone)
+            is MessengerEvent.SnackbarErrorMessage -> {
+                snackbarHostState.currentSnackbarData?.dismiss()
+                scope.launch { snackbarHostState.showSnackbar(event.message) }
+            }
         }
     }
 }
@@ -94,7 +135,8 @@ fun MessengerSheet(
 @Composable
 private fun MessengerSheetContent(
     state: MessengerModel,
-    dispatch: (MessengerIntent) -> Unit
+    dispatch: (MessengerIntent) -> Unit,
+    snackbarHostState: SnackbarHostState
 ) {
     SharedModalBottomSheet(
         onDismissRequest = { dispatch(MessengerIntent.DismissClick) },
@@ -296,27 +338,38 @@ private fun MessengerSheetContent(
                         }
                     }
                 }
+            },
+            snackbarHost = {
+                SharedSnackbarHost(
+                    hostState = snackbarHostState,
+                    containerColor = MaterialTheme.colorScheme.error
+                )
             }
         ) { innerPadding ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-            )
-        }
-    }
+            val listState = rememberLazyListState()
 
-    if (state.isAttachSheetVisible) {
-        MessengerAttachSheet(
-            dispatch = { intent ->
-                when (intent) {
-                    is MessengerAttachIntent.DismissClick -> dispatch(MessengerIntent.DismissAttachSheet)
-                    is MessengerAttachIntent.GalleryClick -> dispatch(MessengerIntent.AttachGalleryClick)
-                    is MessengerAttachIntent.CartProductsClick -> dispatch(MessengerIntent.AttachCartProductsClick)
-                    is MessengerAttachIntent.CatalogClick -> dispatch(MessengerIntent.AttachCatalogClick)
+            LaunchedEffect(state.messageEntities.size) {
+                if (state.messageEntities.isNotEmpty()) {
+                    listState.scrollToItem(state.messageEntities.lastIndex)
                 }
             }
-        )
+
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                state = listState,
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Bottom)
+            ) {
+                items(
+                    items = state.messageEntities,
+                    key = MessengerMessageEntity::id
+                ) { message ->
+                    MessengerTextMessage(message)
+                }
+            }
+        }
     }
 }
 
@@ -331,12 +384,32 @@ private fun MessengerSheetContentPreview(
     ) {
         MessengerSheetContent(
             state = state,
-            dispatch = {}
+            dispatch = {},
+            snackbarHostState = remember { SnackbarHostState() }
         )
     }
 }
 
 private class MessengerModelPreviewParameterProvider: PreviewParameterProvider<MessengerModel> {
+
+    private val previewMessages = listOf(
+        MessengerMessageEntity(
+            id = 1,
+            createTime = "2026-08-26T16:40:00+03:00",
+            text = "Светлана, здравствуйте! Вчера отправила заказ, но до сих пор не получила никакого ответа.",
+            direction = MessengerMessageDirection.Outgoing,
+            status = MessengerMessageStatus.Read,
+            isEdited = false
+        ),
+        MessengerMessageEntity(
+            id = 2,
+            createTime = "2026-08-26T16:28:00+03:00",
+            text = "Мария, здравствуйте, прошу прощения, заказ скоро будет сформирован.",
+            direction = MessengerMessageDirection.Incoming,
+            status = null,
+            isEdited = false
+        )
+    )
 
     override val values: Sequence<MessengerModel> = sequenceOf(
         MessengerModel(
@@ -344,6 +417,7 @@ private class MessengerModelPreviewParameterProvider: PreviewParameterProvider<M
                 employeeName = "Светлана",
                 employeeBrand = "Saint Laurent"
             ),
+            messageEntities = previewMessages,
             messageText = ""
         ),
         MessengerModel(
@@ -351,6 +425,7 @@ private class MessengerModelPreviewParameterProvider: PreviewParameterProvider<M
                 employeeName = "Светлана",
                 employeeBrand = "Saint Laurent"
             ),
+            messageEntities = previewMessages,
             messageText = "Добрый день"
         )
     )
