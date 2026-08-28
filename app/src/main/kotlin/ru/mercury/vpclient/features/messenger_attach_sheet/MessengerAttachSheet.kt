@@ -33,7 +33,7 @@ import ru.mercury.vpclient.features.messenger_attach_sheet.intent.MessengerAttac
 import ru.mercury.vpclient.shared.ui.components.SharedColumn
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.icons.Basket24
-import ru.mercury.vpclient.shared.ui.icons.Catalog24
+import ru.mercury.vpclient.shared.ui.icons.Book24
 import ru.mercury.vpclient.shared.ui.icons.Image24
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
@@ -145,7 +145,7 @@ fun MessengerAttachSheet(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        imageVector = Catalog24,
+                        imageVector = Book24,
                         contentDescription = null,
                         modifier = Modifier.size(24.dp),
                         tint = MaterialTheme.colorScheme.onBackground
