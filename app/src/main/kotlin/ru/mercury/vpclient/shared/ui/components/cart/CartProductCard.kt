@@ -34,7 +34,7 @@ import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.entity.CartProduct
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
 import ru.mercury.vpclient.shared.data.entity.CartProductSize
-import ru.mercury.vpclient.shared.ui.components.product.ProductBrandBox
+import ru.mercury.vpclient.shared.domain.mapper.colorText
 import ru.mercury.vpclient.shared.ui.components.product.ProductSwipeableCard
 import ru.mercury.vpclient.shared.ui.components.product.ProductSwipeableCardState
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
@@ -44,7 +44,7 @@ import ru.mercury.vpclient.shared.ui.theme.regular11
 import ru.mercury.vpclient.shared.ui.theme.regular14
 import ru.mercury.vpclient.shared.ui.theme.regular15
 
-data class CartProductCardState(
+data class CartProductState(
     val product: CartProduct,
     val onClick: () -> Unit = {},
     val onSelectSizeClick: () -> Unit = {},
@@ -68,6 +68,9 @@ data class CartProductCardState(
 ) {
     val articleText: String
         get() = product.article.takeIf { it.isNotEmpty() } ?: product.itemId
+
+    val colorText: String
+        get() = product.colorText
 
     val isPriceVisible: Boolean
         get() = product.priceValue > .0 && product.price.isNotBlank()
@@ -153,11 +156,9 @@ data class CartProductCardState(
 
 @Composable
 fun CartProductCard(
-    state: CartProductCardState,
-    modifier: Modifier = Modifier,
+    state: CartProductState,
+    modifier: Modifier = Modifier
 ) {
-    val product = state.product
-
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
@@ -213,17 +214,14 @@ fun CartProductCard(
                     image,
                     header,
                     title,
-                    color,
-                    article,
+                    info,
                     price,
-                    size,
-                    availability,
                     dateReceiptBadge
                 ) = createRefs()
                 val mainContentBottom = createGuidelineFromTop(178.dp)
 
                 ClientAsyncImage(
-                    imageUrl = product.imageUrl,
+                    imageUrl = state.product.imageUrl,
                     modifier = Modifier.constrainAs(image) {
                         width = Dimension.value(85.dp)
                         height = Dimension.value(130.dp)
@@ -233,87 +231,33 @@ fun CartProductCard(
                     contentScale = ContentScale.Fit
                 )
 
-                Row(
+                CartProductHeader(
+                    state = CartProductHeaderState(
+                        brandEntity = BrandEntity(
+                            brand = state.product.brand,
+                            urlBrandLogo = state.product.urlBrandLogo
+                        ),
+                        isSold = state.product.isSold,
+                        isForPayment = state.product.isForPayment,
+                        onBuySwitchChange = state.onBuySwitchChange
+                    ),
                     modifier = Modifier.constrainAs(header) {
                         width = Dimension.fillToConstraints
+                        height = Dimension.wrapContent
                         start.linkTo(image.end, 16.dp)
                         top.linkTo(image.top)
                         end.linkTo(parent.end, 16.dp)
-                    },
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    ProductBrandBox(
-                        entity = BrandEntity(
-                            brand = product.brand,
-                            urlBrandLogo = product.urlBrandLogo
-                        ),
-                        modifier = Modifier
-                            .height(24.dp)
-                            .weight(1F)
-                    )
-
-                    when {
-                        product.isSold -> {
-                            Text(
-                                text = stringResource(ClientStrings.CartSold),
-                                style = MaterialTheme.typography.regular14.copy(
-                                    color = MaterialTheme.colorScheme.error,
-                                    lineHeight = 18.sp,
-                                    letterSpacing = .2.sp
-                                )
-                            )
-                        }
-                        else -> {
-                            CartBuySwitch(
-                                checked = product.isForPayment,
-                                onCheckedChange = state.onBuySwitchChange
-                            )
-                        }
                     }
-                }
+                )
 
                 Text(
-                    text = product.name,
+                    text = state.product.name,
                     modifier = Modifier.constrainAs(title) {
                         width = Dimension.fillToConstraints
+                        height = Dimension.wrapContent
                         start.linkTo(header.start)
-                        top.linkTo(header.bottom)
+                        top.linkTo(header.bottom, 4.dp)
                         end.linkTo(parent.end, 16.dp)
-                    },
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.regular14.copy(
-                        color = MaterialTheme.colorScheme.onBackground,
-                        lineHeight = 18.sp,
-                        letterSpacing = .2.sp
-                    )
-                )
-
-                Text(
-                    text = product.color,
-                    modifier = Modifier.constrainAs(color) {
-                        width = Dimension.fillToConstraints
-                        start.linkTo(header.start)
-                        top.linkTo(title.bottom, 4.dp)
-                        end.linkTo(size.start, 8.dp)
-                    },
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.regular14.copy(
-                        color = MaterialTheme.colorScheme.onBackground,
-                        lineHeight = 18.sp,
-                        letterSpacing = .2.sp
-                    )
-                )
-
-                Text(
-                    text = stringResource(ClientStrings.CartArticle, state.articleText),
-                    modifier = Modifier.constrainAs(article) {
-                        width = Dimension.fillToConstraints
-                        start.linkTo(header.start)
-                        top.linkTo(color.bottom, 4.dp)
-                        end.linkTo(size.start, 8.dp)
                     },
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
@@ -325,122 +269,88 @@ fun CartProductCard(
                 )
 
                 Row(
-                    modifier = Modifier.constrainAs(price) {
-                        start.linkTo(header.start)
-                        top.linkTo(
-                            anchor = when {
-                                state.isMultipleSizesAvailabilityVisible -> size.bottom
-                                else -> article.bottom
-                            },
-                            margin = when {
-                                state.isMultipleSizesAvailabilityVisible -> 8.dp
-                                state.isDateReceiptBadgeVisible -> 3.dp
-                                else -> 17.dp
-                            }
-                        )
-                        end.linkTo(parent.end, 16.dp)
-                        bottom.linkTo(
-                            anchor = when {
-                                state.isPriceVisible -> mainContentBottom
-                                else -> image.bottom
-                            },
-                            margin = when {
-                                state.isPriceVisible && state.isDateReceiptBadgeVisible -> 57.dp
-                                state.isPriceVisible -> 27.dp
-                                else -> 3.dp
-                            }
-                        )
-                        verticalBias = 0F
+                    modifier = Modifier.constrainAs(info) {
                         width = Dimension.fillToConstraints
+                        height = Dimension.wrapContent
+                        start.linkTo(header.start)
+                        top.linkTo(title.bottom, 4.dp)
+                        end.linkTo(parent.end, 16.dp)
                     },
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    CartPriceRow(
-                        product = product,
-                        modifier = Modifier.weight(1F)
-                    )
-
-                    Text(
-                        text = state.quantityText,
-                        style = MaterialTheme.typography.regular14.copy(
-                            color = MaterialTheme.colorScheme.onBackground,
-                            lineHeight = 18.sp,
-                            letterSpacing = .2.sp
-                        )
-                    )
-                }
-
-                if (state.isDateReceiptBadgeVisible) {
-                    CartProductDateReceiptBadge(
-                        state = CartProductDateReceiptBadgeState(
-                            text = stringResource(ClientStrings.CartRedeemUntil, state.dateReceiptBadgeText),
-                            isOverdue = product.isDateReceiptOverdue
-                        ),
-                        modifier = Modifier.constrainAs(dateReceiptBadge) {
-                            start.linkTo(header.start)
-                            top.linkTo(price.bottom, 10.dp)
-                        }
-                    )
-                }
-
-                when {
-                    state.isSoldSizeVisible -> {
+                    Column(
+                        modifier = Modifier.weight(1F),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
                         Text(
-                            text = product.size,
-                            modifier = Modifier.constrainAs(size) {
-                                top.linkTo(color.top)
-                                end.linkTo(parent.end, 16.dp)
-                            },
+                            text = state.colorText,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
                             style = MaterialTheme.typography.regular14.copy(
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                color = MaterialTheme.colorScheme.onBackground,
+                                lineHeight = 18.sp,
+                                letterSpacing = .2.sp
+                            )
+                        )
+
+                        Text(
+                            text = stringResource(ClientStrings.CartArticle, state.articleText),
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                            style = MaterialTheme.typography.regular14.copy(
+                                color = MaterialTheme.colorScheme.onBackground,
                                 lineHeight = 18.sp,
                                 letterSpacing = .2.sp
                             )
                         )
                     }
-                    state.isSelectSizeButtonVisible -> {
-                        OutlinedButton(
-                            onClick = state.onSelectSizeClick,
-                            modifier = Modifier.constrainAs(size) {
-                                width = Dimension.wrapContent
-                                height = Dimension.value(32.dp)
-                                top.linkTo(color.top)
-                                end.linkTo(parent.end, 16.dp)
-                            },
-                            shape = RoundedCornerShape(4.dp),
-                            border = BorderStroke(
-                                width = 1.dp,
-                                color = MaterialTheme.colorScheme.onBackground
-                            ),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.background,
-                                contentColor = MaterialTheme.colorScheme.onBackground
-                            ),
-                            contentPadding = PaddingValues(horizontal = 8.dp)
-                        ) {
-                            Text(
-                                text = stringResource(ClientStrings.CartSelectSize),
-                                style = MaterialTheme.typography.regular15.copy(
-                                    color = MaterialTheme.colorScheme.onBackground,
-                                    lineHeight = 19.sp,
-                                    letterSpacing = .2.sp
-                                )
-                            )
-                        }
-                    }
-                    else -> {
+
+                    Column(
+                        horizontalAlignment = Alignment.End,
+                        verticalArrangement = Arrangement.spacedBy(1.dp)
+                    ) {
                         when {
+                            state.isSoldSizeVisible -> {
+                                Text(
+                                    text = state.product.size,
+                                    style = MaterialTheme.typography.regular14.copy(
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        lineHeight = 18.sp,
+                                        letterSpacing = .2.sp
+                                    )
+                                )
+                            }
+                            state.isSelectSizeButtonVisible -> {
+                                OutlinedButton(
+                                    onClick = state.onSelectSizeClick,
+                                    modifier = Modifier.height(32.dp),
+                                    shape = RoundedCornerShape(4.dp),
+                                    border = BorderStroke(
+                                        width = 1.dp,
+                                        color = MaterialTheme.colorScheme.onBackground
+                                    ),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.background,
+                                        contentColor = MaterialTheme.colorScheme.onBackground
+                                    ),
+                                    contentPadding = PaddingValues(horizontal = 8.dp)
+                                ) {
+                                    Text(
+                                        text = stringResource(ClientStrings.CartSelectSize),
+                                        style = MaterialTheme.typography.regular15.copy(
+                                            color = MaterialTheme.colorScheme.onBackground,
+                                            lineHeight = 19.sp,
+                                            letterSpacing = .2.sp
+                                        )
+                                    )
+                                }
+                            }
                             state.isMultipleSizesVisible -> {
                                 Column(
-                                    modifier = Modifier.constrainAs(size) {
-                                        top.linkTo(color.top)
-                                        end.linkTo(parent.end, 16.dp)
-                                    },
                                     verticalArrangement = Arrangement.spacedBy(4.dp),
                                     horizontalAlignment = Alignment.End
                                 ) {
-                                    product.sizeItems.forEach { item ->
+                                    state.product.sizeItems.forEach { item ->
                                         Column(
                                             horizontalAlignment = Alignment.End
                                         ) {
@@ -464,11 +374,7 @@ fun CartProductCard(
                             }
                             else -> {
                                 Text(
-                                    text = product.size,
-                                    modifier = Modifier.constrainAs(size) {
-                                        top.linkTo(color.top)
-                                        end.linkTo(parent.end, 16.dp)
-                                    },
+                                    text = state.product.size,
                                     style = MaterialTheme.typography.regular14.copy(
                                         color = MaterialTheme.colorScheme.onBackground,
                                         lineHeight = 18.sp,
@@ -477,29 +383,81 @@ fun CartProductCard(
                                 )
                             }
                         }
+
+                        if (state.isSingleSizeAvailabilityVisible) {
+                            Text(
+                                text = stringResource(ClientStrings.CartInStock),
+                                style = MaterialTheme.typography.regular11.copy(
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            )
+                        }
                     }
                 }
 
-                if (state.isSingleSizeAvailabilityVisible) {
+                Row(
+                    modifier = Modifier.constrainAs(price) {
+                        start.linkTo(header.start)
+                        top.linkTo(
+                            anchor = info.bottom,
+                            margin = when {
+                                state.isMultipleSizesAvailabilityVisible -> 8.dp
+                                state.isDateReceiptBadgeVisible -> 4.dp
+                                else -> 17.dp
+                            }
+                        )
+                        end.linkTo(parent.end, 16.dp)
+                        bottom.linkTo(
+                            anchor = when {
+                                state.isPriceVisible -> mainContentBottom
+                                else -> image.bottom
+                            },
+                            margin = when {
+                                state.isPriceVisible && state.isDateReceiptBadgeVisible -> 57.dp
+                                state.isPriceVisible -> 27.dp
+                                else -> 3.dp
+                            }
+                        )
+                        verticalBias = 0F
+                        width = Dimension.fillToConstraints
+                    },
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    CartPriceRow(
+                        product = state.product,
+                        modifier = Modifier.weight(1F)
+                    )
+
                     Text(
-                        text = stringResource(ClientStrings.CartInStock),
-                        modifier = Modifier.constrainAs(availability) {
-                            top.linkTo(size.bottom, 1.dp)
-                            end.linkTo(size.end)
-                        },
-                        style = MaterialTheme.typography.regular11.copy(
-                            color = MaterialTheme.colorScheme.error
+                        text = state.quantityText,
+                        style = MaterialTheme.typography.regular14.copy(
+                            color = MaterialTheme.colorScheme.onBackground,
+                            lineHeight = 18.sp,
+                            letterSpacing = .2.sp
                         )
                     )
                 }
 
+                if (state.isDateReceiptBadgeVisible) {
+                    CartProductDateReceiptBadge(
+                        state = CartProductDateReceiptBadgeState(
+                            text = stringResource(ClientStrings.CartRedeemUntil, state.dateReceiptBadgeText),
+                            isOverdue = state.product.isDateReceiptOverdue
+                        ),
+                        modifier = Modifier.constrainAs(dateReceiptBadge) {
+                            start.linkTo(header.start)
+                            top.linkTo(price.bottom, 10.dp)
+                        }
+                    )
+                }
             }
         }
 
         if (state.isAlternativesVisible) {
             CartAlternativesSection(
                 state = CartAlternativesSectionState(
-                    alternatives = product.alternatives,
+                    alternatives = state.product.alternatives,
                     selectedAlternativeId = state.selectedAlternativeId
                 ),
                 onAlternativeClick = state.onAlternativeClick,
@@ -520,145 +478,210 @@ fun CartProductCard(
 @Preview(showBackground = true)
 @Composable
 private fun CartProductCardPreview(
-    @PreviewParameter(CartProductCardCartProductProvider::class) product: CartProduct
+    @PreviewParameter(CartProductStatePreviewParameterProvider::class) state: CartProductState
 ) {
     CartProductCard(
-        state = CartProductCardState(
-            product = product
-        )
+        state = state
     )
 }
 
-private class CartProductCardCartProductProvider: PreviewParameterProvider<CartProduct> {
-    override val values: Sequence<CartProduct> = sequenceOf(
-        CartProduct(
-            id = "1",
-            detailId = "1",
-            itemId = "1",
-            colorId = "1",
-            brand = "BRUNELLO CUCINELLI",
-            urlBrandLogo = null,
-            name = "Хлопковая футболка с логотипом",
-            article = "MP827743",
-            color = "Белый",
-            size = "IT 48",
-            price = "1 600 000 ₽",
-            lookId = "look_1",
-            lookName = "Образ",
-            lookImageUrl = "",
-            imageUrl = "",
-            isForPayment = true,
-            priceValue = 1_600_000.0,
-            dateReceipt = "23 июня",
-            isDateReceiptOverdue = false
+private class CartProductStatePreviewParameterProvider: PreviewParameterProvider<CartProductState> {
+    override val values: Sequence<CartProductState> = sequenceOf(
+        CartProductState(
+            product = CartProduct(
+                id = "1",
+                detailId = "1",
+                itemId = "1",
+                colorId = "1",
+                brand = "BRUNELLO CUCINELLI",
+                urlBrandLogo = null,
+                name = "Хлопковая футболка с логотипом",
+                article = "MP827743",
+                color = "Белый",
+                size = "IT 48",
+                price = "1 600 000 ₽",
+                lookId = "look_1",
+                lookName = "Образ",
+                lookImageUrl = "",
+                imageUrl = "",
+                isForPayment = true,
+                priceValue = 1_600_000.0,
+                dateReceipt = "23 июня",
+                isDateReceiptOverdue = false
+            )
         ),
-        CartProduct(
-            id = "2",
-            detailId = "2",
-            itemId = "2",
-            colorId = "2",
-            brand = "SAINT LAURENT",
-            urlBrandLogo = null,
-            name = "Кожаная куртка",
-            article = "SL908221",
-            color = "Черный",
-            size = "FR 38",
-            price = "300 000 ₽",
-            oldPrice = "400 000 ₽",
-            lookId = "look_1",
-            lookName = "Образ",
-            lookImageUrl = "",
-            imageUrl = "",
-            isForPayment = false,
-            quantity = 2,
-            priceValue = 300_000.0,
-            dateReceipt = "23 июня",
-            isDateReceiptOverdue = true
+        CartProductState(
+            product = CartProduct(
+                id = "2",
+                detailId = "2",
+                itemId = "2",
+                colorId = "2",
+                brand = "SAINT LAURENT",
+                urlBrandLogo = null,
+                name = "Кожаная куртка",
+                article = "SL908221",
+                color = "Черный",
+                size = "FR 38",
+                price = "300 000 ₽",
+                oldPrice = "400 000 ₽",
+                lookId = "look_1",
+                lookName = "Образ",
+                lookImageUrl = "",
+                imageUrl = "",
+                isForPayment = false,
+                quantity = 2,
+                priceValue = 300_000.0,
+                dateReceipt = "23 июня",
+                isDateReceiptOverdue = true
+            )
         ),
-        CartProduct(
-            id = "3",
-            detailId = "3",
-            itemId = "3",
-            colorId = "3",
-            brand = "LORO PIANA",
-            urlBrandLogo = null,
-            name = "Кашемировый джемпер",
-            article = "LP112490",
-            color = "Серый",
-            size = "M",
-            price = "580 000 ₽",
-            imageUrl = "",
-            isForPayment = false,
-            isSold = true,
-            isAlternativesPaletteOpen = true,
-            alternatives = listOf(
-                CartProductAlternative(
-                    id = "1",
-                    detailId = "1",
-                    brand = "LORO PIANA",
-                    urlBrandLogo = null,
-                    price = "580 000 ₽",
-                    imageUrl = "",
-                    isOriginal = true
+        CartProductState(
+            product = CartProduct(
+                id = "3",
+                detailId = "3",
+                itemId = "3",
+                colorId = "3",
+                brand = "KITON",
+                urlBrandLogo = null,
+                name = "Шерстяной жакет без указанного размера",
+                article = "KT554210",
+                color = "Темно-синий",
+                size = "",
+                price = "920 000 ₽",
+                imageUrl = "",
+                isForPayment = false,
+                priceValue = 920_000.0
+            )
+        ),
+        CartProductState(
+            product = CartProduct(
+                id = "4",
+                detailId = "4",
+                itemId = "4",
+                colorId = "4",
+                brand = "GUCCI",
+                urlBrandLogo = null,
+                name = "Товар без цены",
+                article = "GG443322",
+                color = "Бежевый",
+                size = "IT 42",
+                price = "",
+                imageUrl = "",
+                isForPayment = false,
+                priceValue = .0
+            )
+        ),
+        CartProductState(
+            product = CartProduct(
+                id = "5",
+                detailId = "5",
+                itemId = "5",
+                colorId = "5",
+                brand = "LORO PIANA",
+                urlBrandLogo = null,
+                name = "Кашемировый джемпер, последний в наличии",
+                article = "LP112490",
+                color = "Серый",
+                size = "M",
+                price = "580 000 ₽",
+                imageUrl = "",
+                isForPayment = true,
+                isLastInStock = true,
+                priceValue = 580_000.0
+            )
+        ),
+        CartProductState(
+            product = CartProduct(
+                id = "6",
+                detailId = "6",
+                itemId = "6",
+                colorId = "6",
+                brand = "PRADA",
+                urlBrandLogo = null,
+                name = "Хлопковая рубашка с несколькими размерами",
+                article = "PR112233",
+                color = "Молочный",
+                size = "IT 38, IT 40",
+                price = "210 000 ₽",
+                imageUrl = "",
+                isForPayment = true,
+                isLastInStock = true,
+                sizeCount = 2,
+                sizeItems = listOf(
+                    CartProductSize(
+                        id = "38",
+                        name = "IT 38",
+                        productId = "6_38",
+                        isLastInStock = true
+                    ),
+                    CartProductSize(
+                        id = "40",
+                        name = "IT 40",
+                        productId = "6_40"
+                    )
                 ),
-                CartProductAlternative(
-                    id = "2",
-                    detailId = "2",
-                    brand = "DOLCE&GABBANA",
-                    urlBrandLogo = null,
-                    price = "1 900 000 ₽",
-                    imageUrl = "",
-                    isOriginal = false
-                )
-            ),
-            priceValue = 580_000.0
+                priceValue = 210_000.0
+            )
         ),
-        CartProduct(
-            id = "4",
-            detailId = "4",
-            itemId = "4",
-            colorId = "4",
-            brand = "KITON",
-            urlBrandLogo = null,
-            name = "Шерстяной жакет",
-            article = "KT554210",
-            color = "Темно-синий",
-            size = "",
-            price = "920 000 ₽",
-            imageUrl = "",
-            isForPayment = false,
-            priceValue = 920_000.0
-        ),
-        CartProduct(
-            id = "5",
-            detailId = "5",
-            itemId = "5",
-            colorId = "5",
-            brand = "PRADA",
-            urlBrandLogo = null,
-            name = "Хлопковая рубашка",
-            article = "PR112233",
-            color = "Молочный",
-            size = "IT 38, IT 40",
-            price = "210 000 ₽",
-            imageUrl = "",
-            isForPayment = true,
-            isLastInStock = true,
-            sizeCount = 2,
-            sizeItems = listOf(
-                CartProductSize(
-                    id = "38",
-                    name = "IT 38",
-                    productId = "5_38",
-                    isLastInStock = true
+        CartProductState(
+            product = CartProduct(
+                id = "7",
+                detailId = "7",
+                itemId = "7",
+                colorId = "7",
+                brand = "LORO PIANA",
+                urlBrandLogo = null,
+                name = "Проданный товар с открытой палитрой альтернатив",
+                article = "LP998877",
+                color = "Серый",
+                size = "M",
+                price = "580 000 ₽",
+                imageUrl = "",
+                isForPayment = false,
+                isSold = true,
+                isAlternativesPaletteOpen = true,
+                alternatives = listOf(
+                    CartProductAlternative(
+                        id = "1",
+                        detailId = "1",
+                        brand = "LORO PIANA",
+                        urlBrandLogo = null,
+                        price = "580 000 ₽",
+                        imageUrl = "",
+                        isOriginal = true
+                    ),
+                    CartProductAlternative(
+                        id = "2",
+                        detailId = "2",
+                        brand = "DOLCE&GABBANA",
+                        urlBrandLogo = null,
+                        price = "1 900 000 ₽",
+                        imageUrl = "",
+                        isOriginal = false
+                    )
                 ),
-                CartProductSize(
-                    id = "40",
-                    name = "IT 40",
-                    productId = "5_40"
-                )
+                priceValue = 580_000.0
             ),
-            priceValue = 210_000.0
+            selectedAlternativeId = "2"
+        ),
+        CartProductState(
+            product = CartProduct(
+                id = "8",
+                detailId = "8",
+                itemId = "8",
+                colorId = "8",
+                brand = "BOTTEGA VENETA",
+                urlBrandLogo = null,
+                name = "Товар с открытой пустой палитрой альтернатив",
+                article = "BV334455",
+                color = "Зеленый",
+                size = "IT 40",
+                price = "450 000 ₽",
+                imageUrl = "",
+                isForPayment = false,
+                isAlternativesPaletteOpen = true,
+                priceValue = 450_000.0
+            )
         )
     )
 }

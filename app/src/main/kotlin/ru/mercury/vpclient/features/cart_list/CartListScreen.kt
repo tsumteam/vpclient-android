@@ -71,7 +71,7 @@ import ru.mercury.vpclient.shared.ui.components.SharedTabRowState
 import ru.mercury.vpclient.shared.ui.components.cart.CartListLoading
 import ru.mercury.vpclient.shared.ui.components.cart.CartLookCard
 import ru.mercury.vpclient.shared.ui.components.cart.CartProductCard
-import ru.mercury.vpclient.shared.ui.components.cart.CartProductCardState
+import ru.mercury.vpclient.shared.ui.components.cart.CartProductState
 import ru.mercury.vpclient.shared.ui.components.cart.CartSummary
 import ru.mercury.vpclient.shared.ui.icons.VipPlatinumBagEmptyVersion2
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
@@ -396,7 +396,7 @@ private fun CartListScreenContent(
                         val product = group.products.first()
 
                         CartProductCard(
-                            state = CartProductCardState(
+                            state = CartProductState(
                                 product = product,
                                 onClick = { dispatch(CartIntent.ProductClick(product.detailId)) },
                                 onSelectSizeClick = { dispatch(CartIntent.ShowSizePicker(product)) },
@@ -546,7 +546,7 @@ private fun CartListScreenContent(
                             }
 
                         CartProductCard(
-                            state = CartProductCardState(
+                            state = CartProductState(
                                 product = draggedProduct
                             ),
                             modifier = modifier

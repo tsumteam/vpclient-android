@@ -21,6 +21,9 @@ import ru.mercury.vpclient.shared.data.network.request.FittingOperationRequest
 import ru.mercury.vpclient.shared.data.network.type.FittingOperationRequestType
 import ru.mercury.vpclient.shared.data.persistence.database.entity.CatalogFilterProductsEntity
 
+val CartProduct.colorText: String
+    get() = color.lowercase().replaceFirstChar { char -> char.uppercase() }
+
 val CartProduct.imagePages: List<String>
     get() {
         val pages = imageUrls.filter { it.isNotEmpty() }

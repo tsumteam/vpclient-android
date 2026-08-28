@@ -132,7 +132,7 @@ fun CartLookCard(
             val isAlternativesVisible = product.isAlternativesPaletteOpen && product.alternatives.isNotEmpty()
 
             CartProductCard(
-                state = CartProductCardState(
+                state = CartProductState(
                     product = product,
                     onClick = { onProductClick(product) },
                     onSelectSizeClick = { onSelectSizeClick(product) },

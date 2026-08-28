@@ -51,7 +51,7 @@ import ru.mercury.vpclient.shared.ui.components.cart.CartFittingSummary
 import ru.mercury.vpclient.shared.ui.components.cart.CartListLoading
 import ru.mercury.vpclient.shared.ui.components.cart.CartLookCard
 import ru.mercury.vpclient.shared.ui.components.cart.CartProductCard
-import ru.mercury.vpclient.shared.ui.components.cart.CartProductCardState
+import ru.mercury.vpclient.shared.ui.components.cart.CartProductState
 import ru.mercury.vpclient.shared.ui.components.fitting.FittingDeliveryHeader
 import ru.mercury.vpclient.shared.ui.components.fitting.FittingDeliveryHeaderState
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
@@ -305,7 +305,7 @@ private fun CartFittingScreenContent(
                                         val product = group.products.first()
 
                                         CartProductCard(
-                                            state = CartProductCardState(
+                                            state = CartProductState(
                                                 product = product,
                                                 onClick = { dispatch(CartIntent.ProductClick(product.detailId)) },
                                                 onSelectSizeClick = { dispatch(CartIntent.ShowSizePicker(product)) },
