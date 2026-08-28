@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
+import ru.mercury.vpclient.shared.domain.mapper.isLogoVisible
 import ru.mercury.vpclient.shared.ui.ktx.clickableWithoutRipple
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.livretMedium21
@@ -47,7 +48,7 @@ fun BrandBox(
         },
         contentAlignment = Alignment.Center
     ) {
-        if (entity.urlBrandLogo.isNullOrEmpty() || isLogoFailed) {
+        if (!entity.isLogoVisible || isLogoFailed) {
             Text(
                 text = entity.brand,
                 style = style.copy(

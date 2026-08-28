@@ -12,6 +12,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
+import ru.mercury.vpclient.shared.domain.mapper.isLogoVisible
+import ru.mercury.vpclient.shared.domain.mapper.isTextVisible
 import ru.mercury.vpclient.shared.ui.components.cart.CartAsyncImage
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.livretMedium21
@@ -26,13 +28,13 @@ fun ProductBrandBox(
         contentAlignment = Alignment.CenterStart
     ) {
         when {
-            !entity.urlBrandLogo.isNullOrEmpty() -> {
+            entity.isLogoVisible -> {
                 CartAsyncImage(
-                    imageUrl = entity.urlBrandLogo,
+                    imageUrl = entity.urlBrandLogo.orEmpty(),
                     modifier = Modifier.matchParentSize()
                 )
             }
-            entity.brand.isNotEmpty() -> {
+            entity.isTextVisible -> {
                 Text(
                     text = entity.brand,
                     style = MaterialTheme.typography.livretMedium21.copy(
@@ -49,22 +51,22 @@ fun ProductBrandBox(
 @Preview(showBackground = true)
 @Composable
 private fun ProductBrandBoxPreview(
-    @PreviewParameter(ProductBrandBoxBrandEntityProvider::class) entity: BrandEntity
+    @PreviewParameter(BrandEntityPreviewParameterProvider::class) entity: BrandEntity
 ) {
     ProductBrandBox(
         entity = entity
     )
 }
 
-private class ProductBrandBoxBrandEntityProvider: PreviewParameterProvider<BrandEntity> {
+private class BrandEntityPreviewParameterProvider: PreviewParameterProvider<BrandEntity> {
     override val values: Sequence<BrandEntity> = sequenceOf(
         BrandEntity(
-            brand = "SAINT LAURENT",
+            brand = "GUCCI",
             urlBrandLogo = null
         ),
         BrandEntity(
-            brand = "GUCCI",
-            urlBrandLogo = "https://example.com/brand-logo.png"
+            brand = "",
+            urlBrandLogo = ""
         )
     )
 }
