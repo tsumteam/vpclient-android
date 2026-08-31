@@ -1,6 +1,8 @@
-Vip Platinum Client Android App
+VPClient
 =
 Исходный код приложения VIP Platinum Client для Android.
 
 ## Build
-- Добавь в папку config файлы `vpclient-keystore-release.jks` и `keystore-release.properties`
+- Добавь файлы `vpclient-keystore-release.jks` и `keystore-release.properties` в папку `config`
+- Добавь переменную `APPMETRICA_API_KEY=` в `local.properties`
+- Собери проект `./gradlew assembleDebug`
