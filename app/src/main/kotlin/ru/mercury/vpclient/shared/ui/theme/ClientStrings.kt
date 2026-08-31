@@ -351,6 +351,8 @@ object ClientStrings {
     val MessengerAttachCartProducts get() = R.string.messenger_attach_cart_products
     val MessengerAttachCatalog get() = R.string.messenger_attach_catalog
     val MessengerAttachCancel get() = R.string.messenger_attach_cancel
+    val MessengerMessageEdited get() = R.string.messenger_message_edited
+    val MessengerMessagePlaceholder get() = R.string.messenger_message_placeholder
 
     val VideoSpeedTitle get() = R.string.video_speed_title
     val VideoSpeed05 get() = R.string.video_speed_05

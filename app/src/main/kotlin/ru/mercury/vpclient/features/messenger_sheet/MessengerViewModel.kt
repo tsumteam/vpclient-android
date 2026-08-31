@@ -4,6 +4,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+import ru.mercury.vpclient.activity.event.MainEventManager
+import ru.mercury.vpclient.features.details.navigation.DetailsRoute
 import ru.mercury.vpclient.features.messenger_sheet.event.MessengerEvent
 import ru.mercury.vpclient.features.messenger_sheet.event.MessengerEventManager
 import ru.mercury.vpclient.features.messenger_sheet.event.MessengerHostEvent
@@ -82,6 +84,13 @@ class MessengerViewModel @Inject constructor(
             is MessengerIntent.MicClick -> {
                 // fixme Запись голосового сообщения пока не реализована
                 return
+            }
+            is MessengerIntent.ProductClick -> {
+                if (intent.productId.isBlank()) return
+                launch {
+                    MessengerEventManager.send(MessengerHostEvent.DismissRequest)
+                    MainEventManager.send(DetailsRoute(id = intent.productId, openedFromCart = true))
+                }
             }
         }
     }

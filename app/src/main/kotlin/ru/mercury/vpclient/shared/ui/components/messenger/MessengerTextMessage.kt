@@ -1,19 +1,25 @@
 package ru.mercury.vpclient.shared.ui.components.messenger
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -21,15 +27,11 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.mercury.vpclient.shared.data.entity.MessengerMessageDirection
+import ru.mercury.vpclient.shared.data.entity.MessengerMessagePayload
 import ru.mercury.vpclient.shared.data.entity.MessengerMessageStatus
 import ru.mercury.vpclient.shared.data.persistence.database.entity.MessengerMessageEntity
-import ru.mercury.vpclient.shared.domain.mapper.messengerMessageDateText
-import ru.mercury.vpclient.shared.ui.icons.MessengerCheck14x10
-import ru.mercury.vpclient.shared.ui.icons.MessengerChecks20x10
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.theme.blue
-import ru.mercury.vpclient.shared.ui.theme.regular12
-import ru.mercury.vpclient.shared.ui.theme.regular15
+import ru.mercury.vpclient.shared.ui.theme.regular14
 
 @Composable
 fun MessengerTextMessage(
@@ -40,67 +42,82 @@ fun MessengerTextMessage(
 
     Column(
         modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(5.dp),
         horizontalAlignment = if (isOutgoing) Alignment.End else Alignment.Start
     ) {
-        Surface(
-            modifier = Modifier.widthIn(max = 328.dp),
-            shape = RoundedCornerShape(
-                topStart = 17.dp,
-                topEnd = 17.dp,
-                bottomEnd = if (isOutgoing) 0.dp else 17.dp,
-                bottomStart = if (isOutgoing) 17.dp else 0.dp
-            ),
-            color = if (isOutgoing) {
-                MaterialTheme.colorScheme.onSurfaceVariant
-            } else {
-                MaterialTheme.colorScheme.outlineVariant
-            }
+        Column(
+            modifier = Modifier
+                .widthIn(max = 328.dp)
+                .clip(
+                    RoundedCornerShape(
+                        topStart = if (isOutgoing) 16.dp else 0.dp,
+                        topEnd = 16.dp,
+                        bottomEnd = if (isOutgoing) 0.dp else 16.dp,
+                        bottomStart = 16.dp
+                    )
+                )
+                .background(
+                    when {
+                        isOutgoing -> MaterialTheme.colorScheme.onSurfaceVariant
+                        else -> MaterialTheme.colorScheme.outlineVariant
+                    }
+                )
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            if (message.payload?.citation.orEmpty().isNotEmpty()) {
+                Row(
+                    modifier = Modifier.height(IntrinsicSize.Min),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .width(2.dp)
+                            .background(
+                                when {
+                                    isOutgoing -> MaterialTheme.colorScheme.background.copy(alpha = .6F)
+                                    else -> MaterialTheme.colorScheme.outline
+                                }
+                            )
+                    )
+
+                    Text(
+                        text = message.payload?.citation.orEmpty(),
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        style = MaterialTheme.typography.regular14.copy(
+                            color = when {
+                                isOutgoing -> MaterialTheme.colorScheme.background.copy(alpha = .6F)
+                                else -> MaterialTheme.colorScheme.onSurfaceVariant
+                            },
+                            lineHeight = 18.sp,
+                            letterSpacing = .2.sp
+                        )
+                    )
+                }
+            }
+
             Text(
                 text = message.text,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-                style = MaterialTheme.typography.regular15.copy(
-                    color = if (isOutgoing) {
-                        MaterialTheme.colorScheme.background
-                    } else {
-                        MaterialTheme.colorScheme.onBackground
+                style = MaterialTheme.typography.regular14.copy(
+                    color = when {
+                        isOutgoing -> MaterialTheme.colorScheme.background
+                        else -> MaterialTheme.colorScheme.onBackground
                     },
-                    lineHeight = 19.sp,
+                    lineHeight = 18.sp,
                     letterSpacing = .2.sp
                 )
             )
         }
 
-        Row(
-            modifier = Modifier.padding(top = 5.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = buildString {
-                    if (message.isEdited) append("Изменено ")
-                    append(message.createTime.messengerMessageDateText())
-                },
-                style = MaterialTheme.typography.regular12.copy(
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    lineHeight = 15.sp
-                )
+        MessengerMessageMeta(
+            state = MessengerMessageMetaState(
+                createTime = message.createTime,
+                isEdited = message.isEdited,
+                status = message.status
             )
-
-            message.status?.let { status ->
-                Icon(
-                    imageVector = when (status) {
-                        MessengerMessageStatus.Sent -> MessengerCheck14x10
-                        MessengerMessageStatus.Received, MessengerMessageStatus.Read -> MessengerChecks20x10
-                    },
-                    contentDescription = null,
-                    tint = when (status) {
-                        MessengerMessageStatus.Read -> MaterialTheme.colorScheme.blue
-                        MessengerMessageStatus.Sent, MessengerMessageStatus.Received -> MaterialTheme.colorScheme.onSurfaceVariant
-                    }
-                )
-            }
-        }
+        )
     }
 }
 
@@ -140,6 +157,28 @@ private class MessengerTextMessagePreviewParameterProvider: PreviewParameterProv
             direction = MessengerMessageDirection.Incoming,
             status = null,
             isEdited = false
+        ),
+        MessengerMessageEntity(
+            id = 4,
+            createTime = "2026-08-26T16:30:00+03:00",
+            text = "Здравствуйте! Заказ уже собран и завтра будет передан курьеру.",
+            direction = MessengerMessageDirection.Incoming,
+            status = null,
+            isEdited = false,
+            payload = MessengerMessagePayload(
+                citation = "Светлана, здравствуйте! Вчера отправила заказ, но до сих пор не получила ответа."
+            )
+        ),
+        MessengerMessageEntity(
+            id = 5,
+            createTime = "2026-08-26T16:32:00+03:00",
+            text = "Да, всё верно, оформляйте доставку на этот адрес.",
+            direction = MessengerMessageDirection.Outgoing,
+            status = MessengerMessageStatus.Read,
+            isEdited = false,
+            payload = MessengerMessagePayload(
+                citation = "Светлана, здравствуйте! Вчера отправила заказ, но до сих пор не получила ответа."
+            )
         )
     )
 }

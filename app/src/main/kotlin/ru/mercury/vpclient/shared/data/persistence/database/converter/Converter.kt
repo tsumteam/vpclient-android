@@ -6,6 +6,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 import ru.mercury.vpclient.shared.data.entity.CartProductAlternative
 import ru.mercury.vpclient.shared.data.entity.CartProductSize
+import ru.mercury.vpclient.shared.data.entity.MessengerMessagePayload
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FilterValueItemEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.GiftCardTemplateEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.ProductAvailableSizesEntity
@@ -151,6 +152,19 @@ class Converter {
 
     @TypeConverter
     fun toProductAvailableSizesEntity(data: String?): ProductAvailableSizesEntity? {
+        return when {
+            data.isNullOrEmpty() -> null
+            else -> json.decodeFromString(data)
+        }
+    }
+
+    @TypeConverter
+    fun fromMessengerMessagePayload(payload: MessengerMessagePayload?): String? {
+        return payload?.let { json.encodeToString(it) }
+    }
+
+    @TypeConverter
+    fun toMessengerMessagePayload(data: String?): MessengerMessagePayload? {
         return when {
             data.isNullOrEmpty() -> null
             else -> json.decodeFromString(data)

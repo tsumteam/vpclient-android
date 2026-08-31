@@ -397,6 +397,8 @@
     <string name="messenger_attach_cart_products">Товары из корзины/примерки</string>
     <string name="messenger_attach_catalog">Выбрать из каталога</string>
     <string name="messenger_attach_cancel">Отменить</string>
+    <string name="messenger_message_edited">"Изменено "</string>
+    <string name="messenger_message_placeholder">Введите сообщение</string>
 
     <string name="video_speed_title">Скорость</string>
     <string name="video_speed_05">0,5x</string>

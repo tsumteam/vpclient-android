@@ -2,6 +2,7 @@ package ru.mercury.vpclient.shared.data.persistence.database.entity
 
 import androidx.room.Entity
 import ru.mercury.vpclient.shared.data.entity.MessengerMessageDirection
+import ru.mercury.vpclient.shared.data.entity.MessengerMessagePayload
 import ru.mercury.vpclient.shared.data.entity.MessengerMessageStatus
 
 @Entity(
@@ -14,5 +15,6 @@ data class MessengerMessageEntity(
     val text: String,
     val direction: MessengerMessageDirection,
     val status: MessengerMessageStatus?,
-    val isEdited: Boolean
+    val isEdited: Boolean,
+    val payload: MessengerMessagePayload? = null
 )

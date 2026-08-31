@@ -62,14 +62,21 @@ import ru.mercury.vpclient.features.messenger_sheet.event.MessengerEvent
 import ru.mercury.vpclient.features.messenger_sheet.intent.MessengerIntent
 import ru.mercury.vpclient.features.messenger_sheet.model.MessengerModel
 import ru.mercury.vpclient.shared.data.entity.MessengerMessageDirection
+import ru.mercury.vpclient.shared.data.entity.MessengerMessagePayload
+import ru.mercury.vpclient.shared.data.entity.MessengerMessagePayloadType
 import ru.mercury.vpclient.shared.data.entity.MessengerMessageStatus
+import ru.mercury.vpclient.shared.data.entity.MessengerPayloadCompilation
+import ru.mercury.vpclient.shared.data.entity.MessengerPayloadImage
+import ru.mercury.vpclient.shared.data.entity.MessengerPayloadLook
+import ru.mercury.vpclient.shared.data.entity.MessengerPayloadProduct
+import ru.mercury.vpclient.shared.data.entity.MessengerPayloadVideo
 import ru.mercury.vpclient.shared.data.persistence.database.entity.EmployeeEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.MessengerMessageEntity
 import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.messenger.MessageSendButton
-import ru.mercury.vpclient.shared.ui.components.messenger.MessengerTextMessage
+import ru.mercury.vpclient.shared.ui.components.messenger.MessengerMessage
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.icons.Chat24
 import ru.mercury.vpclient.shared.ui.icons.ChevronDown24
@@ -253,7 +260,7 @@ private fun MessengerSheetContent(
                         .fillMaxWidth()
                         .imePadding()
                         .background(MaterialTheme.colorScheme.background)
-                        .padding(start = 16.dp, end = 8.dp, bottom = 8.dp)
+                        .padding(start = 16.dp, top = 8.dp, end = 8.dp, bottom = 8.dp)
                 ) {
                     var textFieldLineCount by remember { mutableIntStateOf(1) }
 
@@ -290,7 +297,7 @@ private fun MessengerSheetContent(
                                 ) {
                                     if (state.messageText.isEmpty()) {
                                         Text(
-                                            text = stringResource(ClientStrings.DetailsMessageCommentPlaceholder),
+                                            text = stringResource(ClientStrings.MessengerMessagePlaceholder),
                                             style = MaterialTheme.typography.regular15.copy(
                                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                                 lineHeight = 19.sp,
@@ -348,9 +355,9 @@ private fun MessengerSheetContent(
         ) { innerPadding ->
             val listState = rememberLazyListState()
 
-            LaunchedEffect(state.messageEntities.size) {
-                if (state.messageEntities.isNotEmpty()) {
-                    listState.scrollToItem(state.messageEntities.lastIndex)
+            LaunchedEffect(state.groupedMessageEntities.size) {
+                if (state.groupedMessageEntities.isNotEmpty()) {
+                    listState.scrollToItem(state.groupedMessageEntities.lastIndex)
                 }
             }
 
@@ -363,10 +370,13 @@ private fun MessengerSheetContent(
                 verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Bottom)
             ) {
                 items(
-                    items = state.messageEntities,
+                    items = state.groupedMessageEntities,
                     key = MessengerMessageEntity::id
                 ) { message ->
-                    MessengerTextMessage(message)
+                    MessengerMessage(
+                        message = message,
+                        onProductClick = { productId -> dispatch(MessengerIntent.ProductClick(productId)) }
+                    )
                 }
             }
         }
@@ -408,8 +418,225 @@ private class MessengerModelPreviewParameterProvider: PreviewParameterProvider<M
             direction = MessengerMessageDirection.Incoming,
             status = null,
             isEdited = false
+        ),
+        MessengerMessageEntity(
+            id = 3,
+            createTime = "2026-08-26T16:20:00+03:00",
+            text = "Заказ №1234567 оформлен",
+            direction = MessengerMessageDirection.System,
+            status = null,
+            isEdited = false
+        ),
+        MessengerMessageEntity(
+            id = 4,
+            createTime = "2026-08-26T16:42:00+03:00",
+            text = "",
+            direction = MessengerMessageDirection.Outgoing,
+            status = MessengerMessageStatus.Sent,
+            isEdited = false,
+            payload = MessengerMessagePayload(
+                type = MessengerMessagePayloadType.Images,
+                images = listOf(
+                    MessengerPayloadImage(
+                        imageUrl = "https://example.com/photo-1.jpg",
+                        previewUrl = "https://example.com/photo-1.jpg"
+                    )
+                )
+            )
+        ),
+        MessengerMessageEntity(
+            id = 5,
+            createTime = "2026-08-26T16:43:00+03:00",
+            text = "",
+            direction = MessengerMessageDirection.Incoming,
+            status = null,
+            isEdited = false,
+            payload = MessengerMessagePayload(
+                type = MessengerMessagePayloadType.Images,
+                images = List(6) { index ->
+                    MessengerPayloadImage(
+                        imageUrl = "https://example.com/photo-${index + 1}.jpg",
+                        previewUrl = "https://example.com/photo-${index + 1}.jpg"
+                    )
+                }
+            )
+        ),
+        MessengerMessageEntity(
+            id = 6,
+            createTime = "2026-08-26T16:44:00+03:00",
+            text = "",
+            direction = MessengerMessageDirection.Outgoing,
+            status = MessengerMessageStatus.Sent,
+            isEdited = false,
+            payload = MessengerMessagePayload(
+                type = MessengerMessagePayloadType.Videos,
+                videos = listOf(
+                    MessengerPayloadVideo(
+                        videoUrl = "https://example.com/video.mp4",
+                        previewUrl = "https://example.com/video-preview.jpg"
+                    )
+                )
+            )
+        ),
+        MessengerMessageEntity(
+            id = 7,
+            createTime = "2026-08-26T16:45:00+03:00",
+            text = "",
+            direction = MessengerMessageDirection.Incoming,
+            status = null,
+            isEdited = false,
+            payload = MessengerMessagePayload(
+                type = MessengerMessagePayloadType.Product,
+                products = listOf(
+                    MessengerPayloadProduct(
+                        id = "0000",
+                        brand = "SAINT LAURENT",
+                        name = "Кожаная куртка oversize",
+                        itemId = "0000000",
+                        price = 189_900.0,
+                        colorId = "BLK",
+                        colorName = "Чёрный",
+                        imageUrl = "https://example.com/product.jpg"
+                    )
+                )
+            )
+        ),
+        MessengerMessageEntity(
+            id = 8,
+            createTime = "2026-08-26T16:46:00+03:00",
+            text = "Заказ оформлен и передан в обработку",
+            direction = MessengerMessageDirection.System,
+            status = null,
+            isEdited = false,
+            payload = MessengerMessagePayload(
+                type = MessengerMessagePayloadType.Order,
+                title = "Заказ №1234567",
+                orderNumber = "1234567",
+                products = List(5) { index ->
+                    MessengerPayloadProduct(
+                        id = "000$index",
+                        brand = "SAINT LAURENT",
+                        name = "Кожаная куртка oversize",
+                        itemId = "000000$index",
+                        price = 189_900.0,
+                        colorId = "BLK",
+                        colorName = "Чёрный",
+                        imageUrl = "https://example.com/order-product-${index + 1}.jpg"
+                    )
+                }
+            )
+        ),
+        MessengerMessageEntity(
+            id = 9,
+            createTime = "2026-08-26T16:47:00+03:00",
+            text = "",
+            direction = MessengerMessageDirection.Outgoing,
+            status = MessengerMessageStatus.Sent,
+            isEdited = false,
+            payload = MessengerMessagePayload(
+                type = MessengerMessagePayloadType.ClientCompilation,
+                clientCompilations = listOf(
+                    MessengerPayloadCompilation(
+                        compilationId = 1,
+                        compilationName = "BLV/Hotel",
+                        compilationDescription = "Осенняя подборка городских образов",
+                        imageUrl = "https://example.com/compilation-1.jpg"
+                    )
+                )
+            )
+        ),
+        MessengerMessageEntity(
+            id = 10,
+            createTime = "2026-08-26T16:48:00+03:00",
+            text = "",
+            direction = MessengerMessageDirection.Incoming,
+            status = null,
+            isEdited = false,
+            payload = MessengerMessagePayload(
+                type = MessengerMessagePayloadType.CompilationLook,
+                compilationLooks = listOf(
+                    MessengerPayloadLook(
+                        id = "look-1",
+                        name = "Образ 1",
+                        imageUrl = "https://example.com/look-1.jpg",
+                        compilationName = "BLV/Hotel"
+                    )
+                )
+            )
+        ),
+        MessengerMessageEntity(
+            id = 11,
+            createTime = "2026-08-26T16:49:00+03:00",
+            text = "",
+            direction = MessengerMessageDirection.Outgoing,
+            status = MessengerMessageStatus.Sent,
+            isEdited = false,
+            payload = MessengerMessagePayload(
+                type = MessengerMessagePayloadType.BasketLook,
+                basketLooks = listOf(
+                    MessengerPayloadLook(
+                        id = "look-2",
+                        name = "Образ 2",
+                        imageUrl = "https://example.com/look-2.jpg"
+                    )
+                )
+            )
+        ),
+        MessengerMessageEntity(
+            id = 12,
+            createTime = "2026-08-26T16:50:00+03:00",
+            text = "",
+            direction = MessengerMessageDirection.Outgoing,
+            status = MessengerMessageStatus.Sent,
+            isEdited = false,
+            payload = MessengerMessagePayload(
+                type = MessengerMessagePayloadType.GiftCard,
+                products = listOf(
+                    MessengerPayloadProduct(
+                        id = "0000",
+                        brand = "VIP PLATINUM",
+                        name = "Подарочная карта",
+                        itemId = "0000000",
+                        price = 10_000.0,
+                        colorId = "",
+                        colorName = "",
+                        imageUrl = "https://example.com/gift-card.jpg"
+                    )
+                )
+            )
+        ),
+        MessengerMessageEntity(
+            id = 13,
+            createTime = "2026-08-26T16:51:00+03:00",
+            text = "Подскажите, пожалуйста, когда планируется доставка?",
+            direction = MessengerMessageDirection.Outgoing,
+            status = MessengerMessageStatus.Read,
+            isEdited = false,
+            payload = MessengerMessagePayload(
+                citation = "Заказ №1234567 передан курьерской службе, ожидайте звонка курьера."
+            )
         )
     )
+
+    private val previewAlbumMessages = List(4) { index ->
+        MessengerMessageEntity(
+            id = index.toLong() + 1,
+            createTime = "2026-08-26T16:40:00+03:00",
+            text = "",
+            direction = MessengerMessageDirection.Incoming,
+            status = null,
+            isEdited = false,
+            payload = MessengerMessagePayload(
+                type = MessengerMessagePayloadType.Images,
+                images = listOf(
+                    MessengerPayloadImage(
+                        imageUrl = "https://example.com/album-${index + 1}.jpg",
+                        previewUrl = "https://example.com/album-${index + 1}.jpg"
+                    )
+                )
+            )
+        )
+    }
 
     override val values: Sequence<MessengerModel> = sequenceOf(
         MessengerModel(
@@ -427,6 +654,14 @@ private class MessengerModelPreviewParameterProvider: PreviewParameterProvider<M
             ),
             messageEntities = previewMessages,
             messageText = "Добрый день"
+        ),
+        MessengerModel(
+            activeEmployeeEntity = EmployeeEntity.Empty.copy(
+                employeeName = "Светлана",
+                employeeBrand = "Saint Laurent"
+            ),
+            messageEntities = previewAlbumMessages,
+            messageText = ""
         )
     )
 }
