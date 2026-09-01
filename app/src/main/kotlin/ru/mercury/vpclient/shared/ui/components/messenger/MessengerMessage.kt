@@ -96,17 +96,13 @@ fun MessengerMessage(
                         MessengerPhotoMessage(
                             state = MessengerPhotoMessageState(
                                 imageUrls = imageUrls,
-                                isOutgoing = isOutgoing
+                                isOutgoing = isOutgoing,
+                                metaState = MessengerMessageMetaState(
+                                    createTime = message.createTime,
+                                    isEdited = message.isEdited,
+                                    status = message.status
+                                )
                             )
-                        )
-
-                        MessengerMessageMeta(
-                            state = MessengerMessageMetaState(
-                                createTime = message.createTime,
-                                isEdited = message.isEdited,
-                                status = message.status
-                            ),
-                            modifier = Modifier.padding(top = 5.dp)
                         )
                     }
                 }

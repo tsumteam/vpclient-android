@@ -4,12 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,23 +18,15 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
+import ru.mercury.vpclient.shared.data.entity.MessengerMessageStatus
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
-import ru.mercury.vpclient.shared.ui.theme.medium22
 
 data class MessengerPhotoMessageState(
     val imageUrls: List<String>,
-    val isOutgoing: Boolean
-) {
-    val visibleImageUrls: List<String>
-        get() = imageUrls.take(4)
-
-    val remainingCount: Int
-        get() = (imageUrls.size - 4).coerceAtLeast(0)
-
-    val isRemainingBadgeVisible: Boolean
-        get() = remainingCount > 0
-}
+    val isOutgoing: Boolean,
+    val metaState: MessengerMessageMetaState
+)
 
 @Composable
 fun MessengerPhotoMessage(
@@ -45,15 +35,17 @@ fun MessengerPhotoMessage(
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = if (state.isOutgoing) Alignment.End else Alignment.Start
     ) {
-        when (state.visibleImageUrls.size) {
-            0 -> { }
-            1 -> {
-                ClientAsyncImage(
-                    imageUrl = state.visibleImageUrls[0],
-                    contentScale = ContentScale.Crop,
+        state.imageUrls.forEach { imageUrl ->
+            Column(
+                verticalArrangement = Arrangement.spacedBy(5.dp),
+                horizontalAlignment = if (state.isOutgoing) Alignment.End else Alignment.Start
+            ) {
+                Box(
                     modifier = Modifier
+                        .size(width = 248.dp, height = 248.dp)
                         .clip(
                             RoundedCornerShape(
                                 topStart = 17.dp,
@@ -63,118 +55,17 @@ fun MessengerPhotoMessage(
                             )
                         )
                         .background(MaterialTheme.colorScheme.outlineVariant)
-                        .size(width = 248.dp, height = 248.dp)
+                ) {
+                    ClientAsyncImage(
+                        imageUrl = imageUrl,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.matchParentSize()
+                    )
+                }
+
+                MessengerMessageMeta(
+                    state = state.metaState
                 )
-            }
-            2 -> {
-                Row(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(MaterialTheme.colorScheme.outlineVariant),
-                    horizontalArrangement = Arrangement.spacedBy(2.dp)
-                ) {
-                    ClientAsyncImage(
-                        imageUrl = state.visibleImageUrls[0],
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.size(width = 123.dp, height = 248.dp)
-                    )
-
-                    ClientAsyncImage(
-                        imageUrl = state.visibleImageUrls[1],
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.size(width = 123.dp, height = 248.dp)
-                    )
-                }
-            }
-            3 -> {
-                Row(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(MaterialTheme.colorScheme.outlineVariant),
-                    horizontalArrangement = Arrangement.spacedBy(2.dp)
-                ) {
-                    ClientAsyncImage(
-                        imageUrl = state.visibleImageUrls[0],
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.size(width = 123.dp, height = 248.dp)
-                    )
-
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(2.dp)
-                    ) {
-                        ClientAsyncImage(
-                            imageUrl = state.visibleImageUrls[1],
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.size(123.dp)
-                        )
-
-                        ClientAsyncImage(
-                            imageUrl = state.visibleImageUrls[2],
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.size(123.dp)
-                        )
-                    }
-                }
-            }
-            else -> {
-                Column(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(MaterialTheme.colorScheme.outlineVariant),
-                    verticalArrangement = Arrangement.spacedBy(2.dp)
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(2.dp)
-                    ) {
-                        ClientAsyncImage(
-                            imageUrl = state.visibleImageUrls[0],
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.size(123.dp)
-                        )
-
-                        ClientAsyncImage(
-                            imageUrl = state.visibleImageUrls[1],
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.size(123.dp)
-                        )
-                    }
-
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(2.dp)
-                    ) {
-                        ClientAsyncImage(
-                            imageUrl = state.visibleImageUrls[2],
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.size(123.dp)
-                        )
-
-                        Box(
-                            modifier = Modifier.size(123.dp)
-                        ) {
-                            ClientAsyncImage(
-                                imageUrl = state.visibleImageUrls[3],
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier.matchParentSize()
-                            )
-
-                            if (state.isRemainingBadgeVisible) {
-                                Box(
-                                    modifier = Modifier
-                                        .matchParentSize()
-                                        .background(MaterialTheme.colorScheme.scrim.copy(alpha = .6F)),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        text = "+${state.remainingCount}",
-                                        style = MaterialTheme.typography.medium22.copy(
-                                            color = MaterialTheme.colorScheme.onPrimary
-                                        )
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
             }
         }
     }
@@ -192,28 +83,35 @@ private fun MessengerPhotoMessagePreview(
 }
 
 private class MessengerPhotoMessageStatePreviewParameterProvider: PreviewParameterProvider<MessengerPhotoMessageState> {
-    private val imageUrls = List(8) { index -> "https://example.com/photo-${index + 1}.jpg" }
+    private val imageUrls = List(4) { index -> "https://example.com/photo-${index + 1}.jpg" }
+
+    private val outgoingMetaState = MessengerMessageMetaState(
+        createTime = "2026-08-26T16:40:00+03:00",
+        isEdited = false,
+        status = MessengerMessageStatus.Read
+    )
+
+    private val incomingMetaState = MessengerMessageMetaState(
+        createTime = "2026-08-26T16:40:00+03:00",
+        isEdited = false,
+        status = null
+    )
 
     override val values: Sequence<MessengerPhotoMessageState> = sequenceOf(
         MessengerPhotoMessageState(
             imageUrls = imageUrls.take(1),
-            isOutgoing = true
-        ),
-        MessengerPhotoMessageState(
-            imageUrls = imageUrls.take(2),
-            isOutgoing = false
+            isOutgoing = true,
+            metaState = outgoingMetaState
         ),
         MessengerPhotoMessageState(
             imageUrls = imageUrls.take(3),
-            isOutgoing = true
+            isOutgoing = false,
+            metaState = incomingMetaState
         ),
         MessengerPhotoMessageState(
-            imageUrls = imageUrls.take(4),
-            isOutgoing = false
-        ),
-        MessengerPhotoMessageState(
-            imageUrls = imageUrls.take(6),
-            isOutgoing = true
+            imageUrls = imageUrls.take(3),
+            isOutgoing = true,
+            metaState = outgoingMetaState
         )
     )
 }
