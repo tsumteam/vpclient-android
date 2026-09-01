@@ -1,5 +1,6 @@
 package ru.mercury.vpclient.features.messenger_sheet
 
+import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -17,24 +18,21 @@ import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
 import ru.mercury.vpclient.shared.domain.usecase.BasketChatSendUseCase
 import ru.mercury.vpclient.shared.domain.usecase.BasketChatSendUseCase.BasketChatSendException
 import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
-import ru.mercury.vpclient.shared.domain.usecase.MessengerMessageEntitiesFlowUseCase
-import ru.mercury.vpclient.shared.domain.usecase.MessengerMessagesUseCase
-import ru.mercury.vpclient.shared.domain.usecase.MessengerMessagesUseCase.MessengerMessagesException
+import ru.mercury.vpclient.shared.domain.usecase.MessengerMessagesPagingDataUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class MessengerViewModel @Inject constructor(
     private val employeeActiveFlowUseCase: EmployeeActiveFlowUseCase,
-    private val messengerMessageEntitiesFlowUseCase: MessengerMessageEntitiesFlowUseCase,
-    private val messengerMessagesUseCase: MessengerMessagesUseCase,
-    private val basketChatSendUseCase: BasketChatSendUseCase
+    private val basketChatSendUseCase: BasketChatSendUseCase,
+    messengerMessagesPagingDataUseCase: MessengerMessagesPagingDataUseCase
 ): ClientViewModel<MessengerIntent, MessengerModel, MessengerEvent>(MessengerModel()) {
+
+    val messagesPagingFlow = messengerMessagesPagingDataUseCase(Unit).cachedIn(this)
 
     init {
         dispatch(MessengerIntent.CollectActiveEmployee)
-        dispatch(MessengerIntent.CollectMessages)
-        dispatch(MessengerIntent.LoadMessages)
     }
 
     override fun dispatch(intent: MessengerIntent) {
@@ -46,23 +44,7 @@ class MessengerViewModel @Inject constructor(
                         .collectLatest { entity -> reduce { it.copy(activeEmployeeEntity = entity) } }
                 }
             }
-            is MessengerIntent.CollectMessages -> {
-                launch {
-                    messengerMessageEntitiesFlowUseCase(Unit).collectLatest { entities ->
-                        reduce { it.copy(messageEntities = entities) }
-                    }
-                }
-            }
             is MessengerIntent.MessageTextChange -> reduce { it.copy(messageText = intent.text) }
-            is MessengerIntent.LoadMessages -> {
-                if (stateFlow.value.messagesJob?.isActive == true) return
-                val job = launch {
-                    messengerMessagesUseCase(Unit).getOrThrow()
-                }.also { launchedJob ->
-                    launchedJob.invokeOnCompletion { reduce { it.copy(messagesJob = null) } }
-                }
-                reduce { it.copy(messagesJob = job) }
-            }
             is MessengerIntent.DismissClick -> {
                 launch { MessengerEventManager.send(MessengerHostEvent.DismissRequest) }
             }
@@ -70,7 +52,10 @@ class MessengerViewModel @Inject constructor(
                 val text = stateFlow.value.messageText.trim()
                 if (text.isEmpty()) return
                 reduce { it.copy(messageText = "") }
-                launch { basketChatSendUseCase(text).getOrThrow() }
+                launch {
+                    basketChatSendUseCase(text).getOrThrow()
+                    send(MessengerEvent.RefreshMessages)
+                }
             }
             is MessengerIntent.CallClick -> {
                 launch { send(MessengerEvent.LaunchDialer(stateFlow.value.activeEmployeeEntity.employeePhone)) }
@@ -105,10 +90,6 @@ class MessengerViewModel @Inject constructor(
 
     override fun catch(throwable: Throwable) {
         when (throwable) {
-            is MessengerMessagesException -> {
-                reduce { it.copy(messagesJob = null) }
-                launch { send(MessengerEvent.SnackbarErrorMessage(throwable.message)) }
-            }
             is BasketChatSendException -> {
                 launch { send(MessengerEvent.SnackbarErrorMessage(throwable.message)) }
             }

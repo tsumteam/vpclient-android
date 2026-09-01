@@ -19,7 +19,6 @@ import javax.inject.Inject
 class BasketChatSendUseCase @Inject constructor(
     private val networkService: NetworkService,
     private val settingsDataStore: SettingsDataStore,
-    private val messengerMessagesUseCase: MessengerMessagesUseCase,
     dispatchers: SharedDispatchers
 ): UseCase<String, Unit>(dispatchers.io) {
 
@@ -40,8 +39,7 @@ class BasketChatSendUseCase @Inject constructor(
                 )
                 networkService.basketChatSend(request)
             },
-            onSuccess = { messengerMessagesUseCase(Unit).getOrThrow() },
-            onEmpty = { messengerMessagesUseCase(Unit).getOrThrow() },
+            onSuccess = {},
             onFailure = { error -> throw BasketChatSendException(error.message) }
         )
     }

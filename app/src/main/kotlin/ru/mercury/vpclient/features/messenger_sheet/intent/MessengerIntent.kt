@@ -5,8 +5,6 @@ import ru.mercury.vpclient.shared.mvi.Intent
 sealed interface MessengerIntent: Intent {
     data object DismissClick: MessengerIntent
     data object CollectActiveEmployee: MessengerIntent
-    data object CollectMessages: MessengerIntent
-    data object LoadMessages: MessengerIntent
     data object CallClick: MessengerIntent
     data object AttachClick: MessengerIntent
     data object DismissAttachSheet: MessengerIntent
