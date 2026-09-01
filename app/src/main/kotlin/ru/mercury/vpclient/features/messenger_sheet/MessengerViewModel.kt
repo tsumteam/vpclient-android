@@ -14,6 +14,8 @@ import ru.mercury.vpclient.features.messenger_sheet.model.MessengerModel
 import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
+import ru.mercury.vpclient.shared.domain.usecase.BasketChatSendUseCase
+import ru.mercury.vpclient.shared.domain.usecase.BasketChatSendUseCase.BasketChatSendException
 import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.MessengerMessageEntitiesFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.MessengerMessagesUseCase
@@ -25,7 +27,8 @@ import javax.inject.Inject
 class MessengerViewModel @Inject constructor(
     private val employeeActiveFlowUseCase: EmployeeActiveFlowUseCase,
     private val messengerMessageEntitiesFlowUseCase: MessengerMessageEntitiesFlowUseCase,
-    private val messengerMessagesUseCase: MessengerMessagesUseCase
+    private val messengerMessagesUseCase: MessengerMessagesUseCase,
+    private val basketChatSendUseCase: BasketChatSendUseCase
 ): ClientViewModel<MessengerIntent, MessengerModel, MessengerEvent>(MessengerModel()) {
 
     init {
@@ -63,7 +66,12 @@ class MessengerViewModel @Inject constructor(
             is MessengerIntent.DismissClick -> {
                 launch { MessengerEventManager.send(MessengerHostEvent.DismissRequest) }
             }
-            is MessengerIntent.SendClick -> return // fixme
+            is MessengerIntent.SendClick -> {
+                val text = stateFlow.value.messageText.trim()
+                if (text.isEmpty()) return
+                reduce { it.copy(messageText = "") }
+                launch { basketChatSendUseCase(text).getOrThrow() }
+            }
             is MessengerIntent.CallClick -> {
                 launch { send(MessengerEvent.LaunchDialer(stateFlow.value.activeEmployeeEntity.employeePhone)) }
             }
@@ -99,6 +107,9 @@ class MessengerViewModel @Inject constructor(
         when (throwable) {
             is MessengerMessagesException -> {
                 reduce { it.copy(messagesJob = null) }
+                launch { send(MessengerEvent.SnackbarErrorMessage(throwable.message)) }
+            }
+            is BasketChatSendException -> {
                 launch { send(MessengerEvent.SnackbarErrorMessage(throwable.message)) }
             }
             is ClientException -> {
