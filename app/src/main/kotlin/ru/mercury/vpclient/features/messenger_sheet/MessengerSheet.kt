@@ -47,11 +47,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
+import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -442,8 +446,56 @@ private fun MessengerSheetContent(
 @PreviewWrapper(ThemeWrapper::class)
 @Preview
 @Composable
-private fun MessengerSheetContentPreview() {
-    val previewMessages = listOf(
+private fun MessengerSheetContentPreview(
+    @PreviewParameter(MessengerSheetPreviewParameterProvider::class) state: MessengerSheetPreviewState
+) {
+    val pagingItems = remember(state) {
+        MutableStateFlow(
+            PagingData.from(
+                data = state.messages,
+                sourceLoadStates = state.sourceLoadStates
+            )
+        )
+    }.collectAsLazyPagingItems()
+
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        MessengerSheetContent(
+            state = state.state,
+            pagingItems = pagingItems,
+            dispatch = {},
+            snackbarHostState = remember { SnackbarHostState() }
+        )
+    }
+}
+
+private data class MessengerSheetPreviewState(
+    val state: MessengerModel,
+    val messages: List<MessengerMessageEntity>,
+    val sourceLoadStates: LoadStates
+)
+
+private class MessengerSheetPreviewParameterProvider: PreviewParameterProvider<MessengerSheetPreviewState> {
+
+    private val previewModel = MessengerModel(
+        activeEmployeeEntity = EmployeeEntity.Empty.copy(
+            employeeName = "Светлана",
+            employeeBrand = "Saint Laurent"
+        ),
+        messageText = ""
+    )
+    private val idleLoadStates = LoadStates(
+        refresh = LoadState.NotLoading(endOfPaginationReached = false),
+        prepend = LoadState.NotLoading(endOfPaginationReached = false),
+        append = LoadState.NotLoading(endOfPaginationReached = false)
+    )
+    private val loadingLoadStates = LoadStates(
+        refresh = LoadState.Loading,
+        prepend = LoadState.NotLoading(endOfPaginationReached = false),
+        append = LoadState.NotLoading(endOfPaginationReached = false)
+    )
+    private val previewMessages = listOf(
         MessengerMessageEntity(
             id = 6,
             createTime = "2026-08-26T16:44:00+03:00",
@@ -517,24 +569,17 @@ private fun MessengerSheetContentPreview() {
             isEdited = false
         )
     )
-    val pagingItems = remember {
-        MutableStateFlow(PagingData.from(previewMessages))
-    }.collectAsLazyPagingItems()
 
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        MessengerSheetContent(
-            state = MessengerModel(
-                activeEmployeeEntity = EmployeeEntity.Empty.copy(
-                    employeeName = "Светлана",
-                    employeeBrand = "Saint Laurent"
-                ),
-                messageText = ""
-            ),
-            pagingItems = pagingItems,
-            dispatch = {},
-            snackbarHostState = remember { SnackbarHostState() }
+    override val values: Sequence<MessengerSheetPreviewState> = sequenceOf(
+        MessengerSheetPreviewState(
+            state = previewModel,
+            messages = emptyList(),
+            sourceLoadStates = loadingLoadStates
+        ),
+        MessengerSheetPreviewState(
+            state = previewModel,
+            messages = previewMessages,
+            sourceLoadStates = idleLoadStates
         )
-    }
+    )
 }
