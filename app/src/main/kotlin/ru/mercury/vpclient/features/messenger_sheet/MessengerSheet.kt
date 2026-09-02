@@ -2,6 +2,18 @@
 
 package ru.mercury.vpclient.features.messenger_sheet
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +33,8 @@ import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -33,11 +47,14 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -62,6 +79,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.messenger_attach_sheet.MessengerAttachSheet
 import ru.mercury.vpclient.features.messenger_attach_sheet.intent.MessengerAttachIntent
@@ -110,10 +128,27 @@ fun MessengerSheet(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+    val lazyListState = rememberLazyListState()
+    var lastSentMessageId by remember { mutableStateOf<Long?>(null) }
+    var sentMessageIdToAnimate by remember { mutableStateOf<Long?>(null) }
+
+    LaunchedEffect(lastSentMessageId) {
+        val sentMessageId = lastSentMessageId ?: return@LaunchedEffect
+        snapshotFlow {
+            pagingItems.itemSnapshotList.items.indexOfFirst { message -> message.id == sentMessageId }
+        }.first { index -> index >= 0 }
+
+        lazyListState.requestScrollToItem(0)
+    }
 
     MessengerSheetContent(
         state = state,
         pagingItems = pagingItems,
+        lazyListState = lazyListState,
+        sentMessageIdToAnimate = sentMessageIdToAnimate,
+        onSentMessageAnimationFinished = { messageId ->
+            if (sentMessageIdToAnimate == messageId) sentMessageIdToAnimate = null
+        },
         dispatch = viewModel::dispatch,
         snackbarHostState = snackbarHostState
     )
@@ -143,7 +178,16 @@ fun MessengerSheet(
         flow = viewModel.eventFlow
     ) { event ->
         when (event) {
-            is MessengerEvent.RefreshMessages -> pagingItems.refresh()
+            is MessengerEvent.MessageSent -> {
+                scope.launch {
+                    if (lazyListState.firstVisibleItemIndex != 0 || lazyListState.firstVisibleItemScrollOffset != 0) {
+                        lazyListState.animateScrollToItem(0)
+                    }
+                    lastSentMessageId = event.messageId
+                    sentMessageIdToAnimate = event.messageId
+                    pagingItems.refresh()
+                }
+            }
             is MessengerEvent.LaunchDialer -> context.launcherDialer(event.phone)
             is MessengerEvent.SnackbarErrorMessage -> {
                 snackbarHostState.currentSnackbarData?.dismiss()
@@ -157,6 +201,9 @@ fun MessengerSheet(
 private fun MessengerSheetContent(
     state: MessengerModel,
     pagingItems: LazyPagingItems<MessengerMessageEntity>,
+    lazyListState: LazyListState,
+    sentMessageIdToAnimate: Long?,
+    onSentMessageAnimationFinished: (Long) -> Unit,
     dispatch: (MessengerIntent) -> Unit,
     snackbarHostState: SnackbarHostState
 ) {
@@ -164,7 +211,8 @@ private fun MessengerSheetContent(
         onDismissRequest = { dispatch(MessengerIntent.DismissClick) },
         modifier = Modifier
             .fillMaxHeight()
-            .statusBarsPadding()
+            .statusBarsPadding(),
+        sheetGesturesEnabled = true
     ) {
         SharedScaffold(
             topBar = {
@@ -340,22 +388,32 @@ private fun MessengerSheetContent(
                             )
                         }
 
-                        if (state.isSendButtonVisible) {
-                            MessageSendButton(
-                                onClick = { dispatch(MessengerIntent.SendClick) },
-                                modifier = Modifier.size(40.dp)
-                            )
-                        } else {
-                            IconButton(
-                                onClick = { dispatch(MessengerIntent.MicClick) },
-                                modifier = Modifier.size(40.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Microphone24,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(24.dp),
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        AnimatedContent(
+                            targetState = state.isSendButtonVisible,
+                            modifier = Modifier.size(40.dp),
+                            transitionSpec = {
+                                (fadeIn() + scaleIn(initialScale = .8F)) togetherWith
+                                    (fadeOut() + scaleOut(targetScale = .8F))
+                            },
+                            label = "messenger_action_button_animation"
+                        ) { isSendButtonVisible ->
+                            if (isSendButtonVisible) {
+                                MessageSendButton(
+                                    onClick = { dispatch(MessengerIntent.SendClick) },
+                                    modifier = Modifier.size(40.dp)
                                 )
+                            } else {
+                                IconButton(
+                                    onClick = { dispatch(MessengerIntent.MicClick) },
+                                    modifier = Modifier.size(40.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Microphone24,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(24.dp),
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
                             }
                         }
                     }
@@ -371,6 +429,7 @@ private fun MessengerSheetContent(
             val isInitialLoading = pagingItems.isRefreshLoading && pagingItems.itemCount == 0
 
             LazyColumn(
+                state = lazyListState,
                 modifier = Modifier.fillMaxSize(),
                 reverseLayout = true,
                 contentPadding = innerPadding + PaddingValues(horizontal = 16.dp, vertical = 8.dp),
@@ -400,10 +459,50 @@ private fun MessengerSheetContent(
                         val message = pagingItems[index]
 
                         if (message != null) {
-                            MessengerMessage(
-                                message = message,
-                                onProductClick = { productId -> dispatch(MessengerIntent.ProductClick(productId)) }
-                            )
+                            if (message.id == sentMessageIdToAnimate) {
+                                val visibleState = remember(message.id) {
+                                    MutableTransitionState(false).apply { targetState = true }
+                                }
+
+                                LaunchedEffect(visibleState) {
+                                    snapshotFlow { visibleState.isIdle && visibleState.currentState }
+                                        .first { isAnimationFinished -> isAnimationFinished }
+                                    onSentMessageAnimationFinished(message.id)
+                                }
+
+                                AnimatedVisibility(
+                                    visibleState = visibleState,
+                                    enter = expandVertically(
+                                        animationSpec = tween(
+                                            durationMillis = 320,
+                                            easing = FastOutSlowInEasing
+                                        ),
+                                        expandFrom = Alignment.Bottom,
+                                        clip = false
+                                    ) + slideInVertically(
+                                        animationSpec = tween(
+                                            durationMillis = 320,
+                                            easing = FastOutSlowInEasing
+                                        ),
+                                        initialOffsetY = { fullHeight -> fullHeight }
+                                    ) + fadeIn(
+                                        animationSpec = tween(
+                                            durationMillis = 320,
+                                            easing = FastOutSlowInEasing
+                                        )
+                                    )
+                                ) {
+                                    MessengerMessage(
+                                        message = message,
+                                        onProductClick = { productId -> dispatch(MessengerIntent.ProductClick(productId)) }
+                                    )
+                                }
+                            } else {
+                                MessengerMessage(
+                                    message = message,
+                                    onProductClick = { productId -> dispatch(MessengerIntent.ProductClick(productId)) }
+                                )
+                            }
                         }
                     }
 
@@ -464,6 +563,9 @@ private fun MessengerSheetContentPreview(
         MessengerSheetContent(
             state = state.state,
             pagingItems = pagingItems,
+            lazyListState = rememberLazyListState(),
+            sentMessageIdToAnimate = null,
+            onSentMessageAnimationFinished = {},
             dispatch = {},
             snackbarHostState = remember { SnackbarHostState() }
         )

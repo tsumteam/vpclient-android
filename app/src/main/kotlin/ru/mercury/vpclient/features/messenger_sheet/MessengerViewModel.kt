@@ -53,8 +53,8 @@ class MessengerViewModel @Inject constructor(
                 if (text.isEmpty()) return
                 reduce { it.copy(messageText = "") }
                 launch {
-                    basketChatSendUseCase(text).getOrThrow()
-                    send(MessengerEvent.RefreshMessages)
+                    val messageId = basketChatSendUseCase(text).getOrThrow() ?: return@launch
+                    send(MessengerEvent.MessageSent(messageId = messageId))
                 }
             }
             is MessengerIntent.CallClick -> {
