@@ -2,8 +2,11 @@ package ru.mercury.vpclient.features.messenger_sheet
 
 import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.activity.event.MainEventManager
 import ru.mercury.vpclient.features.details.navigation.DetailsRoute
@@ -15,16 +18,19 @@ import ru.mercury.vpclient.features.messenger_sheet.model.MessengerModel
 import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
+import ru.mercury.vpclient.shared.domain.usecase.BasketChatGetUseCase
 import ru.mercury.vpclient.shared.domain.usecase.BasketChatSendUseCase
 import ru.mercury.vpclient.shared.domain.usecase.BasketChatSendUseCase.BasketChatSendException
 import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.MessengerMessagesPagingDataUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 class MessengerViewModel @Inject constructor(
     private val employeeActiveFlowUseCase: EmployeeActiveFlowUseCase,
+    private val basketChatGetUseCase: BasketChatGetUseCase,
     private val basketChatSendUseCase: BasketChatSendUseCase,
     messengerMessagesPagingDataUseCase: MessengerMessagesPagingDataUseCase
 ): ClientViewModel<MessengerIntent, MessengerModel, MessengerEvent>(MessengerModel()) {
@@ -33,6 +39,7 @@ class MessengerViewModel @Inject constructor(
 
     init {
         dispatch(MessengerIntent.CollectActiveEmployee)
+        dispatch(MessengerIntent.PollNewMessages)
     }
 
     override fun dispatch(intent: MessengerIntent) {
@@ -42,6 +49,18 @@ class MessengerViewModel @Inject constructor(
                     employeeActiveFlowUseCase(Unit)
                         .distinctUntilChanged()
                         .collectLatest { entity -> reduce { it.copy(activeEmployeeEntity = entity) } }
+                }
+            }
+            is MessengerIntent.PollNewMessages -> {
+                launch {
+                    while (isActive) {
+                        try {
+                            basketChatGetUseCase(Unit).getOrThrow()
+                        } catch (throwable: Throwable) {
+                            if (throwable is CancellationException) throw throwable
+                        }
+                        delay(BasketChatGetUseCase.POLL_INTERVAL_MILLIS.milliseconds)
+                    }
                 }
             }
             is MessengerIntent.MessageTextChange -> reduce { it.copy(messageText = intent.text) }
