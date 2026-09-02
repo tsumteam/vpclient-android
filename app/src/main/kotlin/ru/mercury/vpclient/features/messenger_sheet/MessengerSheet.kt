@@ -79,6 +79,9 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import ru.mercury.vpclient.features.messenger_attach_sheet.MessengerAttachSheet
@@ -131,6 +134,7 @@ fun MessengerSheet(
     val lazyListState = rememberLazyListState()
     var lastSentMessageId by remember { mutableStateOf<Long?>(null) }
     var sentMessageIdToAnimate by remember { mutableStateOf<Long?>(null) }
+    var isScrolledToBottom by remember { mutableStateOf(true) }
 
     LaunchedEffect(lastSentMessageId) {
         val sentMessageId = lastSentMessageId ?: return@LaunchedEffect
@@ -139,6 +143,29 @@ fun MessengerSheet(
         }.first { index -> index >= 0 }
 
         lazyListState.requestScrollToItem(0)
+    }
+
+    LaunchedEffect(Unit) {
+        snapshotFlow {
+            lazyListState.firstVisibleItemIndex == 0 && lazyListState.firstVisibleItemScrollOffset == 0
+        }.collect { atBottom -> isScrolledToBottom = atBottom }
+    }
+
+    LaunchedEffect(Unit) {
+        var isInitialTopMessage = true
+        snapshotFlow { pagingItems.itemSnapshotList.items.firstOrNull()?.id }
+            .filterNotNull()
+            .distinctUntilChanged()
+            .collect { topMessageId ->
+                if (isInitialTopMessage) {
+                    isInitialTopMessage = false
+                    return@collect
+                }
+                if (topMessageId == lastSentMessageId) return@collect
+
+                val wasAtBottom = isScrolledToBottom || lazyListState.firstVisibleItemIndex <= 1
+                if (wasAtBottom) lazyListState.animateScrollToItem(0)
+            }
     }
 
     MessengerSheetContent(
