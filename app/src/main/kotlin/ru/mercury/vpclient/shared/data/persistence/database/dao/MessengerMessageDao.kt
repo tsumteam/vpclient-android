@@ -15,6 +15,9 @@ interface MessengerMessageDao {
     @Query("SELECT MIN(id) FROM MessengerMessage")
     suspend fun minMessageId(): Long?
 
+    @Query("SELECT MAX(id) FROM MessengerMessage")
+    suspend fun maxMessageId(): Long?
+
     @Query("DELETE FROM MessengerMessage")
     suspend fun delete()
 
