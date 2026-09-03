@@ -19,7 +19,7 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.data.entity.BrandEntity
 import ru.mercury.vpclient.shared.data.persistence.database.entity.FavoriteBrandEntity
-import ru.mercury.vpclient.shared.ui.icons.Close24
+import ru.mercury.vpclient.shared.ui.icons.CloseSmall24
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 
 data class ProductBrandRowState(
@@ -54,7 +54,7 @@ fun ProductBrandRow(
             onClick = state.onCloseClick
         ) {
             Icon(
-                imageVector = Close24,
+                imageVector = CloseSmall24,
                 contentDescription = null,
                 modifier = Modifier.size(24.dp),
                 tint = MaterialTheme.colorScheme.onBackground
