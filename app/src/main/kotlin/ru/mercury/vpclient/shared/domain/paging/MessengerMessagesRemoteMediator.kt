@@ -54,9 +54,11 @@ class MessengerMessagesRemoteMediator(
                 )
                 networkService.basketChatGet(request)
             }.getOrThrow()
-            val entities = response.items.orEmpty().entities
-            val isEndOfPaginationReached = entities.size < loadLimit ||
-                loadType == LoadType.APPEND && cursor != null && entities.all { entity -> entity.id >= cursor }
+            val responseItems = response.items.orEmpty()
+            val entities = responseItems.entities
+            val isEndOfPaginationReached = responseItems.size < loadLimit ||
+                loadType == LoadType.APPEND && cursor != null &&
+                responseItems.all { item -> (item.messageId ?: Long.MAX_VALUE) >= cursor }
 
             if (loadType == LoadType.REFRESH) {
                 appDatabase.withTransaction {
