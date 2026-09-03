@@ -29,7 +29,7 @@ import ru.mercury.vpclient.shared.ui.icons.Chat24
 import ru.mercury.vpclient.shared.ui.icons.ChevronUp24
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.medium14
-import ru.mercury.vpclient.shared.ui.theme.regular15
+import ru.mercury.vpclient.shared.ui.theme.regular14
 import kotlin.math.min
 
 data class MessengerDockState(
@@ -46,7 +46,7 @@ fun MessengerDock(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .height(84.dp)
+            .height(60.dp)
             .shadow(
                 elevation = 8.dp,
                 shape = MessengerDockShape,
@@ -55,7 +55,8 @@ fun MessengerDock(
             .clip(MessengerDockShape)
             .background(MaterialTheme.colorScheme.background)
             .clickable(onClick = state.onClick),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy((-3).dp)
     ) {
         Icon(
             imageVector = ChevronUp24,
@@ -94,7 +95,7 @@ fun MessengerDock(
         Text(
             text = state.brand,
             maxLines = 1,
-            style = MaterialTheme.typography.regular15.copy(
+            style = MaterialTheme.typography.regular14.copy(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 lineHeight = 18.sp,
                 letterSpacing = .2.sp
