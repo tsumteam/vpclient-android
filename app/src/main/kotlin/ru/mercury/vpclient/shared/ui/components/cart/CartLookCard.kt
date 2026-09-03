@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -31,7 +30,6 @@ import ru.mercury.vpclient.shared.ui.icons.Delete24
 import ru.mercury.vpclient.shared.ui.icons.Disassemble24
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.divider
 import ru.mercury.vpclient.shared.ui.theme.surface2
 
 @Composable
@@ -62,7 +60,8 @@ fun CartLookCard(
     swipeKey: String? = null,
     openedSwipeKey: String? = null,
     onSwipeOpen: (String?) -> Unit = {},
-    selectedAlternativeId: String? = null
+    selectedAlternativeId: String? = null,
+    isLastGroup: Boolean = false
 ) {
     Column(
         modifier = modifier
@@ -129,8 +128,6 @@ fun CartLookCard(
         }
 
         products.forEachIndexed { index, product ->
-            val isAlternativesVisible = product.isAlternativesPaletteOpen && product.alternatives.isNotEmpty()
-
             CartProductCard(
                 state = CartProductState(
                     product = product,
@@ -152,17 +149,11 @@ fun CartLookCard(
                     openedSwipeKey = openedSwipeKey,
                     onSwipeOpen = onSwipeOpen,
                     useFittingSwipeActions = useFittingProductSwipeActions,
-                    selectedAlternativeId = selectedAlternativeId
+                    selectedAlternativeId = selectedAlternativeId,
+                    isTrailingDividerVisible = index < products.lastIndex || isLastGroup
                 ),
                 modifier = productModifier(product)
             )
-
-            if (index < products.lastIndex && !isAlternativesVisible) {
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    color = MaterialTheme.colorScheme.divider
-                )
-            }
         }
     }
 }

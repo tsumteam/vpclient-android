@@ -21,7 +21,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
@@ -76,7 +75,6 @@ import ru.mercury.vpclient.shared.ui.components.cart.CartSummary
 import ru.mercury.vpclient.shared.ui.icons.VipPlatinumBagEmptyVersion2
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
-import ru.mercury.vpclient.shared.ui.theme.divider
 import ru.mercury.vpclient.shared.ui.theme.medium13
 import ru.mercury.vpclient.shared.ui.theme.medium15
 import ru.mercury.vpclient.shared.ui.theme.regular14
@@ -389,7 +387,8 @@ private fun CartListScreenContent(
                             swipeKey = "look_${group.key}",
                             openedSwipeKey = openedSwipeKey,
                             onSwipeOpen = { key -> openedSwipeKey = key },
-                            selectedAlternativeId = state.selectedAlternativeId
+                            selectedAlternativeId = state.selectedAlternativeId,
+                            isLastGroup = groupIndex == lastGroupIndex
                         )
                     }
                     else -> {
@@ -440,17 +439,6 @@ private fun CartListScreenContent(
                         )
                     }
                 }
-            }
-
-            val product = group.products.firstOrNull()
-            val isAlternativesVisible = product?.isAlternativesPaletteOpen == true && product.alternatives.isNotEmpty()
-            val isDividerVisible = !group.isLook && groupIndex < lastGroupIndex && !isAlternativesVisible
-
-            if (isDividerVisible) {
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    color = MaterialTheme.colorScheme.divider
-                )
             }
         }
 
@@ -512,11 +500,6 @@ private fun CartListScreenContent(
                             }
 
                             item {
-                                HorizontalDivider(
-                                    modifier = Modifier.padding(horizontal = 16.dp),
-                                    color = MaterialTheme.colorScheme.divider
-                                )
-
                                 CartSummary(
                                     state = state
                                 )
