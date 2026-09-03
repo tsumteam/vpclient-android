@@ -2,6 +2,7 @@ package ru.mercury.vpclient.shared.data.network
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.plugins.timeout
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.get
@@ -334,6 +335,7 @@ class NetworkService @Inject constructor(
         request: FilterValuesRequest
     ): BaseResponse<FilterValuesResponse> {
         return ktorHttpClient.post("catalog/filter-values") {
+            timeout { requestTimeoutMillis = FILTER_VALUES_REQUEST_TIMEOUT_MILLIS }
             setBody(request)
         }.body()
     }
@@ -1004,6 +1006,7 @@ class NetworkService @Inject constructor(
         request: DigineticaFilterValuesRequest
     ): BaseResponse<FilterValuesResponse> {
         return ktorHttpClient.post("catalog/by-text/filter-values") {
+            timeout { requestTimeoutMillis = FILTER_VALUES_REQUEST_TIMEOUT_MILLIS }
             setBody(request)
         }.body()
     }
@@ -2288,4 +2291,7 @@ class NetworkService @Inject constructor(
         return ktorHttpClient.post("user/profile/delete-photo").body()
     }
 
+    private companion object {
+        private const val FILTER_VALUES_REQUEST_TIMEOUT_MILLIS = 20_000L
+    }
 }

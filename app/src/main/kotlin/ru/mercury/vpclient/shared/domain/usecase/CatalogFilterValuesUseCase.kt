@@ -2,6 +2,8 @@
 
 package ru.mercury.vpclient.shared.domain.usecase
 
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.delay
 import ru.mercury.vpclient.shared.coroutines.SharedDispatchers
 import ru.mercury.vpclient.shared.data.entity.FilterValuesRequestData
 import ru.mercury.vpclient.shared.data.network.NetworkService
@@ -9,10 +11,13 @@ import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.network.request.CatalogFilterRequest
 import ru.mercury.vpclient.shared.data.network.request.DigineticaFilterValuesRequest
 import ru.mercury.vpclient.shared.data.network.request.FilterValuesRequest
+import ru.mercury.vpclient.shared.data.network.response.BaseResponse
+import ru.mercury.vpclient.shared.data.network.response.FilterValuesResponse
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogCategoryDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.CatalogFilterDao
 import ru.mercury.vpclient.shared.data.persistence.database.dao.FilterValuesDao
 import ru.mercury.vpclient.shared.domain.mapper.handleResponse
+import ru.mercury.vpclient.shared.domain.mapper.isNetworkRelated
 import ru.mercury.vpclient.shared.domain.mapper.requests
 import ru.mercury.vpclient.shared.domain.mapper.toFilterValuesEntity
 import ru.mercury.vpclient.shared.domain.mapper.toFilterValuesPickers
@@ -54,26 +59,44 @@ class CatalogFilterValuesUseCase @Inject constructor(
 
         handleResponse(
             request = {
-                val viewType = data.viewTypeOverride ?: catalogCategoryDao.selectNotNull(categoryId)
-                    .viewType(categoryId, titleCategoryId)
-                val request = FilterValuesRequest(
-                    filterType = filterTypeDto,
-                    filterSubtype = filterSubtype,
-                    filterTreeValuesLevel = 0,
-                    viewType = viewType,
-                    hasUserInteractedWithStandartSizesFilter = false,
-                    filters = requestFilters
-                )
-                when {
-                    data.searchText.isNotEmpty() -> {
-                        val digineticaRequest = DigineticaFilterValuesRequest(
-                            searchText = data.searchText,
-                            request = request
+                lateinit var result: BaseResponse<FilterValuesResponse>
+                var attempt = 0
+                while (true) {
+                    try {
+                        val viewType = data.viewTypeOverride ?: catalogCategoryDao.selectNotNull(categoryId)
+                            .viewType(categoryId, titleCategoryId)
+                        val request = FilterValuesRequest(
+                            filterType = filterTypeDto,
+                            filterSubtype = filterSubtype,
+                            filterTreeValuesLevel = 0,
+                            viewType = viewType,
+                            hasUserInteractedWithStandartSizesFilter = false,
+                            filters = requestFilters
                         )
-                        networkService.catalogByTextFilterValues(digineticaRequest)
+                        result = when {
+                            data.searchText.isNotEmpty() -> {
+                                val digineticaRequest = DigineticaFilterValuesRequest(
+                                    searchText = data.searchText,
+                                    request = request
+                                )
+                                networkService.catalogByTextFilterValues(digineticaRequest)
+                            }
+                            else -> networkService.catalogFilterValues(request)
+                        }
+                        break
+                    } catch (throwable: CancellationException) {
+                        throw throwable
+                    } catch (throwable: Throwable) {
+                        if (!throwable.isNetworkRelated || attempt >= MAX_RETRY_ATTEMPTS) throw throwable
+                        val retryDelayMillis = when (attempt) {
+                            0 -> FIRST_RETRY_DELAY_MILLIS
+                            else -> SECOND_RETRY_DELAY_MILLIS
+                        }
+                        delay(retryDelayMillis)
+                        attempt++
                     }
-                    else -> networkService.catalogFilterValues(request)
                 }
+                result
             },
             onSuccess = { response ->
                 val filterValuesEntity = response.filterValues.orEmpty().toFilterValuesEntity(
@@ -96,4 +119,10 @@ class CatalogFilterValuesUseCase @Inject constructor(
     data class FiltersNotSupportedException(
         override val message: String = ""
     ): ClientException(message)
+
+    private companion object {
+        private const val MAX_RETRY_ATTEMPTS = 2
+        private const val FIRST_RETRY_DELAY_MILLIS = 500L
+        private const val SECOND_RETRY_DELAY_MILLIS = 1_500L
+    }
 }
