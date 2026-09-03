@@ -52,6 +52,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -67,6 +68,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -112,6 +114,7 @@ import ru.mercury.vpclient.shared.ui.components.messenger.MessengerMessage
 import ru.mercury.vpclient.shared.ui.components.messenger.MessengerMessageDropdownMenu
 import ru.mercury.vpclient.shared.ui.components.messenger.MessengerMessageDropdownMenuState
 import ru.mercury.vpclient.shared.ui.components.messenger.MessengerMessagePlaceholder
+import ru.mercury.vpclient.shared.ui.components.messenger.MessengerScrollToBottomButton
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.icons.Chat24
 import ru.mercury.vpclient.shared.ui.icons.ChevronDown24
@@ -188,6 +191,7 @@ fun MessengerSheet(
         onSlideInAnimationFinished = { messageId ->
             if (slideInMessageId == messageId) slideInMessageId = null
         },
+        onScrollToBottomClick = { scope.launch { lazyListState.animateScrollToItem(0) } },
         dispatch = viewModel::dispatch,
         snackbarHostState = snackbarHostState
     )
@@ -248,11 +252,19 @@ private fun MessengerSheetContent(
     lazyListState: LazyListState,
     slideInMessageId: Long?,
     onSlideInAnimationFinished: (Long) -> Unit,
+    onScrollToBottomClick: () -> Unit,
     dispatch: (MessengerIntent) -> Unit,
     snackbarHostState: SnackbarHostState
 ) {
     var expandedMenuMessageId by remember { mutableStateOf<Long?>(null) }
     var deletingMessageId by remember { mutableStateOf<Long?>(null) }
+    val density = LocalDensity.current
+    val isFirstMessageHiding by remember(density) {
+        derivedStateOf {
+            lazyListState.firstVisibleItemIndex > 0 ||
+                lazyListState.firstVisibleItemScrollOffset > with(density) { 24.dp.toPx() }
+        }
+    }
     val scrimVisibleState = remember { MutableTransitionState(false) }
     scrimVisibleState.targetState = expandedMenuMessageId != null
 
@@ -482,299 +494,311 @@ private fun MessengerSheetContent(
             ) { innerPadding ->
                 val isInitialLoading = pagingItems.isRefreshLoading && pagingItems.itemCount == 0
 
-                LazyColumn(
-                    state = lazyListState,
-                    modifier = Modifier.fillMaxSize(),
-                    reverseLayout = true,
-                    contentPadding = innerPadding + PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                    userScrollEnabled = !isInitialLoading
+                Box(
+                    modifier = Modifier.fillMaxSize()
                 ) {
-                    when {
-                        isInitialLoading -> {
-                            items(
-                                count = 8
-                            ) { index ->
-                                MessengerMessagePlaceholder(
-                                    direction = if (index % 2 == 0) {
-                                        MessengerMessageDirection.Incoming
-                                    } else {
-                                        MessengerMessageDirection.Outgoing
+                    LazyColumn(
+                        state = lazyListState,
+                        modifier = Modifier.fillMaxSize(),
+                        reverseLayout = true,
+                        contentPadding = innerPadding + PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        userScrollEnabled = !isInitialLoading
+                    ) {
+                        when {
+                            isInitialLoading -> {
+                                items(
+                                    count = 8
+                                ) { index ->
+                                    MessengerMessagePlaceholder(
+                                        direction = if (index % 2 == 0) {
+                                            MessengerMessageDirection.Incoming
+                                        } else {
+                                            MessengerMessageDirection.Outgoing
+                                        }
+                                    )
+                                }
+                            }
+                            else -> {
+                                items(
+                                    count = pagingItems.itemCount,
+                                    key = pagingItems.itemKey { message -> message.id },
+                                    contentType = pagingItems.itemContentType()
+                                ) { index ->
+                                    val message = pagingItems[index]
+
+                                    if (message != null) {
+                                        if (message.id == slideInMessageId) {
+                                            val visibleState = remember(message.id) {
+                                                MutableTransitionState(false).apply { targetState = true }
+                                            }
+
+                                            LaunchedEffect(visibleState) {
+                                                snapshotFlow { visibleState.isIdle && visibleState.currentState }
+                                                    .first { isAnimationFinished -> isAnimationFinished }
+                                                onSlideInAnimationFinished(message.id)
+                                            }
+
+                                            Column(
+                                                modifier = Modifier.animateItem(placementSpec = snap())
+                                            ) {
+                                                AnimatedVisibility(
+                                                    visibleState = visibleState,
+                                                    enter = expandVertically(
+                                                        animationSpec = tween(
+                                                            durationMillis = 320,
+                                                            easing = FastOutSlowInEasing
+                                                        ),
+                                                        expandFrom = Alignment.Bottom,
+                                                        clip = false
+                                                    ) + slideInVertically(
+                                                        animationSpec = tween(
+                                                            durationMillis = 320,
+                                                            easing = FastOutSlowInEasing
+                                                        ),
+                                                        initialOffsetY = { fullHeight -> fullHeight }
+                                                    ) + fadeIn(
+                                                        animationSpec = tween(
+                                                            durationMillis = 320,
+                                                            easing = FastOutSlowInEasing
+                                                        )
+                                                    )
+                                                ) {
+                                                    Box {
+                                                        MessengerMessage(
+                                                            message = message,
+                                                            onProductClick = { productId -> dispatch(MessengerIntent.ProductClick(productId)) },
+                                                            modifier = Modifier.clickableWithoutRipple {
+                                                                expandedMenuMessageId = message.id
+                                                            }
+                                                        )
+
+                                                        Box(
+                                                            modifier = Modifier.align(
+                                                                if (message.direction == MessengerMessageDirection.Outgoing) {
+                                                                    Alignment.CenterEnd
+                                                                } else {
+                                                                    Alignment.CenterStart
+                                                                }
+                                                            )
+                                                        ) {
+                                                            MessengerMessageDropdownMenu(
+                                                                expanded = expandedMenuMessageId == message.id,
+                                                                onDismissRequest = { expandedMenuMessageId = null },
+                                                                state = MessengerMessageDropdownMenuState(
+                                                                    direction = message.direction,
+                                                                    isReplyable = message.isReplyable,
+                                                                    isCopyable = message.isCopyable,
+                                                                    isEditable = message.isEditable,
+                                                                    isDeletable = message.isDeletable,
+                                                                    isResendable = message.isResendable,
+                                                                    onReplyClick = {
+                                                                        expandedMenuMessageId = null
+                                                                        dispatch(MessengerIntent.ReplyMessageClick(message.id))
+                                                                    },
+                                                                    onCopyClick = {
+                                                                        expandedMenuMessageId = null
+                                                                        dispatch(MessengerIntent.CopyMessageClick(message.text))
+                                                                    },
+                                                                    onEditClick = {
+                                                                        expandedMenuMessageId = null
+                                                                        dispatch(MessengerIntent.EditMessageClick(message.id))
+                                                                    },
+                                                                    onDeleteClick = {
+                                                                        expandedMenuMessageId = null
+                                                                        deletingMessageId = message.id
+                                                                        dispatch(MessengerIntent.DeleteMessageClick(message.id))
+                                                                    },
+                                                                    onResendClick = {
+                                                                        expandedMenuMessageId = null
+                                                                        dispatch(MessengerIntent.ResendMessageClick(message.id))
+                                                                    }
+                                                                )
+                                                            )
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        } else if (message.id == deletingMessageId) {
+                                            val visibleState = remember(message.id) {
+                                                MutableTransitionState(true).apply { targetState = false }
+                                            }
+
+                                            Column(
+                                                modifier = Modifier.animateItem(placementSpec = snap())
+                                            ) {
+                                                AnimatedVisibility(
+                                                    visibleState = visibleState,
+                                                    exit = shrinkVertically(
+                                                        animationSpec = tween(
+                                                            durationMillis = 250,
+                                                            easing = FastOutSlowInEasing
+                                                        ),
+                                                        shrinkTowards = Alignment.Top,
+                                                        clip = false
+                                                    ) + fadeOut(
+                                                        animationSpec = tween(
+                                                            durationMillis = 250,
+                                                            easing = FastOutSlowInEasing
+                                                        )
+                                                    )
+                                                ) {
+                                                    Box {
+                                                        MessengerMessage(
+                                                            message = message,
+                                                            onProductClick = { productId -> dispatch(MessengerIntent.ProductClick(productId)) },
+                                                            modifier = Modifier.clickableWithoutRipple {
+                                                                expandedMenuMessageId = message.id
+                                                            }
+                                                        )
+
+                                                        Box(
+                                                            modifier = Modifier.align(
+                                                                if (message.direction == MessengerMessageDirection.Outgoing) {
+                                                                    Alignment.CenterEnd
+                                                                } else {
+                                                                    Alignment.CenterStart
+                                                                }
+                                                            )
+                                                        ) {
+                                                            MessengerMessageDropdownMenu(
+                                                                expanded = expandedMenuMessageId == message.id,
+                                                                onDismissRequest = { expandedMenuMessageId = null },
+                                                                state = MessengerMessageDropdownMenuState(
+                                                                    direction = message.direction,
+                                                                    isReplyable = message.isReplyable,
+                                                                    isCopyable = message.isCopyable,
+                                                                    isEditable = message.isEditable,
+                                                                    isDeletable = message.isDeletable,
+                                                                    isResendable = message.isResendable,
+                                                                    onReplyClick = {
+                                                                        expandedMenuMessageId = null
+                                                                        dispatch(MessengerIntent.ReplyMessageClick(message.id))
+                                                                    },
+                                                                    onCopyClick = {
+                                                                        expandedMenuMessageId = null
+                                                                        dispatch(MessengerIntent.CopyMessageClick(message.text))
+                                                                    },
+                                                                    onEditClick = {
+                                                                        expandedMenuMessageId = null
+                                                                        dispatch(MessengerIntent.EditMessageClick(message.id))
+                                                                    },
+                                                                    onDeleteClick = {
+                                                                        expandedMenuMessageId = null
+                                                                        deletingMessageId = message.id
+                                                                        dispatch(MessengerIntent.DeleteMessageClick(message.id))
+                                                                    },
+                                                                    onResendClick = {
+                                                                        expandedMenuMessageId = null
+                                                                        dispatch(MessengerIntent.ResendMessageClick(message.id))
+                                                                    }
+                                                                )
+                                                            )
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        } else {
+                                            Box(
+                                                modifier = Modifier.animateItem(placementSpec = snap())
+                                            ) {
+                                                MessengerMessage(
+                                                    message = message,
+                                                    onProductClick = { productId -> dispatch(MessengerIntent.ProductClick(productId)) },
+                                                    modifier = Modifier.clickableWithoutRipple {
+                                                        expandedMenuMessageId = message.id
+                                                    }
+                                                )
+
+                                                Box(
+                                                    modifier = Modifier.align(
+                                                        if (message.direction == MessengerMessageDirection.Outgoing) {
+                                                            Alignment.CenterEnd
+                                                        } else {
+                                                            Alignment.CenterStart
+                                                        }
+                                                    )
+                                                ) {
+                                                    MessengerMessageDropdownMenu(
+                                                        expanded = expandedMenuMessageId == message.id,
+                                                        onDismissRequest = { expandedMenuMessageId = null },
+                                                        state = MessengerMessageDropdownMenuState(
+                                                            direction = message.direction,
+                                                            isReplyable = message.isReplyable,
+                                                            isCopyable = message.isCopyable,
+                                                            isEditable = message.isEditable,
+                                                            isDeletable = message.isDeletable,
+                                                            isResendable = message.isResendable,
+                                                            onReplyClick = {
+                                                                expandedMenuMessageId = null
+                                                                dispatch(MessengerIntent.ReplyMessageClick(message.id))
+                                                            },
+                                                            onCopyClick = {
+                                                                expandedMenuMessageId = null
+                                                                dispatch(MessengerIntent.CopyMessageClick(message.text))
+                                                            },
+                                                            onEditClick = {
+                                                                expandedMenuMessageId = null
+                                                                dispatch(MessengerIntent.EditMessageClick(message.id))
+                                                            },
+                                                            onDeleteClick = {
+                                                                expandedMenuMessageId = null
+                                                                deletingMessageId = message.id
+                                                                dispatch(MessengerIntent.DeleteMessageClick(message.id))
+                                                            },
+                                                            onResendClick = {
+                                                                expandedMenuMessageId = null
+                                                                dispatch(MessengerIntent.ResendMessageClick(message.id))
+                                                            }
+                                                        )
+                                                    )
+                                                }
+                                            }
+                                        }
                                     }
+                                }
+
+                                when {
+                                    pagingItems.isPagingLoading -> {
+                                        item {
+                                            PagingLoadingBox(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .height(64.dp)
+                                            )
+                                        }
+                                    }
+                                    pagingItems.isPagingFailure -> {
+                                        item {
+                                            PagingFailureBox(
+                                                onClick = pagingItems::retry,
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .height(64.dp)
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        if (pagingItems.isRefreshFailure) {
+                            item {
+                                PagingFailureBox(
+                                    onClick = pagingItems::retry,
+                                    modifier = Modifier.fillParentMaxSize()
                                 )
                             }
                         }
-                        else -> {
-                            items(
-                                count = pagingItems.itemCount,
-                                key = pagingItems.itemKey { message -> message.id },
-                                contentType = pagingItems.itemContentType()
-                            ) { index ->
-                                val message = pagingItems[index]
-
-                                if (message != null) {
-                                    if (message.id == slideInMessageId) {
-                                        val visibleState = remember(message.id) {
-                                            MutableTransitionState(false).apply { targetState = true }
-                                        }
-
-                                        LaunchedEffect(visibleState) {
-                                            snapshotFlow { visibleState.isIdle && visibleState.currentState }
-                                                .first { isAnimationFinished -> isAnimationFinished }
-                                            onSlideInAnimationFinished(message.id)
-                                        }
-
-                                        Column(
-                                            modifier = Modifier.animateItem(placementSpec = snap())
-                                        ) {
-                                            AnimatedVisibility(
-                                                visibleState = visibleState,
-                                                enter = expandVertically(
-                                                    animationSpec = tween(
-                                                        durationMillis = 320,
-                                                        easing = FastOutSlowInEasing
-                                                    ),
-                                                    expandFrom = Alignment.Bottom,
-                                                    clip = false
-                                                ) + slideInVertically(
-                                                    animationSpec = tween(
-                                                        durationMillis = 320,
-                                                        easing = FastOutSlowInEasing
-                                                    ),
-                                                    initialOffsetY = { fullHeight -> fullHeight }
-                                                ) + fadeIn(
-                                                    animationSpec = tween(
-                                                        durationMillis = 320,
-                                                        easing = FastOutSlowInEasing
-                                                    )
-                                                )
-                                            ) {
-                                                Box {
-                                                    MessengerMessage(
-                                                        message = message,
-                                                        onProductClick = { productId -> dispatch(MessengerIntent.ProductClick(productId)) },
-                                                        modifier = Modifier.clickableWithoutRipple {
-                                                            expandedMenuMessageId = message.id
-                                                        }
-                                                    )
-
-                                                    Box(
-                                                        modifier = Modifier.align(
-                                                            if (message.direction == MessengerMessageDirection.Outgoing) {
-                                                                Alignment.CenterEnd
-                                                            } else {
-                                                                Alignment.CenterStart
-                                                            }
-                                                        )
-                                                    ) {
-                                                        MessengerMessageDropdownMenu(
-                                                            expanded = expandedMenuMessageId == message.id,
-                                                            onDismissRequest = { expandedMenuMessageId = null },
-                                                            state = MessengerMessageDropdownMenuState(
-                                                                direction = message.direction,
-                                                                isReplyable = message.isReplyable,
-                                                                isCopyable = message.isCopyable,
-                                                                isEditable = message.isEditable,
-                                                                isDeletable = message.isDeletable,
-                                                                isResendable = message.isResendable,
-                                                                onReplyClick = {
-                                                                    expandedMenuMessageId = null
-                                                                    dispatch(MessengerIntent.ReplyMessageClick(message.id))
-                                                                },
-                                                                onCopyClick = {
-                                                                    expandedMenuMessageId = null
-                                                                    dispatch(MessengerIntent.CopyMessageClick(message.text))
-                                                                },
-                                                                onEditClick = {
-                                                                    expandedMenuMessageId = null
-                                                                    dispatch(MessengerIntent.EditMessageClick(message.id))
-                                                                },
-                                                                onDeleteClick = {
-                                                                    expandedMenuMessageId = null
-                                                                    deletingMessageId = message.id
-                                                                    dispatch(MessengerIntent.DeleteMessageClick(message.id))
-                                                                },
-                                                                onResendClick = {
-                                                                    expandedMenuMessageId = null
-                                                                    dispatch(MessengerIntent.ResendMessageClick(message.id))
-                                                                }
-                                                            )
-                                                        )
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    } else if (message.id == deletingMessageId) {
-                                        val visibleState = remember(message.id) {
-                                            MutableTransitionState(true).apply { targetState = false }
-                                        }
-
-                                        Column(
-                                            modifier = Modifier.animateItem(placementSpec = snap())
-                                        ) {
-                                            AnimatedVisibility(
-                                                visibleState = visibleState,
-                                                exit = shrinkVertically(
-                                                    animationSpec = tween(
-                                                        durationMillis = 250,
-                                                        easing = FastOutSlowInEasing
-                                                    ),
-                                                    shrinkTowards = Alignment.Top,
-                                                    clip = false
-                                                ) + fadeOut(
-                                                    animationSpec = tween(
-                                                        durationMillis = 250,
-                                                        easing = FastOutSlowInEasing
-                                                    )
-                                                )
-                                            ) {
-                                                Box {
-                                                    MessengerMessage(
-                                                        message = message,
-                                                        onProductClick = { productId -> dispatch(MessengerIntent.ProductClick(productId)) },
-                                                        modifier = Modifier.clickableWithoutRipple {
-                                                            expandedMenuMessageId = message.id
-                                                        }
-                                                    )
-
-                                                    Box(
-                                                        modifier = Modifier.align(
-                                                            if (message.direction == MessengerMessageDirection.Outgoing) {
-                                                                Alignment.CenterEnd
-                                                            } else {
-                                                                Alignment.CenterStart
-                                                            }
-                                                        )
-                                                    ) {
-                                                        MessengerMessageDropdownMenu(
-                                                            expanded = expandedMenuMessageId == message.id,
-                                                            onDismissRequest = { expandedMenuMessageId = null },
-                                                            state = MessengerMessageDropdownMenuState(
-                                                                direction = message.direction,
-                                                                isReplyable = message.isReplyable,
-                                                                isCopyable = message.isCopyable,
-                                                                isEditable = message.isEditable,
-                                                                isDeletable = message.isDeletable,
-                                                                isResendable = message.isResendable,
-                                                                onReplyClick = {
-                                                                    expandedMenuMessageId = null
-                                                                    dispatch(MessengerIntent.ReplyMessageClick(message.id))
-                                                                },
-                                                                onCopyClick = {
-                                                                    expandedMenuMessageId = null
-                                                                    dispatch(MessengerIntent.CopyMessageClick(message.text))
-                                                                },
-                                                                onEditClick = {
-                                                                    expandedMenuMessageId = null
-                                                                    dispatch(MessengerIntent.EditMessageClick(message.id))
-                                                                },
-                                                                onDeleteClick = {
-                                                                    expandedMenuMessageId = null
-                                                                    deletingMessageId = message.id
-                                                                    dispatch(MessengerIntent.DeleteMessageClick(message.id))
-                                                                },
-                                                                onResendClick = {
-                                                                    expandedMenuMessageId = null
-                                                                    dispatch(MessengerIntent.ResendMessageClick(message.id))
-                                                                }
-                                                            )
-                                                        )
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    } else {
-                                        Box(
-                                            modifier = Modifier.animateItem(placementSpec = snap())
-                                        ) {
-                                            MessengerMessage(
-                                                message = message,
-                                                onProductClick = { productId -> dispatch(MessengerIntent.ProductClick(productId)) },
-                                                modifier = Modifier.clickableWithoutRipple {
-                                                    expandedMenuMessageId = message.id
-                                                }
-                                            )
-
-                                            Box(
-                                                modifier = Modifier.align(
-                                                    if (message.direction == MessengerMessageDirection.Outgoing) {
-                                                        Alignment.CenterEnd
-                                                    } else {
-                                                        Alignment.CenterStart
-                                                    }
-                                                )
-                                            ) {
-                                                MessengerMessageDropdownMenu(
-                                                    expanded = expandedMenuMessageId == message.id,
-                                                    onDismissRequest = { expandedMenuMessageId = null },
-                                                    state = MessengerMessageDropdownMenuState(
-                                                        direction = message.direction,
-                                                        isReplyable = message.isReplyable,
-                                                        isCopyable = message.isCopyable,
-                                                        isEditable = message.isEditable,
-                                                        isDeletable = message.isDeletable,
-                                                        isResendable = message.isResendable,
-                                                        onReplyClick = {
-                                                            expandedMenuMessageId = null
-                                                            dispatch(MessengerIntent.ReplyMessageClick(message.id))
-                                                        },
-                                                        onCopyClick = {
-                                                            expandedMenuMessageId = null
-                                                            dispatch(MessengerIntent.CopyMessageClick(message.text))
-                                                        },
-                                                        onEditClick = {
-                                                            expandedMenuMessageId = null
-                                                            dispatch(MessengerIntent.EditMessageClick(message.id))
-                                                        },
-                                                        onDeleteClick = {
-                                                            expandedMenuMessageId = null
-                                                            deletingMessageId = message.id
-                                                            dispatch(MessengerIntent.DeleteMessageClick(message.id))
-                                                        },
-                                                        onResendClick = {
-                                                            expandedMenuMessageId = null
-                                                            dispatch(MessengerIntent.ResendMessageClick(message.id))
-                                                        }
-                                                    )
-                                                )
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-
-                            when {
-                                pagingItems.isPagingLoading -> {
-                                    item {
-                                        PagingLoadingBox(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .height(64.dp)
-                                        )
-                                    }
-                                }
-                                pagingItems.isPagingFailure -> {
-                                    item {
-                                        PagingFailureBox(
-                                            onClick = pagingItems::retry,
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .height(64.dp)
-                                        )
-                                    }
-                                }
-                            }
-                        }
                     }
 
-                    if (pagingItems.isRefreshFailure) {
-                        item {
-                            PagingFailureBox(
-                                onClick = pagingItems::retry,
-                                modifier = Modifier.fillParentMaxSize()
-                            )
-                        }
-                    }
+                    MessengerScrollToBottomButton(
+                        visible = !isInitialLoading && isFirstMessageHiding,
+                        onClick = onScrollToBottomClick,
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(end = 16.dp, bottom = innerPadding.calculateBottomPadding() + 16.dp)
+                    )
                 }
             }
 
@@ -822,6 +846,7 @@ private fun MessengerSheetContentPreview(
             lazyListState = rememberLazyListState(),
             slideInMessageId = null,
             onSlideInAnimationFinished = {},
+            onScrollToBottomClick = {},
             dispatch = {},
             snackbarHostState = remember { SnackbarHostState() }
         )
