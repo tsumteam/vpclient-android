@@ -83,9 +83,9 @@ import ru.mercury.vpclient.shared.ui.placeholder
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.boulder
-import ru.mercury.vpclient.shared.ui.theme.livretMedium17
 import ru.mercury.vpclient.shared.ui.theme.livretRegular13
 import ru.mercury.vpclient.shared.ui.theme.medium15
+import ru.mercury.vpclient.shared.ui.theme.medium18
 import ru.mercury.vpclient.shared.ui.theme.regular13
 
 @Composable
@@ -196,9 +196,8 @@ private fun CompilationScreenContent(
                         text = state.compilationName,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        style = MaterialTheme.typography.livretMedium17.copy(
-                            lineHeight = 26.sp,
-                            letterSpacing = .2.sp
+                        style = MaterialTheme.typography.medium18.copy(
+                            lineHeight = 18.sp
                         )
                     )
                 },
@@ -336,65 +335,80 @@ private fun CompilationScreenContent(
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
+                                    .height(40.dp)
+                                    .padding(horizontal = 16.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = state.selectedLookTitle,
+                                    maxLines = 2,
+                                    overflow = TextOverflow.Ellipsis,
+                                    style = MaterialTheme.typography.livretRegular13.copy(
+                                        color = MaterialTheme.colorScheme.onBackground,
+                                        lineHeight = 16.sp,
+                                        textAlign = TextAlign.Center
+                                    )
+                                )
+                            }
+
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
                                     .weight(1F),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Box(
-                                    modifier = Modifier.aspectRatio(3F / 4F)
-                                ) {
-                                    HorizontalPager(
-                                        state = pagerState,
-                                        modifier = Modifier.fillMaxSize(),
-                                        userScrollEnabled = state.compilationPreviewPageEntities.size > 1
-                                    ) { page ->
-                                        val pageIndex = when {
-                                            state.compilationPreviewPageEntities.size > 1 -> {
-                                                page % state.compilationPreviewPageEntities.size
-                                            }
-                                            else -> page
+                                HorizontalPager(
+                                    state = pagerState,
+                                    modifier = Modifier.fillMaxSize(),
+                                    userScrollEnabled = state.compilationPreviewPageEntities.size > 1
+                                ) { page ->
+                                    val pageIndex = when {
+                                        state.compilationPreviewPageEntities.size > 1 -> {
+                                            page % state.compilationPreviewPageEntities.size
                                         }
-                                        val item = state.compilationPreviewPageEntities[pageIndex]
-
-                                        ClientAsyncImage(
-                                            imageUrl = item.imageUrl,
-                                            modifier = Modifier
-                                                .fillMaxSize()
-                                                .clickable { dispatch(CompilationIntent.ImageClick(pageIndex)) },
-                                            contentScale = ContentScale.Fit
-                                        )
+                                        else -> page
                                     }
+                                    val item = state.compilationPreviewPageEntities[pageIndex]
 
-                                    if (state.isSelectedLookNumberTextVisible) {
+                                    ClientAsyncImage(
+                                        imageUrl = item.imageUrl,
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .clickable { dispatch(CompilationIntent.ImageClick(pageIndex)) },
+                                        contentScale = ContentScale.Fit
+                                    )
+                                }
+
+                                if (state.isSelectedLookNumberTextVisible) {
+                                    Box(
+                                        modifier = Modifier
+                                            .align(Alignment.TopEnd)
+                                            .padding(top = 16.dp, end = 16.dp)
+                                            .height(28.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
                                         Box(
                                             modifier = Modifier
-                                                .align(Alignment.TopEnd)
-                                                .padding(top = 16.dp, end = 16.dp)
-                                                .height(28.dp),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            Box(
-                                                modifier = Modifier
-                                                    .matchParentSize()
-                                                    .blur(
-                                                        radius = 4.dp,
-                                                        edgeTreatment = BlurredEdgeTreatment.Unbounded
-                                                    )
-                                                    .background(
-                                                        color = MaterialTheme.colorScheme.boulder.copy(alpha = .09F),
-                                                        shape = RoundedCornerShape(16.dp)
-                                                    )
-                                            )
-
-                                            Text(
-                                                text = state.selectedLookNumberText,
-                                                maxLines = 1,
-                                                modifier = Modifier.padding(horizontal = 8.dp),
-                                                style = MaterialTheme.typography.regular13.copy(
-                                                    color = MaterialTheme.colorScheme.onBackground,
-                                                    textAlign = TextAlign.Center
+                                                .matchParentSize()
+                                                .blur(
+                                                    radius = 4.dp,
+                                                    edgeTreatment = BlurredEdgeTreatment.Unbounded
                                                 )
+                                                .background(
+                                                    color = MaterialTheme.colorScheme.boulder.copy(alpha = .09F),
+                                                    shape = RoundedCornerShape(16.dp)
+                                                )
+                                        )
+
+                                        Text(
+                                            text = state.selectedLookNumberText,
+                                            maxLines = 1,
+                                            modifier = Modifier.padding(horizontal = 8.dp),
+                                            style = MaterialTheme.typography.regular13.copy(
+                                                color = MaterialTheme.colorScheme.onBackground,
+                                                textAlign = TextAlign.Center
                                             )
-                                        }
+                                        )
                                     }
                                 }
                             }
@@ -410,26 +424,6 @@ private fun CompilationScreenContent(
                                     pageIndexMapping = { it % state.compilationPreviewPageEntities.size }
                                 )
                             }
-                        }
-                    }
-                    item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(40.dp)
-                                .padding(horizontal = 16.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = state.selectedLookTitle,
-                                maxLines = 2,
-                                overflow = TextOverflow.Ellipsis,
-                                style = MaterialTheme.typography.livretRegular13.copy(
-                                    color = MaterialTheme.colorScheme.onBackground,
-                                    lineHeight = 16.sp,
-                                    textAlign = TextAlign.Center
-                                )
-                            )
                         }
                     }
                     if (state.isPromotionBannerVisible) {
