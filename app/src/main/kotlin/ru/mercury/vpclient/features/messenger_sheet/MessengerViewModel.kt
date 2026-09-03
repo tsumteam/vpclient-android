@@ -18,6 +18,8 @@ import ru.mercury.vpclient.features.messenger_sheet.model.MessengerModel
 import ru.mercury.vpclient.shared.data.network.error.ClientException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomException
 import ru.mercury.vpclient.shared.data.persistence.database.RoomSQLiteException
+import ru.mercury.vpclient.shared.domain.usecase.BasketChatDeleteUseCase
+import ru.mercury.vpclient.shared.domain.usecase.BasketChatDeleteUseCase.BasketChatDeleteException
 import ru.mercury.vpclient.shared.domain.usecase.BasketChatGetUseCase
 import ru.mercury.vpclient.shared.domain.usecase.BasketChatSendUseCase
 import ru.mercury.vpclient.shared.domain.usecase.BasketChatSendUseCase.BasketChatSendException
@@ -32,6 +34,7 @@ class MessengerViewModel @Inject constructor(
     private val employeeActiveFlowUseCase: EmployeeActiveFlowUseCase,
     private val basketChatGetUseCase: BasketChatGetUseCase,
     private val basketChatSendUseCase: BasketChatSendUseCase,
+    private val basketChatDeleteUseCase: BasketChatDeleteUseCase,
     messengerMessagesPagingDataUseCase: MessengerMessagesPagingDataUseCase
 ): ClientViewModel<MessengerIntent, MessengerModel, MessengerEvent>(MessengerModel()) {
 
@@ -104,12 +107,24 @@ class MessengerViewModel @Inject constructor(
                     MainEventManager.send(DetailsRoute(id = intent.productId, openedFromCart = true))
                 }
             }
+            is MessengerIntent.ReplyMessageClick -> Unit
+            is MessengerIntent.CopyMessageClick -> {
+                launch { send(MessengerEvent.CopyMessageText(intent.text)) }
+            }
+            is MessengerIntent.EditMessageClick -> Unit
+            is MessengerIntent.DeleteMessageClick -> {
+                launch { basketChatDeleteUseCase(intent.messageId).getOrThrow() }
+            }
+            is MessengerIntent.ResendMessageClick -> Unit
         }
     }
 
     override fun catch(throwable: Throwable) {
         when (throwable) {
             is BasketChatSendException -> {
+                launch { send(MessengerEvent.SnackbarErrorMessage(throwable.message)) }
+            }
+            is BasketChatDeleteException -> {
                 launch { send(MessengerEvent.SnackbarErrorMessage(throwable.message)) }
             }
             is ClientException -> {

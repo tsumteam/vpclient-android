@@ -30,7 +30,7 @@ data class MessengerMessageMetaState(
     val status: MessengerMessageStatus?
 ) {
     val isIconStatusVisible: Boolean
-        get() = status != null
+        get() = status != null && status != MessengerMessageStatus.Failed
 }
 
 @Composable
@@ -63,12 +63,14 @@ fun MessengerMessageMeta(
                     MessengerMessageStatus.Sent -> MessengerCheck14x10
                     MessengerMessageStatus.Received,
                     MessengerMessageStatus.Read -> MessengerChecks20x10
+                    MessengerMessageStatus.Failed -> MessengerCheck14x10
                 },
                 contentDescription = null,
                 tint = when (state.status) {
                     MessengerMessageStatus.Read -> MaterialTheme.colorScheme.blue
                     MessengerMessageStatus.Sent,
-                    MessengerMessageStatus.Received -> MaterialTheme.colorScheme.onSurfaceVariant
+                    MessengerMessageStatus.Received,
+                    MessengerMessageStatus.Failed -> MaterialTheme.colorScheme.onSurfaceVariant
                 }
             )
         }

@@ -21,6 +21,9 @@ interface MessengerMessageDao {
     @Query("DELETE FROM MessengerMessage")
     suspend fun delete()
 
+    @Query("DELETE FROM MessengerMessage WHERE id = :id")
+    suspend fun delete(id: Long)
+
     @Upsert
     suspend fun upsert(entities: List<MessengerMessageEntity>)
 }

@@ -5,5 +5,6 @@ import ru.mercury.vpclient.shared.mvi.Event
 sealed interface MessengerEvent: Event {
     data class MessageSent(val messageId: Long): MessengerEvent
     data class LaunchDialer(val phone: String): MessengerEvent
+    data class CopyMessageText(val text: String): MessengerEvent
     data class SnackbarErrorMessage(val message: String): MessengerEvent
 }

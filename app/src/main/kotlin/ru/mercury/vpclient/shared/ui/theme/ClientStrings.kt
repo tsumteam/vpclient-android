@@ -353,6 +353,11 @@ object ClientStrings {
     val MessengerAttachCancel get() = R.string.messenger_attach_cancel
     val MessengerMessageEdited get() = R.string.messenger_message_edited
     val MessengerMessagePlaceholder get() = R.string.messenger_message_placeholder
+    val MessengerMessageReply get() = R.string.messenger_message_reply
+    val MessengerMessageResend get() = R.string.messenger_message_resend
+    val MessengerMessageCopy get() = R.string.messenger_message_copy
+    val MessengerMessageEdit get() = R.string.messenger_message_edit
+    val MessengerMessageDelete get() = R.string.messenger_message_delete
 
     val VideoSpeedTitle get() = R.string.video_speed_title
     val VideoSpeed05 get() = R.string.video_speed_05

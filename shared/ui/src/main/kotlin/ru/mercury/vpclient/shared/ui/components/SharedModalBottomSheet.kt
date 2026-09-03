@@ -3,6 +3,8 @@
 package ru.mercury.vpclient.shared.ui.components
 
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -19,6 +21,7 @@ fun SharedModalBottomSheet(
     sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
     sheetGesturesEnabled: Boolean = false,
     containerColor: Color = MaterialTheme.colorScheme.background,
+    contentWindowInsets: @Composable () -> WindowInsets = { BottomSheetDefaults.windowInsets },
     content: @Composable ColumnScope.() -> Unit
 ) {
     ModalBottomSheet(
@@ -28,6 +31,7 @@ fun SharedModalBottomSheet(
         sheetGesturesEnabled = sheetGesturesEnabled,
         containerColor = containerColor,
         dragHandle = null,
+        contentWindowInsets = contentWindowInsets,
         content = content
     )
 }

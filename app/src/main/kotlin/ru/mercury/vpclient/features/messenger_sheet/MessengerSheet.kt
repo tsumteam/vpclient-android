@@ -2,6 +2,7 @@
 
 package ru.mercury.vpclient.features.messenger_sheet
 
+import android.content.ClipData
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -12,6 +13,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
@@ -28,6 +30,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.layout.size
@@ -60,6 +63,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.ClipEntry
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -79,7 +84,6 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
@@ -104,6 +108,8 @@ import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.messenger.MessageSendButton
 import ru.mercury.vpclient.shared.ui.components.messenger.MessengerMessage
+import ru.mercury.vpclient.shared.ui.components.messenger.MessengerMessageDropdownMenu
+import ru.mercury.vpclient.shared.ui.components.messenger.MessengerMessageDropdownMenuState
 import ru.mercury.vpclient.shared.ui.components.messenger.MessengerMessagePlaceholder
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.icons.Chat24
@@ -112,6 +118,7 @@ import ru.mercury.vpclient.shared.ui.icons.Microphone24
 import ru.mercury.vpclient.shared.ui.icons.Paperclip24
 import ru.mercury.vpclient.shared.ui.icons.PhoneCalling22
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
+import ru.mercury.vpclient.shared.ui.ktx.clickableWithoutRipple
 import ru.mercury.vpclient.shared.ui.ktx.isPagingFailure
 import ru.mercury.vpclient.shared.ui.ktx.isPagingLoading
 import ru.mercury.vpclient.shared.ui.ktx.isRefreshFailure
@@ -129,6 +136,7 @@ fun MessengerSheet(
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
     val pagingItems = viewModel.messagesPagingFlow.collectAsLazyPagingItems()
     val context = LocalContext.current
+    val clipboard = LocalClipboard.current
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val lazyListState = rememberLazyListState()
@@ -216,6 +224,11 @@ fun MessengerSheet(
                 }
             }
             is MessengerEvent.LaunchDialer -> context.launcherDialer(event.phone)
+            is MessengerEvent.CopyMessageText -> {
+                scope.launch {
+                    clipboard.setClipEntry(ClipEntry(ClipData.newPlainText(null, event.text)))
+                }
+            }
             is MessengerEvent.SnackbarErrorMessage -> {
                 snackbarHostState.currentSnackbarData?.dismiss()
                 scope.launch { snackbarHostState.showSnackbar(event.message) }
@@ -234,335 +247,546 @@ private fun MessengerSheetContent(
     dispatch: (MessengerIntent) -> Unit,
     snackbarHostState: SnackbarHostState
 ) {
+    var expandedMenuMessageId by remember { mutableStateOf<Long?>(null) }
+    var deletingMessageId by remember { mutableStateOf<Long?>(null) }
+    val scrimVisibleState = remember { MutableTransitionState(false) }
+    scrimVisibleState.targetState = expandedMenuMessageId != null
+
     SharedModalBottomSheet(
         onDismissRequest = { dispatch(MessengerIntent.DismissClick) },
         modifier = Modifier
             .fillMaxHeight()
             .statusBarsPadding(),
-        sheetGesturesEnabled = true
+        sheetGesturesEnabled = true,
+        contentWindowInsets = { WindowInsets(0.dp) }
     ) {
-        SharedScaffold(
-            topBar = {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.background),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Icon(
-                        imageVector = ChevronDown24,
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp),
-                        tint = MaterialTheme.colorScheme.error
-                    )
-
-                    CenterAlignedTopAppBar(
-                        title = {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Row(
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Icon(
-                                        imageVector = Chat24,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(24.dp),
-                                        tint = MaterialTheme.colorScheme.onBackground
-                                    )
-
-                                    Text(
-                                        text = state.name,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                        style = MaterialTheme.typography.medium14.copy(
-                                            color = MaterialTheme.colorScheme.onBackground,
-                                            lineHeight = 16.sp
-                                        )
-                                    )
-                                }
-
-                                Text(
-                                    text = state.brand,
-                                    maxLines = 1,
-                                    style = MaterialTheme.typography.regular15.copy(
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        lineHeight = 18.sp,
-                                        letterSpacing = .2.sp
-                                    )
-                                )
-                            }
-                        },
-                        navigationIcon = {
-                            Box(
-                                modifier = Modifier
-                                    .padding(start = 16.dp)
-                                    .size(44.dp)
-                                    .clip(CircleShape)
-                            ) {
-                                ClientAsyncImage(
-                                    imageUrl = state.activeEmployeeEntity.previewPhotoUrl,
-                                    contentScale = ContentScale.Crop,
-                                    modifier = Modifier.fillMaxSize()
-                                )
-                            }
-                        },
-                        actions = {
-                            IconButton(
-                                onClick = { dispatch(MessengerIntent.CallClick) },
-                                modifier = Modifier
-                                    .padding(end = 16.dp)
-                                    .size(44.dp)
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(44.dp)
-                                        .border(
-                                            width = 1.dp,
-                                            color = MaterialTheme.colorScheme.outline,
-                                            shape = CircleShape
-                                        ),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = PhoneCalling22,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(22.dp),
-                                        tint = MaterialTheme.colorScheme.onBackground
-                                    )
-                                }
-                            }
-                        },
-                        windowInsets = WindowInsets(left = 0.dp, right = 0.dp),
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = MaterialTheme.colorScheme.background,
-                            navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
-                            titleContentColor = MaterialTheme.colorScheme.onBackground,
-                            actionIconContentColor = MaterialTheme.colorScheme.onBackground
-                        )
-                    )
-                }
-            },
-            bottomBar = {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .imePadding()
-                        .background(MaterialTheme.colorScheme.background)
-                        .padding(start = 16.dp, top = 8.dp, end = 8.dp, bottom = 8.dp)
-                ) {
-                    var textFieldLineCount by remember { mutableIntStateOf(1) }
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            SharedScaffold(
+                topBar = {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(MaterialTheme.colorScheme.background),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        BasicTextField(
-                            value = state.messageText,
-                            onValueChange = { text -> dispatch(MessengerIntent.MessageTextChange(text)) },
-                            modifier = Modifier
-                                .weight(1F)
-                                .heightIn(min = 48.dp)
-                                .border(
-                                    width = 1.dp,
-                                    color = MaterialTheme.colorScheme.outline,
-                                    shape = RoundedCornerShape(if (textFieldLineCount > 1) 16.dp else 50.dp)
-                                )
-                                .padding(horizontal = 20.dp, vertical = 14.dp),
-                            minLines = 1,
-                            maxLines = 5,
-                            onTextLayout = { textLayoutResult ->
-                                textFieldLineCount = textLayoutResult.lineCount
-                            },
-                            textStyle = MaterialTheme.typography.regular15.copy(
-                                color = MaterialTheme.colorScheme.onBackground,
-                                lineHeight = 19.sp,
-                                letterSpacing = .2.sp
-                            ),
-                            cursorBrush = SolidColor(MaterialTheme.colorScheme.onBackground),
-                            decorationBox = { innerTextField ->
-                                Box(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    contentAlignment = Alignment.CenterStart
+                        Icon(
+                            imageVector = ChevronDown24,
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp),
+                            tint = MaterialTheme.colorScheme.error
+                        )
+
+                        CenterAlignedTopAppBar(
+                            title = {
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
-                                    if (state.messageText.isEmpty()) {
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            imageVector = Chat24,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(24.dp),
+                                            tint = MaterialTheme.colorScheme.onBackground
+                                        )
+
                                         Text(
-                                            text = stringResource(ClientStrings.MessengerMessagePlaceholder),
-                                            style = MaterialTheme.typography.regular15.copy(
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                lineHeight = 19.sp,
-                                                letterSpacing = .2.sp
+                                            text = state.name,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            style = MaterialTheme.typography.medium14.copy(
+                                                color = MaterialTheme.colorScheme.onBackground,
+                                                lineHeight = 16.sp
                                             )
                                         )
                                     }
 
-                                    innerTextField()
-                                }
-                            }
-                        )
-
-                        IconButton(
-                            onClick = { dispatch(MessengerIntent.AttachClick) },
-                            modifier = Modifier
-                                .padding(start = 8.dp)
-                                .size(40.dp)
-                        ) {
-                            Icon(
-                                imageVector = Paperclip24,
-                                contentDescription = null,
-                                modifier = Modifier.size(24.dp),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-
-                        AnimatedContent(
-                            targetState = state.isSendButtonVisible,
-                            modifier = Modifier.size(40.dp),
-                            transitionSpec = {
-                                (fadeIn() + scaleIn(initialScale = .8F)) togetherWith
-                                    (fadeOut() + scaleOut(targetScale = .8F))
-                            },
-                            label = "messenger_action_button_animation"
-                        ) { isSendButtonVisible ->
-                            if (isSendButtonVisible) {
-                                MessageSendButton(
-                                    onClick = { dispatch(MessengerIntent.SendClick) },
-                                    modifier = Modifier.size(40.dp)
-                                )
-                            } else {
-                                IconButton(
-                                    onClick = { dispatch(MessengerIntent.MicClick) },
-                                    modifier = Modifier.size(40.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Microphone24,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(24.dp),
-                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            snackbarHost = {
-                SharedSnackbarHost(
-                    hostState = snackbarHostState,
-                    containerColor = MaterialTheme.colorScheme.error
-                )
-            }
-        ) { innerPadding ->
-            val isInitialLoading = pagingItems.isRefreshLoading && pagingItems.itemCount == 0
-
-            LazyColumn(
-                state = lazyListState,
-                modifier = Modifier.fillMaxSize(),
-                reverseLayout = true,
-                contentPadding = innerPadding + PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                userScrollEnabled = !isInitialLoading
-            ) {
-                if (isInitialLoading) {
-                    items(
-                        count = 8
-                    ) { index ->
-                        MessengerMessagePlaceholder(
-                            direction = if (index % 2 == 0) {
-                                MessengerMessageDirection.Incoming
-                            } else {
-                                MessengerMessageDirection.Outgoing
-                            }
-                        )
-                    }
-                }
-
-                if (!isInitialLoading) {
-                    items(
-                        count = pagingItems.itemCount,
-                        key = pagingItems.itemKey { message -> message.id },
-                        contentType = pagingItems.itemContentType()
-                    ) { index ->
-                        val message = pagingItems[index]
-
-                        if (message != null) {
-                            if (message.id == sentMessageIdToAnimate) {
-                                val visibleState = remember(message.id) {
-                                    MutableTransitionState(false).apply { targetState = true }
-                                }
-
-                                LaunchedEffect(visibleState) {
-                                    snapshotFlow { visibleState.isIdle && visibleState.currentState }
-                                        .first { isAnimationFinished -> isAnimationFinished }
-                                    onSentMessageAnimationFinished(message.id)
-                                }
-
-                                AnimatedVisibility(
-                                    visibleState = visibleState,
-                                    enter = expandVertically(
-                                        animationSpec = tween(
-                                            durationMillis = 320,
-                                            easing = FastOutSlowInEasing
-                                        ),
-                                        expandFrom = Alignment.Bottom,
-                                        clip = false
-                                    ) + slideInVertically(
-                                        animationSpec = tween(
-                                            durationMillis = 320,
-                                            easing = FastOutSlowInEasing
-                                        ),
-                                        initialOffsetY = { fullHeight -> fullHeight }
-                                    ) + fadeIn(
-                                        animationSpec = tween(
-                                            durationMillis = 320,
-                                            easing = FastOutSlowInEasing
+                                    Text(
+                                        text = state.brand,
+                                        maxLines = 1,
+                                        style = MaterialTheme.typography.regular15.copy(
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            lineHeight = 18.sp,
+                                            letterSpacing = .2.sp
                                         )
                                     )
+                                }
+                            },
+                            navigationIcon = {
+                                Box(
+                                    modifier = Modifier
+                                        .padding(start = 16.dp)
+                                        .size(44.dp)
+                                        .clip(CircleShape)
                                 ) {
-                                    MessengerMessage(
-                                        message = message,
-                                        onProductClick = { productId -> dispatch(MessengerIntent.ProductClick(productId)) }
+                                    ClientAsyncImage(
+                                        imageUrl = state.activeEmployeeEntity.previewPhotoUrl,
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier.fillMaxSize()
                                     )
                                 }
-                            } else {
-                                MessengerMessage(
-                                    message = message,
-                                    onProductClick = { productId -> dispatch(MessengerIntent.ProductClick(productId)) }
+                            },
+                            actions = {
+                                IconButton(
+                                    onClick = { dispatch(MessengerIntent.CallClick) },
+                                    modifier = Modifier
+                                        .padding(end = 16.dp)
+                                        .size(44.dp)
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(44.dp)
+                                            .border(
+                                                width = 1.dp,
+                                                color = MaterialTheme.colorScheme.outline,
+                                                shape = CircleShape
+                                            ),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = PhoneCalling22,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(22.dp),
+                                            tint = MaterialTheme.colorScheme.onBackground
+                                        )
+                                    }
+                                }
+                            },
+                            windowInsets = WindowInsets(left = 0.dp, right = 0.dp),
+                            colors = TopAppBarDefaults.topAppBarColors(
+                                containerColor = MaterialTheme.colorScheme.background,
+                                navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
+                                titleContentColor = MaterialTheme.colorScheme.onBackground,
+                                actionIconContentColor = MaterialTheme.colorScheme.onBackground
+                            )
+                        )
+                    }
+                },
+                bottomBar = {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(MaterialTheme.colorScheme.background)
+                            .navigationBarsPadding()
+                            .imePadding()
+                            .padding(start = 16.dp, top = 8.dp, end = 8.dp, bottom = 8.dp)
+                    ) {
+                        var textFieldLineCount by remember { mutableIntStateOf(1) }
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            BasicTextField(
+                                value = state.messageText,
+                                onValueChange = { text -> dispatch(MessengerIntent.MessageTextChange(text)) },
+                                modifier = Modifier
+                                    .weight(1F)
+                                    .heightIn(min = 48.dp)
+                                    .border(
+                                        width = 1.dp,
+                                        color = MaterialTheme.colorScheme.outline,
+                                        shape = RoundedCornerShape(if (textFieldLineCount > 1) 16.dp else 50.dp)
+                                    )
+                                    .padding(horizontal = 20.dp, vertical = 14.dp),
+                                minLines = 1,
+                                maxLines = 5,
+                                onTextLayout = { textLayoutResult ->
+                                    textFieldLineCount = textLayoutResult.lineCount
+                                },
+                                textStyle = MaterialTheme.typography.regular15.copy(
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    lineHeight = 19.sp,
+                                    letterSpacing = .2.sp
+                                ),
+                                cursorBrush = SolidColor(MaterialTheme.colorScheme.onBackground),
+                                decorationBox = { innerTextField ->
+                                    Box(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        contentAlignment = Alignment.CenterStart
+                                    ) {
+                                        if (state.messageText.isEmpty()) {
+                                            Text(
+                                                text = stringResource(ClientStrings.MessengerMessagePlaceholder),
+                                                style = MaterialTheme.typography.regular15.copy(
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                    lineHeight = 19.sp,
+                                                    letterSpacing = .2.sp
+                                                )
+                                            )
+                                        }
+
+                                        innerTextField()
+                                    }
+                                }
+                            )
+
+                            IconButton(
+                                onClick = { dispatch(MessengerIntent.AttachClick) },
+                                modifier = Modifier
+                                    .padding(start = 8.dp)
+                                    .size(40.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Paperclip24,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
+                            }
+
+                            AnimatedContent(
+                                targetState = state.isSendButtonVisible,
+                                modifier = Modifier.size(40.dp),
+                                transitionSpec = {
+                                    (fadeIn() + scaleIn(initialScale = .8F)) togetherWith
+                                        (fadeOut() + scaleOut(targetScale = .8F))
+                                },
+                                label = "messenger_action_button_animation"
+                            ) { isSendButtonVisible ->
+                                if (isSendButtonVisible) {
+                                    MessageSendButton(
+                                        onClick = { dispatch(MessengerIntent.SendClick) },
+                                        modifier = Modifier.size(40.dp)
+                                    )
+                                } else {
+                                    IconButton(
+                                        onClick = { dispatch(MessengerIntent.MicClick) },
+                                        modifier = Modifier.size(40.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = Microphone24,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(24.dp),
+                                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                snackbarHost = {
+                    SharedSnackbarHost(
+                        hostState = snackbarHostState,
+                        containerColor = MaterialTheme.colorScheme.error
+                    )
+                }
+            ) { innerPadding ->
+                val isInitialLoading = pagingItems.isRefreshLoading && pagingItems.itemCount == 0
+
+                LazyColumn(
+                    state = lazyListState,
+                    modifier = Modifier.fillMaxSize(),
+                    reverseLayout = true,
+                    contentPadding = innerPadding + PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    userScrollEnabled = !isInitialLoading
+                ) {
+                    if (isInitialLoading) {
+                        items(
+                            count = 8
+                        ) { index ->
+                            MessengerMessagePlaceholder(
+                                direction = if (index % 2 == 0) {
+                                    MessengerMessageDirection.Incoming
+                                } else {
+                                    MessengerMessageDirection.Outgoing
+                                }
+                            )
+                        }
+                    }
+
+                    if (!isInitialLoading) {
+                        items(
+                            count = pagingItems.itemCount,
+                            key = pagingItems.itemKey { message -> message.id },
+                            contentType = pagingItems.itemContentType()
+                        ) { index ->
+                            val message = pagingItems[index]
+
+                            if (message != null) {
+                                if (message.id == sentMessageIdToAnimate) {
+                                    val visibleState = remember(message.id) {
+                                        MutableTransitionState(false).apply { targetState = true }
+                                    }
+
+                                    LaunchedEffect(visibleState) {
+                                        snapshotFlow { visibleState.isIdle && visibleState.currentState }
+                                            .first { isAnimationFinished -> isAnimationFinished }
+                                        onSentMessageAnimationFinished(message.id)
+                                    }
+
+                                    Column(
+                                        modifier = Modifier.animateItem()
+                                    ) {
+                                        AnimatedVisibility(
+                                            visibleState = visibleState,
+                                            enter = expandVertically(
+                                                animationSpec = tween(
+                                                    durationMillis = 320,
+                                                    easing = FastOutSlowInEasing
+                                                ),
+                                                expandFrom = Alignment.Bottom,
+                                                clip = false
+                                            ) + slideInVertically(
+                                                animationSpec = tween(
+                                                    durationMillis = 320,
+                                                    easing = FastOutSlowInEasing
+                                                ),
+                                                initialOffsetY = { fullHeight -> fullHeight }
+                                            ) + fadeIn(
+                                                animationSpec = tween(
+                                                    durationMillis = 320,
+                                                    easing = FastOutSlowInEasing
+                                                )
+                                            )
+                                        ) {
+                                            Box {
+                                                MessengerMessage(
+                                                    message = message,
+                                                    onProductClick = { productId -> dispatch(MessengerIntent.ProductClick(productId)) },
+                                                    modifier = Modifier.clickableWithoutRipple {
+                                                        expandedMenuMessageId = message.id
+                                                    }
+                                                )
+
+                                                Box(
+                                                    modifier = Modifier.align(
+                                                        if (message.direction == MessengerMessageDirection.Outgoing) {
+                                                            Alignment.CenterEnd
+                                                        } else {
+                                                            Alignment.CenterStart
+                                                        }
+                                                    )
+                                                ) {
+                                                    MessengerMessageDropdownMenu(
+                                                        expanded = expandedMenuMessageId == message.id,
+                                                        onDismissRequest = { expandedMenuMessageId = null },
+                                                        state = MessengerMessageDropdownMenuState(
+                                                            direction = message.direction,
+                                                            isReplyable = message.isReplyable,
+                                                            isCopyable = message.isCopyable,
+                                                            isEditable = message.isEditable,
+                                                            isDeletable = message.isDeletable,
+                                                            isResendable = message.isResendable,
+                                                            onReplyClick = {
+                                                                expandedMenuMessageId = null
+                                                                dispatch(MessengerIntent.ReplyMessageClick(message.id))
+                                                            },
+                                                            onCopyClick = {
+                                                                expandedMenuMessageId = null
+                                                                dispatch(MessengerIntent.CopyMessageClick(message.text))
+                                                            },
+                                                            onEditClick = {
+                                                                expandedMenuMessageId = null
+                                                                dispatch(MessengerIntent.EditMessageClick(message.id))
+                                                            },
+                                                            onDeleteClick = {
+                                                                expandedMenuMessageId = null
+                                                                deletingMessageId = message.id
+                                                                dispatch(MessengerIntent.DeleteMessageClick(message.id))
+                                                            },
+                                                            onResendClick = {
+                                                                expandedMenuMessageId = null
+                                                                dispatch(MessengerIntent.ResendMessageClick(message.id))
+                                                            }
+                                                        )
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else if (message.id == deletingMessageId) {
+                                    val visibleState = remember(message.id) {
+                                        MutableTransitionState(true).apply { targetState = false }
+                                    }
+
+                                    Column(
+                                        modifier = Modifier.animateItem()
+                                    ) {
+                                        AnimatedVisibility(
+                                            visibleState = visibleState,
+                                            exit = shrinkVertically(
+                                                animationSpec = tween(
+                                                    durationMillis = 250,
+                                                    easing = FastOutSlowInEasing
+                                                ),
+                                                shrinkTowards = Alignment.Top,
+                                                clip = false
+                                            ) + fadeOut(
+                                                animationSpec = tween(
+                                                    durationMillis = 250,
+                                                    easing = FastOutSlowInEasing
+                                                )
+                                            )
+                                        ) {
+                                            Box {
+                                                MessengerMessage(
+                                                    message = message,
+                                                    onProductClick = { productId -> dispatch(MessengerIntent.ProductClick(productId)) },
+                                                    modifier = Modifier.clickableWithoutRipple {
+                                                        expandedMenuMessageId = message.id
+                                                    }
+                                                )
+
+                                                Box(
+                                                    modifier = Modifier.align(
+                                                        if (message.direction == MessengerMessageDirection.Outgoing) {
+                                                            Alignment.CenterEnd
+                                                        } else {
+                                                            Alignment.CenterStart
+                                                        }
+                                                    )
+                                                ) {
+                                                    MessengerMessageDropdownMenu(
+                                                        expanded = expandedMenuMessageId == message.id,
+                                                        onDismissRequest = { expandedMenuMessageId = null },
+                                                        state = MessengerMessageDropdownMenuState(
+                                                            direction = message.direction,
+                                                            isReplyable = message.isReplyable,
+                                                            isCopyable = message.isCopyable,
+                                                            isEditable = message.isEditable,
+                                                            isDeletable = message.isDeletable,
+                                                            isResendable = message.isResendable,
+                                                            onReplyClick = {
+                                                                expandedMenuMessageId = null
+                                                                dispatch(MessengerIntent.ReplyMessageClick(message.id))
+                                                            },
+                                                            onCopyClick = {
+                                                                expandedMenuMessageId = null
+                                                                dispatch(MessengerIntent.CopyMessageClick(message.text))
+                                                            },
+                                                            onEditClick = {
+                                                                expandedMenuMessageId = null
+                                                                dispatch(MessengerIntent.EditMessageClick(message.id))
+                                                            },
+                                                            onDeleteClick = {
+                                                                expandedMenuMessageId = null
+                                                                deletingMessageId = message.id
+                                                                dispatch(MessengerIntent.DeleteMessageClick(message.id))
+                                                            },
+                                                            onResendClick = {
+                                                                expandedMenuMessageId = null
+                                                                dispatch(MessengerIntent.ResendMessageClick(message.id))
+                                                            }
+                                                        )
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    Box(
+                                        modifier = Modifier.animateItem()
+                                    ) {
+                                        MessengerMessage(
+                                            message = message,
+                                            onProductClick = { productId -> dispatch(MessengerIntent.ProductClick(productId)) },
+                                            modifier = Modifier.clickableWithoutRipple {
+                                                expandedMenuMessageId = message.id
+                                            }
+                                        )
+
+                                        Box(
+                                            modifier = Modifier.align(
+                                                if (message.direction == MessengerMessageDirection.Outgoing) {
+                                                    Alignment.CenterEnd
+                                                } else {
+                                                    Alignment.CenterStart
+                                                }
+                                            )
+                                        ) {
+                                            MessengerMessageDropdownMenu(
+                                                expanded = expandedMenuMessageId == message.id,
+                                                onDismissRequest = { expandedMenuMessageId = null },
+                                                state = MessengerMessageDropdownMenuState(
+                                                    direction = message.direction,
+                                                    isReplyable = message.isReplyable,
+                                                    isCopyable = message.isCopyable,
+                                                    isEditable = message.isEditable,
+                                                    isDeletable = message.isDeletable,
+                                                    isResendable = message.isResendable,
+                                                    onReplyClick = {
+                                                        expandedMenuMessageId = null
+                                                        dispatch(MessengerIntent.ReplyMessageClick(message.id))
+                                                    },
+                                                    onCopyClick = {
+                                                        expandedMenuMessageId = null
+                                                        dispatch(MessengerIntent.CopyMessageClick(message.text))
+                                                    },
+                                                    onEditClick = {
+                                                        expandedMenuMessageId = null
+                                                        dispatch(MessengerIntent.EditMessageClick(message.id))
+                                                    },
+                                                    onDeleteClick = {
+                                                        expandedMenuMessageId = null
+                                                        deletingMessageId = message.id
+                                                        dispatch(MessengerIntent.DeleteMessageClick(message.id))
+                                                    },
+                                                    onResendClick = {
+                                                        expandedMenuMessageId = null
+                                                        dispatch(MessengerIntent.ResendMessageClick(message.id))
+                                                    }
+                                                )
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        when {
+                            pagingItems.isPagingLoading -> {
+                                item {
+                                    PagingLoadingBox(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(64.dp)
+                                    )
+                                }
+                            }
+                            pagingItems.isPagingFailure -> {
+                                item {
+                                    PagingFailureBox(
+                                        onClick = pagingItems::retry,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(64.dp)
+                                    )
+                                }
                             }
                         }
                     }
 
-                    when {
-                        pagingItems.isPagingLoading -> {
-                            item {
-                                PagingLoadingBox(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(64.dp)
-                                )
-                            }
-                        }
-                        pagingItems.isPagingFailure -> {
-                            item {
-                                PagingFailureBox(
-                                    onClick = pagingItems::retry,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(64.dp)
-                                )
-                            }
+                    if (pagingItems.isRefreshFailure) {
+                        item {
+                            PagingFailureBox(
+                                onClick = pagingItems::retry,
+                                modifier = Modifier.fillParentMaxSize()
+                            )
                         }
                     }
                 }
+            }
 
-                if (pagingItems.isRefreshFailure) {
-                    item {
-                        PagingFailureBox(
-                            onClick = pagingItems::retry,
-                            modifier = Modifier.fillParentMaxSize()
-                        )
-                    }
+            Column(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                AnimatedVisibility(
+                    visibleState = scrimVisibleState,
+                    modifier = Modifier.fillMaxSize(),
+                    enter = fadeIn(),
+                    exit = fadeOut()
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(MaterialTheme.colorScheme.scrim.copy(alpha = .1F))
+                    )
                 }
             }
         }

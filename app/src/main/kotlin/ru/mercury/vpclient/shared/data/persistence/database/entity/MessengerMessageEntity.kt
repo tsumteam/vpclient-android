@@ -17,4 +17,23 @@ data class MessengerMessageEntity(
     val status: MessengerMessageStatus?,
     val isEdited: Boolean,
     val payload: MessengerMessagePayload? = null
-)
+) {
+
+    val isReplyable: Boolean
+        get() = status != MessengerMessageStatus.Failed
+
+    val isCopyable: Boolean
+        get() = text.isNotBlank() && status != MessengerMessageStatus.Failed
+
+    val isEditable: Boolean
+        get() = direction == MessengerMessageDirection.Outgoing &&
+            payload?.type == null &&
+            text.isNotBlank() &&
+            status != MessengerMessageStatus.Failed
+
+    val isDeletable: Boolean
+        get() = direction == MessengerMessageDirection.Outgoing
+
+    val isResendable: Boolean
+        get() = direction == MessengerMessageDirection.Outgoing && status == MessengerMessageStatus.Failed
+}

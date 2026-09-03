@@ -16,4 +16,9 @@ sealed interface MessengerIntent: Intent {
     data object SendClick: MessengerIntent
     data class MessageTextChange(val text: String): MessengerIntent
     data class ProductClick(val productId: String): MessengerIntent
+    data class ReplyMessageClick(val messageId: Long): MessengerIntent
+    data class CopyMessageClick(val text: String): MessengerIntent
+    data class EditMessageClick(val messageId: Long): MessengerIntent
+    data class DeleteMessageClick(val messageId: Long): MessengerIntent
+    data class ResendMessageClick(val messageId: Long): MessengerIntent
 }

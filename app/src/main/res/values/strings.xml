@@ -399,6 +399,11 @@
     <string name="messenger_attach_cancel">Отменить</string>
     <string name="messenger_message_edited">"Изменено "</string>
     <string name="messenger_message_placeholder">Введите сообщение</string>
+    <string name="messenger_message_reply">Ответить</string>
+    <string name="messenger_message_resend">Отправить повторно</string>
+    <string name="messenger_message_copy">Скопировать</string>
+    <string name="messenger_message_edit">Изменить</string>
+    <string name="messenger_message_delete">Удалить</string>
 
     <string name="video_speed_title">Скорость</string>
     <string name="video_speed_05">0,5x</string>
