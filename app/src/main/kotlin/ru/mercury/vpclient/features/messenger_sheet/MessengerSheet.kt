@@ -7,6 +7,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -141,7 +142,7 @@ fun MessengerSheet(
     val snackbarHostState = remember { SnackbarHostState() }
     val lazyListState = rememberLazyListState()
     var lastSentMessageId by remember { mutableStateOf<Long?>(null) }
-    var sentMessageIdToAnimate by remember { mutableStateOf<Long?>(null) }
+    var slideInMessageId by remember { mutableStateOf<Long?>(null) }
     var isScrolledToBottom by remember { mutableStateOf(true) }
 
     LaunchedEffect(lastSentMessageId) {
@@ -172,7 +173,10 @@ fun MessengerSheet(
                 if (topMessageId == lastSentMessageId) return@collect
 
                 val wasAtBottom = isScrolledToBottom || lazyListState.firstVisibleItemIndex <= 1
-                if (wasAtBottom) lazyListState.animateScrollToItem(0)
+                if (wasAtBottom) {
+                    slideInMessageId = topMessageId
+                    lazyListState.requestScrollToItem(0)
+                }
             }
     }
 
@@ -180,9 +184,9 @@ fun MessengerSheet(
         state = state,
         pagingItems = pagingItems,
         lazyListState = lazyListState,
-        sentMessageIdToAnimate = sentMessageIdToAnimate,
-        onSentMessageAnimationFinished = { messageId ->
-            if (sentMessageIdToAnimate == messageId) sentMessageIdToAnimate = null
+        slideInMessageId = slideInMessageId,
+        onSlideInAnimationFinished = { messageId ->
+            if (slideInMessageId == messageId) slideInMessageId = null
         },
         dispatch = viewModel::dispatch,
         snackbarHostState = snackbarHostState
@@ -219,7 +223,7 @@ fun MessengerSheet(
                         lazyListState.animateScrollToItem(0)
                     }
                     lastSentMessageId = event.messageId
-                    sentMessageIdToAnimate = event.messageId
+                    slideInMessageId = event.messageId
                     pagingItems.refresh()
                 }
             }
@@ -242,8 +246,8 @@ private fun MessengerSheetContent(
     state: MessengerModel,
     pagingItems: LazyPagingItems<MessengerMessageEntity>,
     lazyListState: LazyListState,
-    sentMessageIdToAnimate: Long?,
-    onSentMessageAnimationFinished: (Long) -> Unit,
+    slideInMessageId: Long?,
+    onSlideInAnimationFinished: (Long) -> Unit,
     dispatch: (MessengerIntent) -> Unit,
     snackbarHostState: SnackbarHostState
 ) {
@@ -509,7 +513,7 @@ private fun MessengerSheetContent(
                                 val message = pagingItems[index]
 
                                 if (message != null) {
-                                    if (message.id == sentMessageIdToAnimate) {
+                                    if (message.id == slideInMessageId) {
                                         val visibleState = remember(message.id) {
                                             MutableTransitionState(false).apply { targetState = true }
                                         }
@@ -517,11 +521,11 @@ private fun MessengerSheetContent(
                                         LaunchedEffect(visibleState) {
                                             snapshotFlow { visibleState.isIdle && visibleState.currentState }
                                                 .first { isAnimationFinished -> isAnimationFinished }
-                                            onSentMessageAnimationFinished(message.id)
+                                            onSlideInAnimationFinished(message.id)
                                         }
 
                                         Column(
-                                            modifier = Modifier.animateItem()
+                                            modifier = Modifier.animateItem(placementSpec = snap())
                                         ) {
                                             AnimatedVisibility(
                                                 visibleState = visibleState,
@@ -606,7 +610,7 @@ private fun MessengerSheetContent(
                                         }
 
                                         Column(
-                                            modifier = Modifier.animateItem()
+                                            modifier = Modifier.animateItem(placementSpec = snap())
                                         ) {
                                             AnimatedVisibility(
                                                 visibleState = visibleState,
@@ -681,7 +685,7 @@ private fun MessengerSheetContent(
                                         }
                                     } else {
                                         Box(
-                                            modifier = Modifier.animateItem()
+                                            modifier = Modifier.animateItem(placementSpec = snap())
                                         ) {
                                             MessengerMessage(
                                                 message = message,
@@ -816,8 +820,8 @@ private fun MessengerSheetContentPreview(
             state = state.state,
             pagingItems = pagingItems,
             lazyListState = rememberLazyListState(),
-            sentMessageIdToAnimate = null,
-            onSentMessageAnimationFinished = {},
+            slideInMessageId = null,
+            onSlideInAnimationFinished = {},
             dispatch = {},
             snackbarHostState = remember { SnackbarHostState() }
         )
