@@ -33,6 +33,9 @@ val ProductEntity.detailsMessageProductName: String
 val ProductEntity.detailsMessageProductArticle: String
     get() = itemId?.takeIf { it.isNotBlank() } ?: article.orEmpty()
 
+val ProductEntity.detailsMessageProductColorName: String
+    get() = colorName.orEmpty().lowercase().replaceFirstChar { char -> char.uppercase() }
+
 private fun Double?.formattedPrice(): String {
     return when {
         this == null -> ""
