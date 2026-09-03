@@ -33,6 +33,7 @@ import ru.mercury.vpclient.shared.data.entity.MessengerPayloadProduct
 import ru.mercury.vpclient.shared.data.persistence.database.entity.MessengerMessageEntity
 import ru.mercury.vpclient.shared.domain.mapper.formatPriceText
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
+import ru.mercury.vpclient.shared.ui.ktx.clickAreaInset
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.regular11
 import ru.mercury.vpclient.shared.ui.theme.regular12
@@ -97,7 +98,9 @@ fun MessengerProductCard(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { state.onProductClick(product.id) },
+                        .clickAreaInset(horizontal = 16.dp, vertical = 2.dp)
+                        .clickable { state.onProductClick(product.id) }
+                        .padding(horizontal = 16.dp, vertical = 2.dp),
                     horizontalArrangement = Arrangement.spacedBy(9.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
