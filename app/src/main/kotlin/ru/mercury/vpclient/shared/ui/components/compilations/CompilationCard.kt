@@ -203,68 +203,74 @@ fun CompilationCard(
 @Preview(showBackground = true)
 @Composable
 private fun CompilationCardPreview(
-    @PreviewParameter(CompilationEntityProvider::class) compilation: CompilationEntity
+    @PreviewParameter(CompilationCardStateProvider::class) state: CompilationCardState
 ) {
     CompilationCard(
-        state = CompilationCardState(
-            entity = compilation
-        )
+        state = state
     )
 }
 
-private class CompilationEntityProvider: PreviewParameterProvider<CompilationEntity> {
-    override val values: Sequence<CompilationEntity> = sequenceOf(
-        CompilationEntity(
-            id = 1,
-            position = 0,
-            collageUrl = "",
-            photoUrl = "",
-            name = "Подборка от стилиста",
-            description = "",
-            createDate = "2026-07-11",
-            looksQty = 5,
-            lookProductsQty = 36,
-            badge = 1,
-            isStatsAvailable = false
+private class CompilationCardStateProvider: PreviewParameterProvider<CompilationCardState> {
+    override val values: Sequence<CompilationCardState> = sequenceOf(
+        CompilationCardState(
+            entity = CompilationEntity(
+                id = 1,
+                position = 0,
+                collageUrl = "",
+                photoUrl = "",
+                name = "Подборка от стилиста",
+                description = "",
+                createDate = "2026-07-11",
+                looksQty = 5,
+                lookProductsQty = 36,
+                badge = 1,
+                isStatsAvailable = false
+            )
         ),
-        CompilationEntity(
-            id = 2,
-            position = 1,
-            collageUrl = "",
-            photoUrl = "",
-            name = "Подборка для деловой поездки и вечерних мероприятий",
-            description = "",
-            createDate = "2026-07-10",
-            looksQty = 3,
-            lookProductsQty = 17,
-            badge = 1,
-            isStatsAvailable = false
+        CompilationCardState(
+            entity = CompilationEntity(
+                id = 2,
+                position = 1,
+                collageUrl = "",
+                photoUrl = "",
+                name = "Подборка для деловой поездки и вечерних мероприятий",
+                description = "",
+                createDate = "2026-07-10",
+                looksQty = 3,
+                lookProductsQty = 17,
+                badge = 1,
+                isStatsAvailable = false
+            )
         ),
-        CompilationEntity(
-            id = 3,
-            position = 2,
-            collageUrl = "",
-            photoUrl = "",
-            name = "Повседневные образы",
-            description = "",
-            createDate = "2026-07-09",
-            looksQty = 1,
-            lookProductsQty = 4,
-            badge = 0,
-            isStatsAvailable = false
+        CompilationCardState(
+            entity = CompilationEntity(
+                id = 3,
+                position = 2,
+                collageUrl = "",
+                photoUrl = "",
+                name = "Повседневные образы",
+                description = "",
+                createDate = "2026-07-09",
+                looksQty = 1,
+                lookProductsQty = 4,
+                badge = 0,
+                isStatsAvailable = false
+            )
         ),
-        CompilationEntity(
-            id = 3,
-            position = 2,
-            collageUrl = "",
-            photoUrl = "",
-            name = "Подборка для деловой поездки и вечерних мероприятий",
-            description = "",
-            createDate = "2026-07-09",
-            looksQty = 1,
-            lookProductsQty = 4,
-            badge = 0,
-            isStatsAvailable = false
+        CompilationCardState(
+            entity = CompilationEntity(
+                id = 3,
+                position = 2,
+                collageUrl = "",
+                photoUrl = "",
+                name = "Подборка для деловой поездки и вечерних мероприятий",
+                description = "",
+                createDate = "2026-07-09",
+                looksQty = 1,
+                lookProductsQty = 4,
+                badge = 0,
+                isStatsAvailable = false
+            )
         )
     )
 }
