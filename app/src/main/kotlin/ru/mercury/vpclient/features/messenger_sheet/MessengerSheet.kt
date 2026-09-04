@@ -726,7 +726,6 @@ private fun MessengerSheetContent(
                                                                     onDeleteClick = {
                                                                         expandedMenuMessageId = null
                                                                         deletingMessageId = message.id
-                                                                        dispatch(MessengerIntent.DeleteMessageClick(message.id))
                                                                     },
                                                                     onResendClick = {
                                                                         expandedMenuMessageId = null
@@ -743,6 +742,12 @@ private fun MessengerSheetContent(
                                                 MutableTransitionState(true).apply { targetState = false }
                                             }
 
+                                            LaunchedEffect(visibleState) {
+                                                snapshotFlow { visibleState.isIdle && !visibleState.currentState }
+                                                    .first { isAnimationFinished -> isAnimationFinished }
+                                                dispatch(MessengerIntent.DeleteMessageClick(message.id))
+                                            }
+
                                             Column(
                                                 modifier = Modifier.animateItem(placementSpec = snap())
                                             ) {
@@ -753,7 +758,7 @@ private fun MessengerSheetContent(
                                                             durationMillis = 250,
                                                             easing = FastOutSlowInEasing
                                                         ),
-                                                        shrinkTowards = Alignment.Top,
+                                                        shrinkTowards = Alignment.Bottom,
                                                         clip = true
                                                     ) + fadeOut(
                                                         animationSpec = tween(
@@ -825,7 +830,6 @@ private fun MessengerSheetContent(
                                                                     onDeleteClick = {
                                                                         expandedMenuMessageId = null
                                                                         deletingMessageId = message.id
-                                                                        dispatch(MessengerIntent.DeleteMessageClick(message.id))
                                                                     },
                                                                     onResendClick = {
                                                                         expandedMenuMessageId = null
@@ -839,7 +843,12 @@ private fun MessengerSheetContent(
                                             }
                                         } else {
                                             Box(
-                                                modifier = Modifier.animateItem(placementSpec = snap())
+                                                modifier = Modifier.animateItem(
+                                                    placementSpec = tween(
+                                                        durationMillis = 250,
+                                                        easing = FastOutSlowInEasing
+                                                    )
+                                                )
                                             ) {
                                                 val citatedMessage = message.payload?.citatedMessageId?.let { citatedMessageId ->
                                                     pagingItems.itemSnapshotList.items.firstOrNull { item -> item.id == citatedMessageId }
@@ -903,7 +912,6 @@ private fun MessengerSheetContent(
                                                             onDeleteClick = {
                                                                 expandedMenuMessageId = null
                                                                 deletingMessageId = message.id
-                                                                dispatch(MessengerIntent.DeleteMessageClick(message.id))
                                                             },
                                                             onResendClick = {
                                                                 expandedMenuMessageId = null

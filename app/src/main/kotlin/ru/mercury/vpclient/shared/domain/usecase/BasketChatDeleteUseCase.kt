@@ -20,7 +20,10 @@ class BasketChatDeleteUseCase @Inject constructor(
 ): UseCase<Long, Unit>(dispatchers.io) {
 
     override suspend fun execute(messageId: Long) {
+        val originalEntity = messengerMessageDao.select(messageId) ?: return
         val pairedUserId = settingsDataStore.getValue(PreferenceKey.PairedUser).orEmpty()
+
+        messengerMessageDao.delete(messageId)
 
         handleResponse(
             request = {
@@ -30,8 +33,11 @@ class BasketChatDeleteUseCase @Inject constructor(
                 )
                 networkService.basketChatDelete(request)
             },
-            onSuccess = { messengerMessageDao.delete(messageId) },
-            onFailure = { error -> throw BasketChatDeleteException(error.message) }
+            onSuccess = {},
+            onFailure = { error ->
+                messengerMessageDao.upsert(listOf(originalEntity))
+                throw BasketChatDeleteException(error.message)
+            }
         )
     }
 
