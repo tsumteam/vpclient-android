@@ -21,11 +21,13 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.icons.Play33
+import ru.mercury.vpclient.shared.ui.ktx.clickableWithoutRipple
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 
 data class MessengerVideoMessageState(
     val previewUrl: String,
-    val isOutgoing: Boolean
+    val isOutgoing: Boolean,
+    val onBubbleClick: () -> Unit = {}
 )
 
 @Composable
@@ -39,6 +41,7 @@ fun MessengerVideoMessage(
     ) {
         Box(
             modifier = Modifier
+                .clickableWithoutRipple { state.onBubbleClick() }
                 .size(width = 248.dp, height = 248.dp)
                 .clip(
                     RoundedCornerShape(

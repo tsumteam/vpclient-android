@@ -19,6 +19,7 @@ import ru.mercury.vpclient.shared.data.entity.MessengerMessageStatus
 import ru.mercury.vpclient.shared.domain.mapper.messengerMessageDateText
 import ru.mercury.vpclient.shared.ui.icons.MessengerCheck14x10
 import ru.mercury.vpclient.shared.ui.icons.MessengerChecks20x10
+import ru.mercury.vpclient.shared.ui.ktx.clickableWithoutRipple
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.ClientStrings
 import ru.mercury.vpclient.shared.ui.theme.blue
@@ -27,7 +28,8 @@ import ru.mercury.vpclient.shared.ui.theme.regular12
 data class MessengerMessageMetaState(
     val createTime: String,
     val isEdited: Boolean,
-    val status: MessengerMessageStatus?
+    val status: MessengerMessageStatus?,
+    val onClick: () -> Unit = {}
 ) {
     val isIconStatusVisible: Boolean
         get() = status != null && status != MessengerMessageStatus.Failed
@@ -39,7 +41,7 @@ fun MessengerMessageMeta(
     modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier,
+        modifier = modifier.clickableWithoutRipple { state.onClick() },
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

@@ -20,12 +20,14 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import ru.mercury.vpclient.shared.data.entity.MessengerMessageStatus
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
+import ru.mercury.vpclient.shared.ui.ktx.clickableWithoutRipple
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 
 data class MessengerPhotoMessageState(
     val imageUrls: List<String>,
     val isOutgoing: Boolean,
-    val metaState: MessengerMessageMetaState
+    val metaState: MessengerMessageMetaState,
+    val onBubbleClick: () -> Unit = {}
 )
 
 @Composable
@@ -45,6 +47,7 @@ fun MessengerPhotoMessage(
             ) {
                 Box(
                     modifier = Modifier
+                        .clickableWithoutRipple { state.onBubbleClick() }
                         .size(width = 248.dp, height = 248.dp)
                         .clip(
                             RoundedCornerShape(

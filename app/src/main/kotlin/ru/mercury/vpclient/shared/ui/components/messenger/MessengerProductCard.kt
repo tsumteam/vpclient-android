@@ -34,6 +34,7 @@ import ru.mercury.vpclient.shared.data.persistence.database.entity.MessengerMess
 import ru.mercury.vpclient.shared.domain.mapper.formatPriceText
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.ktx.clickAreaInset
+import ru.mercury.vpclient.shared.ui.ktx.clickableWithoutRipple
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.regular11
 import ru.mercury.vpclient.shared.ui.theme.regular12
@@ -41,7 +42,8 @@ import ru.mercury.vpclient.shared.ui.theme.regular14
 
 data class MessengerProductCardState(
     val message: MessengerMessageEntity,
-    val onProductClick: (String) -> Unit
+    val onProductClick: (String) -> Unit,
+    val onBubbleClick: () -> Unit = {}
 ) {
     val isOutgoing: Boolean
         get() = message.direction == MessengerMessageDirection.Outgoing
@@ -62,6 +64,7 @@ fun MessengerProductCard(
     ) {
         Column(
             modifier = Modifier
+                .clickableWithoutRipple { state.onBubbleClick() }
                 .widthIn(max = 328.dp)
                 .clip(
                     RoundedCornerShape(
@@ -168,7 +171,8 @@ fun MessengerProductCard(
             state = MessengerMessageMetaState(
                 createTime = state.message.createTime,
                 isEdited = state.message.isEdited,
-                status = state.message.status
+                status = state.message.status,
+                onClick = state.onBubbleClick
             )
         )
     }

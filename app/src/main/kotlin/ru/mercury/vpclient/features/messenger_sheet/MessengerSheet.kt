@@ -64,6 +64,8 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ClipEntry
@@ -72,6 +74,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -114,6 +118,8 @@ import ru.mercury.vpclient.shared.ui.components.SharedModalBottomSheet
 import ru.mercury.vpclient.shared.ui.components.SharedScaffold
 import ru.mercury.vpclient.shared.ui.components.SharedSnackbarHost
 import ru.mercury.vpclient.shared.ui.components.messenger.MessageSendButton
+import ru.mercury.vpclient.shared.ui.components.messenger.MessengerEditingBar
+import ru.mercury.vpclient.shared.ui.components.messenger.MessengerEditingBarState
 import ru.mercury.vpclient.shared.ui.components.messenger.MessengerMessage
 import ru.mercury.vpclient.shared.ui.components.messenger.MessengerMessageDropdownMenu
 import ru.mercury.vpclient.shared.ui.components.messenger.MessengerMessageDropdownMenuState
@@ -126,7 +132,6 @@ import ru.mercury.vpclient.shared.ui.icons.Microphone24
 import ru.mercury.vpclient.shared.ui.icons.Paperclip24
 import ru.mercury.vpclient.shared.ui.icons.PhoneCalling22
 import ru.mercury.vpclient.shared.ui.ktx.ObserveAsEvents
-import ru.mercury.vpclient.shared.ui.ktx.clickableWithoutRipple
 import ru.mercury.vpclient.shared.ui.ktx.isPagingFailure
 import ru.mercury.vpclient.shared.ui.ktx.isPagingLoading
 import ru.mercury.vpclient.shared.ui.ktx.isRefreshFailure
@@ -419,93 +424,140 @@ private fun MessengerSheetContent(
                             .padding(start = 16.dp, top = 8.dp, end = 8.dp, bottom = 8.dp)
                     ) {
                         var textFieldLineCount by remember { mutableIntStateOf(1) }
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            BasicTextField(
-                                value = state.messageText,
-                                onValueChange = { text -> dispatch(MessengerIntent.MessageTextChange(text)) },
-                                modifier = Modifier
-                                    .weight(1F)
-                                    .heightIn(min = 48.dp)
-                                    .border(
-                                        width = 1.dp,
-                                        color = MaterialTheme.colorScheme.outline,
-                                        shape = RoundedCornerShape(if (textFieldLineCount > 1) 16.dp else 50.dp)
-                                    )
-                                    .padding(horizontal = 20.dp, vertical = 14.dp),
-                                minLines = 1,
-                                maxLines = 5,
-                                onTextLayout = { textLayoutResult ->
-                                    textFieldLineCount = textLayoutResult.lineCount
-                                },
-                                textStyle = MaterialTheme.typography.regular15.copy(
-                                    color = MaterialTheme.colorScheme.onBackground,
-                                    lineHeight = 19.sp,
-                                    letterSpacing = .2.sp
-                                ),
-                                cursorBrush = SolidColor(MaterialTheme.colorScheme.onBackground),
-                                decorationBox = { innerTextField ->
-                                    Box(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        contentAlignment = Alignment.CenterStart
-                                    ) {
-                                        if (state.messageText.isEmpty()) {
-                                            Text(
-                                                text = stringResource(ClientStrings.MessengerMessagePlaceholder),
-                                                style = MaterialTheme.typography.regular15.copy(
-                                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                    lineHeight = 19.sp,
-                                                    letterSpacing = .2.sp
-                                                )
-                                            )
-                                        }
-
-                                        innerTextField()
-                                    }
-                                }
+                        val focusRequester = remember { FocusRequester() }
+                        var messageFieldValue by remember {
+                            mutableStateOf(
+                                TextFieldValue(
+                                    text = state.messageText,
+                                    selection = TextRange(index = state.messageText.length)
+                                )
                             )
+                        }
 
-                            IconButton(
-                                onClick = onAttachClick,
-                                modifier = Modifier
-                                    .padding(start = 8.dp)
-                                    .size(40.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Paperclip24,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(24.dp),
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        LaunchedEffect(state.messageText) {
+                            if (state.messageText != messageFieldValue.text) {
+                                messageFieldValue = TextFieldValue(
+                                    text = state.messageText,
+                                    selection = TextRange(index = state.messageText.length)
+                                )
+                            }
+                        }
+
+                        LaunchedEffect(state.editingMessageId) {
+                            messageFieldValue = messageFieldValue.copy(
+                                selection = TextRange(index = messageFieldValue.text.length)
+                            )
+                            if (state.editingMessageId != null) {
+                                focusRequester.requestFocus()
+                                keyboardController?.show()
+                            }
+                        }
+
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            if (state.isEditing) {
+                                MessengerEditingBar(
+                                    state = MessengerEditingBarState(
+                                        messageText = state.editingOriginalText,
+                                        onCloseClick = { dispatch(MessengerIntent.CancelEditClick) }
+                                    ),
+                                    modifier = Modifier.fillMaxWidth()
                                 )
                             }
 
-                            AnimatedContent(
-                                targetState = state.isSendButtonVisible,
-                                modifier = Modifier.size(40.dp),
-                                transitionSpec = {
-                                    (fadeIn() + scaleIn(initialScale = .8F)) togetherWith
-                                        (fadeOut() + scaleOut(targetScale = .8F))
-                                },
-                                label = "messenger_action_button_animation"
-                            ) { isSendButtonVisible ->
-                                if (isSendButtonVisible) {
-                                    MessageSendButton(
-                                        onClick = { dispatch(MessengerIntent.SendClick) },
-                                        modifier = Modifier.size(40.dp)
-                                    )
-                                } else {
-                                    IconButton(
-                                        onClick = { dispatch(MessengerIntent.MicClick) },
-                                        modifier = Modifier.size(40.dp)
-                                    ) {
-                                        Icon(
-                                            imageVector = Microphone24,
-                                            contentDescription = null,
-                                            modifier = Modifier.size(24.dp),
-                                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            Row(
+                                verticalAlignment = Alignment.Bottom
+                            ) {
+                                BasicTextField(
+                                    value = messageFieldValue,
+                                    onValueChange = { textFieldValue ->
+                                        messageFieldValue = textFieldValue
+                                        dispatch(MessengerIntent.MessageTextChange(textFieldValue.text))
+                                    },
+                                    modifier = Modifier
+                                        .weight(1F)
+                                        .focusRequester(focusRequester)
+                                        .heightIn(min = 48.dp)
+                                        .border(
+                                            width = 1.dp,
+                                            color = MaterialTheme.colorScheme.outline,
+                                            shape = RoundedCornerShape(if (textFieldLineCount > 1) 16.dp else 50.dp)
                                         )
+                                        .padding(horizontal = 20.dp, vertical = 14.dp),
+                                    minLines = 1,
+                                    maxLines = 5,
+                                    onTextLayout = { textLayoutResult ->
+                                        textFieldLineCount = textLayoutResult.lineCount
+                                    },
+                                    textStyle = MaterialTheme.typography.regular15.copy(
+                                        color = MaterialTheme.colorScheme.onBackground,
+                                        lineHeight = 19.sp,
+                                        letterSpacing = .2.sp
+                                    ),
+                                    cursorBrush = SolidColor(MaterialTheme.colorScheme.onBackground),
+                                    decorationBox = { innerTextField ->
+                                        Box(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            contentAlignment = Alignment.CenterStart
+                                        ) {
+                                            if (state.messageText.isEmpty()) {
+                                                Text(
+                                                    text = stringResource(ClientStrings.MessengerMessagePlaceholder),
+                                                    style = MaterialTheme.typography.regular15.copy(
+                                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                        lineHeight = 19.sp,
+                                                        letterSpacing = .2.sp
+                                                    )
+                                                )
+                                            }
+
+                                            innerTextField()
+                                        }
+                                    }
+                                )
+
+                                IconButton(
+                                    onClick = onAttachClick,
+                                    modifier = Modifier
+                                        .padding(start = 8.dp)
+                                        .size(40.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Paperclip24,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(24.dp),
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+
+                                AnimatedContent(
+                                    targetState = state.isSendButtonVisible,
+                                    modifier = Modifier.size(40.dp),
+                                    transitionSpec = {
+                                        (fadeIn() + scaleIn(initialScale = .8F)) togetherWith
+                                            (fadeOut() + scaleOut(targetScale = .8F))
+                                    },
+                                    label = "messenger_action_button_animation"
+                                ) { isSendButtonVisible ->
+                                    if (isSendButtonVisible) {
+                                        MessageSendButton(
+                                            onClick = { dispatch(MessengerIntent.SendClick) },
+                                            modifier = Modifier.size(40.dp)
+                                        )
+                                    } else {
+                                        IconButton(
+                                            onClick = { dispatch(MessengerIntent.MicClick) },
+                                            modifier = Modifier.size(40.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = Microphone24,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(24.dp),
+                                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -607,9 +659,7 @@ private fun MessengerSheetContent(
                                                             onProductClick = { productId -> dispatch(MessengerIntent.ProductClick(productId)) },
                                                             citationAuthorName = citationAuthorName,
                                                             onCitationClick = { message.payload?.citatedMessageId?.let(onCitationClick) },
-                                                            modifier = Modifier.clickableWithoutRipple {
-                                                                expandedMenuMessageId = message.id
-                                                            }
+                                                            onClick = { expandedMenuMessageId = message.id }
                                                         )
 
                                                         Box(
@@ -641,7 +691,7 @@ private fun MessengerSheetContent(
                                                                     },
                                                                     onEditClick = {
                                                                         expandedMenuMessageId = null
-                                                                        dispatch(MessengerIntent.EditMessageClick(message.id))
+                                                                        dispatch(MessengerIntent.EditMessageClick(messageId = message.id, text = message.text))
                                                                     },
                                                                     onDeleteClick = {
                                                                         expandedMenuMessageId = null
@@ -674,7 +724,7 @@ private fun MessengerSheetContent(
                                                             easing = FastOutSlowInEasing
                                                         ),
                                                         shrinkTowards = Alignment.Top,
-                                                        clip = false
+                                                        clip = true
                                                     ) + fadeOut(
                                                         animationSpec = tween(
                                                             durationMillis = 250,
@@ -698,9 +748,7 @@ private fun MessengerSheetContent(
                                                             onProductClick = { productId -> dispatch(MessengerIntent.ProductClick(productId)) },
                                                             citationAuthorName = citationAuthorName,
                                                             onCitationClick = { message.payload?.citatedMessageId?.let(onCitationClick) },
-                                                            modifier = Modifier.clickableWithoutRipple {
-                                                                expandedMenuMessageId = message.id
-                                                            }
+                                                            onClick = { expandedMenuMessageId = message.id }
                                                         )
 
                                                         Box(
@@ -732,7 +780,7 @@ private fun MessengerSheetContent(
                                                                     },
                                                                     onEditClick = {
                                                                         expandedMenuMessageId = null
-                                                                        dispatch(MessengerIntent.EditMessageClick(message.id))
+                                                                        dispatch(MessengerIntent.EditMessageClick(messageId = message.id, text = message.text))
                                                                     },
                                                                     onDeleteClick = {
                                                                         expandedMenuMessageId = null
@@ -768,9 +816,7 @@ private fun MessengerSheetContent(
                                                     onProductClick = { productId -> dispatch(MessengerIntent.ProductClick(productId)) },
                                                     citationAuthorName = citationAuthorName,
                                                     onCitationClick = { message.payload?.citatedMessageId?.let(onCitationClick) },
-                                                    modifier = Modifier.clickableWithoutRipple {
-                                                        expandedMenuMessageId = message.id
-                                                    }
+                                                    onClick = { expandedMenuMessageId = message.id }
                                                 )
 
                                                 Box(
@@ -802,7 +848,7 @@ private fun MessengerSheetContent(
                                                             },
                                                             onEditClick = {
                                                                 expandedMenuMessageId = null
-                                                                dispatch(MessengerIntent.EditMessageClick(message.id))
+                                                                dispatch(MessengerIntent.EditMessageClick(messageId = message.id, text = message.text))
                                                             },
                                                             onDeleteClick = {
                                                                 expandedMenuMessageId = null

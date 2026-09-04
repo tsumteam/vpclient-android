@@ -27,11 +27,13 @@ import ru.mercury.vpclient.shared.data.entity.MessengerPayloadProduct
 import ru.mercury.vpclient.shared.domain.mapper.formatPriceText
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.icons.GiftCard24
+import ru.mercury.vpclient.shared.ui.ktx.clickableWithoutRipple
 import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 import ru.mercury.vpclient.shared.ui.theme.medium15
 
 data class MessengerGiftCardMessageState(
-    val product: MessengerPayloadProduct
+    val product: MessengerPayloadProduct,
+    val onBubbleClick: () -> Unit = {}
 ) {
     val titleText: String
         get() = product.name.ifEmpty { product.brand }
@@ -56,6 +58,7 @@ fun MessengerGiftCardMessage(
 ) {
     Row(
         modifier = modifier
+            .clickableWithoutRipple { state.onBubbleClick() }
             .widthIn(max = 300.dp)
             .clip(RoundedCornerShape(17.dp))
             .background(MaterialTheme.colorScheme.outlineVariant)

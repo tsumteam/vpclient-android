@@ -38,7 +38,8 @@ import ru.mercury.vpclient.shared.ui.theme.regular14
 data class MessengerTextMessageState(
     val message: MessengerMessageEntity,
     val citationAuthorName: String = "",
-    val onCitationClick: () -> Unit = {}
+    val onCitationClick: () -> Unit = {},
+    val onBubbleClick: () -> Unit = {}
 ) {
 
     val isCitationVisible: Boolean
@@ -59,6 +60,7 @@ fun MessengerTextMessage(
     ) {
         Column(
             modifier = Modifier
+                .clickableWithoutRipple { state.onBubbleClick() }
                 .widthIn(max = 328.dp)
                 .clip(
                     RoundedCornerShape(
@@ -170,7 +172,8 @@ fun MessengerTextMessage(
             state = MessengerMessageMetaState(
                 createTime = state.message.createTime,
                 isEdited = state.message.isEdited,
-                status = state.message.status
+                status = state.message.status,
+                onClick = state.onBubbleClick
             )
         )
     }

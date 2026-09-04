@@ -33,6 +33,7 @@ fun MessengerMessage(
     onProductClick: (String) -> Unit,
     citationAuthorName: String,
     onCitationClick: () -> Unit,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     when (message.direction) {
@@ -102,8 +103,10 @@ fun MessengerMessage(
                                 metaState = MessengerMessageMetaState(
                                     createTime = message.createTime,
                                     isEdited = message.isEdited,
-                                    status = message.status
-                                )
+                                    status = message.status,
+                                    onClick = onClick
+                                ),
+                                onBubbleClick = onClick
                             )
                         )
                     }
@@ -121,7 +124,8 @@ fun MessengerMessage(
                         MessengerVideoMessage(
                             state = MessengerVideoMessageState(
                                 previewUrl = previewUrl,
-                                isOutgoing = isOutgoing
+                                isOutgoing = isOutgoing,
+                                onBubbleClick = onClick
                             )
                         )
 
@@ -129,7 +133,8 @@ fun MessengerMessage(
                             state = MessengerMessageMetaState(
                                 createTime = message.createTime,
                                 isEdited = message.isEdited,
-                                status = message.status
+                                status = message.status,
+                                onClick = onClick
                             ),
                             modifier = Modifier.padding(top = 5.dp)
                         )
@@ -139,7 +144,8 @@ fun MessengerMessage(
                     MessengerProductCard(
                         state = MessengerProductCardState(
                             message = message,
-                            onProductClick = onProductClick
+                            onProductClick = onProductClick,
+                            onBubbleClick = onClick
                         ),
                         modifier = modifier
                     )
@@ -154,7 +160,10 @@ fun MessengerMessage(
                     ) {
                         if (items.size == 1) {
                             MessengerCompilationCard(
-                                state = MessengerCompilationCardState(compilation = items.first())
+                                state = MessengerCompilationCardState(
+                                    compilation = items.first(),
+                                    onBubbleClick = onClick
+                                )
                             )
                         } else {
                             Row(
@@ -163,7 +172,10 @@ fun MessengerMessage(
                             ) {
                                 items.forEach { compilation ->
                                     MessengerCompilationCard(
-                                        state = MessengerCompilationCardState(compilation = compilation)
+                                        state = MessengerCompilationCardState(
+                                            compilation = compilation,
+                                            onBubbleClick = onClick
+                                        )
                                     )
                                 }
                             }
@@ -173,7 +185,8 @@ fun MessengerMessage(
                             state = MessengerMessageMetaState(
                                 createTime = message.createTime,
                                 isEdited = message.isEdited,
-                                status = message.status
+                                status = message.status,
+                                onClick = onClick
                             ),
                             modifier = Modifier.padding(top = 5.dp)
                         )
@@ -189,7 +202,10 @@ fun MessengerMessage(
                     ) {
                         if (items.size == 1) {
                             MessengerLookCard(
-                                state = MessengerLookCardState(look = items.first())
+                                state = MessengerLookCardState(
+                                    look = items.first(),
+                                    onBubbleClick = onClick
+                                )
                             )
                         } else {
                             Row(
@@ -198,7 +214,10 @@ fun MessengerMessage(
                             ) {
                                 items.forEach { look ->
                                     MessengerLookCard(
-                                        state = MessengerLookCardState(look = look)
+                                        state = MessengerLookCardState(
+                                            look = look,
+                                            onBubbleClick = onClick
+                                        )
                                     )
                                 }
                             }
@@ -208,7 +227,8 @@ fun MessengerMessage(
                             state = MessengerMessageMetaState(
                                 createTime = message.createTime,
                                 isEdited = message.isEdited,
-                                status = message.status
+                                status = message.status,
+                                onClick = onClick
                             ),
                             modifier = Modifier.padding(top = 5.dp)
                         )
@@ -224,7 +244,10 @@ fun MessengerMessage(
                     ) {
                         if (items.size == 1) {
                             MessengerLookCard(
-                                state = MessengerLookCardState(look = items.first())
+                                state = MessengerLookCardState(
+                                    look = items.first(),
+                                    onBubbleClick = onClick
+                                )
                             )
                         } else {
                             Row(
@@ -233,7 +256,10 @@ fun MessengerMessage(
                             ) {
                                 items.forEach { look ->
                                     MessengerLookCard(
-                                        state = MessengerLookCardState(look = look)
+                                        state = MessengerLookCardState(
+                                            look = look,
+                                            onBubbleClick = onClick
+                                        )
                                     )
                                 }
                             }
@@ -243,7 +269,8 @@ fun MessengerMessage(
                             state = MessengerMessageMetaState(
                                 createTime = message.createTime,
                                 isEdited = message.isEdited,
-                                status = message.status
+                                status = message.status,
+                                onClick = onClick
                             ),
                             modifier = Modifier.padding(top = 5.dp)
                         )
@@ -260,7 +287,10 @@ fun MessengerMessage(
                     ) {
                         products.forEach { product ->
                             MessengerGiftCardMessage(
-                                state = MessengerGiftCardMessageState(product = product)
+                                state = MessengerGiftCardMessageState(
+                                    product = product,
+                                    onBubbleClick = onClick
+                                )
                             )
                         }
 
@@ -268,7 +298,8 @@ fun MessengerMessage(
                             state = MessengerMessageMetaState(
                                 createTime = message.createTime,
                                 isEdited = message.isEdited,
-                                status = message.status
+                                status = message.status,
+                                onClick = onClick
                             ),
                             modifier = Modifier.padding(top = 5.dp)
                         )
@@ -279,7 +310,8 @@ fun MessengerMessage(
                         state = MessengerTextMessageState(
                             message = message,
                             citationAuthorName = citationAuthorName,
-                            onCitationClick = onCitationClick
+                            onCitationClick = onCitationClick,
+                            onBubbleClick = onClick
                         ),
                         modifier = modifier
                     )
@@ -299,7 +331,8 @@ private fun MessengerMessagePreview(
         message = message,
         onProductClick = {},
         citationAuthorName = "",
-        onCitationClick = {}
+        onCitationClick = {},
+        onClick = {}
     )
 }
 

@@ -6,7 +6,9 @@ import ru.mercury.vpclient.shared.mvi.Model
 data class MessengerModel(
     val activeEmployeeEntity: EmployeeEntity = EmployeeEntity.Empty,
     val messageText: String = "",
-    val isAttachSheetVisible: Boolean = false
+    val isAttachSheetVisible: Boolean = false,
+    val editingMessageId: Long? = null,
+    val editingOriginalText: String = ""
 ): Model {
 
     val name: String
@@ -17,4 +19,7 @@ data class MessengerModel(
 
     val isSendButtonVisible: Boolean
         get() = messageText.isNotBlank()
+
+    val isEditing: Boolean
+        get() = editingMessageId != null
 }
