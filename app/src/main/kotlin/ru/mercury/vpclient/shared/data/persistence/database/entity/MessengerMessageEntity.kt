@@ -29,7 +29,8 @@ data class MessengerMessageEntity(
         get() = direction == MessengerMessageDirection.Outgoing &&
             payload?.type == null &&
             text.isNotBlank() &&
-            status != MessengerMessageStatus.Failed
+            status != MessengerMessageStatus.Failed &&
+            status != MessengerMessageStatus.Read
 
     val isDeletable: Boolean
         get() = direction == MessengerMessageDirection.Outgoing
