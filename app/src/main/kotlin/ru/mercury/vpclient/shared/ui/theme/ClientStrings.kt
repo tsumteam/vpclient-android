@@ -352,6 +352,7 @@ object ClientStrings {
     val MessengerAttachCatalog get() = R.string.messenger_attach_catalog
     val MessengerAttachCancel get() = R.string.messenger_attach_cancel
     val MessengerMessageEdited get() = R.string.messenger_message_edited
+    val MessengerEditing get() = R.string.messenger_editing
     val MessengerMessagePlaceholder get() = R.string.messenger_message_placeholder
     val MessengerMessageReply get() = R.string.messenger_message_reply
     val MessengerMessageResend get() = R.string.messenger_message_resend

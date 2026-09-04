@@ -398,6 +398,7 @@
     <string name="messenger_attach_catalog">Выбрать из каталога</string>
     <string name="messenger_attach_cancel">Отменить</string>
     <string name="messenger_message_edited">"Изменено "</string>
+    <string name="messenger_editing">Редактирование</string>
     <string name="messenger_message_placeholder">Введите сообщение</string>
     <string name="messenger_message_reply">Ответить</string>
     <string name="messenger_message_resend">Отправить повторно</string>
