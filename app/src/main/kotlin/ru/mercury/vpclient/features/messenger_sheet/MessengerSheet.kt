@@ -124,6 +124,8 @@ import ru.mercury.vpclient.shared.ui.components.messenger.MessengerMessage
 import ru.mercury.vpclient.shared.ui.components.messenger.MessengerMessageDropdownMenu
 import ru.mercury.vpclient.shared.ui.components.messenger.MessengerMessageDropdownMenuState
 import ru.mercury.vpclient.shared.ui.components.messenger.MessengerMessagePlaceholder
+import ru.mercury.vpclient.shared.ui.components.messenger.MessengerReplyBar
+import ru.mercury.vpclient.shared.ui.components.messenger.MessengerReplyBarState
 import ru.mercury.vpclient.shared.ui.components.messenger.MessengerScrollToBottomButton
 import ru.mercury.vpclient.shared.ui.components.system.ClientAsyncImage
 import ru.mercury.vpclient.shared.ui.icons.Chat24
@@ -453,6 +455,13 @@ private fun MessengerSheetContent(
                             }
                         }
 
+                        LaunchedEffect(state.replyMessageId) {
+                            if (state.replyMessageId != null) {
+                                focusRequester.requestFocus()
+                                keyboardController?.show()
+                            }
+                        }
+
                         Column(
                             modifier = Modifier.fillMaxWidth(),
                             verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -462,6 +471,17 @@ private fun MessengerSheetContent(
                                     state = MessengerEditingBarState(
                                         messageText = state.editingOriginalText,
                                         onCloseClick = { dispatch(MessengerIntent.CancelEditClick) }
+                                    ),
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+
+                            if (state.isReplying) {
+                                MessengerReplyBar(
+                                    state = MessengerReplyBarState(
+                                        authorName = state.replyAuthorName,
+                                        messageText = state.replyText,
+                                        onCloseClick = { dispatch(MessengerIntent.CancelReplyClick) }
                                     ),
                                     modifier = Modifier.fillMaxWidth()
                                 )
@@ -683,7 +703,17 @@ private fun MessengerSheetContent(
                                                                     isResendable = message.isResendable,
                                                                     onReplyClick = {
                                                                         expandedMenuMessageId = null
-                                                                        dispatch(MessengerIntent.ReplyMessageClick(message.id))
+                                                                        dispatch(
+                                                                            MessengerIntent.ReplyMessageClick(
+                                                                                messageId = message.id,
+                                                                                authorName = if (message.direction == MessengerMessageDirection.Outgoing) {
+                                                                                    replyYouName
+                                                                                } else {
+                                                                                    state.name
+                                                                                },
+                                                                                text = message.text
+                                                                            )
+                                                                        )
                                                                     },
                                                                     onCopyClick = {
                                                                         expandedMenuMessageId = null
@@ -772,7 +802,17 @@ private fun MessengerSheetContent(
                                                                     isResendable = message.isResendable,
                                                                     onReplyClick = {
                                                                         expandedMenuMessageId = null
-                                                                        dispatch(MessengerIntent.ReplyMessageClick(message.id))
+                                                                        dispatch(
+                                                                            MessengerIntent.ReplyMessageClick(
+                                                                                messageId = message.id,
+                                                                                authorName = if (message.direction == MessengerMessageDirection.Outgoing) {
+                                                                                    replyYouName
+                                                                                } else {
+                                                                                    state.name
+                                                                                },
+                                                                                text = message.text
+                                                                            )
+                                                                        )
                                                                     },
                                                                     onCopyClick = {
                                                                         expandedMenuMessageId = null
@@ -840,7 +880,17 @@ private fun MessengerSheetContent(
                                                             isResendable = message.isResendable,
                                                             onReplyClick = {
                                                                 expandedMenuMessageId = null
-                                                                dispatch(MessengerIntent.ReplyMessageClick(message.id))
+                                                                dispatch(
+                                                                    MessengerIntent.ReplyMessageClick(
+                                                                        messageId = message.id,
+                                                                        authorName = if (message.direction == MessengerMessageDirection.Outgoing) {
+                                                                            replyYouName
+                                                                        } else {
+                                                                            state.name
+                                                                        },
+                                                                        text = message.text
+                                                                    )
+                                                                )
                                                             },
                                                             onCopyClick = {
                                                                 expandedMenuMessageId = null

@@ -25,6 +25,7 @@ import ru.mercury.vpclient.shared.domain.usecase.BasketChatEditUseCase.BasketCha
 import ru.mercury.vpclient.shared.domain.usecase.BasketChatGetUseCase
 import ru.mercury.vpclient.shared.domain.usecase.BasketChatSendUseCase
 import ru.mercury.vpclient.shared.domain.usecase.BasketChatSendUseCase.BasketChatSendException
+import ru.mercury.vpclient.shared.domain.usecase.BasketChatSendUseCase.Params
 import ru.mercury.vpclient.shared.domain.usecase.EmployeeActiveFlowUseCase
 import ru.mercury.vpclient.shared.domain.usecase.MessengerMessagesPagingDataUseCase
 import ru.mercury.vpclient.shared.mvi.ClientViewModel
@@ -78,9 +79,20 @@ class MessengerViewModel @Inject constructor(
                 if (text.isEmpty()) return
                 when (val editingId = stateFlow.value.editingMessageId) {
                     null -> {
-                        reduce { it.copy(messageText = "") }
+                        val replyId = stateFlow.value.replyMessageId
+                        val replyText = stateFlow.value.replyText
+                        reduce {
+                            it.copy(
+                                messageText = "",
+                                replyMessageId = null,
+                                replyAuthorName = "",
+                                replyText = ""
+                            )
+                        }
                         launch {
-                            val messageId = basketChatSendUseCase(text).getOrThrow() ?: return@launch
+                            val messageId = basketChatSendUseCase(
+                                Params(text = text, citatedMessageId = replyId, citation = replyId?.let { replyText })
+                            ).getOrThrow() ?: return@launch
                             send(MessengerEvent.MessageSent(messageId = messageId))
                         }
                     }
@@ -120,7 +132,18 @@ class MessengerViewModel @Inject constructor(
                     MainEventManager.send(DetailsRoute(id = intent.productId, openedFromCart = true))
                 }
             }
-            is MessengerIntent.ReplyMessageClick -> Unit
+            is MessengerIntent.ReplyMessageClick -> {
+                reduce {
+                    it.copy(
+                        messageText = if (it.editingMessageId != null) "" else it.messageText,
+                        replyMessageId = intent.messageId,
+                        replyAuthorName = intent.authorName,
+                        replyText = intent.text,
+                        editingMessageId = null,
+                        editingOriginalText = ""
+                    )
+                }
+            }
             is MessengerIntent.CopyMessageClick -> {
                 launch { send(MessengerEvent.CopyMessageText(intent.text)) }
             }
@@ -129,12 +152,18 @@ class MessengerViewModel @Inject constructor(
                     it.copy(
                         messageText = intent.text,
                         editingMessageId = intent.messageId,
-                        editingOriginalText = intent.text
+                        editingOriginalText = intent.text,
+                        replyMessageId = null,
+                        replyAuthorName = "",
+                        replyText = ""
                     )
                 }
             }
             is MessengerIntent.CancelEditClick -> {
                 reduce { it.copy(messageText = "", editingMessageId = null, editingOriginalText = "") }
+            }
+            is MessengerIntent.CancelReplyClick -> {
+                reduce { it.copy(replyMessageId = null, replyAuthorName = "", replyText = "") }
             }
             is MessengerIntent.DeleteMessageClick -> {
                 launch { basketChatDeleteUseCase(intent.messageId).getOrThrow() }

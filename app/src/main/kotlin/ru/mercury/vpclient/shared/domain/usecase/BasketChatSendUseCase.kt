@@ -1,5 +1,3 @@
-@file:Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
-
 package ru.mercury.vpclient.shared.domain.usecase
 
 import kotlinx.coroutines.CancellationException
@@ -12,6 +10,7 @@ import ru.mercury.vpclient.shared.data.persistence.datastore.PreferenceKey
 import ru.mercury.vpclient.shared.data.persistence.datastore.SettingsDataStore
 import ru.mercury.vpclient.shared.domain.mapper.entities
 import ru.mercury.vpclient.shared.domain.mapper.handleResponseResult
+import ru.mercury.vpclient.shared.domain.usecase.BasketChatSendUseCase.Params
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -22,10 +21,10 @@ class BasketChatSendUseCase @Inject constructor(
     private val networkService: NetworkService,
     private val settingsDataStore: SettingsDataStore,
     dispatchers: SharedDispatchers
-): UseCase<String, Long?>(dispatchers.io) {
+): UseCase<Params, Long?>(dispatchers.io) {
 
-    override suspend fun execute(text: String): Long? {
-        val trimmed = text.trim()
+    override suspend fun execute(params: Params): Long? {
+        val trimmed = params.text.trim()
         if (trimmed.isEmpty()) return null
 
         val pairedUserId = settingsDataStore.getValue(PreferenceKey.PairedUser).orEmpty()
@@ -35,7 +34,11 @@ class BasketChatSendUseCase @Inject constructor(
             pairedUserId = pairedUserId,
             localCreateTime = OffsetDateTime.now().format(DATE_TIME_FORMATTER),
             localMessageId = UUID.randomUUID().toString(),
-            payload = ProductPayloadResponse(text = trimmed)
+            payload = ProductPayloadResponse(
+                text = trimmed,
+                citation = params.citation,
+                citatedMessageId = params.citatedMessageId?.toInt()
+            )
         )
         val response = handleResponseResult {
             networkService.basketChatSend(request)
@@ -47,6 +50,12 @@ class BasketChatSendUseCase @Inject constructor(
 
         return entity.id
     }
+
+    data class Params(
+        val text: String,
+        val citatedMessageId: Long? = null,
+        val citation: String? = null
+    )
 
     data class BasketChatSendException(
         override val message: String

@@ -8,7 +8,10 @@ data class MessengerModel(
     val messageText: String = "",
     val isAttachSheetVisible: Boolean = false,
     val editingMessageId: Long? = null,
-    val editingOriginalText: String = ""
+    val editingOriginalText: String = "",
+    val replyMessageId: Long? = null,
+    val replyAuthorName: String = "",
+    val replyText: String = ""
 ): Model {
 
     val name: String
@@ -22,4 +25,7 @@ data class MessengerModel(
 
     val isEditing: Boolean
         get() = editingMessageId != null
+
+    val isReplying: Boolean
+        get() = replyMessageId != null
 }
