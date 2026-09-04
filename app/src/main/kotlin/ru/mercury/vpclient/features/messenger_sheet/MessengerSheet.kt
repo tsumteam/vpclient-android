@@ -196,6 +196,12 @@ fun MessengerSheet(
             if (slideInMessageId == messageId) slideInMessageId = null
         },
         onScrollToBottomClick = { scope.launch { lazyListState.animateScrollToItem(0) } },
+        onCitationClick = { citatedMessageId ->
+            scope.launch {
+                val index = pagingItems.itemSnapshotList.items.indexOfFirst { message -> message.id == citatedMessageId }
+                if (index >= 0) lazyListState.animateScrollToItem(index)
+            }
+        },
         dispatch = viewModel::dispatch,
         snackbarHostState = snackbarHostState
     )
@@ -257,6 +263,7 @@ private fun MessengerSheetContent(
     slideInMessageId: Long?,
     onSlideInAnimationFinished: (Long) -> Unit,
     onScrollToBottomClick: () -> Unit,
+    onCitationClick: (Long) -> Unit,
     dispatch: (MessengerIntent) -> Unit,
     snackbarHostState: SnackbarHostState
 ) {
@@ -585,9 +592,21 @@ private fun MessengerSheetContent(
                                                     )
                                                 ) {
                                                     Box {
+                                                        val citatedMessage = message.payload?.citatedMessageId?.let { citatedMessageId ->
+                                                            pagingItems.itemSnapshotList.items.firstOrNull { item -> item.id == citatedMessageId }
+                                                        }
+                                                        val replyYouName = stringResource(ClientStrings.MessengerReplyYou)
+                                                        val citationAuthorName = when {
+                                                            message.payload?.citation.orEmpty().isEmpty() -> ""
+                                                            citatedMessage?.direction == MessengerMessageDirection.Outgoing -> replyYouName
+                                                            else -> state.name
+                                                        }
+
                                                         MessengerMessage(
                                                             message = message,
                                                             onProductClick = { productId -> dispatch(MessengerIntent.ProductClick(productId)) },
+                                                            citationAuthorName = citationAuthorName,
+                                                            onCitationClick = { message.payload?.citatedMessageId?.let(onCitationClick) },
                                                             modifier = Modifier.clickableWithoutRipple {
                                                                 expandedMenuMessageId = message.id
                                                             }
@@ -664,9 +683,21 @@ private fun MessengerSheetContent(
                                                     )
                                                 ) {
                                                     Box {
+                                                        val citatedMessage = message.payload?.citatedMessageId?.let { citatedMessageId ->
+                                                            pagingItems.itemSnapshotList.items.firstOrNull { item -> item.id == citatedMessageId }
+                                                        }
+                                                        val replyYouName = stringResource(ClientStrings.MessengerReplyYou)
+                                                        val citationAuthorName = when {
+                                                            message.payload?.citation.orEmpty().isEmpty() -> ""
+                                                            citatedMessage?.direction == MessengerMessageDirection.Outgoing -> replyYouName
+                                                            else -> state.name
+                                                        }
+
                                                         MessengerMessage(
                                                             message = message,
                                                             onProductClick = { productId -> dispatch(MessengerIntent.ProductClick(productId)) },
+                                                            citationAuthorName = citationAuthorName,
+                                                            onCitationClick = { message.payload?.citatedMessageId?.let(onCitationClick) },
                                                             modifier = Modifier.clickableWithoutRipple {
                                                                 expandedMenuMessageId = message.id
                                                             }
@@ -722,9 +753,21 @@ private fun MessengerSheetContent(
                                             Box(
                                                 modifier = Modifier.animateItem(placementSpec = snap())
                                             ) {
+                                                val citatedMessage = message.payload?.citatedMessageId?.let { citatedMessageId ->
+                                                    pagingItems.itemSnapshotList.items.firstOrNull { item -> item.id == citatedMessageId }
+                                                }
+                                                val replyYouName = stringResource(ClientStrings.MessengerReplyYou)
+                                                val citationAuthorName = when {
+                                                    message.payload?.citation.orEmpty().isEmpty() -> ""
+                                                    citatedMessage?.direction == MessengerMessageDirection.Outgoing -> replyYouName
+                                                    else -> state.name
+                                                }
+
                                                 MessengerMessage(
                                                     message = message,
                                                     onProductClick = { productId -> dispatch(MessengerIntent.ProductClick(productId)) },
+                                                    citationAuthorName = citationAuthorName,
+                                                    onCitationClick = { message.payload?.citatedMessageId?.let(onCitationClick) },
                                                     modifier = Modifier.clickableWithoutRipple {
                                                         expandedMenuMessageId = message.id
                                                     }
@@ -867,6 +910,7 @@ private fun MessengerSheetContentPreview(
             slideInMessageId = null,
             onSlideInAnimationFinished = {},
             onScrollToBottomClick = {},
+            onCitationClick = {},
             dispatch = {},
             snackbarHostState = remember { SnackbarHostState() }
         )

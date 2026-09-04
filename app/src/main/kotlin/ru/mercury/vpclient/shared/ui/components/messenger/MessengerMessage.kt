@@ -31,6 +31,8 @@ import ru.mercury.vpclient.shared.ui.preview.ThemeWrapper
 fun MessengerMessage(
     message: MessengerMessageEntity,
     onProductClick: (String) -> Unit,
+    citationAuthorName: String,
+    onCitationClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     when (message.direction) {
@@ -274,7 +276,11 @@ fun MessengerMessage(
                 }
                 else -> {
                     MessengerTextMessage(
-                        message = message,
+                        state = MessengerTextMessageState(
+                            message = message,
+                            citationAuthorName = citationAuthorName,
+                            onCitationClick = onCitationClick
+                        ),
                         modifier = modifier
                     )
                 }
@@ -291,7 +297,9 @@ private fun MessengerMessagePreview(
 ) {
     MessengerMessage(
         message = message,
-        onProductClick = {}
+        onProductClick = {},
+        citationAuthorName = "",
+        onCitationClick = {}
     )
 }
 

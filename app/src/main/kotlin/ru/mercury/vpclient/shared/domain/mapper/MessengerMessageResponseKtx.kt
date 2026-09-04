@@ -93,6 +93,7 @@ private val PayloadDtoBaseResponse.messengerMessagePayload: MessengerMessagePayl
             title = title,
             citation = citation,
             citatedText = null,
+            citatedMessageId = citatedMessageId?.toLong(),
             orderNumber = orderNumber,
             products = products.orEmpty().map { item -> item.messengerPayloadProduct },
             images = images.orEmpty().map { item -> item.messengerPayloadImage },

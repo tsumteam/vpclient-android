@@ -404,6 +404,7 @@
     <string name="messenger_message_copy">Скопировать</string>
     <string name="messenger_message_edit">Изменить</string>
     <string name="messenger_message_delete">Удалить</string>
+    <string name="messenger_reply_you">Вы</string>
 
     <string name="video_speed_title">Скорость</string>
     <string name="video_speed_05">0,5x</string>

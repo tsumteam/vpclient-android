@@ -8,6 +8,7 @@ data class MessengerMessagePayload(
     val title: String? = null,
     val citation: String? = null,
     val citatedText: String? = null,
+    val citatedMessageId: Long? = null,
     val orderNumber: String? = null,
     val products: List<MessengerPayloadProduct> = emptyList(),
     val images: List<MessengerPayloadImage> = emptyList(),
