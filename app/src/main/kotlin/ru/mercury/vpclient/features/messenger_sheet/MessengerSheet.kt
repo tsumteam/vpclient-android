@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -69,6 +70,7 @@ import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -91,6 +93,8 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
+import kotlin.time.Duration.Companion.milliseconds
 import ru.mercury.vpclient.features.messenger_attach_sheet.MessengerAttachSheet
 import ru.mercury.vpclient.features.messenger_attach_sheet.intent.MessengerAttachIntent
 import ru.mercury.vpclient.features.messenger_sheet.event.MessengerEvent
@@ -276,6 +280,22 @@ private fun MessengerSheetContent(
         sheetGesturesEnabled = true,
         contentWindowInsets = { WindowInsets(0.dp) }
     ) {
+        val keyboardController = LocalSoftwareKeyboardController.current
+        val imeInsets = WindowInsets.ime
+        val scope = rememberCoroutineScope()
+        val onAttachClick: () -> Unit = remember(keyboardController, imeInsets, density, dispatch) {
+            {
+                keyboardController?.hide()
+                scope.launch {
+                    withTimeoutOrNull(400.milliseconds) {
+                        snapshotFlow { imeInsets.getBottom(density) }
+                            .first { imeBottom -> imeBottom == 0 }
+                    }
+                    dispatch(MessengerIntent.AttachClick)
+                }
+            }
+        }
+
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
@@ -441,7 +461,7 @@ private fun MessengerSheetContent(
                             )
 
                             IconButton(
-                                onClick = { dispatch(MessengerIntent.AttachClick) },
+                                onClick = onAttachClick,
                                 modifier = Modifier
                                     .padding(start = 8.dp)
                                     .size(40.dp)
